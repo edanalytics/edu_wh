@@ -1,0 +1,35 @@
+version: 2
+
+models:
+  - name: dim_course_section
+    description: >
+      Defines individual sections of a course, and all known characteristics.
+    columns:
+      - name: k_course_section
+        description: Defining key for course sections
+        tests: 
+          - unique
+      - name: k_course
+      - name: k_school
+      - name: k_session
+      - name: k_classroom
+      - name: tenant_code
+      - name: section_id
+      - name: section_name
+      - name: local_course_code
+      - name: local_course_title
+      - name: course_code
+      - name: course_title
+      - name: school_year
+      - name: session_name
+      - name: academic_subject
+      - name: career_pathway
+      - name: instructional_time_planned
+      - name: sequence_of_course
+      - name: educational_environment_type
+      - name: instruction_language
+      - name: medium_of_instruction
+      - name: population_served
+      - name: available_credits
+      - name: available_credit_conversion
+      - name: available_credit_type

@@ -1,0 +1,32 @@
+version: 2
+
+models:
+  - name: dim_program
+    description: >
+      Defines programs at the school and LEA level.
+    columns:
+      - name: k_program
+        description: Defining key for programs.
+        tests: 
+          - unique
+      - name: k_lea
+        description: Association to the LEA with the program.
+      - name: k_school
+        description: Association to the school with the program.
+      - name: school_year
+        description: > 
+          School year specified by Spring year.
+          e.g., the 2021-2022 year would be 2022.
+      - name: tenant_code
+      - name: ed_org_id
+        description: The identifier for the educational organization with the program.
+      - name: ed_org_type
+        description: >
+          The type of educational organization
+          e.g., School or LocalEducationlAgency.
+      - name: program_id
+        description: The identifier for the program.
+      - name: program_name
+        description: The name of the program.
+      - name: program_type
+        description: The type or category of the program.

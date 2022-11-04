@@ -1,0 +1,53 @@
+version: 2
+
+models:
+  - name: dim_student
+    description: >
+      Defines students across years and some of their key characteristics.
+    columns:
+      - name: k_student
+        description: Defining key for the student in this school year.
+        tests: 
+          - unique
+          - not_null
+      - name: k_student_xyear
+        description: Defining key for the student, which is consistent across years.
+        tests: 
+          - not_null
+      - name: tenant_code
+      - name: school_year
+        description: > 
+          School year specified by Spring year.
+          e.g. the 2021-2022 year would be 2022.
+        tests: 
+          - not_null
+      - name: student_unique_id
+        description: The student's unique id number in the education organization.
+      - name: first_name
+        description: The student's first name, or given name.
+      - name: middle_name
+        description: The student's middle name.
+      - name: last_name
+        description: The student's last name, family name, or surname.
+      - name: display_name
+        description: The student's last name, first name, and middle initial.
+      - name: birth_date
+        description: The student's birthday formatted as YYYY-MM-DD.
+      - name: lep_code
+        description: The student's Limited English Profiency code.
+      - name: gender
+        description: The student's gender.
+      - name: grade_level
+        description: The student's grade level for the given year.
+      - name: race_ethnicity
+        description: >
+          A single value defining the student's race, which includes logic
+          for multi-racial students and Hispanic or Latino students.
+      - name: is_special_education_annual
+        description: The student's special education status for the given year.
+      - name: is_special_education_active
+        description: The student's special education status based on the current date.
+      - name: race_array
+        description: A list of the student's races.
+      - name: safe_display_name
+        description: Display name with student ID.

@@ -1,0 +1,34 @@
+version: 2
+
+models: 
+  - name: fct_student_school_attendance_event
+    description: >
+      Raw school-level attendance events.
+
+      Since attendance is generally recorded only in the negative, this is 
+      typically a table of absences only. To find full daily attendance records,
+      see `fct_student_daily_attendance` or the aggregations thereof.
+
+
+      *Primary Key:* `k_student, k_school, k_calendar_date`
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - k_student
+            - k_school
+            - k_calendar_date
+    columns:
+      - name: k_student
+      - name: k_student_xyear
+      - name: k_school
+      - name: k_calendar_date
+      - name: k_session
+      - name: tenant_code
+      - name: attendance_event_category
+      - name: attendance_event_reason
+      - name: is_absent
+      - name: event_duration
+      - name: arrival_time
+      - name: departure_time
+      - name: educational_environment

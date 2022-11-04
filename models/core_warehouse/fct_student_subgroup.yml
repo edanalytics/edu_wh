@@ -1,0 +1,25 @@
+version: 2
+
+models: 
+  - name: fct_student_subgroup
+    description: >
+      Long student subgroup assignments. Useful for aggregating analytics by the full universe of student groups.
+      This table is created by casting long the indicators and status columns in `dim_student`.
+
+      *Primary Key:* `k_student, k_subgroup`
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - k_student
+            - k_subgroup
+    columns:
+      - name: k_student
+      - name: k_student_xyear
+      - name: tenant_code
+      - name: school_year
+      - name: k_subgroup
+      - name: subgroup_category
+        description: Category of subgroup. e.g. "grade_level". A column name in `dim_student`
+      - name: subgroup_value
+        description: Specific value found in `dim_student` for this student & subgroup_category. e.g. "Eighth grade"

@@ -1,0 +1,50 @@
+version: 2
+
+models: 
+  - name: fct_course_transcripts
+    description: >
+      Course Transcripts contain the full historic record of student
+      course grades, though in less detail than `fct_student_grades`.
+      Transcripts contain only final grades, while the grade fact may contain
+      mid-period progress reports or even in progress grades.
+
+      Rows represent a student's grade and associated details for one
+      attempt result in one course at one school during one academic term.
+
+      *Primary Key:* `k_course, k_student_academic_record, course_attempt_result`
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - k_course
+            - k_student_academic_record
+            - course_attempt_result
+    columns:
+      - name: k_course
+      - name: k_student_academic_record
+      - name: k_lea
+      - name: k_school
+      - name: k_student
+      - name: tenant_code
+      - name: school_year
+      - name: academic_term
+      - name: course_attempt_result
+      - name: course_title
+        description: >
+          Course title as it appears in the transcript. May differ from the 
+          title that appears in `dim_course`.
+      - name: alternative_course_code
+      - name: alternative_course_title
+      - name: when_taken_grade_level
+      - name: final_letter_grade_earned
+      - name: final_numeric_grade_earned
+      - name: earned_credits
+      - name: attempted_credits
+      - name: course_repeat_code
+      - name: method_credit_earned
+      - name: earned_credit_type
+      - name: earned_credit_conversion
+      - name: attempted_credit_type
+      - name: attempted_credit_conversion
+      - name: assigning_organization_identification_code
+      - name: course_catalog_url

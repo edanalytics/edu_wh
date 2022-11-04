@@ -1,0 +1,20 @@
+version: 2
+
+models:
+  - name: dim_classroom
+    description: >
+      Defines locations within the school, most commonly classrooms.
+    columns:
+      - name: k_classroom
+        description: Defining key for school locations
+        tests: 
+          - unique
+      - name: k_school
+        description: Association to the school containing the location
+      - name: tenant_code
+      - name: classroom_id_code
+        description: The classroom's descriptive ID
+      - name: maximum_seating
+        description: The maximum occupancy of the location
+      - name: optimum_seating
+        description: The optimum occupancy of the location

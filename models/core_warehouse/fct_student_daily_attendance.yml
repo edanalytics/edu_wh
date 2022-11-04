@@ -1,0 +1,57 @@
+version: 2
+
+models: 
+  - name: fct_student_daily_attendance
+    description: >
+      Student daily attendance computed using full-day attendance 
+      as reported in `studentSchoolAttendanceEvents`.
+
+      **Primary Key:** k_student, k_school, k_calendar_date
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - k_student
+            - k_school
+            - k_calendar_date
+    columns:
+      - name: k_student
+      - name: k_school
+      - name: k_calendar_date
+      - name: k_session
+      - name: tenant_code
+      - name: calendar_date
+      - name: attendance_event_category
+        description: >
+          The descriptor value from AttendanceEventDescriptor
+      - name: is_absent
+        description: Indicator for absence. Defined via descriptor mapping in `xwalk_attendance_events`
+      - name: is_present
+        description: Inverse of `is_absent`, for use in calculations.
+      - name: is_enrolled
+      - name: total_days_enrolled
+      - name: cumulative_days_absent
+        description: >
+          Cumulative count, up to the day specified in the row.
+      - name: cumulative_days_enrolled
+        description: >
+          Cumulative count, up to the day specified in the row.
+      - name: cumulative_days_attended
+        description: >
+          Cumulative count, up to the day specified in the row.
+      - name: cumulative_attendance_rate
+        description: >
+          Cumulative count, up to the day specified in the row.
+      - name: is_chronic_absentee
+        description: >
+          Whether the student was considered chronically absent as of this day.
+          Defined as attendance rate less than {{ var('edu:attendance:chronic_absence_threshold') }}
+          and days enrolled at least {{ var('edu:attendance:chronic_absence_min_days') }}.
+          Configurable in `dbt_project.yml`
+      - name: absentee_category_rank
+        description: >
+          A numeric value categorizing levels of attendance. Defined in the 
+          seed table `absentee_categories`.
+      - name: absentee_category_label
+        description: >
+          A text label categorizing levels of attendance. Defined in the 
+          seed table `absentee_categories`.

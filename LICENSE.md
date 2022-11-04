@@ -1,4 +1,6 @@
-> EDU is licensed under the PolyForm Noncommercial License 1.0.0. Refer to our [License doc](https://enabledataunion.org/docs/license/) if you have any questions, or reach out to us at edu@edanalytics.org
+> EDU is licensed under the PolyForm Noncommercial License 1.0.0. Refer to our 
+[License doc](https://enabledataunion.org/docs/license/) if you have any questions, 
+or reach out to us at edu@edanalytics.org
 
 # PolyForm Noncommercial License 1.0.0
 

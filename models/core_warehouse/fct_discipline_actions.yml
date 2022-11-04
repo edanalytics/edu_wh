@@ -1,0 +1,70 @@
+version: 2
+
+models: 
+  - name: fct_discipline_actions
+    description: >
+      This table describes disciplinary actions taken by the school, such as 
+      suspensions. 
+      The incidents and behaviors leading to those actions are not yet
+      covered in the warehouse model. 
+
+      Rows represent one disciplinary action for one student on one date.
+
+      *Primary Key:* k_student, discipline_action_id, discipline_date, discipline_action
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - k_student
+            - discipline_action_id
+            - discipline_date
+            - discipline_action
+    columns:
+      - name: k_student
+      - name: k_school
+        description: >
+          This is filled from either k_school__assignment or k_school__responsibility,
+          whichever is populated. It provides a convenience single column for joins.
+      - name: k_school__assignment
+        description: >
+          (Optional) The school to which a student was transferred for discipline.
+      - name: k_school__responsibility
+        description: >
+          The school responsible for the student's discipline
+      - name: k_staff
+        description:
+          (Optional) The staff responsible for enforcing the discipline action
+      - name: discipline_action_id
+        description: > 
+          Identifier for this discipline action assigned by the originating software.
+      - name: discipline_date
+      - name: discipline_action_length
+        description: >
+          The length of time in school days for the discipline action, if applicable.
+      - name: actual_discipline_action_length
+        description: >
+          The actual length in school days of a student's disciplinary assignment.
+      - name: triggered_iep_placement_meeting
+      - name: is_related_to_zero_tolerance_policy
+      - name: discipline_action_length_difference_reason
+      - name: k_staff_array
+        description: >
+          It is possible to associate multiple staff with a discipline action, 
+          though this rarely happens in practice. If there are multiple staff,
+          this list will contain each key, and `k_staff` will contain the first.
+      - name: is_oss
+        description: Is this an Out of School Suspension?
+      - name: is_iss
+        description: Is this an In School Suspension?
+      - name: is_exp
+        description: Is this an Expulsion?
+      - name: is_minor
+        description: Is this a minor disciplinary action?
+      - name: severity_order
+        description: >
+          A ranking number for the severity of action, for selecting the most 
+          severe. Actions are grouped into levels by the 100s, from 0 to 4, and
+          then ranked within levels.
+          This is controlled in `xwalk_discipline_actions.csv`
+      
+        

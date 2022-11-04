@@ -1,0 +1,55 @@
+version: 2
+
+models: 
+  - name: fct_student_school_association
+    description: >
+      Student School Association describes student enrollments.
+
+      Note that a student can have multiple enrollments within a year,
+      either at multiple schools or even multiple enrollments at the same
+      school provided the start dates are different.
+
+      `is_active_enrollment` helps find unclosed enrollments in the current year.
+      `is_latest_annual_entry` helps find a unique record for each 
+      student-school-year.
+
+      *Primary Key:* `k_student, k_school, school_year, entry_date`
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - k_student
+            - k_school
+            - school_year
+            - entry_date
+    columns:
+      - name: k_student
+      - name: k_student_xyear
+      - name: k_lea
+      - name: k_school
+      - name: k_school_calendar
+        description: >
+          The school calendar used by the student. This is important for 
+          calculating attendance.
+      - name: tenant_code
+      - name: school_year
+      - name: entry_date
+      - name: exit_withdraw_date
+      - name: is_primary_school
+      - name: is_repeat_grade
+      - name: is_school_choice_transfer
+      - name: is_active_enrollment
+        description: >
+          Indicator for active enrollment: calculated as enrollments in the 
+          current school year that have begun but not yet ended.
+      - name: entry_grade_level
+      - name: entry_grade_level_reason
+      - name: entry_type
+      - name: exit_withdraw_type
+      - name: class_of_school_year
+      - name: graduation_plan_type
+      - name: residency_status
+      - name: is_latest_annual_entry
+        description: >
+          True if this is the most recent enrollment (by entry date) at this 
+          school in this year.

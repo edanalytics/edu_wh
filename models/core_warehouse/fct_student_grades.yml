@@ -1,0 +1,53 @@
+version: 2
+
+models: 
+  - name: fct_student_grades
+    description: >
+      Student course grades by grading period within the school year.
+
+      Note that not all grading periods indicate final grades, so averages 
+      across grading periods may double-count some periods of time.
+
+      Note that `grade_type` is part of the Primary Key, meaning a student
+      may have multiple grades for the same course in the same grading period,
+      provided they have different grade types.
+
+
+      *Primary Key:* `k_student, k_school, k_course_section, k_grading_period, grade_type`
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - k_student
+            - k_school
+            - k_course_section
+            - k_grading_period
+            - grade_type
+    columns:
+      - name: k_student
+      - name: k_course_section
+      - name: k_school
+      - name: k_grading_period
+      - name: grade_type
+      - name: tenant_code
+      - name: letter_grade_earned
+      - name: numeric_grade_earned
+      - name: diagnostic_statement
+      - name: performance_base_conversion
+      - name: unweighted_gpa_points
+        description: >
+          A translation of letter_grade to a numeric grade point value.
+          Controlled by xwalk_letter_grades seed.
+      - name: exclude_from_gpa
+        description: >
+          Letter grades that don't contribute to GPA, such as Pass/Fail courses.
+          Controlled by xwalk_letter_grades seed.
+      - name: is_dorf
+        description: >
+          Indicator for D or F grades, i.e. low performance. Often relevant in 
+          early warning systems or on-track metrics.
+          Controlled by xwalk_letter_grades seed.
+      - name: grade_sort_index
+        description: >
+          A numeric sort of letter grades.
+          Controlled by xwalk_letter_grades seed.
