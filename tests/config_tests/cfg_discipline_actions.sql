@@ -12,7 +12,7 @@ xwalk_discipline_actions as (
 ),
 flattened as (
     --todo: duplicated logic. consider splitting to build table
-    select *, {{ dbt_edfi_source.extract_descriptor('value:disciplineDescriptor::string') }} as discipline_action
+    select *, {{ edu_edfi_source.extract_descriptor('value:disciplineDescriptor::string') }} as discipline_action
     from stg_discipline_actions
         , lateral flatten(v_disciplines)
 ),
