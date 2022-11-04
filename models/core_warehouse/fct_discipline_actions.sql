@@ -25,7 +25,7 @@ flatten_staff_keys as (
         discipline_action_id,
         discipline_date,
         index,
-        {{ dbt_edfi_source.gen_skey('k_staff', alt_ref='value:staffReference') }}
+        {{ edu_edfi_source.gen_skey('k_staff', alt_ref='value:staffReference') }}
     from stg_discipline_actions
         , lateral flatten(v_staffs)
 ),
@@ -55,7 +55,7 @@ formatted as (
         stg_discipline_actions.tenant_code,
         stg_discipline_actions.discipline_action_id,
         stg_discipline_actions.discipline_date,
-        {{ dbt_edfi_source.extract_descriptor('value:disciplineDescriptor::string') }} as discipline_action,
+        {{ edu_edfi_source.extract_descriptor('value:disciplineDescriptor::string') }} as discipline_action,
         stg_discipline_actions.discipline_action_length,
         stg_discipline_actions.actual_discipline_action_length,
         stg_discipline_actions.triggered_iep_placement_meeting,

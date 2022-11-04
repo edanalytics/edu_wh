@@ -47,7 +47,7 @@ formatted as (
         stg_stu_spec_ed.participation_status,
         stg_stu_spec_ed.reason_exited,
         stg_stu_spec_ed.special_education_setting
-        {{ dbt_edfi_source.extract_extension(model_name='stg_ef3__student_special_education_program_associations', flatten=False) }}
+        {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_special_education_program_associations', flatten=False) }}
     from stg_stu_spec_ed
     inner join dim_student
         on stg_stu_spec_ed.k_student = dim_student.k_student
