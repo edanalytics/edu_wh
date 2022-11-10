@@ -30,7 +30,7 @@ packages:
 
 ## License
 This package is free to use for noncommercial purposes. 
-See [License](LICENSE).
+See [License](LICENSE.md).
 
 ## Configuration
 This package is highly configurable: it needs to parse a variety of [Descriptors](https://techdocs.ed-fi.org/display/EFDS32/Descriptor+Guidance) from Ed-Fi 
