@@ -157,7 +157,7 @@ metric_labels as (
             else null 
         end as absentee_category_rank,
         case 
-            when meets_enrollment_threshold then metric_absentee_categories.level_numeric 
+            when meets_enrollment_threshold then metric_absentee_categories.level_label 
             else null
         end as absentee_category_label
     from cumulatives
