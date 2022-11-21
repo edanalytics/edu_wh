@@ -7,7 +7,7 @@ It is a highly configurable and extensible package to power analytics on K12
 education data. 
 
 > **Note**
-> This package is not complete on its own. Use our [Project Template]() to populate
+> This package is not complete on its own. Use our [Project Template](https://github.com/edanalytics/edu_project_template) to populate
 > necessary configuration.
 
 This package is part of the larger [EDU](https://enabledataunion.org)
