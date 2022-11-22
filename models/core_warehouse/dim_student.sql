@@ -58,7 +58,7 @@ formatted as (
             except=['tenant_code', 'api_year', 'k_student', 'k_student_xyear', 'ed_org_id']
         ) %}
         {%- for col in stu_char_cols -%}
-            {{ col }},
+            stu_chars.{{ col }},
         {%- endfor -%}
 
         -- student indicators
@@ -67,7 +67,7 @@ formatted as (
             except=['tenant_code', 'api_year', 'k_student', 'k_student_xyear', 'ed_org_id']
         ) %}
         {%- for col in stu_ind_cols -%}
-            {{ col }},
+            stu_indicators.{{ col }},
         {%- endfor -%}
 
         -- intersection groups
