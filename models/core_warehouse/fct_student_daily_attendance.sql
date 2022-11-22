@@ -89,10 +89,13 @@ fill_positive_attendance as (
             fct_student_school_att.attendance_event_category,
             '{{ var("edu:attendance:in_attendance_code") }}' 
         ) as attendance_event_category,
+        fct_student_school_att.attendance_event_reason,
         coalesce(fct_student_school_att.is_absent, FALSE) as is_absent,
         not coalesce(fct_student_school_att.is_absent, FALSE) as is_present,
         true as is_enrolled,
-       total_days_enrolled 
+        total_days_enrolled,
+        fct_student_school_att.event_duration,
+        fct_student_school_att.school_attendance_duration
     from stu_enr_att_cal
     left join fct_student_school_att
         on stu_enr_att_cal.k_student = fct_student_school_att.k_student
@@ -131,6 +134,7 @@ cumulatives as (
         positive_attendance_deduped.k_session,
         positive_attendance_deduped.tenant_code,
         positive_attendance_deduped.attendance_event_category,
+        fct_student_school_att.attendance_event_reason,
         positive_attendance_deduped.is_absent,
         positive_attendance_deduped.is_present,
         positive_attendance_deduped.is_enrolled,
@@ -146,7 +150,9 @@ cumulatives as (
             order by calendar_date) as cumulative_days_enrolled,
         round(100 * cumulative_days_attended / nullif(cumulative_days_enrolled, 0), 2) as cumulative_attendance_rate,
         cumulative_days_enrolled >= {{ var('edu:attendance:chronic_absence_min_days') }} as meets_enrollment_threshold,
-        {{ msr_chronic_absentee('cumulative_attendance_rate', 'cumulative_days_enrolled') }} as is_chronic_absentee
+        {{ msr_chronic_absentee('cumulative_attendance_rate', 'cumulative_days_enrolled') }} as is_chronic_absentee,
+        fct_student_school_att.event_duration,
+        fct_student_school_att.school_attendance_duration
     from positive_attendance_deduped
 ),
 metric_labels as (
