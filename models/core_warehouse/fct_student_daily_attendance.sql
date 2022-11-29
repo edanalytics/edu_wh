@@ -134,7 +134,7 @@ cumulatives as (
         positive_attendance_deduped.k_session,
         positive_attendance_deduped.tenant_code,
         positive_attendance_deduped.attendance_event_category,
-        fct_student_school_att.attendance_event_reason,
+        positive_attendance_deduped.attendance_event_reason,
         positive_attendance_deduped.is_absent,
         positive_attendance_deduped.is_present,
         positive_attendance_deduped.is_enrolled,
@@ -151,8 +151,8 @@ cumulatives as (
         round(100 * cumulative_days_attended / nullif(cumulative_days_enrolled, 0), 2) as cumulative_attendance_rate,
         cumulative_days_enrolled >= {{ var('edu:attendance:chronic_absence_min_days') }} as meets_enrollment_threshold,
         {{ msr_chronic_absentee('cumulative_attendance_rate', 'cumulative_days_enrolled') }} as is_chronic_absentee,
-        fct_student_school_att.event_duration,
-        fct_student_school_att.school_attendance_duration
+        positive_attendance_deduped.event_duration,
+        positive_attendance_deduped.school_attendance_duration
     from positive_attendance_deduped
 ),
 metric_labels as (

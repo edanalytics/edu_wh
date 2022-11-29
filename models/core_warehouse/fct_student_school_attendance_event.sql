@@ -62,6 +62,7 @@ formatted as (
         stg_stu_sch_attend.attendance_event_reason,
         xwalk_att_events.is_absent,
         stg_stu_sch_attend.event_duration,
+        stg_stu_sch_attend.school_attendance_duration,
         stg_stu_sch_attend.arrival_time,
         stg_stu_sch_attend.departure_time,
         stg_stu_sch_attend.educational_environment
