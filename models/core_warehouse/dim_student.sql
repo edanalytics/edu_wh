@@ -20,6 +20,9 @@ stu_races as (
 stu_chars as (
     select * from {{ ref('bld_ef3__student_characteristics') }}
 ),
+stu_indicators as (
+    select * from {{ ref('bld_ef3__student_indicators') }}
+),
 stu_grade as (
     select * from {{ ref('bld_ef3__stu_grade_level') }}
 ),
@@ -48,9 +51,24 @@ formatted as (
         stu_races.race_ethnicity,
         coalesce(stu_annual_spec_ed.is_special_education_annual, false) as is_special_education_annual,
         coalesce(stu_is_spec_ed.is_special_education_active, false) as is_special_education_active,
-        {{ dbt_utils.star(ref('bld_ef3__student_characteristics'),
-                          except=['tenant_code', 'api_year', 'k_student', 
-                          'k_student_xyear', 'ed_org_id']) }},
+
+        -- student characteristics
+        {% set stu_char_cols = dbt_utils.get_filtered_columns_in_relation(
+            ref('bld_ef3__student_characteristics'),
+            except=['tenant_code', 'api_year', 'k_student', 'k_student_xyear', 'ed_org_id']
+        ) %}
+        {%- for col in stu_char_cols -%}
+            stu_chars.{{ col }},
+        {%- endfor -%}
+
+        -- student indicators
+        {% set stu_ind_cols = dbt_utils.get_filtered_columns_in_relation(
+            ref('bld_ef3__student_indicators'),
+            except=['tenant_code', 'api_year', 'k_student', 'k_student_xyear', 'ed_org_id']
+        ) %}
+        {%- for col in stu_ind_cols -%}
+            stu_indicators.{{ col }},
+        {%- endfor -%}
 
         -- intersection groups
         {% set intersection_vars = var("edu:stu_demos:intersection_groups") %}
@@ -82,6 +100,9 @@ formatted as (
     left join stu_chars 
         on stu_demos.k_student = stu_chars.k_student
         and stu_demos.ed_org_id = stu_chars.ed_org_id
+    left join stu_indicators 
+        on stu_demos.k_student = stu_indicators.k_student
+        and stu_demos.ed_org_id = stu_indicators.ed_org_id
     left join stu_grade
         on stu_demos.k_student = stu_grade.k_student
         and stg_student.api_year = stu_grade.school_year
