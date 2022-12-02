@@ -18,17 +18,19 @@ pivoted as (
         api_year,
         k_student,
         k_student_xyear,
-        ed_org_id,
-        {{ alias_pivot(column='indicator_name',
-                    cmp_col_name='original_indicator_name',
-                    alias_col_name='dim_stu_name',
-                    xwalk_ref='xwalk_student_indicators',
-                    agg='min',
-                    null_false=False,
-                    cast=null,
-                    then_value='indicator_value',
-                    else_value='null',
-                    quote_identifiers=False) }}
+        ed_org_id
+        {%- if not is_empty_model('xwalk_student_indicators') -%},
+          {{ alias_pivot(column='indicator_name',
+                      cmp_col_name='original_indicator_name',
+                      alias_col_name='dim_stu_name',
+                      xwalk_ref='xwalk_student_indicators',
+                      agg='min',
+                      null_false=False,
+                      cast=null,
+                      then_value='indicator_value',
+                      else_value='null',
+                      quote_identifiers=False) }}
+        {% endif %}
     from stu_ind
     left join xwalk_stu_ind 
         on stu_ind.indicator_name = xwalk_stu_ind.original_indicator_name
