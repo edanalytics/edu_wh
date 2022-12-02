@@ -1,3 +1,5 @@
+-- depends_on: {{ ref('xwalk_course_level_characteristics') }}
+
 -- todo: need some test cases of this
 -- todo: preferable to cast this to boolean after agg, but need to modify macro
 -- todo: need a filtered get_column_values to avoid NULL becoming a column?
@@ -27,7 +29,7 @@ pivoted as (
               else_value=0,
               quote_identifiers=False
           ) }}
-        {%- endif -%}
+        {%- endif %}
     from char_long
     group by 1,2,3,4,5
 )
