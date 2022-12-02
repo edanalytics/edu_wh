@@ -14,6 +14,9 @@ with stg_student as (
 stu_demos as (
     select * from {{ ref('bld_ef3__choose_stu_demos') }}
 ),
+stu_ids as (
+    select * from {{ ref('bld_ef3__wide_ids_student') }}
+),
 stu_races as (
     select * from {{ ref('bld_ef3__stu_race_ethnicity') }}
 ),
@@ -39,6 +42,14 @@ formatted as (
         stg_student.tenant_code,
         stg_student.api_year as school_year,
         stg_student.student_unique_id,
+        -- student ids
+        {% set stu_id_cols = dbt_utils.get_filtered_columns_in_relation(
+            ref('bld_ef3__wide_ids_student'),
+            except=['tenant_code', 'api_year', 'k_student', 'k_student_xyear', 'ed_org_id']
+        ) %}
+        {%- for col in stu_id_cols %}
+            stu_ids.{{ col }},
+        {%- endfor %}
         stg_student.first_name,
         stg_student.middle_name,
         stg_student.last_name,
@@ -57,18 +68,18 @@ formatted as (
             ref('bld_ef3__student_characteristics'),
             except=['tenant_code', 'api_year', 'k_student', 'k_student_xyear', 'ed_org_id']
         ) %}
-        {%- for col in stu_char_cols -%}
+        {%- for col in stu_char_cols %}
             stu_chars.{{ col }},
-        {%- endfor -%}
+        {%- endfor %}
 
         -- student indicators
         {% set stu_ind_cols = dbt_utils.get_filtered_columns_in_relation(
             ref('bld_ef3__student_indicators'),
             except=['tenant_code', 'api_year', 'k_student', 'k_student_xyear', 'ed_org_id']
         ) %}
-        {%- for col in stu_ind_cols -%}
+        {%- for col in stu_ind_cols %}
             stu_indicators.{{ col }},
-        {%- endfor -%}
+        {%- endfor %}
 
         -- intersection groups
         {% set intersection_vars = var("edu:stu_demos:intersection_groups") %}
@@ -94,6 +105,9 @@ formatted as (
     from stg_student
     join stu_demos
         on stg_student.k_student = stu_demos.k_student
+    left join stu_ids 
+        on stu_demos.k_student = stu_ids.k_student
+        and stu_demos.ed_org_id = stu_ids.ed_org_id
     left join stu_races 
         on stu_demos.k_student = stu_races.k_student
         and stu_demos.ed_org_id = stu_races.ed_org_id
