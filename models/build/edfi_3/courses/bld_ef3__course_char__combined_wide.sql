@@ -13,19 +13,21 @@ pivoted as (
         api_year,
         k_course,
         k_course_offering,
-        k_course_section,
-        {{ alias_pivot(
-            column='indicator_name',
-            cmp_col_name='characteristic_descriptor',
-            alias_col_name='indicator_name',
-            xwalk_ref='xwalk_course_level_characteristics',
-            agg='sum',
-            null_false=True,
-            cast='boolean',
-            then_value=1,
-            else_value=0,
-            quote_identifiers=False
-        ) }}
+        k_course_section
+        {%- if not is_empty_model('xwalk_course_level_characteristics') -%},
+          {{ alias_pivot(
+              column='indicator_name',
+              cmp_col_name='characteristic_descriptor',
+              alias_col_name='indicator_name',
+              xwalk_ref='xwalk_course_level_characteristics',
+              agg='sum',
+              null_false=True,
+              cast='boolean',
+              then_value=1,
+              else_value=0,
+              quote_identifiers=False
+          ) }}
+        {%- endif -%}
     from char_long
     group by 1,2,3,4,5
 )
