@@ -27,7 +27,7 @@ pivoted as (
               else_value=0,
               quote_identifiers=False
           ) }}
-        {%- endif -%}
+        {%- endif %}
     from char_long
     group by 1,2,3,4,5
 )
