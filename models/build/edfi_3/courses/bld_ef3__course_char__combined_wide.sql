@@ -1,5 +1,3 @@
--- depends_on: {{ ref('xwalk_course_level_characteristics') }}
-
 -- todo: need some test cases of this
 -- todo: preferable to cast this to boolean after agg, but need to modify macro
 -- todo: need a filtered get_column_values to avoid NULL becoming a column?
