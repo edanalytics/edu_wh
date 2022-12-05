@@ -24,10 +24,7 @@ stu_long_subgroup as (
           'display_name',
           'birth_date',
           'race_array',
-          'safe_display_name',
-          'district_student_id',
-          'state_student_id'
-
+          'safe_display_name'
        ],
        remove = stu_id_cols,
        field_name='subgroup_category',
