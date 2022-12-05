@@ -5,6 +5,10 @@ dim_subgroup as (
     select * from {{ ref('dim_subgroup') }}
 ),
 
+{% set stu_id_cols = dbt_utils.get_filtered_columns_in_relation(
+        ref('bld_ef3__wide_ids_student'),
+        except=['tenant_code', 'api_year', 'k_student', 'k_student_xyear', 'ed_org_id']
+) %}
 stu_long_subgroup as (
     {{ dbt_utils.unpivot(
        relation=ref('dim_student'),
@@ -22,6 +26,7 @@ stu_long_subgroup as (
           'race_array',
           'safe_display_name'
        ],
+       remove = stu_id_cols,
        field_name='subgroup_category',
        value_name='subgroup_value'
   ) }}
