@@ -22,7 +22,7 @@ stack_results as (
     union all 
     select * from performance_levels
 ),
--- todo: we have seen examples of the say key existing in both score results and PLs
+-- we have seen examples of the say key existing in both score results and PLs
 -- this will choose the highest score result
 dedupe_results as (
     {{
