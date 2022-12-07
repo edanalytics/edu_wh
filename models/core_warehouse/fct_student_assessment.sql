@@ -53,7 +53,7 @@ student_assessments_wide as (
         and student_assessments_long_results.normalized_score_name != 'other'
     left join object_agg_other_results
         on student_assessments.k_student_assessment = object_agg_other_results.k_student_assessment
-    group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
+    {{ dbt_utils.group_by(n=15) }}
 )
 select *
 from student_assessments_wide
