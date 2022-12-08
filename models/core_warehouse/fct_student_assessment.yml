@@ -1,0 +1,37 @@
+version: 2
+
+models: 
+  - name: fct_student_assessment
+    description: >
+      Student assessment records. The wide results columns are
+      determined based on the `normalized_score_name` column
+      from the seed table `xwalk_assessment_scores`.
+    columns:
+      - name: k_student_assessment
+        description: >
+          Generated primary key composed of `tenant_code`, `api_year`, and `studentAssessmentIdentifier`.
+        tests: 
+          - unique
+      - name: k_assessment
+      - name: k_student
+      - name: school_year
+      - name: administration_date
+      - name: administration_end_date
+      - name: event_description
+      - name: administration_environment
+      - name: administration_language
+      - name: event_circumstance
+      - name: platform_type
+      - name: reason_not_tested
+      - name: retest_indicator
+      - name: when_assessed_grade_level
+      - name: v_other_results
+        description: >
+          This is an array of all additional score results that were not
+          mapped in the seed table `xwalk_assessment_scores`.
+      - name: scale_score
+        description: >
+          One of the results columns that could exist if mapped in the seed table `xwalk_assessment_scores`.
+      - name: sem
+        description: >
+          One of the results columns that could exist if mapped in the seed table `xwalk_assessment_scores`.

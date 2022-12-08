@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: dim_objective_assessment
+    description: >
+      Defines an objective assessment and all known characteristics.
+    columns:
+      - name: k_objective_assessment
+        description: >
+            Generated primary key composed of `tenant_code`, `api_year`, `academicSubjectDescriptor`,
+            `assessmentIdentifier`, `namespace`, and `objectiveAssessmentIdentificationCode`.
+        tests: 
+          - unique
+      - name: k_assessment
+      - name: tenant_code
+      - name: school_year
+      - name: assessment_identifier
+      - name: namespace
+      - name: objective_assessment_description
+      - name: objective_assessment_identification_code
+      - name: max_raw_score
+      - name: nomenclature
+      - name: percent_of_assessment
+      - name: academic_subject
+      - name: scores_array
+      - name: performance_levels_array
