@@ -19,8 +19,13 @@ formatted as (
         stg_course.school_year,
         stg_course.course_code,
         stg_course.course_title,
-        {{ dbt_utils.star(ref('bld_ef3__wide_ids_course'), 
-            except=['TENANT_CODE', 'API_YEAR', 'K_COURSE']) }},
+        {% set crs_id_cols = dbt_utils.get_filtered_columns_in_relation(
+            ref('bld_ef3__wide_ids_course'),
+            except=['tenant_code', 'api_year', 'k_course']
+        ) %}
+        {%- for col in crs_id_cols %}
+            wide_ids.{{ col }},
+        {%- endfor %}
         stg_course.course_description,
         stg_course.ed_org_id,
         stg_course.ed_org_type,
