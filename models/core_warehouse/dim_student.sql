@@ -43,13 +43,11 @@ formatted as (
         stg_student.api_year as school_year,
         stg_student.student_unique_id,
         -- student ids
-        {% set stu_id_cols = dbt_utils.get_filtered_columns_in_relation(
-            ref('bld_ef3__wide_ids_student'),
-            except=['tenant_code', 'api_year', 'k_student', 'k_student_xyear', 'ed_org_id']
-        ) %}
-        {%- for col in stu_id_cols %}
-            stu_ids.{{ col }},
-        {%- endfor %}
+        {{ accordion_columns(
+            source_table='bld_ef3__wide_ids_student',
+            exclude_columns=['tenant_code', 'api_year', 'k_student', 'k_student_xyear', 'ed_org_id'],
+            source_alias='stu_ids'
+        ) }}
         stg_student.first_name,
         stg_student.middle_name,
         stg_student.last_name,
@@ -64,22 +62,18 @@ formatted as (
         coalesce(stu_is_spec_ed.is_special_education_active, false) as is_special_education_active,
 
         -- student characteristics
-        {% set stu_char_cols = dbt_utils.get_filtered_columns_in_relation(
-            ref('bld_ef3__student_characteristics'),
-            except=['tenant_code', 'api_year', 'k_student', 'k_student_xyear', 'ed_org_id']
-        ) %}
-        {%- for col in stu_char_cols %}
-            stu_chars.{{ col }},
-        {%- endfor %}
+        {{ accordion_columns(
+            source_table='bld_ef3__student_characteristics',
+            exclude_columns=['tenant_code', 'api_year', 'k_student', 'k_student_xyear', 'ed_org_id'],
+            source_alias='stu_chars'
+        ) }}
 
         -- student indicators
-        {% set stu_ind_cols = dbt_utils.get_filtered_columns_in_relation(
-            ref('bld_ef3__student_indicators'),
-            except=['tenant_code', 'api_year', 'k_student', 'k_student_xyear', 'ed_org_id']
-        ) %}
-        {%- for col in stu_ind_cols %}
-            stu_indicators.{{ col }},
-        {%- endfor %}
+        {{ accordion_columns(
+            source_table='bld_ef3__student_indicators',
+            exclude_columns=['tenant_code', 'api_year', 'k_student', 'k_student_xyear', 'ed_org_id'],
+            source_alias='stu_indicators'
+        ) }}
 
         -- intersection groups
         {% set intersection_vars = var("edu:stu_demos:intersection_groups") %}

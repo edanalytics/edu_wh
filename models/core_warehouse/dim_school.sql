@@ -9,7 +9,7 @@
 with stg_school as (
     select * from {{ ref('stg_ef3__schools') }}
 ),
-wide_ids as (
+bld_ef3__wide_ids_school as (
     select * from {{ ref('bld_ef3__wide_ids_school') }}
 ),
 bld_network_associations as (
@@ -43,13 +43,9 @@ formatted as (
         {%- endif %}
         stg_school.tenant_code,
         stg_school.school_id,
-        {% set sch_id_cols = dbt_utils.get_filtered_columns_in_relation(
-            ref('bld_ef3__wide_ids_school'),
-            except=['tenant_code', 'api_year', 'k_school']
-        ) %}
-        {%- for col in sch_id_cols %}
-            wide_ids.{{ col }},
-        {%- endfor %}
+        {{ accordion_columns(
+            source_table='bld_ef3__wide_ids_school',
+            exclude_columns=['tenant_code', 'k_school']) }}
         stg_school.school_name,
         stg_school.school_short_name,
         dim_lea.lea_name,
@@ -79,8 +75,8 @@ formatted as (
     from stg_school
     join dim_lea 
         on stg_school.k_lea = dim_lea.k_lea
-    left join wide_ids
-        on stg_school.k_school = wide_ids.k_school
+    left join bld_ef3__wide_ids_school
+        on stg_school.k_school = bld_ef3__wide_ids_school.k_school
     left join choose_address
         on stg_school.k_school = choose_address.k_school
     left join bld_network_associations
