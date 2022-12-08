@@ -25,8 +25,13 @@ formatted as (
         stg_staff.k_staff,
         stg_staff.tenant_code,
         stg_staff.staff_unique_id,
-        {{ dbt_utils.star(ref('bld_ef3__wide_ids_staff'), 
-            except=['TENANT_CODE', 'API_YEAR', 'K_STAFF']) }},
+        {% set staff_id_cols = dbt_utils.get_filtered_columns_in_relation(
+            ref('bld_ef3__wide_ids_staff'),
+            except=['tenant_code', 'api_year', 'k_staff']
+        ) %}
+        {%- for col in staff_id_cols %}
+            wide_ids.{{ col }},
+        {%- endfor %}
         stg_staff.login_id,
         choose_email.email_address,
         choose_email.email_type,
