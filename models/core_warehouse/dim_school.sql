@@ -43,12 +43,17 @@ formatted as (
         {%- endif %}
         stg_school.tenant_code,
         stg_school.school_id,
-        {{ dbt_utils.star(ref('bld_ef3__wide_ids_school'), 
-            except=['TENANT_CODE', 'API_YEAR', 'K_SCHOOL']) }},
+        {% set sch_id_cols = dbt_utils.get_filtered_columns_in_relation(
+            ref('bld_ef3__wide_ids_school'),
+            except=['tenant_code', 'api_year', 'k_school']
+        ) %}
+        {%- for col in sch_id_cols %}
+            wide_ids.{{ col }},
+        {%- endfor %}
         stg_school.school_name,
         stg_school.school_short_name,
         dim_lea.lea_name,
-        dim_lea.lea_id, --todo: include other district ids here?
+        dim_lea.lea_id,
         stg_school.school_category,
         stg_school.school_type,
         stg_school.operational_status,
