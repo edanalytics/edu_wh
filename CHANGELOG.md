@@ -9,7 +9,8 @@
 ## Under the hood
 - Changed chronic absenteeism threshold to be inclusive to better align with common standards
 - Added more columns to attendance tables from source data
-- Improved handling of extensible `dim_student` columns such that neither `characteristics` nor `indicators` are required
+- Improved handling of extensible column-sets, such that all are optional
+    - Added macro `accordion_columns` to help with these cases
 
 ## Fixes
 - Fixed chronic absenteeism labeling issue
