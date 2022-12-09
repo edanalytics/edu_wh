@@ -41,7 +41,8 @@ student_obj_assessments_wide as (
         reason_not_tested,
         retest_indicator,
         when_assessed_grade_level,
-        v_other_results,
+        v_other_results
+        {%- if not is_empty_model('xwalk_objective_assessment_scores') -%},
         {{ dbt_utils.pivot(
             'normalized_score_name',
             dbt_utils.get_column_values(ref('xwalk_objective_assessment_scores'), 'normalized_score_name'),
@@ -50,6 +51,7 @@ student_obj_assessments_wide as (
             agg='max',
             quote_identifiers=False
         ) }}
+        {%- endif %}
     from student_obj_assessments
     join student_obj_assessments_long_results
         on student_obj_assessments.k_student_objective_assessment = student_obj_assessments_long_results.k_student_objective_assessment
