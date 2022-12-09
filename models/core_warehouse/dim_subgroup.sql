@@ -1,3 +1,8 @@
+{{
+  config(
+    tags=['bypass_rls']
+    )
+}}
 with dim_student as (
     select * from {{ ref('dim_student') }}
 ),
