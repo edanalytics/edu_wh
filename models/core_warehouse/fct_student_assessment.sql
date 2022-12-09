@@ -38,7 +38,9 @@ student_assessments_wide as (
         reason_not_tested,
         retest_indicator,
         when_assessed_grade_level,
-        v_other_results,
+        v_other_results
+        {%- if not is_empty_model('xwalk_assessment_scores') -%},
+        ,
         {{ dbt_utils.pivot(
             'normalized_score_name',
             dbt_utils.get_column_values(ref('xwalk_assessment_scores'), 'normalized_score_name'),
@@ -47,6 +49,7 @@ student_assessments_wide as (
             agg='max',
             quote_identifiers=False
         ) }}
+        {%- endif %}
     from student_assessments
     join student_assessments_long_results
         on student_assessments.k_student_assessment = student_assessments_long_results.k_student_assessment
