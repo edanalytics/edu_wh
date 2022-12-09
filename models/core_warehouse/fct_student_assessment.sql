@@ -40,7 +40,6 @@ student_assessments_wide as (
         when_assessed_grade_level,
         v_other_results
         {%- if not is_empty_model('xwalk_assessment_scores') -%},
-        ,
         {{ dbt_utils.pivot(
             'normalized_score_name',
             dbt_utils.get_column_values(ref('xwalk_assessment_scores'), 'normalized_score_name'),
