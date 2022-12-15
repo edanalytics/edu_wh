@@ -27,6 +27,8 @@ student_assessments_wide as (
         student_assessments.k_student_assessment,
         student_assessments.k_assessment,
         student_assessments.k_student,
+        student_assessments.student_assessment_identifier,
+        student_assessments.serial_number,
         school_year,
         administration_date,
         administration_end_date,
@@ -40,7 +42,6 @@ student_assessments_wide as (
         when_assessed_grade_level,
         v_other_results
         {%- if not is_empty_model('xwalk_assessment_scores') -%},
-        ,
         {{ dbt_utils.pivot(
             'normalized_score_name',
             dbt_utils.get_column_values(ref('xwalk_assessment_scores'), 'normalized_score_name'),
@@ -56,7 +57,7 @@ student_assessments_wide as (
         and student_assessments_long_results.normalized_score_name != 'other'
     left join object_agg_other_results
         on student_assessments.k_student_assessment = object_agg_other_results.k_student_assessment
-    {{ dbt_utils.group_by(n=15) }}
+    {{ dbt_utils.group_by(n=17) }}
 )
 select *
 from student_assessments_wide

@@ -88,9 +88,9 @@ Arguments:
       {% if distinct %} distinct {% endif -%}
       case
       {% if null_false %}
-      when equal_null({{column}}, '{{ dbt_utils.escape_single_quotes(value) }}')
+      when equal_null({{column}}, '{{ escape_single_quotes(value) }}')
       {% else %}
-      when {{ column }} {{ cmp }} '{{ dbt_utils.escape_single_quotes(value) }}'
+      when {{ column }} {{ cmp }} '{{ escape_single_quotes(value) }}'
       {% endif %}
         then {{ then_value }}
       else {{ else_value }}
