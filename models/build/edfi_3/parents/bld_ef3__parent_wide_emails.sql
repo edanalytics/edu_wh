@@ -11,8 +11,9 @@ emails_wide as (
     {{ dbt_utils.pivot(
       'normalized_email_type',
       dbt_utils.get_column_values(ref('xwalk_parent_email_types'), 'normalized_email_type'),
-      agg='listagg',
+      agg='max',
       then_value='email_address',
+      else_value='null',
       suffix='_email_address'
     ) }}
   from stg_parent_emails

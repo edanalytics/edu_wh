@@ -11,8 +11,9 @@ phones_wide as (
     {{ dbt_utils.pivot(
       'normalized_phone_number_type',
       dbt_utils.get_column_values(ref('xwalk_parent_phone_number_types'), 'normalized_phone_number_type'),
-      agg='listagg',
+      agg='max',
       then_value='phone_number',
+      else_value='null',
       suffix='_phone_number'
     ) }}
   from stg_parent_phones
