@@ -33,7 +33,7 @@ formatted as (
         stg_stu_parent.is_legal_guardian
     from stg_stu_parent
     join dim_student 
-        on stg_stu_section.k_student = dim_student.k_student
+        on stg_stu_parent.k_student = dim_student.k_student
     join dim_parent
         on stg_stu_parent.k_parent = dim_parent.k_parent
 )
