@@ -22,6 +22,7 @@ formatted as (
         dim_student.k_student,
         dim_student.k_student_xyear,
         dim_parent.k_parent,
+        stg_stu_parent.tenant_code,
         stg_stu_parent.school_year,
         stg_stu_parent.contact_priority,
         stg_stu_parent.contact_restrictions,
