@@ -8,6 +8,7 @@ emails_wide as (
   select 
     k_parent,
     -- todo: do I need api year in here?
+    -- or do I dedupe to keep latest?
     {{ dbt_utils.pivot(
       'normalized_email_type',
       dbt_utils.get_column_values(ref('xwalk_parent_email_types'), 'normalized_email_type'),
