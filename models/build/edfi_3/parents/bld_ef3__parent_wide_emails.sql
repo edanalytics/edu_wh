@@ -1,4 +1,4 @@
-stg_parent_emails as (
+with stg_parent_emails as (
     select * from {{ ref('stg_ef3__parents__emails') }}
 ),
 parent_email_types as (

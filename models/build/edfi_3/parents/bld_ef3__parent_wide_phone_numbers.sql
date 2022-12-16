@@ -1,4 +1,4 @@
-stg_parent_phones as (
+with stg_parent_phones as (
     select * from {{ ref('stg_ef3__parents__telephones') }}
 ),
 parent_phone_number_types as (
