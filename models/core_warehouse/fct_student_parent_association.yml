@@ -1,0 +1,25 @@
+version: 2
+
+models: 
+  - name: fct_student_parent_association
+    description: Associations between students and parents. 
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - k_student
+            - k_parent
+            - school_year
+    columns:
+      - name: k_student
+      - name: k_student_xyear
+      - name: k_parent
+      - name: tenant_code
+      - name: school_year
+      - name: contact_priority
+      - name: contact_restrictions
+      - name: relation_type
+        description: The type of relationship the parent has with the student (e.g. Mother, Father, Aunt, etc.) 
+      - name: is_emergency_contact
+      - name: is_living_with
+      - name: is_primary_contact
+      - name: is_legal_guardian

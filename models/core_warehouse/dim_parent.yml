@@ -1,0 +1,34 @@
+version: 2
+
+models:
+  - name: dim_parent
+    description: >
+      Defines parents, some of their key characteristics, and their contact information.
+    columns:
+      - name: k_parent
+        description: Defining key for the parent, which is consistent across years.
+        tests: 
+          - unique
+          - not_null
+      - name: tenant_code
+      - name: parent_unique_id
+        description: The parent's unique id number in the education organization.
+      - name: person_id
+      - name: login_id
+      - name: person_source_system
+      - name: display_name
+        description: The parent's last name, first name, and middle initial.
+      - name: first_name
+        description: The parent's first name, or given name.
+      - name: last_name
+        description: The parent's last name, family name, or surname.
+      - name: middle_name
+        description: The parent's middle name.
+      - name: maiden_name
+        description: The parent's maiden name
+      - name: personal_title_prefix
+      - name: generation_code_suffix
+      - name: sex
+      - name: highest_completed_level_of_education
+      - name: full_address
+        description: The parent's full mailing address
