@@ -27,6 +27,7 @@ student_assessments_wide as (
         student_assessments.k_student_assessment,
         student_assessments.k_assessment,
         student_assessments.k_student,
+        student_assessments.tenant_code,
         student_assessments.student_assessment_identifier,
         student_assessments.serial_number,
         school_year,
@@ -57,7 +58,7 @@ student_assessments_wide as (
         and student_assessments_long_results.normalized_score_name != 'other'
     left join object_agg_other_results
         on student_assessments.k_student_assessment = object_agg_other_results.k_student_assessment
-    {{ dbt_utils.group_by(n=17) }}
+    {{ dbt_utils.group_by(n=18) }}
 )
 select *
 from student_assessments_wide

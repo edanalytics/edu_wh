@@ -35,6 +35,8 @@ dedupe_results as (
 ),
 merged_xwalk as (
     select
+        tenant_code,
+        api_year,
         k_student_objective_assessment,
         score_name as original_score_name,
         coalesce(normalized_score_name, 'other') as normalized_score_name,
