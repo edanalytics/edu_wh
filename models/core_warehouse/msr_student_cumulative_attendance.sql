@@ -23,9 +23,9 @@ aggregated as (
         stu_daily_attendance.k_school,
         dim_calendar_date.school_year,
         any_value(stu_daily_attendance.tenant_code) as tenant_code,
-        sum(is_absent::int) as days_absent,
-        sum(is_present::int) as days_attended,
-        sum(is_enrolled::int) as days_enrolled,
+        sum(is_absent) as days_absent,
+        sum(is_present) as days_attended,
+        sum(is_enrolled) as days_enrolled,
         round(100 * days_attended / days_enrolled, 2) as attendance_rate,
         days_enrolled >= {{ var('edu:attendance:chronic_absence_min_days') }} as meets_enrollment_threshold,
         {{ msr_chronic_absentee('attendance_rate', 'days_enrolled') }} as is_chronic_absentee

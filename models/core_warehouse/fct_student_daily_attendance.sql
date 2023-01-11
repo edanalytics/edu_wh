@@ -90,9 +90,10 @@ fill_positive_attendance as (
             '{{ var("edu:attendance:in_attendance_code") }}' 
         ) as attendance_event_category,
         fct_student_school_att.attendance_event_reason,
-        coalesce(fct_student_school_att.is_absent, FALSE) as is_absent,
-        not coalesce(fct_student_school_att.is_absent, FALSE) as is_present,
-        true as is_enrolled,
+        coalesce(fct_student_school_att.is_absent, 0.0) as is_absent,
+        -- invert is_absent: 1->0, 0->1, 0.25->0.75
+        1.0 - coalesce(fct_student_school_att.is_absent, 0.0) as is_present,
+        1.0 as is_enrolled,
         total_days_enrolled,
         fct_student_school_att.event_duration,
         fct_student_school_att.school_attendance_duration
@@ -139,10 +140,10 @@ cumulatives as (
         positive_attendance_deduped.is_present,
         positive_attendance_deduped.is_enrolled,
         positive_attendance_deduped.total_days_enrolled,
-        sum(is_absent::integer) over(
+        sum(is_absent) over(
             partition by k_student, k_school 
             order by calendar_date) as cumulative_days_absent,
-        sum(is_present::integer) over(
+        sum(is_present) over(
             partition by k_student, k_school 
             order by calendar_date) as cumulative_days_attended,
         sum(1) over(
