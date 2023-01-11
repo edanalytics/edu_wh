@@ -1,7 +1,7 @@
 {{
   config(
       store_failures = true,
-      severity       = 'warn'
+      severity       = 'error'
     )
 }}
 select distinct is_absent
