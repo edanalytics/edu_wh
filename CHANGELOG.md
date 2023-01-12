@@ -1,3 +1,10 @@
+# Unreleased
+## New features
+
+## Under the hood
+
+## Fixes
+- Fixed typo regarding Chronic Absenteeism buckets
 
 # edu_wh v0.1.1
 ## New features
