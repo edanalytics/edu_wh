@@ -7,8 +7,8 @@ parent_email_types as (
 emails_wide as (
   select 
     k_parent,
-    -- todo: do I need api year in here?
-    -- or do I dedupe to keep latest?
+    tenant_code,
+    -- note: this is already deduped to be the most recent record for a parent
     {{ dbt_utils.pivot(
       'normalized_email_type',
       dbt_utils.get_column_values(ref('xwalk_parent_email_types'), 'normalized_email_type'),

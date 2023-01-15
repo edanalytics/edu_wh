@@ -7,8 +7,8 @@ parent_phone_number_types as (
 phones_wide as (
   select 
     k_parent,
-    -- todo: do I need api year in here?
-    -- or do I dedupe to keep latest?
+    tenant_code,
+    -- note: this is already deduped to be the most recent record for a parent
     {{ dbt_utils.pivot(
       'normalized_phone_number_type',
       dbt_utils.get_column_values(ref('xwalk_parent_phone_number_types'), 'normalized_phone_number_type'),
