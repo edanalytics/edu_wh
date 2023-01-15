@@ -17,6 +17,12 @@ dim_student as (
 dim_parent as (
     select * from {{ ref('dim_parent') }}
 ),
+-- the goal here is to find the most recent student record
+most_recent_k_student as (
+    select k_student
+    from dim_student
+    having school_year = max(school_year) over (partition by k_student_xyear) 
+),
 formatted as (
     select 
         dim_student.k_student,
@@ -32,8 +38,12 @@ formatted as (
         stg_stu_parent.is_primary_contact,
         stg_stu_parent.is_legal_guardian
     from stg_stu_parent
+    -- subset to only the stu/parent records associated with the most recent student records
+    join most_recent_k_student
+        on stg_stu_parent.k_student = most_recent_k_student.k_student
+    -- this will associate the above stu/parent records to all student records (all k_student for a k_student_xyear)
     join dim_student 
-        on stg_stu_parent.k_student = dim_student.k_student
+        on most_recent_k_student.k_student_xyear = dim_student.k_student_xyear
     join dim_parent
         on stg_stu_parent.k_parent = dim_parent.k_parent
 )
