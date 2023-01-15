@@ -4,7 +4,7 @@ Find students parent associations with multiple school years.
 {{
   config(
       store_failures = true,
-      severity       = 'fail'
+      severity       = 'error'
     )
 }}
 -- find students with multiple primary contacts
