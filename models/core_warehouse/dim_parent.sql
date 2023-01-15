@@ -26,6 +26,8 @@ formatted as (
     select 
         stg_parent.k_parent,
         stg_parent.tenant_code,
+        -- todo: add this? technically could be different for different parents so could be helpful to know when this information is from
+        stg_parent.api_year as school_year,
         stg_parent.parent_unique_id,
         stg_parent.person_id,
         stg_parent.login_id,

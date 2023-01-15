@@ -11,6 +11,7 @@ models:
           - unique
           - not_null
       - name: tenant_code
+      - name: school_year
       - name: parent_unique_id
         description: The parent's unique id number in the education organization.
       - name: person_id
