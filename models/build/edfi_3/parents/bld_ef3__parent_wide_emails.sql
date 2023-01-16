@@ -20,6 +20,6 @@ emails_wide as (
   from stg_parent_emails
   join parent_email_types 
     on stg_parent_emails.email_type = parent_email_types.original_email_type
-  group by k_parent
+  group by k_parent, tenant_code
 )
 select * from emails_wide

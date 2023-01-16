@@ -20,6 +20,6 @@ phones_wide as (
   from stg_parent_phones
   join parent_phone_number_types
     on stg_parent_phones.phone_number_type = parent_phone_number_types.original_phone_number_type
-  group by k_parent
+  group by k_parent, tenant_code
 )
 select * from phones_wide
