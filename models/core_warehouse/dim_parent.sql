@@ -41,8 +41,8 @@ formatted as (
         stg_parent.generation_code_suffix,
         stg_parent.sex,
         stg_parent.highest_completed_level_of_education,
-        {{ dbt_utils.star(from=ref('bld_ef3__parent_wide_phone_numbers'), except=["k_parent"]) }},
-        {{ dbt_utils.star(from=ref('bld_ef3__parent_wide_emails'), except=["k_parent"]) }},
+        {{ dbt_utils.star(from=ref('bld_ef3__parent_wide_phone_numbers'), except=["k_parent", "tenant_code"]) }},
+        {{ dbt_utils.star(from=ref('bld_ef3__parent_wide_emails'), except=["k_parent", "tenant_code"]) }},
         choose_address.full_address
         -- leaving out contact info/addresses entirely given the difference in grain
         -- todo: need to determine what to do here
