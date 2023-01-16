@@ -21,7 +21,7 @@ dim_parent as (
 most_recent_k_student as (
     select k_student
     from dim_student
-    having school_year = max(school_year) over (partition by k_student_xyear) 
+    qualify school_year = max(school_year) over (partition by k_student_xyear) 
 ),
 formatted as (
     select 
