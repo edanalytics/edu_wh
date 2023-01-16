@@ -7,7 +7,7 @@ Find students parent associations with multiple school years.
       severity       = 'error'
     )
 }}
--- find students with multiple primary contacts
+-- Find students parent associations with multiple school years.
 with stu_parent_associations_with_multiple_school_years as (
   select tenant_code, k_student_xyear, k_parent, count(distinct school_year) as n_school_years
   from {{ ref('fct_student_parent_association') }}
