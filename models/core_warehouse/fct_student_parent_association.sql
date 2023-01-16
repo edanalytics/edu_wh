@@ -41,9 +41,9 @@ formatted as (
     -- subset to only the stu/parent records associated with the most recent student records
     join most_recent_k_student
         on stg_stu_parent.k_student = most_recent_k_student.k_student
-    -- this will associate the above stu/parent records to all student records (all k_student for a k_student_xyear)
+    -- this will associate the above stu/parent records to all student records (aka. all k_student for a k_student_xyear)
     join dim_student 
-        on most_recent_k_student.k_student_xyear = dim_student.k_student_xyear
+        on stg_stu_parent.k_student_xyear = dim_student.k_student_xyear
     join dim_parent
         on stg_stu_parent.k_parent = dim_parent.k_parent
 )
