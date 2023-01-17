@@ -4,6 +4,8 @@ models:
   - name: dim_program
     description: >
       Defines programs at the school and LEA level.
+    config:
+      tags: ['core']
     columns:
       - name: k_program
         description: Defining key for programs.

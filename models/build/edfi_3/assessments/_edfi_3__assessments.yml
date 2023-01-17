@@ -1,0 +1,24 @@
+version: 2
+
+models:
+  - name: bld_ef3__assessment_grade_levels
+    config:
+      tags: ['assessment']
+  - name: bld_ef3__assessment_performance_levels
+    config:
+      tags: ['assessment']
+  - name: bld_ef3__assessment_scores
+    config:
+      tags: ['assessment']
+  - name: bld_ef3__objective_assessment_performance_levels
+    config:
+      tags: ['assessment']
+  - name: bld_ef3__objective_assessment_scores
+    config:
+      tags: ['assessment']
+  - name: bld_ef3__student_assessments_long_results
+    config:
+      tags: ['assessment']
+  - name: bld_ef3__student_objective_assessments_long_results
+    config:
+      tags: ['assessment']

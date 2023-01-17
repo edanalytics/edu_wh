@@ -4,6 +4,8 @@ models:
   - name: dim_course_section
     description: >
       Defines individual sections of a course, and all known characteristics.
+    config:
+      tags: ['core']
     columns:
       - name: k_course_section
         description: Defining key for course sections

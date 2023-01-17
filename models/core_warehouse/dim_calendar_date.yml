@@ -5,6 +5,8 @@ models:
     description: >
       Calendar dates as defined for a particular calendar at a particular school,
       along with some slicing variables for ordering and grouping time.
+    config:
+      tags: ['core']
     columns:
       - name: k_calendar_date
         description: >
