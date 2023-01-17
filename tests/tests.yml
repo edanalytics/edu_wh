@@ -1,44 +1,44 @@
 version: 2
 
 models:
-  config_tests:
-    - name: cfg_attendance_event_codes
-      config:
-        tags: ['core']
-    - name: cfg_calendar_event_codes
-      config:
-        tags: ['core']
-    - name: cfg_discipline_actions
-      config:
-        tags: ['discipline']
-    - name: cfg_letter_grades
-      config:
-        tags: ['core']
-    - name: cfg_section_attendance_event_codes
-      config:
-        tags: ['core']
+  # config_tests
+  - name: cfg_attendance_event_codes
+    config:
+      tags: ['core']
+  - name: cfg_calendar_event_codes
+    config:
+      tags: ['core']
+  - name: cfg_discipline_actions
+    config:
+      tags: ['discipline']
+  - name: cfg_letter_grades
+    config:
+      tags: ['core']
+  - name: cfg_section_attendance_event_codes
+    config:
+      tags: ['core']
 
-  integrity_tests:
-    - name: all_attendance_dates_have_calendar_dates
-      config:
-        tags: ['core']
-    - name: all_student_school_associations_have_calendars
-      config:
-        tags: ['core']
-    - name: custom_demo_sources_are_unique_on_k_student
-      config:
-        tags: ['core']
-    - name: missing_demographics
-      config:
-        tags: ['core']
+  # integrity_tests
+  - name: all_attendance_dates_have_calendar_dates
+    config:
+      tags: ['core']
+  - name: all_student_school_associations_have_calendars
+    config:
+      tags: ['core']
+  - name: custom_demo_sources_are_unique_on_k_student
+    config:
+      tags: ['core']
+  - name: missing_demographics
+    config:
+      tags: ['core']
 
-  value_tests:
-    - name: attendance_freshness_test
-      config:
-        tags: ['core']
-    - name: overlapping_enrollments
-      config:
-        tags: ['core']
-    - name: student_attendance_total_days
-      config:
-        tags: ['core']
+  # value_tests
+  - name: attendance_freshness_test
+    config:
+      tags: ['core']
+  - name: overlapping_enrollments
+    config:
+      tags: ['core']
+  - name: student_attendance_total_days
+    config:
+      tags: ['core']
