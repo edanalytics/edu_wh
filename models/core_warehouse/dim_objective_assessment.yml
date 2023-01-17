@@ -4,6 +4,8 @@ models:
   - name: dim_objective_assessment
     description: >
       Defines an objective assessment and all known characteristics.
+    config:
+      tags: ['assessment']
     columns:
       - name: k_objective_assessment
         description: >

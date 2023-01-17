@@ -1,0 +1,18 @@
+version: 2
+
+models:
+  - name: cfg_attendance_event_codes
+    config:
+      tags: ['core']
+  - name: cfg_calendar_event_codes
+    config:
+      tags: ['core']
+  - name: cfg_discipline_actions
+    config:
+      tags: ['discipline']
+  - name: cfg_letter_grades
+    config:
+      tags: ['core']
+  - name: cfg_section_attendance_event_codes
+    config:
+      tags: ['core']

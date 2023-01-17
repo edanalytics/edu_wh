@@ -13,6 +13,8 @@ models:
 
       *Primary Key:* `k_course, k_student_academic_record, course_attempt_result`
 
+    config:
+      tags: ['core']
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:

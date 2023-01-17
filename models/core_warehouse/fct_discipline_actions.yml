@@ -12,6 +12,8 @@ models:
 
       *Primary Key:* k_student, discipline_action_id, discipline_date, discipline_action
 
+    config:
+      tags: ['discipline']
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
