@@ -1,0 +1,47 @@
+version: 2
+
+models: 
+  - name: fct_student_special_education_program_service
+    description: >
+     **Overview:**
+       This fact table provides student special education program services. It references [stg_ef3__stu_spec_ed__program_services](#!/model/model.edu_edfi_source.stg_ef3__stu_spec_ed__program_services)
+
+     **Primary Key:**
+       `k_student, k_program, spec_ed_program_begin_date, special_education_program_service` --
+       There is one record per student, program, program start date, and program service
+
+     **Important business rules:**
+        - `spec_ed_program_begin_date` is included in the unique key, because a student may be associated with the same program at multiple times, and those associations may have different service designations.
+        
+        
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - k_student
+            - k_program
+    columns:
+      - name: k_student
+      - name: k_student_xyear
+      - name: k_program
+      - name: k_lea
+      - name: k_school
+      - name: tenant_code
+      - name: school_year
+      - name: spec_ed_program_begin_date
+      - name: spec_ed_program_end_date
+      - name: is_idea_eligible
+      - name: iep_begin_date
+      - name: iep_end_date
+      - name: iep_review_date
+      - name: last_evaluation_date
+      - name: is_medically_fragile
+      - name: is_multiply_disabled
+      - name: school_hours_per_week
+      - name: spec_ed_hours_per_week
+      - name: is_served_outside_regular_session
+      - name: participation_status_designated_by
+      - name: participation_status_begin_date
+      - name: participation_status_end_date
+      - name: participation_status
+      - name: reason_exited
+      - name: special_education_setting
