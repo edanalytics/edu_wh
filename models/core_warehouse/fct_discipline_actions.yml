@@ -14,7 +14,7 @@ models:
 
     config:
       tags: ['discipline']
-      enabled: "{{ var('src:discipline:assessment:enabled', True) }}"
+      enabled: "{{ var('src:domain:discipline:enabled', True) }}"
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
