@@ -4,21 +4,28 @@ models:
   - name: bld_ef3__assessment_grade_levels
     config:
       tags: ['assessment']
+      enabled: "{{ var('src:domain:assessment:enabled', True) }}"
   - name: bld_ef3__assessment_performance_levels
     config:
       tags: ['assessment']
+      enabled: "{{ var('src:domain:assessment:enabled', True) }}"
   - name: bld_ef3__assessment_scores
     config:
       tags: ['assessment']
+      enabled: "{{ var('src:domain:assessment:enabled', True) }}"
   - name: bld_ef3__objective_assessment_performance_levels
     config:
       tags: ['assessment']
+      enabled: "{{ var('src:domain:assessment:enabled', True) }}"
   - name: bld_ef3__objective_assessment_scores
     config:
       tags: ['assessment']
+      enabled: "{{ var('src:domain:assessment:enabled', True) }}"
   - name: bld_ef3__student_assessments_long_results
     config:
       tags: ['assessment']
+      enabled: "{{ var('src:domain:assessment:enabled', True) }}"
   - name: bld_ef3__student_objective_assessments_long_results
     config:
       tags: ['assessment']
+      enabled: "{{ var('src:domain:assessment:enabled', True) }}"

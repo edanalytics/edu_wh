@@ -19,9 +19,11 @@ models:
   - name: bld_ef3__student_special_education_active
     config:
       tags: ['special_ed']
+      enabled: "{{ var('src:program:special_ed:enabled', True) }}"
   - name: bld_ef3__student_special_education_annual
     config:
       tags: ['special_ed']
+      enabled: "{{ var('src:program:special_ed:enabled', True) }}"
   - name: bld_ef3__wide_ids_student
     config:
       tags: ['core']
