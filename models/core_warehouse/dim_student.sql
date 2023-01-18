@@ -29,12 +29,15 @@ stu_indicators as (
 stu_grade as (
     select * from {{ ref('bld_ef3__stu_grade_level') }}
 ),
-stu_annual_spec_ed as (
-    select * from {{ ref('bld_ef3__student_special_education_annual') }}
-),
-stu_is_spec_ed as (
-    select * from {{ ref('bld_ef3__student_special_education_active') }}
-),
+
+{% if var('src:program:special_ed:enabled', True) %}
+    stu_annual_spec_ed as (
+        select * from {{ ref('bld_ef3__student_special_education_annual') }}
+    ),
+    stu_is_spec_ed as (
+        select * from {{ ref('bld_ef3__student_special_education_active') }}
+    ),
+{% endif %}
 
 formatted as (
     select 
@@ -60,11 +63,10 @@ formatted as (
         stu_grade.entry_grade_level as grade_level,
         stu_races.race_ethnicity,
 
-        {% if var('edu:special_ed:enabled', True) %}
-          coalesce(stu_annual_spec_ed.is_special_education_annual, false) as is_special_education_annual,
-          coalesce(stu_is_spec_ed.is_special_education_active, false) as is_special_education_active,
+        {% if var('src:program:special_ed:enabled', True) %}
+            coalesce(stu_annual_spec_ed.is_special_education_annual, false) as is_special_education_annual,
+            coalesce(stu_is_spec_ed.is_special_education_active, false) as is_special_education_active,
         {% endif %}
-
 
         -- student characteristics
         {{ accordion_columns(
@@ -126,12 +128,12 @@ formatted as (
             on stu_demos.k_student = stu_grade.k_student
             and stg_student.api_year = stu_grade.school_year
 
-        {% if var('edu:special_ed:enabled', True) %}
-          left join stu_annual_spec_ed
-              on stu_demos.k_student = stu_annual_spec_ed.k_student
+        {% if var('src:program:special_ed:enabled', True) %}
+            left join stu_annual_spec_ed
+                on stu_demos.k_student = stu_annual_spec_ed.k_student
 
-          left join stu_is_spec_ed
-              on stu_demos.k_student = stu_is_spec_ed.k_student
+            left join stu_is_spec_ed
+                on stu_demos.k_student = stu_is_spec_ed.k_student
         {% endif %}
 
         -- custom data sources
@@ -141,7 +143,6 @@ formatted as (
               on stu_demos.k_student = {{ source }}.k_student
           {%- endfor -%}
         {%- endif %}
-
 )
 
 select * from formatted
