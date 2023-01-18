@@ -8,6 +8,7 @@ models:
       from the seed table `xwalk_objective_assessment_scores`.
     config:
       tags: ['assessment']
+      enabled: "{{ var('src:domain:assessment:enabled', True) }}"
     columns:
       - name: k_student_objective_assessment
         description: >

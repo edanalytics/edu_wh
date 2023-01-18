@@ -6,6 +6,7 @@ models:
       Defines an objective assessment and all known characteristics.
     config:
       tags: ['assessment']
+      enabled: "{{ var('src:domain:assessment:enabled', True) }}"
     columns:
       - name: k_objective_assessment
         description: >

@@ -10,6 +10,7 @@ models:
   - name: cfg_discipline_actions
     config:
       tags: ['discipline']
+      enabled: "{{ var('src:domain:discipline:enabled', True) }}"
   - name: cfg_letter_grades
     config:
       tags: ['core']
