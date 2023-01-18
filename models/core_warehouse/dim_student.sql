@@ -35,6 +35,7 @@ stu_annual_spec_ed as (
 stu_is_spec_ed as (
     select * from {{ ref('bld_ef3__student_special_education_active') }}
 ),
+
 formatted as (
     select 
         stg_student.k_student,
@@ -58,8 +59,12 @@ formatted as (
         stu_demos.gender,
         stu_grade.entry_grade_level as grade_level,
         stu_races.race_ethnicity,
-        coalesce(stu_annual_spec_ed.is_special_education_annual, false) as is_special_education_annual,
-        coalesce(stu_is_spec_ed.is_special_education_active, false) as is_special_education_active,
+
+        {% if var('edu:special_ed:enabled', True) %}
+          coalesce(stu_annual_spec_ed.is_special_education_annual, false) as is_special_education_annual,
+          coalesce(stu_is_spec_ed.is_special_education_active, false) as is_special_education_active,
+        {% endif %}
+
 
         -- student characteristics
         {{ accordion_columns(
@@ -93,39 +98,51 @@ formatted as (
         {%- endif %}
         -- todo: bring in additional summarized attributes
 
-        
         stu_races.race_array,
         concat(display_name, ' (', stg_student.student_unique_id, ')') as safe_display_name
+
     from stg_student
-    join stu_demos
-        on stg_student.k_student = stu_demos.k_student
-    left join stu_ids 
-        on stu_demos.k_student = stu_ids.k_student
-        and stu_demos.ed_org_id = stu_ids.ed_org_id
-    left join stu_races 
-        on stu_demos.k_student = stu_races.k_student
-        and stu_demos.ed_org_id = stu_races.ed_org_id
-    left join stu_chars 
-        on stu_demos.k_student = stu_chars.k_student
-        and stu_demos.ed_org_id = stu_chars.ed_org_id
-    left join stu_indicators 
-        on stu_demos.k_student = stu_indicators.k_student
-        and stu_demos.ed_org_id = stu_indicators.ed_org_id
-    left join stu_grade
-        on stu_demos.k_student = stu_grade.k_student
-        and stg_student.api_year = stu_grade.school_year
-    left join stu_annual_spec_ed
-        on stu_demos.k_student = stu_annual_spec_ed.k_student
-    left join stu_is_spec_ed
-        on stu_demos.k_student = stu_is_spec_ed.k_student
-    -- custom data sources
-    {% if custom_data_sources is not none and custom_data_sources | length -%}
-      {%- for source in custom_data_sources -%}
-        left join {{ ref(source) }}
-          on stu_demos.k_student = {{ source }}.k_student
-      {%- endfor -%}
-    {%- endif %}
+
+        join stu_demos
+            on stg_student.k_student = stu_demos.k_student
+
+        left join stu_ids
+            on stu_demos.k_student = stu_ids.k_student
+            and stu_demos.ed_org_id = stu_ids.ed_org_id
+
+        left join stu_races
+            on stu_demos.k_student = stu_races.k_student
+            and stu_demos.ed_org_id = stu_races.ed_org_id
+
+        left join stu_chars
+            on stu_demos.k_student = stu_chars.k_student
+            and stu_demos.ed_org_id = stu_chars.ed_org_id
+
+        left join stu_indicators
+            on stu_demos.k_student = stu_indicators.k_student
+            and stu_demos.ed_org_id = stu_indicators.ed_org_id
+
+        left join stu_grade
+            on stu_demos.k_student = stu_grade.k_student
+            and stg_student.api_year = stu_grade.school_year
+
+        {% if var('edu:special_ed:enabled', True) %}
+          left join stu_annual_spec_ed
+              on stu_demos.k_student = stu_annual_spec_ed.k_student
+
+          left join stu_is_spec_ed
+              on stu_demos.k_student = stu_is_spec_ed.k_student
+        {% endif %}
+
+        -- custom data sources
+        {% if custom_data_sources is not none and custom_data_sources | length -%}
+          {%- for source in custom_data_sources -%}
+            left join {{ ref(source) }}
+              on stu_demos.k_student = {{ source }}.k_student
+          {%- endfor -%}
+        {%- endif %}
 
 )
+
 select * from formatted
 order by tenant_code, school_year desc, k_student
