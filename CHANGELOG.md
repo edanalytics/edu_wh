@@ -1,7 +1,9 @@
 # Unreleased
 ## New features
+- Add optional domain disabling to all non-core models, using vars in dbt_project.yml.
 
 ## Under the hood
+- Add a single model properties file under each subdirectory, as per DBT recommendation.
 
 ## Fixes
 - Fixed typo regarding Chronic Absenteeism buckets
