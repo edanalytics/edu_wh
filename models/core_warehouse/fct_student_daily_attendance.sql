@@ -81,10 +81,6 @@ fill_positive_attendance as (
         bld_attendance_sessions.total_instructional_days,
         stu_enr_att_cal.tenant_code,
         stu_enr_att_cal.calendar_date,
-        coalesce(
-            fct_student_school_att.attendance_event_category,
-            '{{ var("edu:attendance:in_attendance_code") }}' 
-        ) as attendance_event_category,
         fct_student_school_att.attendance_event_reason,
         -- set enrollment flag: 1 during enrollment, 0 after, no row prior
         case 
@@ -93,6 +89,12 @@ fill_positive_attendance as (
             then 1.0
             else 0.0
         end is_enrolled,
+        case 
+            when is_enrolled = 0 then 'Not Enrolled'
+            else coalesce(
+                    fct_student_school_att.attendance_event_category,
+                    '{{ var("edu:attendance:in_attendance_code") }}') 
+        end as attendance_event_category,
         coalesce(
             case 
                 when is_enrolled = 1 then fct_student_school_att.is_absent
