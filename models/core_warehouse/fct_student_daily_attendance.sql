@@ -132,7 +132,7 @@ positive_attendance_deduped as (
         dbt_utils.deduplicate(
             relation='fill_positive_attendance',
             partition_by='k_student, k_school, calendar_date',
-            order_by='total_instructional_days'
+            order_by='is_enrolled desc, total_instructional_days'
         )
     }}
 ),
