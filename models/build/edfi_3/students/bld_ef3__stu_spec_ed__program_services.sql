@@ -14,7 +14,6 @@ wide as (
       array_agg(special_education_program_service) within group (order by special_education_program_service) as special_education_program_services
     from stg_spec_ed_program_services
     {{ dbt_utils.group_by(n=8) }}
-    --TODO DO NULLS BELONG HERE? (STU-PROG ASSOC THAT DON'T HAVE ANY PROG SERVICES)
 
 )
 select * from wide

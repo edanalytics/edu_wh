@@ -62,8 +62,6 @@ formatted as (
     left join bld_program_services 
         on stg_stu_spec_ed.k_student = bld_program_services.k_student
         and stg_stu_spec_ed.k_program = bld_program_services.k_program
-        and equal_null(stg_stu_spec_ed.k_lea, bld_program_services.k_lea)
-        and equal_null(stg_stu_spec_ed.k_school, bld_program_services.k_school)
         and stg_stu_spec_ed.spec_ed_program_begin_date = bld_program_services.spec_ed_program_begin_date
 )
 
