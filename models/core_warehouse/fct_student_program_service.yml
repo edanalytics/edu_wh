@@ -1,0 +1,33 @@
+version: 2
+
+models: 
+  - name: fct_student_program_service
+    description: >
+     **Overview:**
+       This fact table provides student program services. It references [stg_ef3__stu_spec_ed__program_services](#!/model/model.edu_edfi_source.stg_ef3__stu_spec_ed__program_services),
+      # TODO ADD LINKS TO OTHER PROGRAM SERVICE STAGES
+
+     **Primary Key:**
+       `k_student, k_program, program_begin_date, program_service` --
+       There is one record per student, program, program start date, and program service
+
+     **Important business rules:**
+        - `program_begin_date` is included in the unique key, because a student may be associated with the same program at multiple times, and those associations may have different service designations.
+     
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - k_student
+            - k_program
+            - program_begin_date
+            - program_service
+    columns:
+      - name: k_student
+      - name: k_program
+      - name: tenant_code
+      - name: program_begin_date
+      - name: program_service
+      - name: primary_indicator
+      - name: v_providers
+      - name: service_begin_date
+      - name: service_end_date
