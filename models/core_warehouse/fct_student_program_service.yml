@@ -13,7 +13,9 @@ models:
 
      **Important business rules:**
         - `program_begin_date` is included in the unique key, because a student may be associated with the same program at multiple times, and those associations may have different service designations.
-     
+
+    config:
+      tags: ['special_ed']
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:

@@ -10,6 +10,9 @@ models:
   - name: bld_ef3__stu_race_ethnicity
     config:
       tags: ['core']
+  - name: bld_ef3__stu_spec_ed__program_services
+    config:
+      tags: ['special_ed']
   - name: bld_ef3__student_characteristics
     config:
       tags: ['core']
