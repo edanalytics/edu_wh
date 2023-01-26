@@ -38,3 +38,4 @@ models:
       - name: participation_status
       - name: reason_exited
       - name: special_education_setting
+      - name: special_education_program_services
