@@ -41,7 +41,7 @@ dim_program as (
         from stg_stu_spec_ed_services
             join dim_program
                 on stg_stu_spec_ed_services.k_program = dim_program.k_program
-    )
+    ),
 
     {% do program_select_ctes.append('spec_ed_select') %}
 {% endif %}
@@ -67,7 +67,7 @@ dim_program as (
         from stg_stu_lang_instr_services
             join dim_program
                 on stg_stu_lang_instr_services.k_program = dim_program.k_program
-    )
+    ),
 
     {% do program_select_ctes.append('lang_instr_select') %}
 {% endif %}
@@ -93,7 +93,7 @@ dim_program as (
         from stg_stu_homeless_services
             join dim_program
                 on stg_stu_homeless_services.k_program = dim_program.k_program
-    )
+    ),
 
     {% do program_select_ctes.append('homeless_select') %}
 {% endif %}
@@ -119,7 +119,7 @@ dim_program as (
         from stg_stu_title_i_services
             join dim_program
                 on stg_stu_title_i_services.k_program = dim_program.k_program
-    )
+    ),
 
     {% do program_select_ctes.append('title_i_select') %}
 {% endif %}
