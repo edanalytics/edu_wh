@@ -17,7 +17,9 @@ dim_program as (
 ),
 
 
--- Add all optional program service models here.
+-- Build all optional program service models here.
+{% set program_select_ctes = [] %}
+
 {% if var('src:program:special_ed:enabled', True) %}
     stg_stu_spec_ed_services as (
         select * from {{ ref('stg_ef3__stu_spec_ed__program_services') }}
@@ -40,6 +42,8 @@ dim_program as (
             join dim_program
                 on stg_stu_spec_ed_services.k_program = dim_program.k_program
     )
+
+    {% do program_select_ctes.append('spec_ed_select') %}
 {% endif %}
 
 {% if var('src:program:language_instruction:enabled', True) %}
@@ -64,6 +68,8 @@ dim_program as (
             join dim_program
                 on stg_stu_lang_instr_services.k_program = dim_program.k_program
     )
+
+    {% do program_select_ctes.append('lang_instr_select') %}
 {% endif %}
 
 {% if var('src:program:homeless:enabled', True) %}
@@ -88,6 +94,8 @@ dim_program as (
             join dim_program
                 on stg_stu_homeless_services.k_program = dim_program.k_program
     )
+
+    {% do program_select_ctes.append('homeless_select') %}
 {% endif %}
 
 {% if var('src:program:title_i:enabled', True) %}
@@ -112,25 +120,12 @@ dim_program as (
             join dim_program
                 on stg_stu_title_i_services.k_program = dim_program.k_program
     )
+
+    {% do program_select_ctes.append('title_i_select') %}
 {% endif %}
 
-
-{% set program_cte_mapping = {
-    'src:program:special_ed:enabled'          : 'special_ed_select',
-    'src:program:language_instruction:enabled': 'lang_instr_select',
-    'src:program:homeless:enabled'            : 'homeless_select',
-    'src:program:title_i:enabled'             : 'title_i_select'
-} %}
-
 stacked as (
-    {% set select_ctes = [] %}
-    {% for variable, cte in program_cte_mapping.item() %}
-        {% if var(variable, True) %}
-            {% do select_ctes.append(cte) %}
-        {% endif %}
-    {% endfor %}
-
-    {% for cte in select_ctes %}
+    {% for cte in program_select_ctes %}
         select * from {{ cte }}
         {% if not loop.last %} union all {% endif %}
     {% endfor %}
