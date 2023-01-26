@@ -2,13 +2,19 @@ version: 2
 
 models: 
   - name: fct_student_parent_association
-    description: Associations between students and parents. 
+    description: >
+      Associations between students and parents. 
+      
+      Note: We chose to only keep current associations by determining the most recent
+      student record, subsetting to parent associations from that year, then applying the
+      information to all other years (for cross-year analytical/reporting purposes).
+
+      *Primary Key:* `k_student, k_parent`
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - k_student
             - k_parent
-            - school_year
     columns:
       - name: k_student
       - name: k_student_xyear
