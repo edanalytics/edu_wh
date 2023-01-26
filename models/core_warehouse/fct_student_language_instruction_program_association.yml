@@ -1,0 +1,37 @@
+version: 2
+
+models:
+  - name: fct_student_language_instruction_program_association
+    description: >
+      Student language instruction program enrollment information.
+
+      *Primary Key:* `k_student, k_program`
+
+    config:
+      tags: ['language_instruction']
+      enabled: "{{ var('src:program:language_instruction:enabled', True) }}"
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - k_student
+            - k_program
+
+    columns:
+      - name: k_student
+      - name: k_student_xyear
+      - name: k_program
+      - name: k_lea
+      - name: k_school
+      - name: tenant_code
+      - name: school_year
+      - name: program_enroll_begin_date
+      - name: program_enroll_end_date
+      - name: has_english_learner_participation
+      - name: intervention_duration_min
+      - name: served_outside_regular_session
+      - name: participation_status
+      - name: status_designated_by
+      - name: status_begin_date
+      - name: status_end_date
+      - name: reason_exited
