@@ -7,7 +7,7 @@ It is a highly configurable and extensible package to power analytics on K12
 education data. 
 
 > **Note**
-> This package is not complete on its own. Use our [Project Template]() to populate
+> This package is not complete on its own. Use our [Project Template](https://github.com/edanalytics/edu_project_template) to populate
 > necessary configuration.
 
 This package is part of the larger [EDU](https://enabledataunion.org)
@@ -22,7 +22,7 @@ Include the following in your `packages.yml` file:
 ```
 packages:
   - package: edanalytics/edu_wh
-    version: 0.1.0
+    version: 0.1.1
 ```
 
 > **Note**
@@ -30,7 +30,7 @@ packages:
 
 ## License
 This package is free to use for noncommercial purposes. 
-See [License](LICENSE).
+See [License](LICENSE.md).
 
 ## Configuration
 This package is highly configurable: it needs to parse a variety of [Descriptors](https://techdocs.ed-fi.org/display/EFDS32/Descriptor+Guidance) from Ed-Fi 

@@ -9,7 +9,7 @@
 with stg_staff as (
     select * from {{ ref('stg_ef3__staffs') }}
 ),
-wide_ids as (
+bld_ef3__wide_ids_staff as (
     select * from {{ ref('bld_ef3__wide_ids_staff') }}
 ),
 choose_email as (
@@ -25,8 +25,9 @@ formatted as (
         stg_staff.k_staff,
         stg_staff.tenant_code,
         stg_staff.staff_unique_id,
-        {{ dbt_utils.star(ref('bld_ef3__wide_ids_staff'), 
-            except=['TENANT_CODE', 'API_YEAR', 'K_STAFF']) }},
+        {{ accordion_columns(
+            source_table='bld_ef3__wide_ids_staff', 
+            exclude_columns=['tenant_code', 'api_year', 'k_staff']) }}
         stg_staff.login_id,
         choose_email.email_address,
         choose_email.email_type,
@@ -43,8 +44,8 @@ formatted as (
         stg_staff.years_of_prior_professional_experience,
         stg_staff.years_of_prior_teaching_experience
     from stg_staff
-    left join wide_ids 
-        on stg_staff.k_staff = wide_ids.k_staff
+    left join bld_ef3__wide_ids_staff 
+        on stg_staff.k_staff = bld_ef3__wide_ids_staff.k_staff
     left join choose_email
         on stg_staff.k_staff = choose_email.k_staff
 )

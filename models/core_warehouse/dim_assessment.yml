@@ -1,0 +1,31 @@
+version: 2
+
+models:
+  - name: dim_assessment
+    description: >
+      Defines an assessment and all known characteristics.
+    columns:
+      - name: k_assessment
+        description: Generated primary key composed of `tenant_code`, `api_year`, `academicSubjectDescriptor`, `assessmentIdentifier`, and `namespace`.
+        tests: 
+          - unique
+      - name: tenant_code
+      - name: school_year
+      - name: assessment_identifier
+      - name: namespace
+      - name: assessment_title
+      - name: academic_subject
+      - name: is_adaptive_assessment
+      - name: assessment_family
+      - name: assessment_form
+      - name: assessment_version
+      - name: max_raw_score
+      - name: nomenclature
+      - name: revision_date
+      - name: assessment_category
+      - name: assessment_period_begin_date
+      - name: assessment_period_end_date
+      - name: content_standard
+      - name: scores_array
+      - name: performance_levels_array
+      - name: grades_array

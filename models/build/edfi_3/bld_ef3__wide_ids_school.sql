@@ -6,7 +6,6 @@ xwalk_ids as (
 )
 select 
     tenant_code,
-    api_year,
     k_school,
     {{ dbt_utils.pivot(column='id_name',
                        values=dbt_utils.get_column_values(
@@ -22,4 +21,4 @@ select
 from school_ids
 join xwalk_ids
     on school_ids.id_system = xwalk_ids.id_system
-group by 1,2,3
+group by 1,2
