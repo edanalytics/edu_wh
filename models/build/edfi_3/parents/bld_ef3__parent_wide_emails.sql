@@ -7,8 +7,9 @@ parent_email_types as (
 emails_wide as (
   select 
     k_parent,
-    tenant_code,
+    tenant_code
     -- note: this is already deduped to be the most recent record for a parent
+    {%- if not is_empty_model('xwalk_parent_email_types') -%},
     {{ dbt_utils.pivot(
       'normalized_email_type',
       dbt_utils.get_column_values(ref('xwalk_parent_email_types'), 'normalized_email_type'),
@@ -17,6 +18,7 @@ emails_wide as (
       else_value='null',
       suffix='_email_address'
     ) }}
+    {%- endif %}
   from stg_parent_emails
   join parent_email_types 
     on stg_parent_emails.email_type = parent_email_types.original_email_type
