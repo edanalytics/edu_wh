@@ -1,5 +1,8 @@
 {#
+    Emulates `var()` on a list of variables.
 
+    If any variables return True, True is returned.
+    If no variables are defined, `default` is returned.
 #}
 {% macro any_var(var_list, default=True) %}
 
