@@ -26,7 +26,6 @@ formatted as (
     select 
         stg_parent.k_parent,
         stg_parent.tenant_code,
-        -- todo: add this? technically could be different for different parents so could be helpful to know when this information is from
         stg_parent.api_year as school_year,
         stg_parent.parent_unique_id,
         stg_parent.person_id,
@@ -41,11 +40,17 @@ formatted as (
         stg_parent.generation_code_suffix,
         stg_parent.sex,
         stg_parent.highest_completed_level_of_education,
-        {{ dbt_utils.star(from=ref('bld_ef3__parent_wide_phone_numbers'), except=["k_parent", "tenant_code"]) }},
-        {{ dbt_utils.star(from=ref('bld_ef3__parent_wide_emails'), except=["k_parent", "tenant_code"]) }},
+        {{ accordion_columns(
+            source_table='bld_ef3__parent_wide_phone_numbers',
+            exclude_columns=["k_parent", "tenant_code"],
+            source_alias='parent_phones_wide'
+        ) }}
+        {{ accordion_columns(
+            source_table='bld_ef3__parent_wide_emails',
+            exclude_columns=["k_parent", "tenant_code"],
+            source_alias='parent_emails_wide'
+        ) }}
         choose_address.full_address
-        -- leaving out contact info/addresses entirely given the difference in grain
-        -- todo: need to determine what to do here
     from stg_parent
     left join parent_phones_wide
       on stg_parent.k_parent = parent_phones_wide.k_parent
