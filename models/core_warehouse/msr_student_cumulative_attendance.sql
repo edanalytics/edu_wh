@@ -26,10 +26,7 @@ aggregated as (
         sum(is_absent) as days_absent,
         sum(is_present) as days_attended,
         sum(is_enrolled) as days_enrolled,
-        case 
-          when days_enrolled = 0 then null
-          else round(100 * days_attended / days_enrolled, 2)
-        end as  attendance_rate,
+        round(100 * days_attended / nullif(days_enrolled, 0), 2) as attendance_rate,
         days_enrolled >= {{ var('edu:attendance:chronic_absence_min_days') }} as meets_enrollment_threshold,
         {{ msr_chronic_absentee('attendance_rate', 'days_enrolled') }} as is_chronic_absentee
     from stu_daily_attendance
