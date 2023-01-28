@@ -8,8 +8,8 @@ emails_wide as (
   select 
     k_parent,
     tenant_code
-    -- note: this is already deduped to be the most recent record for a parent
     {%- if not is_empty_model('xwalk_parent_email_types') -%},
+    -- note: this is already deduped to be the most recent record for a parent
     {{ dbt_utils.pivot(
       'normalized_email_type',
       dbt_utils.get_column_values(ref('xwalk_parent_email_types'), 'normalized_email_type'),
