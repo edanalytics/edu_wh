@@ -16,7 +16,8 @@ emails_wide as (
       agg='max',
       then_value='email_address',
       else_value='null',
-      suffix='_email_address'
+      suffix='_email_address',
+      quote_identifiers = False
     ) }}
     {%- endif %}
   from stg_parent_emails

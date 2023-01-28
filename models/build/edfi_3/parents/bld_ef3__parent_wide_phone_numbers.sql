@@ -16,7 +16,8 @@ phones_wide as (
       agg='max',
       then_value='phone_number',
       else_value='null',
-      suffix='_phone_number'
+      suffix='_phone_number',
+      quote_identifiers = False
     ) }}
     {%- endif %}
   from stg_parent_phones
