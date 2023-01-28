@@ -1,4 +1,3 @@
 packages:
-  - local: ~/code/edu_edfi_source
-  #- git: "https://github.com/edanalytics/edu_edfi_source.git"
-   # revision: 0.1.2
+  - git: "https://github.com/edanalytics/edu_edfi_source.git"
+    revision: 0.1.2
