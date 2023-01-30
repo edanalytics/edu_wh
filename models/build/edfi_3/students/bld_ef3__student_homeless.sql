@@ -1,11 +1,11 @@
 {# customizable: certain program names may be excluded and not counted as homeless #}
-{% set exclude_programs = var('edu:homeless:exclude_programs') %}
+{% set exclude_programs = var('edu:homeless:exclude_programs', []) %}
 
 {# customizable: the column that defines the start date for the homeless program #}
-{% set start_date_column = var('edu:homeless:start_date_column') %}
+{% set start_date_column = var('edu:homeless:start_date_column', 'program_enroll_begin_date') %}
 
 {# customizable: the column that defines the end date for the homeless program #}
-{% set exit_date_column = var('edu:homeless:exit_date_column') %}
+{% set exit_date_column = var('edu:homeless:exit_date_column', 'program_enroll_end_date') %}
 
 {# customizable: defines whether to define program as active, annual, or both #}
 {% set agg_type = var('edu:homeless:active_or_annual', ['annual']) %}
