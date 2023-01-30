@@ -5,6 +5,19 @@
 
 ## Fixes
 
+
+# edu_wh v0.1.3
+## New features
+- Warehouse models for parents and student-parent linkage
+## Fixes
+- Bump edu_edfi_source version
+
+
+# edu_wh v0.1.2
+## Under the hood
+- Bump edu_edfi_source version
+
+
 # edu_wh v0.1.1
 ## New features
 - Added parsing for `studentEducationOrganizationAssociation.indicators` in `dim_student`
