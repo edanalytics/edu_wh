@@ -4,8 +4,11 @@ models:
   - name: fct_student_program_service
     description: >
      **Overview:**
-       This fact table provides student program services. It references [stg_ef3__stu_spec_ed__program_services](#!/model/model.edu_edfi_source.stg_ef3__stu_spec_ed__program_services),
-      # TODO ADD LINKS TO OTHER PROGRAM SERVICE STAGES
+       This fact table provides student program services. It references any or all of the following models:
+      - [stg_ef3__stu_spec_ed__program_services](#!/model/model.edu_edfi_source.stg_ef3__stu_spec_ed__program_services),
+      - [stg_ef3__stu_lang_instr__program_services](#!/model/model.edu_edfi_source.stg_ef3__stu_lang_instr__program_services),
+      - [stg_ef3__stu_homeless__program_services](#!/model/model.edu_edfi_source.stg_ef3__stu_homeless__program_services),
+      - [stg_ef3__stu_title_i__program_services](#!/model/model.edu_edfi_source.stg_ef3__stu_title_i__program_services),
 
      **Primary Key:**
        `k_student, k_program, program_begin_date, program_service` --
@@ -17,13 +20,24 @@ models:
     config:
       tags: ['special_ed', 'homeless', 'language_instruction', 'title_i']
       enabled: >
-        "{{ any_var([
-              'src:program:special_ed:enabled',
-              'src:program:homeless:enabled',
-              'src:program:language_instruction:enabled',
-              'src:program:title_i:enabled'
-            ], default=True
-        ) }}"
+        {%- set var_values = [] -%}
+        {%- for variable in [
+             'src:program:special_ed:enabled',
+             'src:program:homeless:enabled',
+             'src:program:language_instruction:enabled',
+             'src:program:title_i:enabled',
+        ] -%}
+           {%- do var_values.append(var(variable, none)) -%}
+        {%- endfor -%}
+
+        {%- if True in var_values -%}
+           {{ True  | as_bool }}
+        {%- elif False in var_values -%}
+           {{ False | as_bool }}
+        {%- else -%}
+           {{ True  | as_bool }}
+        {%- endif -%}
+        
 
     tests:
       - dbt_utils.unique_combination_of_columns:
