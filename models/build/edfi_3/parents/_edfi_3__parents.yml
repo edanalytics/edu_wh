@@ -1,0 +1,9 @@
+version: 2
+
+models:
+  - name: bld_ef3__parent_wide_emails
+    config:
+      tags: ['core']
+  - name: bld_ef3__parent_wide_phone_numbers
+    config:
+      tags: ['core']

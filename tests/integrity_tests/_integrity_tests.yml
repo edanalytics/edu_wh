@@ -21,10 +21,18 @@ models:
     config:
       tags: ['core']
 
+  - name: all_students_have_one_primary_contact
+    config:
+      tags: [ 'core' ]
+
   - name: custom_demo_sources_are_unique_on_k_student
     config:
       tags: ['core']
 
   - name: missing_demographics
+    config:
+      tags: ['core']
+
+  - name: one_school_year_per_student_parent_association
     config:
       tags: ['core']
