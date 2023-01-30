@@ -13,6 +13,7 @@ models:
   - name: bld_ef3__stu_spec_ed__program_services
     config:
       tags: ['special_ed']
+      enabled: "{{ var('src:program:special_ed:enabled', True) }}"
   - name: bld_ef3__student_characteristics
     config:
       tags: ['core']
