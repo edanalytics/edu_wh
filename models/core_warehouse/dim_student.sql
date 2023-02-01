@@ -29,12 +29,21 @@ stu_indicators as (
 stu_grade as (
     select * from {{ ref('bld_ef3__stu_grade_level') }}
 ),
-stu_annual_spec_ed as (
-    select * from {{ ref('bld_ef3__student_special_education_annual') }}
+
+-- student programs
+stu_special_ed as (
+    select * from {{ ref('bld_ef3__student_program__special_education') }}
 ),
-stu_is_spec_ed as (
-    select * from {{ ref('bld_ef3__student_special_education_active') }}
+stu_language_instruction as (
+    select * from {{ ref('bld_ef3__student_program__language_instruction') }}
 ),
+stu_homeless as (
+    select * from {{ ref('bld_ef3__student_program__homeless') }}
+),
+stu_title_i as (
+    select * from {{ ref('bld_ef3__student_program__title_i') }}
+),
+
 formatted as (
     select 
         stg_student.k_student,
@@ -58,8 +67,16 @@ formatted as (
         stu_demos.gender,
         stu_grade.entry_grade_level as grade_level,
         stu_races.race_ethnicity,
-        coalesce(stu_annual_spec_ed.is_special_education_annual, false) as is_special_education_annual,
-        coalesce(stu_is_spec_ed.is_special_education_active, false) as is_special_education_active,
+
+        -- student programs
+        coalesce(stu_special_ed.is_special_education_annual, false) as is_special_education_annual,
+        coalesce(stu_special_ed.is_special_education_active, false) as is_special_education_active,
+        coalesce(stu_language_instruction.is_ell_annual, false) as is_ell_annual,
+        coalesce(stu_language_instruction.is_ell_active, false) as is_ell_active,
+        coalesce(stu_homeless.is_homeless_annual, false) as is_homeless_annual,
+        coalesce(stu_homeless.is_homeless_active, false) as is_homeless_active,
+        coalesce(stu_title_i.is_title_i_annual, false) as is_title_i_annual,
+        coalesce(stu_title_i.is_title_i_active, false) as is_title_i_active,
 
         -- student characteristics
         {{ accordion_columns(
@@ -93,10 +110,11 @@ formatted as (
         {%- endif %}
         -- todo: bring in additional summarized attributes
 
-        
         stu_races.race_array,
         concat(display_name, ' (', stg_student.student_unique_id, ')') as safe_display_name
+
     from stg_student
+
     join stu_demos
         on stg_student.k_student = stu_demos.k_student
     left join stu_ids 
@@ -114,10 +132,17 @@ formatted as (
     left join stu_grade
         on stu_demos.k_student = stu_grade.k_student
         and stg_student.api_year = stu_grade.school_year
-    left join stu_annual_spec_ed
-        on stu_demos.k_student = stu_annual_spec_ed.k_student
-    left join stu_is_spec_ed
-        on stu_demos.k_student = stu_is_spec_ed.k_student
+
+    -- student programs
+    left join stu_special_ed
+        on stu_demos.k_student = stu_special_ed.k_student
+    left join stu_language_instruction
+        on stu_demos.k_student = stu_language_instruction.k_student
+    left join stu_homeless
+        on stu_demos.k_student = stu_homeless.k_student
+    left join stu_title_i
+        on stu_demos.k_student = stu_title_i.k_student
+
     -- custom data sources
     {% if custom_data_sources is not none and custom_data_sources | length -%}
       {%- for source in custom_data_sources -%}
