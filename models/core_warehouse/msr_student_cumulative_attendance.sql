@@ -48,6 +48,6 @@ metric_labels as (
     from aggregated
     left join metric_absentee_categories
         on attendance_rate >= metric_absentee_categories.threshold_lower
-        and attendance_rate < metric_absentee_categories.threshold_upper
+        and attendance_rate <= metric_absentee_categories.threshold_upper
 )
 select * from metric_labels
