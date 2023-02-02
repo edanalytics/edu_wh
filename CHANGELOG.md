@@ -5,6 +5,12 @@
 
 ## Fixes
 
+# edu_wh v0.1.4
+## Under the hood
+- Change absenteeism metric boundaries to better match common business rules
+
+## Fixes
+- Improve whitespace handling and macro robustness for empty crosswalks
 
 # edu_wh v0.1.3
 ## New features
