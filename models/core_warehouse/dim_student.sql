@@ -123,7 +123,7 @@ formatted as (
       {%- for source in custom_data_sources -%}
         left join {{ ref(source) }}
           on stu_demos.k_student = {{ source }}.k_student
-      {%- endfor -%}
+      {% endfor %}
     {%- endif %}
 
 )
