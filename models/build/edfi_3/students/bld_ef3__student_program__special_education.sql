@@ -2,10 +2,10 @@
 {% set exclude_programs = var('edu:special_ed:exclude_programs', []) %}
 
 {# customizable: the column that defines the start date for the language instruction program #}
-{% set start_date_column = var('edu:special_ed:start_date_column', 'spec_ed_program_begin_date') %}
+{% set start_date_column = var('edu:special_ed:start_date_column', 'program_enroll_begin_date') %}
 
 {# customizable: the column that defines the end date for the language instruction program #}
-{% set exit_date_column = var('edu:special_ed:exit_date_column', 'spec_ed_program_end_date') %}
+{% set exit_date_column = var('edu:special_ed:exit_date_column', 'program_enroll_begin_date') %}
 
 {# customizable: defines whether to define program as active, annual, or both #}
 {% set agg_type = var('edu:special_ed:active_or_annual', ['annual']) %}
