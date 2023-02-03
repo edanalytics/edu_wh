@@ -35,11 +35,11 @@ formatted as (
 
         stage.title_i_part_a_participant_status,
 
-        stage.served_outside_regular_session,
+        stage.is_served_outside_regular_session,
         stage.participation_status,
-        stage.status_designated_by,
-        stage.status_begin_date,
-        stage.status_end_date,
+        stage.participation_status_designated_by,
+        stage.participation_status_begin_date,
+        stage.participation_status_end_date,
         stage.reason_exited
 
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_title_i_part_a_program_associations', flatten=False) }}

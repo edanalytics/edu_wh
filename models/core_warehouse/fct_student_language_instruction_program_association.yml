@@ -29,9 +29,9 @@ models:
       - name: program_enroll_end_date
       - name: has_english_learner_participation
       - name: intervention_duration_min
-      - name: served_outside_regular_session
+      - name: is_served_outside_regular_session
       - name: participation_status
-      - name: status_designated_by
-      - name: status_begin_date
-      - name: status_end_date
+      - name: participation_status_designated_by
+      - name: participation_status_begin_date
+      - name: participation_status_end_date
       - name: reason_exited
