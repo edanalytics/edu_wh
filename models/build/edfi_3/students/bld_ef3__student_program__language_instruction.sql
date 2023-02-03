@@ -27,13 +27,13 @@ maxed as (
           and {{ start_date_column }} <= current_date() -- start date is today or in the past
           and ({{ exit_date_column }} is null -- no exit date
             or {{ exit_date_column }} > current_date()) -- exit date is in the future
-        ) as is_ell_active -- if the student has an active language instruction program enrollment
+        ) as is_english_language_learner_active -- if the student has an active language instruction program enrollment
         {% endif %}
 
         {% if agg_type == 'annual' or 'annual' in agg_type %}
         max(
           {{ value_not_in_list(field='program_name', excluded_items=exclude_programs) }}
-        ) as is_ell_annual, -- the student had a language instruction program enrollment any time during the year
+        ) as is_english_language_learner_active, -- the student had a language instruction program enrollment any time during the year
         {% endif %}
 
         max(has_english_learner_participation) as has_english_learner_participation
