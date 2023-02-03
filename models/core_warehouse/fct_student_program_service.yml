@@ -50,7 +50,7 @@ models:
       - name: k_student
       - name: k_program
       - name: tenant_code
-      - name: program_begin_date
+      - name: program_enroll_begin_date
       - name: program_service
       - name: primary_indicator
       - name: v_providers
