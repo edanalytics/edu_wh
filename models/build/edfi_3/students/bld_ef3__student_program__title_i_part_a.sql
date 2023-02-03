@@ -8,7 +8,7 @@
 {% set exit_date_column = var('edu:title_i:exit_date_column', 'program_enroll_end_date') %}
 
 {# customizable: defines whether to define program as active, annual, or both #}
-{% set agg_type = var('edu:title_i:active_or_annual', ['annual']) %}
+{% set agg_type = var('edu:title_i:active_or_annual', ['annual', 'active']) %}
 
 
 with stage as (
@@ -27,7 +27,7 @@ maxed as (
           and {{ start_date_column }} <= current_date() -- start date is today or in the past
           and ({{ exit_date_column }} is null -- no exit date
             or {{ exit_date_column }} > current_date()) -- exit date is in the future
-        ) as is_title_i_active -- if the student has an active title_i program enrollment
+        ) as is_title_i_active, -- if the student has an active title_i program enrollment
         {% endif %}
 
         {% if agg_type == 'annual' or 'annual' in agg_type %}
