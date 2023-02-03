@@ -16,6 +16,7 @@ maxed as (
     -- take one row per student, maxing across kept rows
     select
         k_student,
+        k_student_xyear,
         any_value(tenant_code) as tenant_code,
 
         max(
@@ -33,7 +34,26 @@ maxed as (
 
     from stage
 
+    group by 1, 2
+),
+
+xyear_agged as (
+    select
+        k_student_xyear,
+        boolor_agg(is_english_language_learner_annual) as is_english_language_learner_ever
+
+    from maxed
     group by 1
+),
+
+joined as (
+    select
+        maxed.*,
+        xyear_agged.is_english_language_learner_ever
+
+    from maxed
+        left join xyear_agged
+        on maxed.k_student_xyear = xyear_agged.k_student_xyear
 )
 
-select * from maxed
+select * from joined
