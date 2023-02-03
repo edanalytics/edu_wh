@@ -27,7 +27,7 @@ models:
       - name: school_year
       - name: program_enroll_begin_date
       - name: program_enroll_end_date
-      - name: is_awaiting_forster_care
+      - name: is_awaiting_foster_care
       - name: is_homeless_unaccompanied_youth
       - name: homeless_primary_nighttime_residence
       - name: is_served_outside_regular_session

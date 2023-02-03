@@ -22,7 +22,7 @@ dim_program as (
 ),
 
 bld_program_services as (
-    select * From {{ ref ('bld_ef3__stu_spec_ed__program_services')}}
+    select * From {{ ref ('bld_ef3__student_program__special_education__program_services')}}
 ),
 
 formatted as (
@@ -56,7 +56,7 @@ formatted as (
         stage.reason_exited,
         
         stage.special_education_setting,
-        bld_program_services.special_education_program_services
+        bld_program_services.program_services as special_education_program_services
         
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_special_education_program_associations', flatten=False) }}
         

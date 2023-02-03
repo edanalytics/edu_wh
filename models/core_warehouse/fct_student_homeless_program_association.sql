@@ -33,7 +33,7 @@ formatted as (
         stage.program_enroll_begin_date,
         stage.program_enroll_end_date,
 
-        stage.is_awaiting_forster_care,
+        stage.is_awaiting_foster_care,
         stage.is_homeless_unaccompanied_youth,
         stage.homeless_primary_nighttime_residence,
 

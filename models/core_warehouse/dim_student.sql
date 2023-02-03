@@ -40,8 +40,8 @@ stu_language_instruction as (
 stu_homeless as (
     select * from {{ ref('bld_ef3__student_program__homeless') }}
 ),
-stu_title_i as (
-    select * from {{ ref('bld_ef3__student_program__title_i') }}
+stu_title_i_part_a as (
+    select * from {{ ref('bld_ef3__student_program__title_i_part_a') }}
 ),
 
 formatted as (
@@ -71,12 +71,12 @@ formatted as (
         -- student programs
         coalesce(stu_special_ed.is_special_education_annual, false) as is_special_education_annual,
         coalesce(stu_special_ed.is_special_education_active, false) as is_special_education_active,
-        coalesce(stu_language_instruction.is_ell_annual, false) as is_ell_annual,
-        coalesce(stu_language_instruction.is_ell_active, false) as is_ell_active,
+        coalesce(stu_language_instruction.is_english_language_learner_annual, false) as is_english_language_learner_annual,
+        coalesce(stu_language_instruction.is_english_language_learner_active, false) as is_english_language_learner_active,
         coalesce(stu_homeless.is_homeless_annual, false) as is_homeless_annual,
         coalesce(stu_homeless.is_homeless_active, false) as is_homeless_active,
-        coalesce(stu_title_i.is_title_i_annual, false) as is_title_i_annual,
-        coalesce(stu_title_i.is_title_i_active, false) as is_title_i_active,
+        coalesce(stu_title_i_part_a.is_title_i_annual, false) as is_title_i_annual,
+        coalesce(stu_title_i_part_a.is_title_i_active, false) as is_title_i_active,
 
         -- student characteristics
         {{ accordion_columns(
@@ -140,8 +140,8 @@ formatted as (
         on stu_demos.k_student = stu_language_instruction.k_student
     left join stu_homeless
         on stu_demos.k_student = stu_homeless.k_student
-    left join stu_title_i
-        on stu_demos.k_student = stu_title_i.k_student
+    left join stu_title_i_part_a
+        on stu_demos.k_student = stu_title_i_part_a.k_student
 
     -- custom data sources
     {% if custom_data_sources is not none and custom_data_sources | length -%}

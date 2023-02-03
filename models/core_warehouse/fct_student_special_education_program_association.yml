@@ -20,8 +20,8 @@ models:
       - name: k_school
       - name: tenant_code
       - name: school_year
-      - name: spec_ed_program_begin_date
-      - name: spec_ed_program_end_date
+      - name: program_enroll_begin_date
+      - name: program_enroll_end_date
       - name: is_idea_eligible
       - name: iep_begin_date
       - name: iep_end_date
