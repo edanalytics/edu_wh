@@ -168,8 +168,8 @@ metric_labels as (
         end as absentee_category_label
     from cumulatives
     left join metric_absentee_categories
-        on cumulative_attendance_rate >= metric_absentee_categories.threshold_lower
-        and cumulative_attendance_rate < metric_absentee_categories.threshold_upper
+        on cumulative_attendance_rate > metric_absentee_categories.threshold_lower
+        and cumulative_attendance_rate <= metric_absentee_categories.threshold_upper
 )
 select * from metric_labels
 order by tenant_code, k_school, k_student, cumulative_days_enrolled

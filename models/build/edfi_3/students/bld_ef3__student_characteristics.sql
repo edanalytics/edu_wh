@@ -21,7 +21,7 @@ select
                    then_value=1,
                    else_value=0,
                    quote_identifiers=False) }}
-    {%- endif -%}
+    {% endif %}
 from stu_char
 left join xwalk_stu_char 
     on stu_char.student_characteristic = xwalk_stu_char.characteristic_descriptor

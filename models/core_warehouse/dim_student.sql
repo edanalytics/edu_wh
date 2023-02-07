@@ -104,45 +104,40 @@ formatted as (
         concat(display_name, ' (', stg_student.student_unique_id, ')') as safe_display_name
 
     from stg_student
+    join stu_demos
+        on stg_student.k_student = stu_demos.k_student
+    left join stu_ids 
+        on stu_demos.k_student = stu_ids.k_student
+        and stu_demos.ed_org_id = stu_ids.ed_org_id
+    left join stu_races 
+        on stu_demos.k_student = stu_races.k_student
+        and stu_demos.ed_org_id = stu_races.ed_org_id
+    left join stu_chars 
+        on stu_demos.k_student = stu_chars.k_student
+        and stu_demos.ed_org_id = stu_chars.ed_org_id
+    left join stu_indicators 
+        on stu_demos.k_student = stu_indicators.k_student
+        and stu_demos.ed_org_id = stu_indicators.ed_org_id
+    left join stu_grade
+        on stu_demos.k_student = stu_grade.k_student
+        and stg_student.api_year = stu_grade.school_year
+        
+    {% if var('src:program:special_ed:enabled', True) %}
+        left join stu_annual_spec_ed
+            on stu_demos.k_student = stu_annual_spec_ed.k_student
 
-        join stu_demos
-            on stg_student.k_student = stu_demos.k_student
+        left join stu_is_spec_ed
+            on stu_demos.k_student = stu_is_spec_ed.k_student
+    {% endif %}
 
-        left join stu_ids
-            on stu_demos.k_student = stu_ids.k_student
-            and stu_demos.ed_org_id = stu_ids.ed_org_id
+    -- custom data sources
+    {% if custom_data_sources is not none and custom_data_sources | length -%}
+      {%- for source in custom_data_sources -%}
+        left join {{ ref(source) }}
+          on stu_demos.k_student = {{ source }}.k_student
+      {% endfor %}
+    {%- endif %}
 
-        left join stu_races
-            on stu_demos.k_student = stu_races.k_student
-            and stu_demos.ed_org_id = stu_races.ed_org_id
-
-        left join stu_chars
-            on stu_demos.k_student = stu_chars.k_student
-            and stu_demos.ed_org_id = stu_chars.ed_org_id
-
-        left join stu_indicators
-            on stu_demos.k_student = stu_indicators.k_student
-            and stu_demos.ed_org_id = stu_indicators.ed_org_id
-
-        left join stu_grade
-            on stu_demos.k_student = stu_grade.k_student
-            and stg_student.api_year = stu_grade.school_year
-
-        {% if var('src:program:special_ed:enabled', True) %}
-            left join stu_annual_spec_ed
-                on stu_demos.k_student = stu_annual_spec_ed.k_student
-
-            left join stu_is_spec_ed
-                on stu_demos.k_student = stu_is_spec_ed.k_student
-        {% endif %}
-
-        -- custom data sources
-        {% if custom_data_sources is not none and custom_data_sources | length -%}
-          {%- for source in custom_data_sources -%}
-            left join {{ ref(source) }}
-              on stu_demos.k_student = {{ source }}.k_student
-          {%- endfor -%}
-        {%- endif %}
 )
 
 select * from formatted
