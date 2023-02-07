@@ -1,0 +1,6 @@
+version: 2
+
+models:
+  - name: dim_staff
+    config:
+      tags: ['core']

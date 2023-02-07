@@ -6,6 +6,9 @@ models:
       Student objective assessment records. The wide results columns are
       determined based on the `normalized_score_name` column
       from the seed table `xwalk_objective_assessment_scores`.
+    config:
+      tags: ['assessment']
+      enabled: "{{ var('src:domain:assessment:enabled', True) }}"
     columns:
       - name: k_student_objective_assessment
         description: >

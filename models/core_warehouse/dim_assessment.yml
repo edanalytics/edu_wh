@@ -4,6 +4,9 @@ models:
   - name: dim_assessment
     description: >
       Defines an assessment and all known characteristics.
+    config:
+      tags: ['assessment']
+      enabled: "{{ var('src:domain:assessment:enabled', True) }}"
     columns:
       - name: k_assessment
         description: Generated primary key composed of `tenant_code`, `api_year`, `academicSubjectDescriptor`, `assessmentIdentifier`, and `namespace`.

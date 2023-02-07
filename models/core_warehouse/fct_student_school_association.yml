@@ -15,6 +15,8 @@ models:
 
       *Primary Key:* `k_student, k_school, school_year, entry_date`
 
+    config:
+      tags: ['core']
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:

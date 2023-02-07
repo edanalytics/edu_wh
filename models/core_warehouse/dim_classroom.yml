@@ -4,6 +4,8 @@ models:
   - name: dim_classroom
     description: >
       Defines locations within the school, most commonly classrooms.
+    config:
+      tags: ['core']
     columns:
       - name: k_classroom
         description: Defining key for school locations

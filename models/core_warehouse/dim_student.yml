@@ -4,6 +4,8 @@ models:
   - name: dim_student
     description: >
       Defines students across years and some of their key characteristics.
+    config:
+      tags: ['core', 'special_ed']
     columns:
       - name: k_student
         description: Defining key for the student in this school year.
