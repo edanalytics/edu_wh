@@ -66,7 +66,7 @@ root `packages.yml` to avoid package version conflicts.
 ## Package Maintenance
 
 The Education Analytics team only maintains the latest version of the package.
-We recommend that you stay consistent with the [latest version]() of the package
+We recommend that you stay consistent with the [latest version](https://github.com/edanalytics/edu_wh/releases/latest) of the package
 and refer to the [CHANGELOG](https://github.com/edanalytics/edu_wh/blob/main/CHANGELOG.md)
 and release notes for more information on changes across versions.
 
