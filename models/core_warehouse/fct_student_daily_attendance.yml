@@ -7,6 +7,8 @@ models:
       as reported in `studentSchoolAttendanceEvents`.
 
       **Primary Key:** k_student, k_school, k_calendar_date
+    config:
+      tags: ['core']
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
@@ -26,7 +28,7 @@ models:
       - name: is_absent
         description: Indicator for absence. Defined via descriptor mapping in `xwalk_attendance_events`
       - name: is_present
-        description: Inverse of `is_absent`, for use in calculations.
+        description: Inverse of `is_absent`, for use in calculations. Can be fractional.
       - name: is_enrolled
       - name: total_days_enrolled
       - name: cumulative_days_absent

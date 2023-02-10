@@ -10,6 +10,8 @@ models:
 
       *Primary Key:* `k_subgroup`
 
+    config:
+      tags: ['core']
     columns:
       - name: k_subgroup
         description: Defining key for subgroups

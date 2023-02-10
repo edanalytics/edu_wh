@@ -22,7 +22,7 @@ Include the following in your `packages.yml` file:
 ```
 packages:
   - package: edanalytics/edu_wh
-    version: 0.1.3
+    version: 0.2.0
 ```
 
 > **Note**
@@ -66,7 +66,7 @@ root `packages.yml` to avoid package version conflicts.
 ## Package Maintenance
 
 The Education Analytics team only maintains the latest version of the package.
-We recommend that you stay consistent with the [latest version]() of the package
+We recommend that you stay consistent with the [latest version](https://github.com/edanalytics/edu_wh/releases/latest) of the package
 and refer to the [CHANGELOG](https://github.com/edanalytics/edu_wh/blob/main/CHANGELOG.md)
 and release notes for more information on changes across versions.
 

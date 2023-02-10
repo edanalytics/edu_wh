@@ -1,0 +1,6 @@
+version: 2
+
+models:
+  - name: fct_student_section_association
+    config:
+      tags: ['core']

@@ -1,0 +1,33 @@
+version: 2
+
+models:
+  - name: bld_ef3__choose_stu_demos
+    config:
+      tags: ['core']
+  - name: bld_ef3__stu_grade_level
+    config:
+      tags: ['core']
+  - name: bld_ef3__stu_race_ethnicity
+    config:
+      tags: ['core']
+  - name: bld_ef3__stu_spec_ed__program_services
+    config:
+      tags: ['special_ed']
+      enabled: "{{ var('src:program:special_ed:enabled', True) }}"
+  - name: bld_ef3__student_characteristics
+    config:
+      tags: ['core']
+  - name: bld_ef3__student_indicators
+    config:
+      tags: ['core']
+  - name: bld_ef3__student_special_education_active
+    config:
+      tags: ['special_ed']
+      enabled: "{{ var('src:program:special_ed:enabled', True) }}"
+  - name: bld_ef3__student_special_education_annual
+    config:
+      tags: ['special_ed']
+      enabled: "{{ var('src:program:special_ed:enabled', True) }}"
+  - name: bld_ef3__wide_ids_student
+    config:
+      tags: ['core']

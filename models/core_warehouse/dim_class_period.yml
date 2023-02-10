@@ -1,0 +1,6 @@
+version: 2
+
+models:
+  - name: dim_class_period
+    config:
+      tags: ['core']

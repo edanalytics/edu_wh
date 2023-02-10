@@ -1,10 +1,33 @@
 # Unreleased
 ## New features
+## Under the hood
+## Fixes 
+
+
+# edu_wh v0.2.0
+## New features
+- Add optional domain disabling to all non-core models, using vars in dbt_project.yml.
+- Remove student_school_associations with invalid dates, such as withdraw dates before
+    the first day of school, or before the entry date
+- Add audit table to capture all invalid school enrollments
+- Rework daily attendance model
+    - Allow for fractional attendance by changing indicators from bools to floats
+    - Roll attendance rates for exited students forward to the end of the year
+        so that chronic absenteeism metrics can include exited students in 
+        daily calculations
+    - **Required Migration:** Convert T/F values in `xwalk_attendance_events` to 1.0/0.0
 
 ## Under the hood
+- Add a single model properties file under each subdirectory, as per DBT recommendation.
 
 ## Fixes
 
+# edu_wh v0.1.4
+## Under the hood
+- Change absenteeism metric boundaries to better match common business rules
+
+## Fixes
+- Improve whitespace handling and macro robustness for empty crosswalks
 
 # edu_wh v0.1.3
 ## New features

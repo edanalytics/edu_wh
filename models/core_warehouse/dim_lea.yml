@@ -1,0 +1,6 @@
+version: 2
+
+models:
+  - name: dim_lea
+    config:
+      tags: ['core']

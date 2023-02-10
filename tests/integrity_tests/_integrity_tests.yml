@@ -1,0 +1,38 @@
+version: 2
+
+models:
+  - name: all_attendance_dates_have_calendar_dates
+    config:
+      tags: ['core']
+
+  - name: all_student_school_associations_have_calendars
+    description: >
+      "**What is this test?** This test returns if any records at a school/year in fct_student_school_association are
+        a) missing a valid calendar association
+        b) at a school that has >1 valid calendar
+      
+      **When is this important to resolve?**
+      This is always important for attendance metrics, because we need to be able to associate a student-school enrollment to a calendar, to know which days the student was enrolled and in attendance.
+      
+      **How to resolve?**
+      a) Ask the tenant or SIS vendor to make sure calendarReference is populating for all records in studentSchoolAssociations
+      b) (less likely) Ask the tenant or SIS vendor to remove any invalid calendars at the relevant schools"
+
+    config:
+      tags: ['core']
+
+  - name: all_students_have_one_primary_contact
+    config:
+      tags: ['core']
+
+  - name: custom_demo_sources_are_unique_on_k_student
+    config:
+      tags: ['core']
+
+  - name: missing_demographics
+    config:
+      tags: ['core']
+
+  - name: one_school_year_per_student_parent_association
+    config:
+      tags: ['core']

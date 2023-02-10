@@ -1,0 +1,6 @@
+version: 2
+
+models:
+  - name: msr_student_cumulative_attendance
+    config:
+      tags: ['core']

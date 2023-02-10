@@ -31,9 +31,12 @@ stu_grade as (
 ),
 
 -- student programs
-stu_special_ed as (
-    select * from {{ ref('bld_ef3__student_program__special_education') }}
-),
+{% if var('src:program:special_ed:enabled', True) %}
+    stu_special_ed as (
+        select * from {{ ref('bld_ef3__student_program__special_education') }}
+    ),
+{% endif %}
+
 stu_language_instruction as (
     select * from {{ ref('bld_ef3__student_program__language_instruction') }}
 ),
@@ -69,14 +72,16 @@ formatted as (
         stu_races.race_ethnicity,
 
         -- student programs
-        {% if 'annual' in var('edu:special_ed:agg_types') %}
-            coalesce(stu_special_ed.is_special_education_annual, false) as is_special_education_annual,
-        {% endif %}
-        {% if 'active' in var('edu:special_ed:agg_types') %}
-            coalesce(stu_special_ed.is_special_education_active, false) as is_special_education_active,
-        {% endif %}
-        {% if 'ever' in var('edu:special_ed:agg_types') %}
-            coalesce(stu_special_ed.is_special_education_ever, false) as is_special_education_ever,
+        {% if var('src:program:special_ed:enabled', True) %}
+            {% if 'annual' in var('edu:special_ed:agg_types') %}
+                coalesce(stu_special_ed.is_special_education_annual, false) as is_special_education_annual,
+            {% endif %}
+            {% if 'active' in var('edu:special_ed:agg_types') %}
+                coalesce(stu_special_ed.is_special_education_active, false) as is_special_education_active,
+            {% endif %}
+            {% if 'ever' in var('edu:special_ed:agg_types') %}
+                coalesce(stu_special_ed.is_special_education_ever, false) as is_special_education_ever,
+            {% endif %}
         {% endif %}
 
         {% if 'annual' in var('edu:language_instruction:agg_types') %}
@@ -141,6 +146,7 @@ formatted as (
         {%- endif %}
         -- todo: bring in additional summarized attributes
 
+        
         stu_races.race_array,
         concat(display_name, ' (', stg_student.student_unique_id, ')') as safe_display_name
 
@@ -165,12 +171,17 @@ formatted as (
         and stg_student.api_year = stu_grade.school_year
 
     -- student programs
-    left join stu_special_ed
-        on stu_demos.k_student = stu_special_ed.k_student
+    {% if var('src:program:special_ed:enabled', True) %}
+        left join stu_special_ed
+            on stu_demos.k_student = stu_special_ed.k_student
+    {% endif %}
+
     left join stu_language_instruction
         on stu_demos.k_student = stu_language_instruction.k_student
+
     left join stu_homeless
         on stu_demos.k_student = stu_homeless.k_student
+
     left join stu_title_i_part_a
         on stu_demos.k_student = stu_title_i_part_a.k_student
 
@@ -179,9 +190,10 @@ formatted as (
       {%- for source in custom_data_sources -%}
         left join {{ ref(source) }}
           on stu_demos.k_student = {{ source }}.k_student
-      {%- endfor -%}
+      {% endfor %}
     {%- endif %}
 
 )
+
 select * from formatted
 order by tenant_code, school_year desc, k_student

@@ -5,7 +5,7 @@
     select count(*) from {{ ref(model_name) }}
   {%- endset -%}
 
-  {%- set nrow = edu_wh.get_single_value(sql_statement) -%}
+  {%- set nrow = edu_wh.get_single_value(sql_statement, default=0) -%}
 
   {{ return(nrow == 0) }}
 
