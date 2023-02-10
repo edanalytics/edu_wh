@@ -37,15 +37,23 @@ stu_grade as (
     ),
 {% endif %}
 
-stu_language_instruction as (
-    select * from {{ ref('bld_ef3__student_program__language_instruction') }}
-),
-stu_homeless as (
-    select * from {{ ref('bld_ef3__student_program__homeless') }}
-),
-stu_title_i_part_a as (
-    select * from {{ ref('bld_ef3__student_program__title_i_part_a') }}
-),
+{% if var('src:program:language_instruction:enabled', True) %}
+    stu_language_instruction as (
+        select * from {{ ref('bld_ef3__student_program__language_instruction') }}
+    ),
+{% endif %}
+
+{% if var('src:program:homeless:enabled', True) %}
+    stu_homeless as (
+        select * from {{ ref('bld_ef3__student_program__homeless') }}
+    ),
+{% endif %}
+
+{% if var('src:program:title_i:enabled', True) %}
+    stu_title_i_part_a as (
+        select * from {{ ref('bld_ef3__student_program__title_i_part_a') }}
+    ),
+{% endif %}
 
 formatted as (
     select 
@@ -84,34 +92,40 @@ formatted as (
             {% endif %}
         {% endif %}
 
-        {% if 'annual' in var('edu:language_instruction:agg_types') %}
-            coalesce(stu_language_instruction.is_english_language_learner_annual, false) as is_english_language_learner_annual,
-        {% endif %}
-        {% if 'active' in var('edu:language_instruction:agg_types') %}
-            coalesce(stu_language_instruction.is_english_language_learner_active, false) as is_english_language_learner_active,
-        {% endif %}
-        {% if 'ever' in var('edu:language_instruction:agg_types') %}
-            coalesce(stu_language_instruction.is_english_language_learner_ever, false) as is_english_language_learner_ever,
-        {% endif %}
-
-        {% if 'annual' in var('edu:homeless:agg_types') %}
-            coalesce(stu_homeless.is_homeless_annual, false) as is_homeless_annual,
-        {% endif %}
-        {% if 'active' in var('edu:homeless:agg_types') %}
-            coalesce(stu_homeless.is_homeless_active, false) as is_homeless_active,
-        {% endif %}
-        {% if 'ever' in var('edu:homeless:agg_types') %}
-            coalesce(stu_homeless.is_homeless_ever, false) as is_homeless_ever,
+        {% if var('src:program:language_instruction:enabled', True) %}
+            {% if 'annual' in var('edu:language_instruction:agg_types') %}
+                coalesce(stu_language_instruction.is_english_language_learner_annual, false) as is_english_language_learner_annual,
+            {% endif %}
+            {% if 'active' in var('edu:language_instruction:agg_types') %}
+                coalesce(stu_language_instruction.is_english_language_learner_active, false) as is_english_language_learner_active,
+            {% endif %}
+            {% if 'ever' in var('edu:language_instruction:agg_types') %}
+                coalesce(stu_language_instruction.is_english_language_learner_ever, false) as is_english_language_learner_ever,
+            {% endif %}
         {% endif %}
 
-        {% if 'annual' in var('edu:title_i:agg_types') %}
-            coalesce(stu_title_i_part_a.is_title_i_annual, false) as is_title_i_annual,
+        {% if var('src:program:homeless:enabled', True) %}
+            {% if 'annual' in var('edu:homeless:agg_types') %}
+                coalesce(stu_homeless.is_homeless_annual, false) as is_homeless_annual,
+            {% endif %}
+            {% if 'active' in var('edu:homeless:agg_types') %}
+                coalesce(stu_homeless.is_homeless_active, false) as is_homeless_active,
+            {% endif %}
+            {% if 'ever' in var('edu:homeless:agg_types') %}
+                coalesce(stu_homeless.is_homeless_ever, false) as is_homeless_ever,
+            {% endif %}
         {% endif %}
-        {% if 'active' in var('edu:title_i:agg_types') %}
-            coalesce(stu_title_i_part_a.is_title_i_active, false) as is_title_i_active,
-        {% endif %}
-        {% if 'ever' in var('edu:title_i:agg_types') %}
-            coalesce(stu_title_i_part_a.is_title_i_ever, false) as is_title_i_ever,
+
+        {% if var('src:program:title_i:enabled', True) %}
+            {% if 'annual' in var('edu:title_i:agg_types') %}
+                coalesce(stu_title_i_part_a.is_title_i_annual, false) as is_title_i_annual,
+            {% endif %}
+            {% if 'active' in var('edu:title_i:agg_types') %}
+                coalesce(stu_title_i_part_a.is_title_i_active, false) as is_title_i_active,
+            {% endif %}
+            {% if 'ever' in var('edu:title_i:agg_types') %}
+                coalesce(stu_title_i_part_a.is_title_i_ever, false) as is_title_i_ever,
+            {% endif %}
         {% endif %}
 
         -- student characteristics
@@ -176,14 +190,20 @@ formatted as (
             on stu_demos.k_student = stu_special_ed.k_student
     {% endif %}
 
-    left join stu_language_instruction
-        on stu_demos.k_student = stu_language_instruction.k_student
+    {% if var('src:program:language_instruction:enabled', True) %}
+        left join stu_language_instruction
+            on stu_demos.k_student = stu_language_instruction.k_student
+    {% endif %}
 
-    left join stu_homeless
-        on stu_demos.k_student = stu_homeless.k_student
+    {% if var('src:program:homeless:enabled', True) %}
+        left join stu_homeless
+            on stu_demos.k_student = stu_homeless.k_student
+    {% endif %}
 
-    left join stu_title_i_part_a
-        on stu_demos.k_student = stu_title_i_part_a.k_student
+    {% if var('src:program:title_i:enabled', True) %}
+        left join stu_title_i_part_a
+            on stu_demos.k_student = stu_title_i_part_a.k_student
+    {% endif %}
 
     -- custom data sources
     {% if custom_data_sources is not none and custom_data_sources | length -%}

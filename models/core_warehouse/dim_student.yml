@@ -5,7 +5,7 @@ models:
     description: >
       Defines students across years and some of their key characteristics.
     config:
-      tags: ['core', 'special_ed']
+      tags: ['core', 'special_ed', 'homeless', 'language_instruction', 'title_i']
     columns:
       - name: k_student
         description: Defining key for the student in this school year.
