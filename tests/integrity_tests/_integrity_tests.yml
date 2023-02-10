@@ -23,7 +23,7 @@ models:
 
   - name: all_students_have_one_primary_contact
     config:
-      tags: [ 'core' ]
+      tags: ['core']
 
   - name: custom_demo_sources_are_unique_on_k_student
     config:
