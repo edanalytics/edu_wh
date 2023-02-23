@@ -1,6 +1,9 @@
 version: 2
 
 models:
+  - name: cfg_attendance_codes_valid_range
+    config:
+      tags: ['core']
   - name: cfg_attendance_event_codes
     config:
       tags: ['core']
