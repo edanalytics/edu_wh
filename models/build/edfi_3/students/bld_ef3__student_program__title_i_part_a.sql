@@ -40,7 +40,7 @@ maxed as (
 xyear_agged as (
     select
         k_student_xyear,
-        boolor_agg(is_title_i_annual) as is_title_i_ever
+        max(is_title_i_annual) as is_title_i_ever
 
     from maxed
     group by 1

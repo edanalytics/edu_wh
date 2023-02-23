@@ -41,7 +41,7 @@ maxed as (
 xyear_agged as (
     select
         k_student_xyear,
-        boolor_agg(is_homeless_annual) as is_homeless_ever
+        max(is_homeless_annual) as is_homeless_ever
 
     from maxed
     group by 1

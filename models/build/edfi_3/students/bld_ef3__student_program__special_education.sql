@@ -41,7 +41,7 @@ maxed as (
 xyear_agged as (
     select
         k_student_xyear,
-        boolor_agg(is_special_education_annual) as is_special_education_ever
+        max(is_special_education_annual) as is_special_education_ever
 
     from maxed
     group by 1

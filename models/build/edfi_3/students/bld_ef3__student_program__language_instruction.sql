@@ -40,7 +40,7 @@ maxed as (
 xyear_agged as (
     select
         k_student_xyear,
-        boolor_agg(is_english_language_learner_annual) as is_english_language_learner_ever
+        max(is_english_language_learner_annual) as is_english_language_learner_ever
 
     from maxed
     group by 1
