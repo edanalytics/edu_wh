@@ -1,7 +1,7 @@
 version: 2
 
 models: 
-  - name: fct_discipline_actions
+  - name: fct_student_discipline_actions
     description: >
       This table describes disciplinary actions taken by the school, such as 
       suspensions. 
