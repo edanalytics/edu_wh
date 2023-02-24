@@ -10,20 +10,24 @@
 with stg_discipline_incidents as (
     select * from {{ ref('stg_ef3__discipline_incidents') }}
 ),
-stg_discipline_incidents_behaviors as (
-    select * from {{ ref('stg_ef3__discipline_incidents__behaviors') }}
-),
 dim_school as (
     select * from {{ ref('dim_school') }}
 ),
-formatted as (
-    -- the grain of this table will include both incident & behavior
+behaviors as (
     select
+        k_discipline_incident,
+        array_agg(object_construct('behavior_type', behavior_type,
+                                   'behavior_detailed_description', behavior_detailed_description)) as behavior_array
+        group by k_discipline_incident
+    from {{ ref('stg_ef3__discipline_incidents__behaviors') }}
+),
+formatted as (
+    select
+        stg_discipline_incidents.k_discipline_incident,
         dim_school.k_school,
         stg_discipline_incidents.tenant_code,
         stg_discipline_incidents.incident_id,
         stg_discipline_incidents.incident_date,
-        stg_discipline_incidents_behaviors.behavior_type,
         -- adding an indicator for multiple behaviors for an incident
         case
             when array_size(stg_discipline_incidents.v_behaviors) > 1
@@ -36,12 +40,13 @@ formatted as (
         stg_discipline_incidents.was_reported_to_law_enforcement,
         stg_discipline_incidents.reporter_name,
         stg_discipline_incidents.reporter_description,
-        stg_discipline_incidents.incident_location
+        stg_discipline_incidents.incident_location,
+        behaviors.behavior_array
         -- todo: weapons? external participants?
     from stg_discipline_incidents
-    -- left join because behaviors aren't required
-    left join stg_discipline_incidents_behaviors
-        on stg_discipline_incidents.k_discipline_incident = stg_discipline_incidents_behaviors.k_discipline_incident
+    -- behaviors are not required
+    left join behaviors
+        on stg_discipline_incidents.k_discipline_incident = behaviors.k_discipline_incident
     join dim_school
         on stg_discipline_incidents.k_school = dim_school.k_school
 )
