@@ -1,8 +1,8 @@
 with stg_stu_discipline_incident_behaviors as (
-    select * from {{ ref('stg_ef3__student_discipline_incident_behaviors') }}
+    select * from {{ ref('stg_ef3__student_discipline_incident_behavior_associations') }}
 ),
-stg_stu_discipline_non_offenders as (
-    select * from {{ ref('stg_ef3__student_discipline_non_offenders') }}
+stg_stu_discipline_incident_non_offenders as (
+    select * from {{ ref('stg_ef3__student_discipline_incident_non_offender_associations') }}
 ),
 dim_student as (
     select * from {{ ref('dim_student') }}
@@ -26,16 +26,16 @@ stack_discipline_incidents as (
     union all 
 
     select
-        stg_stu_discipline_non_offenders.k_student,
-        stg_stu_discipline_non_offenders.k_discipline_incident,
-        stg_stu_discipline_non_offenders.incident_id,
+        stg_stu_discipline_incident_non_offenders.k_student,
+        stg_stu_discipline_incident_non_offenders.k_discipline_incident,
+        stg_stu_discipline_incident_non_offenders.incident_id,
         null as behavior_type,
         null as behavior_detailed_description,
         -- todo: how do I deal with the list of participation codes
         -- don't want to change the grain
         -- do I pull one out somehow? by severity?
         false as is_offender
-    from stg_stu_discipline_non_offenders
+    from stg_stu_discipline_incident_non_offenders
 ),
 formatted as (
     select 
