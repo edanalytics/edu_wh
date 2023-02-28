@@ -34,11 +34,7 @@ formatted as (
     join fct_student_discipline_incident_behaviors
         on stu_discipline_incident_behaviors_actions.k_student = fct_student_discipline_incident_behaviors.k_student
         and stu_discipline_incident_behaviors_actions.incident_id = fct_student_discipline_incident_behaviors.incident_id
-        -- the deprecated version of discipline incidents do not include behavior type in the primary key
-        case
-            when stu_discipline_incident_behaviors_actions.behavior_type is not null
-                then and stu_discipline_incident_behaviors_actions.behavior_type = fct_student_discipline_incident_behaviors.behavior_type
-        end
+        and stu_discipline_incident_behaviors_actions.behavior_type = iff(stu_discipline_incident_behaviors_actions.behavior_type is null, null, fct_student_discipline_incident_behaviors.behavior_type)
     join dim_student as dim_student_incident
         on stu_discipline_incident_behaviors_actions.student_unique_id = dim_student_incident.student_unique_id
         and stu_discipline_incident_behaviors_actions.tenant_code = dim_student_incident.tenant_code
