@@ -31,18 +31,10 @@ formatted as (
         on stu_discipline_incident_behaviors_actions.k_student = fct_student_discipline_actions.k_student
         and stu_discipline_incident_behaviors_actions.discipline_action_id = fct_student_discipline_actions.discipline_action_id
         and stu_discipline_incident_behaviors_actions.discipline_date = fct_student_discipline_actions.discipline_date
-    case
-        when stu_discipline_incident_behaviors_actions.behavior_type is null
-            then 
-                join fct_student_discipline_incident_behaviors
-                    on stu_discipline_incident_behaviors_actions.k_student = fct_student_discipline_incident_behaviors.k_student
-                    and stu_discipline_incident_behaviors_actions.incident_id = fct_student_discipline_incident_behaviors.incident_id
-            else
-                join fct_student_discipline_incident_behaviors
-                    on stu_discipline_incident_behaviors_actions.k_student = fct_student_discipline_incident_behaviors.k_student
-                    and stu_discipline_incident_behaviors_actions.incident_id = fct_student_discipline_incident_behaviors.incident_id
-                    and stu_discipline_incident_behaviors_actions.behavior_type = fct_student_discipline_incident_behaviors.behavior_type
-    end
+    join fct_student_discipline_incident_behaviors
+        on stu_discipline_incident_behaviors_actions.k_student = fct_student_discipline_incident_behaviors.k_student
+        and stu_discipline_incident_behaviors_actions.incident_id = fct_student_discipline_incident_behaviors.incident_id
+        and ifnull(stu_discipline_incident_behaviors_actions.behavior_type, 1) = iff(stu_discipline_incident_behaviors_actions.behavior_type is null, 1, fct_student_discipline_incident_behaviors.behavior_type)
     join dim_student as dim_student_incident
         on stu_discipline_incident_behaviors_actions.student_unique_id = dim_student_incident.student_unique_id
         and stu_discipline_incident_behaviors_actions.tenant_code = dim_student_incident.tenant_code
