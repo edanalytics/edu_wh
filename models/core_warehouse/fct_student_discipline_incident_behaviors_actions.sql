@@ -24,7 +24,7 @@ formatted as (
         fct_student_discipline_actions.discipline_action
     from stu_discipline_incident_behaviors_actions
     join fct_student_discipline_actions
-        on stu_discipline_incident_behaviors_actions.k_student__action = fct_student_discipline_actions.k_student
+        on stu_discipline_incident_behaviors_actions.k_student = fct_student_discipline_actions.k_student
         and stu_discipline_incident_behaviors_actions.discipline_action_id = fct_student_discipline_actions.discipline_action_id
         and stu_discipline_incident_behaviors_actions.discipline_date = fct_student_discipline_actions.discipline_date
     join dim_student as dim_student_incident
