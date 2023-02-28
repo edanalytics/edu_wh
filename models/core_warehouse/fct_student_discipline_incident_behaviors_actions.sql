@@ -3,7 +3,7 @@
 with stu_discipline_incident_behaviors_actions as (
     select * from {{ ref('stg_ef3__discipline_actions__student_discipline_incident_behaviors') }}
 ),
-fct_stu_discipline_actions as (
+fct_student_discipline_actions as (
     select * from {{ ref('fct_student_discipline_actions') }}
 ),
 dim_student as (
