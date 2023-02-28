@@ -37,6 +37,7 @@ formatted as (
         and ifnull(stu_discipline_incident_behaviors_actions.behavior_type, 1) = iff(stu_discipline_incident_behaviors_actions.behavior_type is null, 1, fct_student_discipline_incident_behaviors.behavior_type)
     join dim_student as dim_student_incident
         on stu_discipline_incident_behaviors_actions.student_unique_id = dim_student_incident.student_unique_id
+        and stu_discipline_incident_behaviors_actions.api_year = dim_student_incident.api_year
         and stu_discipline_incident_behaviors_actions.tenant_code = dim_student_incident.tenant_code
     join dim_student as dim_student_action
         on stu_discipline_incident_behaviors_actions.k_student = dim_student_action.k_student
