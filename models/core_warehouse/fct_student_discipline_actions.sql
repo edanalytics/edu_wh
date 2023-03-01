@@ -1,7 +1,7 @@
 {{
   config(
     post_hook=[
-        "alter table {{ this }} add primary key (k_student, discipline_action_id, discipline_date, discipline_action)",
+        "alter table {{ this }} add primary key (k_student, k_discipline_action, discipline_action)",
         "alter table {{ this }} add constraint fk_{{ this.name }}_student foreign key (k_student) references {{ ref('dim_student') }}",
     ]
   )
@@ -51,10 +51,20 @@ formatted as (
             dim_school__assignment.k_school) as k_school,
         dim_school__assignment.k_school as k_school__assignment,
         dim_school__responsibility.k_school as k_school__responsibility,
+        -- todo: naming here
+        {{ dbt_utils.surrogate_key(
+            [
+                'stg_discipline_actions.tenant_code',
+                'stg_discipline_actions.api_year',
+                'stg_discipline_actions.discipline_action_id',
+                'stg_discipline_actions.discipline_date'
+            ]
+        ) }} as k_discipline_action,
         agg_staff_keys.k_staff_single as k_staff,
         stg_discipline_actions.tenant_code,
         stg_discipline_actions.discipline_action_id,
         stg_discipline_actions.discipline_date,
+        -- todo: naming here
         {{ edu_edfi_source.extract_descriptor('value:disciplineDescriptor::string') }} as discipline_action,
         stg_discipline_actions.discipline_action_length,
         stg_discipline_actions.actual_discipline_action_length,

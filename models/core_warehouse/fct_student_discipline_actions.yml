@@ -16,8 +16,7 @@ models:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - k_student
-            - discipline_action_id
-            - discipline_date
+            - k_discipline_action
             - discipline_action
     columns:
       - name: k_student
