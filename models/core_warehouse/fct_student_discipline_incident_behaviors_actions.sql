@@ -20,7 +20,7 @@ formatted as (
         dim_student_incident.k_student as k_student__incident,
         fct_student_discipline_incident_behaviors.k_discipline_incident,
         dim_student_action.k_student as k_student__action,
-        stu_discipline_incident_behaviors_actions.k_discipline_action
+        stu_discipline_incident_behaviors_actions.k_discipline_action,
         fct_student_discipline_incident_behaviors.behavior_type,
         fct_student_discipline_actions.discipline_action
     from stu_discipline_incident_behaviors_actions
