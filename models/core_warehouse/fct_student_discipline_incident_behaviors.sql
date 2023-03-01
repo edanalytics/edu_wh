@@ -47,7 +47,6 @@ formatted as (
         dim_student.k_student,
         dim_school.k_school,
         dim_discipline_incidents.k_discipline_incident,
-        stack_discipline_incidents.k_discipline_incident,
         stack_discipline_incidents.incident_id,
         stack_discipline_incidents.behavior_type,
         stack_discipline_incidents.behavior_detailed_description,
