@@ -22,3 +22,4 @@ formatted as (
         on combined_gpas.k_student_academic_record = academic_record.k_student_academic_record
 )
 select * from formatted
+order by tenant_code, k_student
