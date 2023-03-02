@@ -1,20 +1,22 @@
 version: 2
 
-models: 
-  - name: fct_student_special_education_program_association
+models:
+  - name: fct_student_homeless_program_association
     description: >
-      Student special education program enrollment information.
+      Student homeless program enrollment information.
 
       *Primary Key:* `k_student, k_program`
 
     config:
-      tags: ['special_ed']
-      enabled: "{{ var('src:program:special_ed:enabled', True) }}"
+      tags: ['homeless']
+      enabled: "{{ var('src:program:homeless:enabled', True) }}"
+
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - k_student
             - k_program
+
     columns:
       - name: k_student
       - name: k_student_xyear
@@ -25,20 +27,12 @@ models:
       - name: school_year
       - name: program_enroll_begin_date
       - name: program_enroll_end_date
-      - name: is_idea_eligible
-      - name: iep_begin_date
-      - name: iep_end_date
-      - name: iep_review_date
-      - name: last_evaluation_date
-      - name: is_medically_fragile
-      - name: is_multiply_disabled
-      - name: school_hours_per_week
-      - name: spec_ed_hours_per_week
+      - name: is_awaiting_foster_care
+      - name: is_homeless_unaccompanied_youth
+      - name: homeless_primary_nighttime_residence
       - name: is_served_outside_regular_session
+      - name: participation_status
       - name: participation_status_designated_by
       - name: participation_status_begin_date
       - name: participation_status_end_date
-      - name: participation_status
       - name: reason_exited
-      - name: special_education_setting
-      - name: special_education_program_services
