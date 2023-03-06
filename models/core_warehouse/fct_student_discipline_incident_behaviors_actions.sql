@@ -16,6 +16,10 @@ dim_school as (
     select * from {{ ref('dim_school') }}
 ),
 formatted as (
+    -- todo: bring in action ranking?
+    -- could have ranking column then
+    -- window function for is_most_severe (that name could be misleading though)
+    -- for a single incident/student
     select
         dim_student_incident.k_student as k_student__incident,
         fct_student_discipline_incident_behaviors.k_discipline_incident,
