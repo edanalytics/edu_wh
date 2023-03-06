@@ -27,6 +27,7 @@ formatted as (
         stg_stu_discipline_incident_non_offenders.incident_id,
         false as is_offender,
         -- todo: name of this col?
+        -- there is typically only a single value here, choosing the first option for analytical use cases
         {{ extract_descriptor('v_discipline_incident_participation_codes[0]:disciplineIncidentParticipationCodeDescriptor::string') }} as participation_code,
         participation_codes.participation_codes_array
     from stg_stu_discipline_incident_non_offenders
