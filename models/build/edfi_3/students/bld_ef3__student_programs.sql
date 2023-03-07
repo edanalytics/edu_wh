@@ -1,6 +1,6 @@
 -- Creates a list of program types from the xwalk
 {% set program_types_query %}
-    select distinct program_type from {{ ref('xwalk_student_programs')}}
+    select distinct indicator_name from {{ ref('xwalk_student_programs')}}
     order by 1
 {% endset %}
 
@@ -27,14 +27,14 @@ maxed as (
         any_value(tenant_code) as tenant_code,
         {% for program_type in program_types %}
             max(
-                program_xwalk.program_type = '{{ program_type }}'
+                program_xwalk.indicator_name = '{{ program_type }}'
                 and program_enroll_begin_date <= current_date() -- start date is today or in the past
                 and (program_enroll_end_date is null -- no exit date
                     or program_enroll_end_date > current_date()) -- exit date is in the future
             ) as is_{{ program_type }}_active, -- the student has an active program enrollment
 
             max(
-                program_xwalk.program_type = '{{ program_type }}'
+                program_xwalk.indicator_name = '{{ program_type }}'
             ) as is_{{ program_type }}_annual, -- the student had a program enrollment any time during the year
         {% endfor%}
         any_value(ed_org_id) as ed_org_id -- placed at the end to avoid comma issues with the loop
