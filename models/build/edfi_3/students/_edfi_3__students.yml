@@ -10,24 +10,44 @@ models:
   - name: bld_ef3__stu_race_ethnicity
     config:
       tags: ['core']
-  - name: bld_ef3__stu_spec_ed__program_services
-    config:
-      tags: ['special_ed']
-      enabled: "{{ var('src:program:special_ed:enabled', True) }}"
   - name: bld_ef3__student_characteristics
     config:
       tags: ['core']
   - name: bld_ef3__student_indicators
     config:
       tags: ['core']
-  - name: bld_ef3__student_special_education_active
+  - name: bld_ef3__student_program__homeless
+    config:
+      tags: ['homeless']
+      enabled: "{{ var('src:program:homeless:enabled', True) }}"
+  - name: bld_ef3__student_program__homeless__program_services
+    config:
+      tags: ['homeless']
+      enabled: "{{ var('src:program:homeless:enabled', True) }}"
+  - name: bld_ef3__student_program__language_instruction
+    config:
+      tags: ['language_instruction']
+      enabled: "{{ var('src:program:language_instruction:enabled', True) }}"
+  - name: bld_ef3__student_program__language_instruction__program_services
+    config:
+      tags: ['language_instruction']
+      enabled: "{{ var('src:program:language_instruction:enabled', True) }}"
+  - name: bld_ef3__student_program__special_education
     config:
       tags: ['special_ed']
       enabled: "{{ var('src:program:special_ed:enabled', True) }}"
-  - name: bld_ef3__student_special_education_annual
+  - name: bld_ef3__student_program__special_education__program_services
     config:
       tags: ['special_ed']
       enabled: "{{ var('src:program:special_ed:enabled', True) }}"
+  - name: bld_ef3__student_program__title_i_part_a
+    config:
+      tags: ['title_i']
+      enabled: "{{ var('src:program:title_i:enabled', True) }}"
+  - name: bld_ef3__student_program__title_i_part_a__program_services
+    config:
+      tags: ['title_i']
+      enabled: "{{ var('src:program:title_i:enabled', True) }}"
   - name: bld_ef3__wide_ids_student
     config:
       tags: ['core']

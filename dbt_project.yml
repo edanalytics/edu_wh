@@ -1,7 +1,7 @@
 config-version: 2
 
 name: 'edu_wh'
-version: '0.2.0'
+version: '0.2.1'
 require-dbt-version: [">=1.0.0", "<2.0.0"]
 
 # This setting configures which "profile" dbt uses for this project.
@@ -43,12 +43,28 @@ vars:
   # custom data sources for student characteristics. must contain and be unique by `k_student`
   'edu:stu_demos:custom_data_sources': Null
   
-  # rules for inclusion in 'special education' demographic group
+  # rules for inclusion in program associations
   # Begin and end dates to use for cutoffs, and a list of program names to exclude
-  'edu:special_ed:start_date_column': spec_ed_program_begin_date
-  'edu:special_ed:exit_date_column': spec_ed_program_end_date
+  'edu:homeless:start_date_column': program_enroll_begin_date
+  'edu:homeless:exit_date_column': program_enroll_end_date
+  'edu:homeless:exclude_programs': Null
+  'edu:homeless:agg_types': ['annual', 'active']
+
+  'edu:language_instruction:start_date_column': program_enroll_begin_date
+  'edu:language_instruction:exit_date_column': program_enroll_end_date
+  'edu:language_instruction:exclude_programs': Null
+  'edu:language_instruction:agg_types': ['annual', 'active']
+
+  'edu:special_ed:start_date_column': program_enroll_begin_date
+  'edu:special_ed:exit_date_column': program_enroll_end_date
   'edu:special_ed:exclude_programs': Null
-  
+  'edu:special_ed:agg_types': ['annual', 'active']
+
+  'edu:title_i:start_date_column': program_enroll_begin_date
+  'edu:title_i:exit_date_column': program_enroll_end_date
+  'edu:title_i:exclude_programs': Null
+  'edu:title_i:agg_types': ['annual', 'active']
+
   # label for 'Present' days generated from negative attendance
   'edu:attendance:in_attendance_code': In Attendance
   # threshold and minimum enrolled days for chronic absence definition

@@ -3,6 +3,15 @@
 ## Under the hood
 ## Fixes 
 
+# edu_wh v0.2.1
+## New features
+- Add fact table for student GPAs
+- Add additional program-type fact tables
+- Add configurable program parsing to dim_student
+- Add combined program services table
+## Under the hood
+- Add minimum dbt version requirement
+- Switch to ranged version pin for edu_edfi_source
 
 # edu_wh v0.2.0
 ## New features
@@ -20,12 +29,10 @@
 ## Under the hood
 - Add a single model properties file under each subdirectory, as per DBT recommendation.
 
-## Fixes
 
 # edu_wh v0.1.4
 ## Under the hood
 - Change absenteeism metric boundaries to better match common business rules
-
 ## Fixes
 - Improve whitespace handling and macro robustness for empty crosswalks
 
@@ -50,13 +57,11 @@
 - Added student ids to dim_student
 - Fixed typo regarding Chronic Absenteeism buckets
 - Add program services
-
 ## Under the hood
 - Changed chronic absenteeism threshold to be inclusive to better align with common standards
 - Added more columns to attendance tables from source data
 - Improved handling of extensible column-sets, such that all are optional
     - Added macro `accordion_columns` to help with these cases
-
 ## Fixes
 - Fixed chronic absenteeism labeling issue
 

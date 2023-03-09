@@ -1,3 +1,3 @@
 packages:
-  - git: "https://github.com/edanalytics/edu_edfi_source.git"
-    revision: 0.2.0
+  - package: edanalytics/edu_edfi_source
+    version: [">=0.2.1", "<0.3.0"]
