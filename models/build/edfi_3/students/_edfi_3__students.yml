@@ -50,8 +50,7 @@ models:
       enabled: "{{ var('src:program:title_i:enabled', True) }}"
   - name: bld_ef3_student_programs
     config:
-      tags: ['programs']
-      enabled: "{{ var('src:program:programs:enabled', True) }}"
+      tags: ['core']
   - name: bld_ef3__wide_ids_student
     config:
       tags: ['core']

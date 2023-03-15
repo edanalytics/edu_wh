@@ -4,9 +4,8 @@
     order by 1
 {% endset %}
 
-{% set results = run_query(program_types_query) %}
-
 {% if execute %}
+{% set results = run_query(program_types_query) %}
 {% set program_types = results.columns[0].values() %} 
 {% else %}
 {% set program_types = [] %}
