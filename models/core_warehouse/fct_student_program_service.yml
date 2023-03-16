@@ -44,7 +44,7 @@ models:
           combination_of_columns:
             - k_student
             - k_program
-            - program_begin_date
+            - program_enroll_begin_date
             - program_service
     columns:
       - name: k_student
