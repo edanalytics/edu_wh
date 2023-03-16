@@ -1,0 +1,6 @@
+version: 2
+
+models:
+  - name: dim_education_service_center
+    config:
+      tags: ['esc']
