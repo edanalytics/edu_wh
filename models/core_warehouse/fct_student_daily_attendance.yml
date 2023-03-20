@@ -3,10 +3,22 @@ version: 2
 models: 
   - name: fct_student_daily_attendance
     description: >
-      Student daily attendance computed using full-day attendance 
-      as reported in `studentSchoolAttendanceEvents`.
+     **Overview:**
+       This fact table provides student daily attendance, computed using full-day attendance as reported in `studentSchoolAttendanceEvents`.
 
-      **Primary Key:** k_student, k_school, k_calendar_date
+     **Primary Key:**
+       k_student, k_school, k_calendar_date
+
+     **Important business rules:**
+        - "chronic absence" is calculated here for each student & day, and reflected in boolean column `is_chronic_absentee`.
+        It marks a student as a chronic absentee if their  **cumulative** attendance rate is less than or equal to {{ var('edu:attendance:chronic_absence_threshold') }};
+        the threshold value {{ var('edu:attendance:chronic_absence_threshold') }} is defined in dbt_project.yml --> `edu:attendance:chronic_absence_threshold`.
+        It also will only count students who have been enrolled at the school for at least {{ var('edu:attendance:chronic_absence_min_days') }} days;
+        the threshold value {{ var('edu:attendance:chronic_absence_min_days') }} is defined in dbt_project.yml --> `edu:attendance:chronic_absence_min_days`
+
+        - "absentee category" is calculated here for each student & day, and reflected in `absentee_category_rank` (integer) and `absentee_category_label` (string).
+        It categorizes students using their **cumulative** attendance rate in comparison to thresholds set by the seed table `absentee_categories`.
+      
     config:
       tags: ['core']
     tests:
@@ -21,7 +33,6 @@ models:
       - name: k_calendar_date
       - name: k_session
       - name: tenant_code
-      - name: calendar_date
       - name: attendance_event_category
         description: >
           The descriptor value from AttendanceEventDescriptor

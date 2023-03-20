@@ -9,7 +9,7 @@ models:
      #### Primary Key:
        `k_school` -- There is one record per school
       
-     {{ doc(var('edu:extra_docs:dim_school', '')) }}
+     {{ doc(var('edu:custom_docs:dim_school', '')) }}
 
     config:
       tags: ['core']
