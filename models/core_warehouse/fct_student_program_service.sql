@@ -14,22 +14,22 @@
 
 -- Special Education
 {% if var('src:program:special_ed:enabled', True) %}
-    {% do stage_program_relations.append('stg_ef3__stu_spec_ed__program_services') %}
+    {% do stage_program_relations.append(ref('stg_ef3__stu_spec_ed__program_services')) %}
 {% endif %}
 
 -- Language Instruction
 {% if var('src:program:language_instruction:enabled', True) %}
-    {% do stage_program_relations.append('stg_ef3__stu_lang_instr__program_services') %}
+    {% do stage_program_relations.append(ref('stg_ef3__stu_lang_instr__program_services')) %}
 {% endif %}
 
 -- Homeless
 {% if var('src:program:homeless:enabled', True) %}
-    {% do stage_program_relations.append('stg_ef3__stu_homeless__program_services') %}
+    {% do stage_program_relations.append(ref('stg_ef3__stu_homeless__program_services')) %}
 {% endif %}
 
 -- Title I Part A
 {% if var('src:program:title_i:enabled', True) %}
-    {% do stage_program_relations.append('stg_ef3__stu_title_i_part_a__program_services') %}
+    {% do stage_program_relations.append(ref('stg_ef3__stu_title_i_part_a__program_services')) %}
 {% endif %}
 
 
@@ -42,26 +42,44 @@ dim_program as (
 ),
 
 stacked as (
-    {% for relation in stage_program_relations %}
-        select
-            stage.k_student,
-            stage.k_program,
-            stage.tenant_code,
-            stage.program_enroll_begin_date,
-            stage.program_service,
-            stage.primary_indicator,
-            stage.v_providers,
-            stage.service_begin_date,
-            stage.service_end_date
-            {{ edu_edfi_source.extract_extension(model_name=relation, flatten=False) }}
 
-        from {{ ref(relation) }} as stage
+    {{ dbt_utils.union_relations(
 
-            join dim_program
-                on stage.k_program = dim_program.k_program
+        relations=stage_program_relations
 
-        {% if not loop.last %} union all {% endif %}
+    ) }}
+),
+
+{# -- Find the extension columns from each program relation -- #}
+{% set extensions = [] -%}
+{%- for relation in stage_program_relations -%}
+    {%- for extension in var('extensions')[relation.name] -%}
+        {%- do extensions.append(extension) -%}
+    {%- endfor -%}
+{%- endfor %}
+
+subset as (
+  select
+    stacked.k_student,
+    stacked.k_program,
+    stacked.tenant_code,
+    stacked.program_enroll_begin_date,
+    stacked.program_service,
+    stacked.primary_indicator,
+    stacked.v_providers,
+    stacked.service_begin_date,
+    stacked.service_end_date
+
+    {# -- Select the extension columns from each relation (use unique so there's one column per extension, even if it exists in multiple relations) #}
+    {%- for extension in extensions|unique -%}
+        {% if loop.first %}, {% endif %}
+        {{ extension }}
+        {%- if not loop.last %}, {% endif -%}
     {% endfor %}
+
+  from stacked
+  join dim_program
+    on stacked.k_program = dim_program.k_program
 )
 
-select * from stacked
+select * from subset
