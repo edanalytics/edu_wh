@@ -1,12 +1,21 @@
 -- Creates a list of program types from the xwalk
 {% set program_types_query %}
-    select distinct indicator_name from {{ ref('xwalk_student_programs')}}
+    select 
+        indicator_name, 
+        is_active, 
+        is_annual, 
+        is_ever 
+    from {{ ref('xwalk_student_programs')}}
+    group by indicator_name, is_active, is_annual, is_ever 
     order by 1
 {% endset %}
 
 {% if execute %}
 {% set results = run_query(program_types_query) %}
 {% set program_types = results.columns[0].values() %} 
+{% set include_is_active = results.columns[1].values() %} 
+{% set include_is_annual = results.columns[2].values() %} 
+{% set include_is_ever = results.columns[3].values() %} 
 {% else %}
 {% set program_types = [] %}
 {% endif %}
@@ -31,7 +40,7 @@ maxed as (
                 and (program_enroll_end_date is null -- no exit date
                     or program_enroll_end_date > current_date()) -- exit date is in the future
             ) as is_{{ program_type }}_active, -- the student has an active program enrollment
-
+            
             max(
                 program_xwalk.indicator_name = '{{ program_type }}'
             ) as is_{{ program_type }}_annual, -- the student had a program enrollment any time during the year
@@ -60,9 +69,17 @@ joined as (
         maxed.k_student_xyear,
         maxed.tenant_code,
         {% for program_type in program_types %}
-            maxed.is_{{ program_type }}_active,
-            is_{{ program_type }}_annual,
-            xyear_agged.is_{{ program_type }}_ever,
+            {% if include_is_active[loop.index0] == true %}
+                maxed.is_{{ program_type }}_active,
+            {% endif %}
+
+            {% if include_is_annual[loop.index0] == true %}
+                is_{{ program_type }}_annual,
+            {% endif %}
+
+            {% if include_is_ever[loop.index0] == true %}
+                xyear_agged.is_{{ program_type }}_ever,
+            {% endif %}
         {% endfor%}
         maxed.ed_org_id -- placed at the end to avoid comma issues with the loop
     from maxed
