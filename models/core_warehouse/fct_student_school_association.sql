@@ -89,7 +89,7 @@ formatted as (
     left join single_calendar_schools
         on stg_stu_school.k_school = single_calendar_schools.k_school
         and stg_stu_school.school_year = single_calendar_schools.school_year
-    left join 
+    left join first_school_day
         on coalesce(
             dim_school_calendar.k_school_calendar,
             single_calendar_schools.k_school_calendar
