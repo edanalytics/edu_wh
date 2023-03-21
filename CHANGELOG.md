@@ -2,6 +2,7 @@
 ## New features
 ## Under the hood
 ## Fixes 
+ - Implement "first day school" rule for single-caldendar schools in fct_student_school_association
 
 # edu_wh v0.2.1
 ## New features
