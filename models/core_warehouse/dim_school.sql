@@ -59,15 +59,6 @@ formatted as (
         stg_school.charter_status,
         stg_school.charter_approval_agency,
         stg_school.magnet_type,
-
-        -- custom indicators
-        {% set custom_indicators = var('edu:schools:custom_indicators') %}
-        {%- if custom_indicators is not none and custom_indicators | length -%}
-          {%- for indicator in custom_indicators -%}
-              {{ custom_indicators[indicator]['where'] }} as {{ indicator }},
-          {%- endfor -%}
-        {%- endif %}
-
         stg_school.website,
         choose_address.address_type,
         choose_address.street_address,
