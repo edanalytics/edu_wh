@@ -26,9 +26,19 @@ models:
             - entry_date
     columns:
       - name: k_student
+        description: > 
+          The student enrolled in the school. This key defines a single student 
+          in a single school year (foreign key to dim_student)
       - name: k_student_xyear
+        description: > 
+          The student enrolled in the school. This key defines a single 
+          student across all school years
       - name: k_lea
+        description: > 
+          The Local Education Agency of which the enrolling School is an 
+          organizational component
       - name: k_school
+        description: The school enrolling the student. References dim_school
       - name: k_school_calendar
         description: >
           The school calendar used by the student. This is important for 
@@ -36,21 +46,58 @@ models:
       - name: tenant_code
       - name: school_year
       - name: entry_date
+        description: > 
+          The month, day, and year on which an individual enters and begins to 
+          receive instructional services in a school.
       - name: exit_withdraw_date
+        description: The recorded exit or withdraw date for the student.	
       - name: is_primary_school
+        description: > 
+          Indicates if a given enrollment record should be considered the primary
+           record for a student.	
       - name: is_repeat_grade
+        description: > 
+          An indicator of whether the student is enrolling to repeat a grade level, 
+          either by failure or an agreement to hold the student back.	
       - name: is_school_choice_transfer
+        description: > 
+          An indication of whether students transferred in or out of the school did so 
+          during the school year under the provisions for public school choice in 
+          accordance with Title I, Part A, Section 1116.	
       - name: is_active_enrollment
         description: >
           Indicator for active enrollment: calculated as enrollments in the 
           current school year that have begun but not yet ended.
       - name: entry_grade_level
+        description: > 
+          The grade level or primary instructional level at which a student enters
+          and receives services in a school or an educational institution during a
+          given academic session.	
       - name: entry_grade_level_reason
+        description: > 
+          The primary reason as to why a staff member determined that a student
+          should be promoted or not (or be demoted) at the end of a given school
+          term.	
       - name: entry_type
+        description: > 
+          The process by which a student enters a school during a given academic
+          session.	
       - name: exit_withdraw_type
+        description: > 
+          The circumstances under which the student exited from membership in an
+          educational institution.	
       - name: class_of_school_year
+        description: > 
+          Projected High School graduation year.
       - name: graduation_plan_type
+        description: > 
+          The primary graduation plan associated with the student enrolled in the
+          school.	
       - name: residency_status
+        description: > 
+          An indication of the location of a persons legal residence relative to
+          (within or outside of) the boundaries of the public school attended and its
+          administrative unit.	
       - name: is_latest_annual_entry
         description: >
           True if this is the most recent enrollment (by entry date) at this 
