@@ -89,8 +89,11 @@ formatted as (
     left join single_calendar_schools
         on stg_stu_school.k_school = single_calendar_schools.k_school
         and stg_stu_school.school_year = single_calendar_schools.school_year
-    left join first_school_day
-        on stg_stu_school.k_school_calendar = first_school_day.k_school_calendar
+    left join 
+        on coalesce(
+            dim_school_calendar.k_school_calendar,
+            single_calendar_schools.k_school_calendar
+        ) = first_school_day.k_school_calendar
     where true
     -- exclude students who exited before the first school day
     and (exit_withdraw_date >= first_school_day.calendar_date
