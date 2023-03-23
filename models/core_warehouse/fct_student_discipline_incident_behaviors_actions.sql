@@ -1,5 +1,3 @@
---todo: I hate this
---todo: I really hate this
 with stu_discipline_incident_behaviors_actions as (
     select * from {{ ref('stg_ef3__discipline_actions__student_discipline_incident_behaviors') }}
 ),
@@ -16,14 +14,10 @@ dim_school as (
     select * from {{ ref('dim_school') }}
 ),
 formatted as (
-    -- todo: bring in action ranking?
-    -- could have ranking column then
-    -- window function for is_most_severe (that name could be misleading though)
-    -- for a single incident/student
     select
         dim_student.k_student as k_student,
         fct_student_discipline_incident_behaviors.k_discipline_incident,
-        fct_student_discipline_actions.k_discipline_action,
+        fct_student_discipline_actions.k_discipline_event,
         fct_student_discipline_incident_behaviors.behavior_type,
         fct_student_discipline_actions.discipline_action
     from stu_discipline_incident_behaviors_actions
@@ -40,5 +34,15 @@ formatted as (
     join dim_school 
         on stu_discipline_incident_behaviors_actions.school_id = dim_school.school_id
         and stu_discipline_incident_behaviors_actions.tenant_code = dim_school.tenant_code
+    -- We have a 'is_most_severe' flag in fct_student_discipline_action
+    -- but multiple discipline events can be associated with a single incident
+    -- so we are using similar logic but instead partitioning by the incident to grab the
+    -- most severe discipline action for a single incident
+    -- TODO: THIS WILL ALSO SUBSET TO A SINGLE BEHAVIOR I THINK WHICH WE DO NOT WANT
+    -- ^ DO I INCLUDE BEHAVIOR TYPE IN THE PARTITION BY?
+    -- or should we also have a severity order for behaviors?
+    -- todo: what if severity order is not added?
+    having 1 = row_number() over (partition by k_student, k_discipline_incident order by fct_student_discipline_actions.severity_order desc)
+
 )
 select * from formatted

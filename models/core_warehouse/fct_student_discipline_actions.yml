@@ -16,7 +16,7 @@ models:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - k_student
-            - k_discipline_action
+            - k_discipline_event
             - discipline_action
     columns:
       - name: k_student
@@ -30,9 +30,12 @@ models:
       - name: k_school__responsibility
         description: >
           The school responsible for the student's discipline
+      - name: k_discipline_event >
+        description: >
+          A key containing discipline_action_id and discipline_date to represent a single discipline event.
       - name: k_staff
         description:
-          (Optional) The staff responsible for enforcing the discipline action
+          (Optional) The staff responsible for enforcing the discipline action.
       - name: discipline_action_id
         description: > 
           Identifier for this discipline action assigned by the originating software.
@@ -65,5 +68,10 @@ models:
           severe. Actions are grouped into levels by the 100s, from 0 to 4, and
           then ranked within levels.
           This is controlled in `xwalk_discipline_actions.csv`
+      - name: is_most_severe
+        description: >
+          A flag for whether the discipline action is the most severe for a student, 
+          discipline action id, and discipline date (k_student, k_discipline_event). 
+          In the case of a tie, the first record is chosen.
       
         
