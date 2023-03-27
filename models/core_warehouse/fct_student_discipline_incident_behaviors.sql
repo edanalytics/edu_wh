@@ -10,6 +10,9 @@ dim_school as (
 dim_discipline_incidents as (
     select * from {{ ref('dim_discipline_incidents') }}
 ),
+xwalk_discipline_behaviors as (
+    select * from {{ ref('xwalk_discipline_behaviors') }}
+),
 participation_codes as (
     select
         k_student,
@@ -28,6 +31,7 @@ formatted as (
         stg_stu_discipline_incident_behaviors.behavior_type,
         stg_stu_discipline_incident_behaviors.behavior_detailed_description,
         true as is_offender,
+        xwalk_discipline_behaviors.severity_order,
         -- todo: name of this col?
         -- there is typically only a single value here, choosing the first option for analytical use cases
         {{ extract_descriptor('v_discipline_incident_participation_codes[0]:disciplineIncidentParticipationCodeDescriptor::string') }} as participation_code,
@@ -39,6 +43,8 @@ formatted as (
     join dim_student on stg_stu_discipline_incident_behaviors.k_student = dim_student.k_student
     join dim_school on stg_stu_discipline_incident_behaviors.k_school = dim_school.k_school
     join dim_discipline_incidents on stg_stu_discipline_incident_behaviors.k_discipline_incident = dim_discipline_incidents.k_discipline_incident
+    left join xwalk_discipline_behaviors
+        on stg_stu_discipline_incident_behaviors.behavior_type = xwalk_discipline_actions.behavior_type
 )
 select *
 from formatted
