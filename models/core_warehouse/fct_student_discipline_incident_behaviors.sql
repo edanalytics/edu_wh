@@ -37,7 +37,7 @@ formatted as (
         {{ extract_descriptor('v_discipline_incident_participation_codes[0]:disciplineIncidentParticipationCodeDescriptor::string') }} as participation_code,
         participation_codes.participation_codes_array
     from stg_stu_discipline_incident_behaviors
-    join participation_codes 
+    left join participation_codes 
         on stg_stu_discipline_incident_behaviors.k_student = participation_codes.k_student
         and stg_stu_discipline_incident_behaviors.k_discipline_incident = participation_codes.k_discipline_incident
     join dim_student on stg_stu_discipline_incident_behaviors.k_student = dim_student.k_student
