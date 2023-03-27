@@ -42,7 +42,7 @@ formatted as (
     -- ^ DO I INCLUDE BEHAVIOR TYPE IN THE PARTITION BY?
     -- or should we also have a severity order for behaviors?
     -- todo: what if severity order is not added?
-    having 1 = row_number() over (partition by k_student, k_discipline_incident order by fct_student_discipline_actions.severity_order desc)
+    having 1 = row_number() over (partition by k_student, k_discipline_incident order by fct_student_discipline_actions.severity_order desc, fct_student_discipline_incident_behaviors.severity_order desc)
 
 )
 select * from formatted
