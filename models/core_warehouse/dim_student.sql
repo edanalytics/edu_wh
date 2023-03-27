@@ -26,6 +26,9 @@ stu_chars as (
 stu_indicators as (
     select * from {{ ref('bld_ef3__student_indicators') }}
 ),
+stu_programs as (
+    select * from {{ ref('bld_ef3__student_programs') }}
+),
 stu_grade as (
     select * from {{ ref('bld_ef3__stu_grade_level') }}
 ),
@@ -56,7 +59,7 @@ stu_grade as (
 {% endif %}
 
 formatted as (
-    select 
+    select
         stg_student.k_student,
         stg_student.k_student_xyear,
         stg_student.tenant_code,
@@ -118,6 +121,13 @@ formatted as (
             source_alias='stu_indicators'
         ) }}
 
+        -- student programs (those which do not have individual tables)
+        {{ accordion_columns(
+            source_table='bld_ef3__student_programs',
+            exclude_columns=['tenant_code', 'api_year', 'k_student', 'k_student_xyear', 'ed_org_id'],
+            source_alias='stu_programs'
+        ) }}
+
         -- intersection groups
         {% set intersection_vars = var("edu:stu_demos:intersection_groups") %}
         {%- if intersection_vars is not none and intersection_vars | length -%}
@@ -136,7 +146,7 @@ formatted as (
         {%- endif %}
         -- todo: bring in additional summarized attributes
 
-        
+       
         stu_races.race_array,
         concat(display_name, ' (', stg_student.student_unique_id, ')') as safe_display_name
 
@@ -144,18 +154,21 @@ formatted as (
 
     join stu_demos
         on stg_student.k_student = stu_demos.k_student
-    left join stu_ids 
+    left join stu_ids
         on stu_demos.k_student = stu_ids.k_student
         and stu_demos.ed_org_id = stu_ids.ed_org_id
-    left join stu_races 
+    left join stu_races
         on stu_demos.k_student = stu_races.k_student
         and stu_demos.ed_org_id = stu_races.ed_org_id
-    left join stu_chars 
+    left join stu_chars
         on stu_demos.k_student = stu_chars.k_student
         and stu_demos.ed_org_id = stu_chars.ed_org_id
-    left join stu_indicators 
+    left join stu_indicators
         on stu_demos.k_student = stu_indicators.k_student
         and stu_demos.ed_org_id = stu_indicators.ed_org_id
+    left join stu_programs
+        on stu_demos.k_student = stu_programs.k_student
+        and stu_demos.ed_org_id = stu_programs.ed_org_id
     left join stu_grade
         on stu_demos.k_student = stu_grade.k_student
         and stg_student.api_year = stu_grade.school_year
