@@ -99,7 +99,7 @@ join_descriptor_interpretation as (
         -- flag the most severe discipline
         -- this will also handle if there are ties in severity and just choose the first option
         case
-            when 1 = row_number() over (partition by k_student, k_discipline_event order by xwalk_discipline_actions.severity_order desc)
+            when 1 = row_number() over (partition by k_student, k_school, k_discipline_event order by xwalk_discipline_actions.severity_order desc)
                 then true
             else false
         end as is_most_severe
