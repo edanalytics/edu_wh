@@ -32,6 +32,14 @@ formatted as (
         stg_stu_discipline_incident_behaviors.behavior_detailed_description,
         true as is_offender,
         xwalk_discipline_behaviors.severity_order,
+        -- for a specific discipline event (which can include multiple disciplines)
+        -- flag the most severe discipline
+        -- this will also handle if there are ties in severity and just choose the first option
+        case
+            when 1 = row_number() over (partition by k_student, k_school, k_discipline_incident order by xwalk_discipline_behaviors.severity_order desc)
+                then true
+            else false
+        end as is_most_severe,
         -- todo: name of this col?
         -- there is typically only a single value here, choosing the first option for analytical use cases
         {{ extract_descriptor('v_discipline_incident_participation_codes[0]:disciplineIncidentParticipationCodeDescriptor::string') }} as participation_code,
