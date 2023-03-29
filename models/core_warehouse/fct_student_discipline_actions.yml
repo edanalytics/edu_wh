@@ -40,6 +40,9 @@ models:
         description: > 
           Identifier for this discipline action assigned by the originating software.
       - name: discipline_date
+      - name: discipline_action
+        description: >
+          Type of action taken used to discipline a student in response to a discipline incident.
       - name: discipline_action_length
         description: >
           The length of time in school days for the discipline action, if applicable.
