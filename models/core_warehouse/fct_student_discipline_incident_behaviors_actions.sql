@@ -1,3 +1,13 @@
+{{
+  config(
+    post_hook=[
+        "alter table {{ this }} add primary key (k_student, k_discipline_incident, k_discipline_event)",
+        "alter table {{ this }} add constraint fk_{{ this.name }}_student foreign key (k_student) references {{ ref('dim_student') }}",
+        "alter table {{ this }} add constraint fk_{{ this.name }}_discipline_incident foreign key (k_discipline_incident) references {{ ref('dim_discipline_incident') }}"
+    ]
+  )
+}}
+
 with stu_discipline_incident_behaviors_actions as (
     select * from {{ ref('stg_ef3__discipline_actions__student_discipline_incident_behaviors') }}
 ),
@@ -6,12 +16,6 @@ fct_student_discipline_actions as (
 ),
 fct_student_discipline_incident_behaviors as (
     select * from {{ ref('fct_student_discipline_incident_behaviors') }}
-),
-dim_student as (
-    select * from {{ ref('dim_student') }}
-),
-dim_school as (
-    select * from {{ ref('dim_school') }}
 ),
 formatted as (
     select
@@ -25,24 +29,24 @@ formatted as (
         on stu_discipline_incident_behaviors_actions.k_student = fct_student_discipline_actions.k_student
         and stu_discipline_incident_behaviors_actions.discipline_action_id = fct_student_discipline_actions.discipline_action_id
         and stu_discipline_incident_behaviors_actions.discipline_date = fct_student_discipline_actions.discipline_date
-    join dim_student
-        on stu_discipline_incident_behaviors_actions.k_student = dim_student.k_student
     join fct_student_discipline_incident_behaviors
         on dim_student.k_student = fct_student_discipline_incident_behaviors.k_student
+        and stu_discipline_incident_behaviors_actions.school_id = fct_student_discipline_incident_behaviors.school_id
         and stu_discipline_incident_behaviors_actions.incident_id = fct_student_discipline_incident_behaviors.incident_id
+        -- due to the deprecated version where behavior type is not required,
+        -- we need to be able to either merge by the behavior type or not
         and ifnull(stu_discipline_incident_behaviors_actions.behavior_type, 1) = iff(stu_discipline_incident_behaviors_actions.behavior_type is null, 1, fct_student_discipline_incident_behaviors.behavior_type)
-    join dim_school 
-        on stu_discipline_incident_behaviors_actions.school_id = dim_school.school_id
-        and stu_discipline_incident_behaviors_actions.tenant_code = dim_school.tenant_code
     -- We have a 'is_most_severe' flag in fct_student_discipline_action
     -- but multiple discipline events can be associated with a single incident
     -- so we are using similar logic but instead partitioning by the incident to grab the
     -- most severe discipline action for a single incident
-    -- TODO: THIS WILL ALSO SUBSET TO A SINGLE BEHAVIOR I THINK WHICH WE DO NOT WANT
-    -- ^ DO I INCLUDE BEHAVIOR TYPE IN THE PARTITION BY?
-    -- or should we also have a severity order for behaviors?
-    -- todo: what if severity order is not added?
+    -- Note: we are ordering by both discipline and behavior severity order
+    -- ^ this will keep a single row for a student, incident, and incident event with the most severe behaviors and actions
+    {% if dbt_utils.get_column_values(table=ref('xwalk_discipline_actions'), column='severity order')|length > 0 and dbt_utils.get_column_values(table=ref('xwalk_discipline_behaviors'), column='severity order')|length > 0 %}
     having 1 = row_number() over (partition by k_student, k_discipline_incident order by fct_student_discipline_actions.severity_order desc, fct_student_discipline_incident_behaviors.severity_order desc)
-
+    {% else %}
+    -- We only want this table populated if both severity orders are also populated
+    where 1 = 0
+    {% endif %}
 )
 select * from formatted
