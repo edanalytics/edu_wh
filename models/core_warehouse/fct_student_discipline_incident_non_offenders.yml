@@ -1,0 +1,42 @@
+version: 2
+
+models: 
+  - name: fct_student_discipline_incident_non_offenders
+    description: >
+      This table describes the non-offenders associated to disciplinary incidents.
+      No behaviors are included in this table because behaviors are only linked
+      to offenders.
+
+      Rows represent one student, school, and incident.
+
+      *Primary Key:* k_student, k_discipline_incident
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - k_student
+            - k_discipline_incident
+    columns:
+      - name: k_student
+      - name: k_school
+      - name: k_discipline_incident >
+        description: >
+          A key containing incident_id and school_id to represent a single discipline incident.
+      - name: tenant_code
+      - name: incident_id
+        description: > 
+          Identifier for this discipline incident assigned by the originating software.
+      - name: is_offender
+        description: >
+          Flag for whether or not the student is categorized as an offender
+          of the incident. This will always be false for this table.
+      - name: participation_code
+        description: >
+          The role the student took in an incident, such as 'Offender', 'Witness'.
+          This comes from a list of participation codes but typically only
+          one is associated with a student/incident so we chose the 
+          first value for analytical purposes. The values in this table
+          will only be codes linked to non-offenders.
+      - name: participation_codes_array
+      
+        
