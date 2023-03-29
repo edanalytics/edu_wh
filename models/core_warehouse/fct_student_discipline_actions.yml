@@ -10,7 +10,7 @@ models:
 
       Rows represent one disciplinary action for one student on one date.
 
-      *Primary Key:* k_student, discipline_action_id, discipline_date, discipline_action
+      *Primary Key:* k_student, k_discipline_event, discipline_action
 
     tests:
       - dbt_utils.unique_combination_of_columns:
