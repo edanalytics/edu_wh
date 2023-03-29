@@ -37,6 +37,7 @@ formatted as (
         dim_school.k_school,
         dim_discipline_incidents.k_discipline_incident,
         stg_stu_discipline_incident_behaviors.tenant_code,
+        stg_stu_discipline_incident_behaviors.school_id,
         stg_stu_discipline_incident_behaviors.incident_id,
         stg_stu_discipline_incident_behaviors.behavior_type,
         stg_stu_discipline_incident_behaviors.behavior_detailed_description,

@@ -34,6 +34,7 @@ formatted as (
         dim_school.k_school,
         dim_discipline_incidents.k_discipline_incident,
         stg_stu_discipline_incident_non_offenders.tenant_code,
+        stg_stu_discipline_incident_non_offenders.school_id,
         stg_stu_discipline_incident_non_offenders.incident_id,
         false as is_offender,
         -- todo: name of this col?

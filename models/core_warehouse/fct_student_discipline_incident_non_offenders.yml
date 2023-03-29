@@ -23,6 +23,7 @@ models:
         description: >
           A key containing incident_id and school_id to represent a single discipline incident.
       - name: tenant_code
+      - name: school_id
       - name: incident_id
         description: > 
           Identifier for this discipline incident assigned by the originating software.
