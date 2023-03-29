@@ -22,6 +22,7 @@ formatted as (
         dim_student.k_student as k_student,
         fct_student_discipline_incident_behaviors.k_discipline_incident,
         fct_student_discipline_actions.k_discipline_event,
+        stu_discipline_incident_behaviors_actions.tenant_code,
         fct_student_discipline_incident_behaviors.behavior_type,
         fct_student_discipline_actions.discipline_action
     from stu_discipline_incident_behaviors_actions
