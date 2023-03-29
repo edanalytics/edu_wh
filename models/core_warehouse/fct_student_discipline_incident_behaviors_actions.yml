@@ -1,0 +1,35 @@
+version: 2
+
+models: 
+  - name: fct_student_discipline_incident_behaviors_actions
+    description: >
+      This table links discipline actions to discipline incidents and behaviors.
+      The most severe discipline action and behavior for an incident is chosen.
+
+      Rows represent one behavior and discipline action per student,
+      incident, and discipline event.
+
+      *Primary Key:* k_student, k_discipline_incident, k_discipline_event
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - k_student
+            - k_discipline_incident
+            - k_discipline_event
+    columns:
+      - name: k_student
+      - name: k_discipline_incident
+        description: >
+          A key containing incident_id and school_id to represent a single discipline incident.
+      - name: k_discipline_event
+        description: >
+          A key containing discipline_action_id and discipline_date to represent a single discipline event.
+      - name: tenant_code
+      - name: behavior_type
+        description: >
+          Category of behavior describing the discipline incident. Examples include:
+          'Disorderly Conduct', 'Vandalism'.
+      - name: discipline_action
+        description: >
+          Type of action taken used to discipline a student in response to a discipline incident.
