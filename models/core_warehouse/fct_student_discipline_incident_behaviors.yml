@@ -20,7 +20,7 @@ models:
     columns:
       - name: k_student
       - name: k_school
-      - name: k_discipline_incident >
+      - name: k_discipline_incident
         description: >
           A key containing incident_id and school_id to represent a single discipline incident.
       - name: tenant_code
