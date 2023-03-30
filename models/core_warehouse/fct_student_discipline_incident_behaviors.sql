@@ -62,7 +62,7 @@ formatted as (
     join dim_school on stg_stu_discipline_incident_behaviors.k_school = dim_school.k_school
     join dim_discipline_incidents on stg_stu_discipline_incident_behaviors.k_discipline_incident = dim_discipline_incidents.k_discipline_incident
     left join xwalk_discipline_behaviors
-        on stg_stu_discipline_incident_behaviors.behavior_type = xwalk_discipline_actions.behavior_type
+        on stg_stu_discipline_incident_behaviors.behavior_type = xwalk_discipline_behaviors.behavior_type
 )
 select *
 from formatted
