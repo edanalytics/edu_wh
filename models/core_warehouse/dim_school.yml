@@ -3,10 +3,10 @@ version: 2
 models:
   - name: dim_school
     description: >
-     #### Overview:
+     ##### Overview:
        This dimension table defines schools and the characteristics unique to them, like name, address, charter_status, etc.
 
-     #### Primary Key:
+     ##### Primary Key:
        `k_school` -- There is one record per school
       
      {{ doc(var('edu:custom_docs:dim_school')) if var('edu:custom_docs:dim_school', '') }}
