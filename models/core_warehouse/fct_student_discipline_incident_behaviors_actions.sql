@@ -19,7 +19,7 @@ fct_student_discipline_incident_behaviors as (
 ),
 formatted as (
     select
-        dim_student.k_student as k_student,
+        dim_student.k_student,
         fct_student_discipline_incident_behaviors.k_discipline_incident,
         fct_student_discipline_actions.k_discipline_actions_event,
         stu_discipline_incident_behaviors_actions.tenant_code,
