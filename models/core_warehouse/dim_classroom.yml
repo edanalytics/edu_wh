@@ -3,7 +3,12 @@ version: 2
 models:
   - name: dim_classroom
     description: >
-      Defines locations within the school, most commonly classrooms.
+      ##### Overview:
+        Defines locations within the school, most commonly classrooms.
+
+      ##### Primary Key:
+        `k_classroom` - There is one record per classroom.
+
     config:
       tags: ['core']
     columns:

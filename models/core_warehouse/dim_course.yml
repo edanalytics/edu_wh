@@ -2,5 +2,92 @@ version: 2
 
 models:
   - name: dim_course
+    description: >
+        ##### Overview:
+          Defines courses, their subject matter and instructional characteristics. To see where this course is offered and 
+          the characteristics of a particular course section offering, see [dim_course_section](#!/model/model.edu_wh.dim_course_section).
+
+        ##### Primary Key:
+          `k_course` - There is one record per course.
     config:
       tags: ['core']
+    columns:
+      - name: k_course
+        description: Defining key for course sections. Generated primary key composed of `tenant_code`, `api_year`, `course_code`, and `ed_org_id`.
+        tests: 
+          - unique
+      - name: tenant_code
+        description: "Code defining the Tenant (may be an LEA, SEA, etc.) of the EdFi ODS from which this record was pulled"
+
+      - name: school_year
+        description: ""
+
+      - name: course_code
+        description: "A unique alphanumeric code assigned to a course."
+
+      - name: course_title
+        description: ""
+
+      - name: school_course_code
+        description: ""
+
+      - name: state_course_code
+        description: ""
+
+      - name: course_description
+        description: ""
+
+      - name: ed_org_id
+        description: ""
+
+      - name: ed_org_type
+        description: ""
+
+      - name: academic_subject
+        description: ""
+
+      - name: career_pathway
+        description: ""
+
+      - name: course_defined_by
+        description: ""
+
+      - name: gpa_applicability
+        description: ""
+
+      - name: date_course_adopted
+        description: ""
+
+      - name: is_high_school_course_requirement
+        description: ""
+
+      - name: max_completions_for_credit
+        description: ""
+
+      - name: maximum_available_credits
+        description: ""
+
+      - name: maximum_available_credit_type
+        description: ""
+
+      - name: maximum_available_credit_conversion
+        description: ""
+
+      - name: minimum_available_credits
+        description: ""
+
+      - name: minimum_available_credit_type
+        description: ""
+
+      - name: minimum_available_credit_conversion
+        description: ""
+
+      - name: number_of_parts
+        description: ""
+
+      - name: time_required_for_completion
+        description: ""
+
+
+
+    

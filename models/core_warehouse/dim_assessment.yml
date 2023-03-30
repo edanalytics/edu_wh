@@ -3,7 +3,12 @@ version: 2
 models:
   - name: dim_assessment
     description: >
-      Defines an assessment and all known characteristics.
+      ##### Overview:
+        Defines an assessment and all known characteristics. 
+
+      ##### Primary Key:
+        `k_assessment` - There is one record per assessment. See definition of `k_assessment` in column descriptions below.
+
     config:
       tags: ['assessment']
       enabled: "{{ var('src:domain:assessment:enabled', True) }}"
