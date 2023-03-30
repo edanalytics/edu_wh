@@ -51,7 +51,6 @@ formatted as (
                 then true
             else false
         end as is_most_severe,
-        -- todo: name of this col?
         -- there is typically only a single value here, choosing the first option for analytical use cases
         {{ extract_descriptor('v_discipline_incident_participation_codes[0]:disciplineIncidentParticipationCodeDescriptor::string') }} as participation_code,
         participation_codes.participation_codes_array
