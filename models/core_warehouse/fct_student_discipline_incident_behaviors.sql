@@ -47,7 +47,7 @@ formatted as (
         -- flag the most severe discipline
         -- this will also handle if there are ties in severity and just choose the first option
         case
-            when 1 = row_number() over (partition by k_student, k_school, k_discipline_incident order by xwalk_discipline_behaviors.severity_order desc)
+            when 1 = row_number() over (partition by dim_student.k_student, dim_school.k_school, stg_stu_discipline_incident_behaviors.k_discipline_incident order by xwalk_discipline_behaviors.severity_order desc)
                 then true
             else false
         end as is_most_severe,
