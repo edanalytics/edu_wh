@@ -7,7 +7,7 @@ models:
   - name: bld_ef3__combine_gpas
     config:
       tags: ['core']
-  - name: bld_ef3__first_day_of_school
+  - name: bld_ef3__school_calendar_windows
     config:
       tags: ['core']
   - name: bld_ef3__wide_ids_lea
