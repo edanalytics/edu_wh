@@ -3,17 +3,53 @@ version: 2
 models: 
   - name: fct_student_school_association
     description: >
-      Student School Association describes student enrollments.
+      ##### Overview:
+        This fact table describes student school enrollments. Note that a student can have multiple 
+        enrollments within a year. They might be enrolled at multiple schools, or have multiple
+        enrollments at the same school, provided the start dates are different. Therefore, it's
+        very important to handle duplicates intentionally and carefully when pulling from this table. 
+      
+      ##### Primary Key: 
+        `k_student, k_school, school_year, entry_date` -- There is one record
+      per student, school, year, and entry date.
 
-      Note that a student can have multiple enrollments within a year,
-      either at multiple schools or even multiple enrollments at the same
-      school provided the start dates are different.
+      ##### Important Business Rules:
+        `is_active_enrollment` helps find unclosed enrollments in the current year
+          
+        `is_latest_annual_entry` helps find a unique record for each student-school-year (the latest entry_date is chosen)
 
-      `is_active_enrollment` helps find unclosed enrollments in the current year.
-      `is_latest_annual_entry` helps find a unique record for each 
-      student-school-year.
+      ##### Example Use Cases:
+        1. Find the count of distinct students actively enrolled in each grade. `distinct` is used to account for students who may be 
+        enrolled at multiple schools. But *caution duplicates*; if for example a student is concurrently enrolled at Maple Middle 
+        as an 8th grader and at Hoover High as a 9th grader, they will be counted toward both groups in this query.
+        ```
+          SELECT
+            entry_grade_level,
+            count(distinct k_student)
+          FROM analytics.prod_wh.fct_student_school_association
+          WHERE is_active_enrollment
+          GROUP BY 1;
+        ```  
 
-      *Primary Key:* `k_student, k_school, school_year, entry_date`
+            
+        2. Find the count of students who were enrolled during February of each school year.
+        ```
+          SELECT 
+            school_year,
+            count(distinct k_student)
+          FROM analytics.prod_wh.fct_student_school_association
+          WHERE true
+            -- filter to students who enrolled before the end of february
+            AND entry_date < school_year || '-03-01'
+            -- and exited after the begining of february (or hasn't yet exited)
+            AND (exit_withdraw_date >= school_year || '-02-01' or exit_withdraw_date is null)
+          GROUP BY 1
+          ORDER BY 1;
+        ```  
+          
+
+        {{ doc(var('edu:custom_docs:fct_student_school_association')) if var('edu:custom_docs:fct_student_school_association', '') }}
+
 
     config:
       tags: ['core']
