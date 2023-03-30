@@ -42,7 +42,6 @@ formatted as (
         stg_discipline_incidents.reporter_description,
         stg_discipline_incidents.incident_location,
         behaviors.behavior_array
-        -- todo: weapons? external participants?
     from stg_discipline_incidents
     -- behaviors are not required
     left join behaviors
