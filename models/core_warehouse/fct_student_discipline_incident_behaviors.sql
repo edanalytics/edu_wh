@@ -52,7 +52,7 @@ formatted as (
             else false
         end as is_most_severe,
         -- there is typically only a single value here, choosing the first option for analytical use cases
-        {{ extract_descriptor('v_discipline_incident_participation_codes[0]:disciplineIncidentParticipationCodeDescriptor::string') }} as participation_code,
+        participation_codes.participation_codes_array[0] as participation_code,
         participation_codes.participation_codes_array
     from stg_stu_discipline_incident_behaviors
     left join participation_codes 
