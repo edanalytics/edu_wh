@@ -1,7 +1,7 @@
 {{
   config(
     post_hook=[
-        "alter table {{ this }} add primary key (k_student, k_discipline_incident, k_discipline_event)",
+        "alter table {{ this }} add primary key (k_student, k_discipline_incident, k_discipline_actions_event)",
         "alter table {{ this }} add constraint fk_{{ this.name }}_student foreign key (k_student) references {{ ref('dim_student') }}",
         "alter table {{ this }} add constraint fk_{{ this.name }}_discipline_incident foreign key (k_discipline_incident) references {{ ref('dim_discipline_incident') }}"
     ]
@@ -21,7 +21,7 @@ formatted as (
     select
         dim_student.k_student as k_student,
         fct_student_discipline_incident_behaviors.k_discipline_incident,
-        fct_student_discipline_actions.k_discipline_event,
+        fct_student_discipline_actions.k_discipline_actions_event,
         stu_discipline_incident_behaviors_actions.tenant_code,
         fct_student_discipline_incident_behaviors.behavior_type,
         fct_student_discipline_actions.discipline_action

@@ -10,13 +10,13 @@ models:
 
       Rows represent one disciplinary action for one student on one date.
 
-      *Primary Key:* k_student, k_discipline_event, discipline_action
+      *Primary Key:* k_student, k_discipline_actions_event, discipline_action
 
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - k_student
-            - k_discipline_event
+            - k_discipline_actions_event
             - discipline_action
     columns:
       - name: k_student
@@ -30,7 +30,7 @@ models:
       - name: k_school__responsibility
         description: >
           The school responsible for the student's discipline
-      - name: k_discipline_event >
+      - name: k_discipline_actions_event >
         description: >
           A key containing discipline_action_id and discipline_date to represent a single discipline event.
       - name: k_staff
@@ -74,7 +74,7 @@ models:
       - name: is_most_severe
         description: >
           A flag for whether the discipline action is the most severe for a student, 
-          discipline action id, and discipline date (k_student, k_discipline_event). 
+          discipline action id, and discipline date (k_student, k_discipline_actions_event). 
           In the case of a tie, the first record is chosen.
       
         

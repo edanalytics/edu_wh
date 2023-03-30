@@ -9,20 +9,20 @@ models:
       Rows represent one behavior and discipline action per student,
       incident, and discipline event.
 
-      *Primary Key:* k_student, k_discipline_incident, k_discipline_event
+      *Primary Key:* k_student, k_discipline_incident, k_discipline_actions_event
 
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - k_student
             - k_discipline_incident
-            - k_discipline_event
+            - k_discipline_actions_event
     columns:
       - name: k_student
       - name: k_discipline_incident
         description: >
           A key containing incident_id and school_id to represent a single discipline incident.
-      - name: k_discipline_event
+      - name: k_discipline_actions_event
         description: >
           A key containing discipline_action_id and discipline_date to represent a single discipline event.
       - name: tenant_code

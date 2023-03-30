@@ -1,7 +1,7 @@
 {{
   config(
     post_hook=[
-        "alter table {{ this }} add primary key (k_student, k_discipline_action, discipline_action)",
+        "alter table {{ this }} add primary key (k_student, k_discipline_actions_event, discipline_action)",
         "alter table {{ this }} add constraint fk_{{ this.name }}_student foreign key (k_student) references {{ ref('dim_student') }}",
     ]
   )
@@ -59,7 +59,7 @@ formatted as (
                 'stg_discipline_actions.discipline_action_id',
                 'stg_discipline_actions.discipline_date'
             ]
-        ) }} as k_discipline_event,
+        ) }} as k_discipline_actions_event,
         agg_staff_keys.k_staff_single as k_staff,
         stg_discipline_actions.tenant_code,
         stg_discipline_actions.discipline_action_id,
@@ -99,7 +99,7 @@ join_descriptor_interpretation as (
         -- flag the most severe discipline
         -- this will also handle if there are ties in severity and just choose the first option
         case
-            when 1 = row_number() over (partition by k_student, k_school, k_discipline_event order by xwalk_discipline_actions.severity_order desc)
+            when 1 = row_number() over (partition by k_student, k_school, k_discipline_actions_event order by xwalk_discipline_actions.severity_order desc)
                 then true
             else false
         end as is_most_severe
