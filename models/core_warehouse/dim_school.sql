@@ -1,7 +1,18 @@
+-- depends_on: {{ ref('dim_network') }}
 {{
   config(
     post_hook=[
         "alter table {{ this }} add primary key (k_school)",
+
+        "{% set network_types = dbt_utils.get_column_values(
+                           table=ref('xwalk_network_association_types'),
+                           column='network_type',
+                           where=\"association_type = 'school'\",
+                           order_by='network_type')
+        %}
+        {% for network_type in network_types %} 
+            alter table {{ this }} add constraint fk_{{this.name}}_{{network_type}}_network foreign key (k_network__{{network_type}}) references {{ ref('dim_network') }} (k_network)
+         {% endfor %}"
     ]
   )
 }}
@@ -38,7 +49,7 @@ formatted as (
         %}
         {%- if network_types is not none and network_types | length -%}
           {%- for network_type in network_types -%}
-            bld_network_associations.k_network__{{network_type}},
+            bld_network_associations.k_network__{{network_type}}::varchar(32) as k_network__{{network_type}},
           {%- endfor -%}
         {%- endif %}
         stg_school.tenant_code,
@@ -67,7 +78,6 @@ formatted as (
               {{ custom_indicators[indicator]['where'] }} as {{ indicator }},
           {%- endfor -%}
         {%- endif %}
-
         stg_school.website,
         choose_address.address_type,
         choose_address.street_address,
