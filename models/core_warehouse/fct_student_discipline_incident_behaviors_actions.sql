@@ -9,14 +9,14 @@
 }}
 
 
-with x as (
+with fct_student_discipline_incident_behaviors as (
+    select * from {{ ref('fct_student_discipline_incident_behaviors') }}
+),
+x as (
     select * from {{ ref('stg_ef3__discipline_actions__student_discipline_incident_behaviors') }}
 ),
 y as (
     select * from {{ ref('fct_student_discipline_actions') }}
-),
-fct_student_discipline_incident_behaviors as (
-    select * from {{ ref('fct_student_discipline_incident_behaviors') }}
 ),
 formatted as (
     select
