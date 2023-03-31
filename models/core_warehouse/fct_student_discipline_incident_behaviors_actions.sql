@@ -1,13 +1,3 @@
-{{
-  config(
-    post_hook=[
-        "alter table {{ this }} add primary key (k_student, k_discipline_incident, k_discipline_actions_event)",
-        "alter table {{ this }} add constraint fk_{{ this.name }}_student foreign key (k_student) references {{ ref('dim_student') }}",
-        "alter table {{ this }} add constraint fk_{{ this.name }}_discipline_incidents foreign key (k_discipline_incident) references {{ ref('dim_discipline_incidents') }}"
-    ]
-  )
-}}
-
 with stu_discipline_incident_behaviors_actions as (
     select * from {{ ref('stg_ef3__discipline_actions__student_discipline_incident_behaviors') }}
 ),
