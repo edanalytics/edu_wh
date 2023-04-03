@@ -2,6 +2,7 @@
 ## New features
 ## Under the hood
 ## Fixes 
+- Allow extension columns to correctly be pulled into the stacked fct_program_service table
 
 # edu_wh v0.2.1
 ## New features
