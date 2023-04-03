@@ -50,13 +50,11 @@ stacked as (
     ) }}
 ),
 
-{# -- Find the extension columns from each program relation -- #}
-{% set extensions = [] -%}
+{# -- append the name of each `stage_program_relations` into a new list, so we can pass that list to `extract_extension` below -- #}
+{% set relation_names = [] -%}
 {%- for relation in stage_program_relations -%}
-    {%- for extension in var('extensions')[relation.name] -%}
-        {%- do extensions.append(extension) -%}
-    {%- endfor -%}
-{%- endfor %}
+  {%- do relation_names.append(relation.name) -%}
+{%- endfor -%}
 
 subset as (
   select
@@ -70,12 +68,7 @@ subset as (
     stacked.service_begin_date,
     stacked.service_end_date
 
-    {# -- Select the extension columns from each relation (use unique so there's one column per extension, even if it exists in multiple relations) #}
-    {%- for extension in extensions|unique -%}
-        {% if loop.first %}, {% endif %}
-        {{ extension }}
-        {%- if not loop.last %}, {% endif -%}
-    {% endfor %}
+    {{ edu_edfi_source.extract_extension(model_name=relation_names, flatten=False) }}
 
   from stacked
   join dim_program
