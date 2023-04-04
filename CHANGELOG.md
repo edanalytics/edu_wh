@@ -2,7 +2,8 @@
 ## New features
 ## Under the hood
 ## Fixes 
- - Implement "first day school" rule for single-caldendar schools in fct_student_school_association
+- Implement "first day school" rule for single-calendar schools in fct_student_school_association
+- Allow extension columns to correctly be pulled into the stacked fct_program_service table
 
 # edu_wh v0.2.1
 ## New features
