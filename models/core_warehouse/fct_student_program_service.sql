@@ -14,22 +14,22 @@
 
 -- Special Education
 {% if var('src:program:special_ed:enabled', True) %}
-    {% do stage_program_relations.append('stg_ef3__stu_spec_ed__program_services') %}
+    {% do stage_program_relations.append(ref('stg_ef3__stu_spec_ed__program_services')) %}
 {% endif %}
 
 -- Language Instruction
 {% if var('src:program:language_instruction:enabled', True) %}
-    {% do stage_program_relations.append('stg_ef3__stu_lang_instr__program_services') %}
+    {% do stage_program_relations.append(ref('stg_ef3__stu_lang_instr__program_services')) %}
 {% endif %}
 
 -- Homeless
 {% if var('src:program:homeless:enabled', True) %}
-    {% do stage_program_relations.append('stg_ef3__stu_homeless__program_services') %}
+    {% do stage_program_relations.append(ref('stg_ef3__stu_homeless__program_services')) %}
 {% endif %}
 
 -- Title I Part A
 {% if var('src:program:title_i:enabled', True) %}
-    {% do stage_program_relations.append('stg_ef3__stu_title_i_part_a__program_services') %}
+    {% do stage_program_relations.append(ref('stg_ef3__stu_title_i_part_a__program_services')) %}
 {% endif %}
 
 
@@ -42,27 +42,37 @@ dim_program as (
 ),
 
 stacked as (
-    {% for relation in stage_program_relations %}
-        select
-            stage.k_student,
-            stage.k_student_xyear,
-            stage.k_program,
-            stage.tenant_code,
-            stage.program_enroll_begin_date,
-            stage.program_service,
-            stage.primary_indicator,
-            stage.v_providers,
-            stage.service_begin_date,
-            stage.service_end_date
-            {{ edu_edfi_source.extract_extension(model_name=relation, flatten=False) }}
+    {{ dbt_utils.union_relations(
 
-        from {{ ref(relation) }} as stage
+        relations=stage_program_relations
 
-            join dim_program
-                on stage.k_program = dim_program.k_program
+    ) }}
+),
 
-        {% if not loop.last %} union all {% endif %}
-    {% endfor %}
+{# -- append the name of each `stage_program_relations` into a new list, so we can pass that list to `extract_extension` below -- #}
+{% set relation_names = [] -%}
+{%- for relation in stage_program_relations -%}
+  {%- do relation_names.append(relation.name) -%}
+{%- endfor -%}
+
+subset as (
+  select
+    stacked.k_student,
+    stacked.k_student_xyear,
+    stacked.k_program,
+    stacked.tenant_code,
+    stacked.program_enroll_begin_date,
+    stacked.program_service,
+    stacked.primary_indicator,
+    stacked.v_providers,
+    stacked.service_begin_date,
+    stacked.service_end_date
+
+    {{ edu_edfi_source.extract_extension(model_name=relation_names, flatten=False) }}
+
+  from stacked
+  join dim_program
+    on stacked.k_program = dim_program.k_program
 )
 
-select * from stacked
+select * from subset
