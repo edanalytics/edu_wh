@@ -45,6 +45,7 @@ stacked as (
     {% for relation in stage_program_relations %}
         select
             stage.k_student,
+            stage.k_student_xyear,
             stage.k_program,
             stage.tenant_code,
             stage.program_enroll_begin_date,

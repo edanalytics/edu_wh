@@ -20,6 +20,7 @@ metric_absentee_categories as (
 aggregated as (
     select 
         stu_daily_attendance.k_student,
+        stu_daily_attendance.k_student_xyear,
         stu_daily_attendance.k_school,
         dim_calendar_date.school_year,
         any_value(stu_daily_attendance.tenant_code) as tenant_code,
@@ -32,7 +33,7 @@ aggregated as (
     from stu_daily_attendance
     join dim_calendar_date
         on stu_daily_attendance.k_calendar_date = dim_calendar_date.k_calendar_date
-    group by 1,2,3
+    group by 1,2,3,4
 ),
 metric_labels as (
     select 

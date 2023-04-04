@@ -56,6 +56,7 @@ stu_enr_att_cal as (
     -- create an attendance calendar by student, conditional on enrollment
     select 
         enr.k_student,
+        enr.k_student_xyear,
         enr.k_school,
         enr.tenant_code,
         enr.entry_date,
@@ -72,6 +73,7 @@ stu_enr_att_cal as (
 fill_positive_attendance as (
     select 
         stu_enr_att_cal.k_student,
+        stu_enr_att_cal.k_student_xyear,
         stu_enr_att_cal.k_school,
         stu_enr_att_cal.k_calendar_date,
         coalesce(
@@ -141,6 +143,7 @@ positive_attendance_deduped as (
 cumulatives as (
     select 
         positive_attendance_deduped.k_student,
+        positive_attendance_deduped.k_student_xyear,
         positive_attendance_deduped.k_school,
         positive_attendance_deduped.k_calendar_date,
         positive_attendance_deduped.k_session,
