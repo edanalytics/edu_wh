@@ -51,7 +51,6 @@ formatted as (
             dim_school__assignment.k_school) as k_school,
         dim_school__assignment.k_school as k_school__assignment,
         dim_school__responsibility.k_school as k_school__responsibility,
-        -- todo: naming here
         {{ dbt_utils.surrogate_key(
             [
                 'stg_discipline_actions.tenant_code',
@@ -64,7 +63,6 @@ formatted as (
         stg_discipline_actions.tenant_code,
         stg_discipline_actions.discipline_action_id,
         stg_discipline_actions.discipline_date,
-        -- todo: naming here
         {{ edu_edfi_source.extract_descriptor('value:disciplineDescriptor::string') }} as discipline_action,
         stg_discipline_actions.discipline_action_length,
         stg_discipline_actions.actual_discipline_action_length,
