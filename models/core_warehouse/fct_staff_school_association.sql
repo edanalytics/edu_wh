@@ -1,7 +1,7 @@
 {{
   config(
     post_hook=[
-        "alter table {{ this }} add primary key (k_staff, k_school, program_assignment, school_year)",
+        "alter table {{ this }} add primary key (k_staff, k_lea, k_school, program_assignment, school_year, begin_date)",
         "alter table {{ this }} add constraint fk_{{ this.name }}_school foreign key (k_school) references {{ ref('dim_school') }}",
     ]
   )
@@ -59,10 +59,12 @@ formatted as (
         on stg_staff_school.k_staff = dim_staff.k_staff
     left join stg_staff_ed_org_assign as lea_assign
         on stg_staff_school.k_staff = lea_assign.k_staff
+        and stg_staff_school.school_year = lea_assign.school_year
         and dim_school.k_lea = lea_assign.k_lea
         and lea_assign.ed_org_type = 'LocalEducationAgency'
     left join stg_staff_ed_org_assign as school_assign
         on stg_staff_school.k_staff = school_assign.k_staff
+        and stg_staff_school.school_year = school_assign.school_year
         and dim_school.k_school = school_assign.k_school
         and school_assign.ed_org_type = 'School'
     -- staff-calendar association is optional
