@@ -15,9 +15,11 @@ models:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - k_student
+            - k_student_xyear
             - k_discipline_incident
     columns:
       - name: k_student
+      - name: k_student_xyear
       - name: k_school
       - name: k_discipline_incident
         description: >
