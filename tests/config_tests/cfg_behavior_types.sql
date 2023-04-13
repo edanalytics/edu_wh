@@ -17,6 +17,6 @@ joined as (
     from fct_student_discipline_incident_behaviors
     left join xwalk_discipline_behaviors
         on fct_student_discipline_incident_behaviors.behavior_type = xwalk_discipline_behaviors.behavior_type
-    where xwalk_discipline_actions.severity_order is null
+    where xwalk_discipline_behaviors.severity_order is null
 )
 select * from joined
