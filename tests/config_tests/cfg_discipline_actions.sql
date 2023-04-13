@@ -4,26 +4,19 @@
       severity       = 'warn'
     )
 }}
-with stg_discipline_actions as (
-    select * from {{ ref('stg_ef3__discipline_actions') }}
+with fct_student_discipline_action as (
+    select * from {{ ref('fct_student_discipline_actions') }}
 ),
 xwalk_discipline_actions as (
     select * from {{ ref('xwalk_discipline_actions') }}
 ),
-flattened as (
-    --todo: duplicated logic. consider splitting to build table
-    select *, {{ edu_edfi_source.extract_descriptor('value:disciplineDescriptor::string') }} as discipline_action
-    from stg_discipline_actions
-        , lateral flatten(v_disciplines)
-),
 joined as (
     select distinct
-        flattened.tenant_code,
-        flattened.api_year,
-        flattened.discipline_action
-    from flattened
+        fct_student_discipline_action.tenant_code,
+        fct_student_discipline_action.discipline_action
+    from fct_student_discipline_action
     left join xwalk_discipline_actions
-        on flattened.discipline_action = xwalk_discipline_actions.discipline_action
-    where xwalk_discipline_actions.is_oss is null
+        on fct_student_discipline_action.discipline_action = xwalk_discipline_actions.discipline_action
+    where xwalk_discipline_actions.severity_order is null
 )
 select * from joined
