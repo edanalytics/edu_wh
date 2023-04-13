@@ -53,7 +53,7 @@ formatted as (
                 then null
             when xwalk_discipline_behaviors.severity_order is not null 
                 and 1 = row_number() over (partition by dim_student.k_student, dim_student.k_student_xyear, dim_school.k_school, stg_stu_discipline_incident_behaviors.k_discipline_incident 
-                                           order by xwalk_discipline_behaviors.severity_order desc)
+                                           order by xwalk_discipline_behaviors.severity_order desc nulls last)
                 then true
             else false
         end as is_most_severe_behavior,

@@ -104,7 +104,7 @@ join_descriptor_interpretation as (
                 then null
             when xwalk_discipline_actions.severity_order is not null 
                 and 1 = row_number() over (partition by k_student, k_student_xyear, k_school, k_discipline_actions_event 
-                                           order by xwalk_discipline_actions.severity_order desc)
+                                           order by xwalk_discipline_actions.severity_order desc nulls last)
                 then true
             else false
         end as is_most_severe_action
