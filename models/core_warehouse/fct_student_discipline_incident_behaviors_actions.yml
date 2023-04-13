@@ -4,21 +4,25 @@ models:
   - name: fct_student_discipline_incident_behaviors_actions
     description: >
       This table links discipline actions to discipline incidents and behaviors.
-      The most severe discipline action and behavior for an incident is chosen.
+      To keep the grain at a single student, incident, and discipline event but 
+      also represent the multiple behaviors and actions, we included
+      both as lists.
 
       Rows represent one behavior and discipline action per student,
       incident, and discipline event.
 
-      *Primary Key:* k_student, k_discipline_incident, k_discipline_actions_event
+      *Primary Key:* k_student, k_student_xyear, k_discipline_incident, k_discipline_actions_event
 
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - k_student
+            - k_student_xyear
             - k_discipline_incident
             - k_discipline_actions_event
     columns:
       - name: k_student
+      - name: k_student_xyear
       - name: k_discipline_incident
         description: >
           A key containing incident_id and school_id to represent a single discipline incident.
@@ -26,10 +30,11 @@ models:
         description: >
           A key containing discipline_action_id and discipline_date to represent a single discipline event.
       - name: tenant_code
-      - name: behavior_type
+      - name: behavior_types_array
         description: >
-          Category of behavior describing the discipline incident. Examples include:
-          'Disorderly Conduct', 'Vandalism'.
-      - name: discipline_action
+          An array of behavior types, which are defined as a category of behavior describing the 
+          discipline incident. Examples include: 'Disorderly Conduct', 'Vandalism'.
+      - name: discipline_action_array
         description: >
-          Type of action taken used to discipline a student in response to a discipline incident.
+          An array of discipline actions, which are the type of action taken used to discipline 
+          a student in response to a discipline incident.
