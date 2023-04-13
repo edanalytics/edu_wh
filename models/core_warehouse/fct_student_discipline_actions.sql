@@ -1,7 +1,7 @@
 {{
   config(
     post_hook=[
-        "alter table {{ this }} add primary key (k_student, k_discipline_actions_event, discipline_action)",
+        "alter table {{ this }} add primary key (k_student, k_student_xyear, k_discipline_actions_event, discipline_action)",
         "alter table {{ this }} add constraint fk_{{ this.name }}_student foreign key (k_student) references {{ ref('dim_student') }}",
     ]
   )
@@ -22,6 +22,7 @@ xwalk_discipline_actions as (
 flatten_staff_keys as (
     select 
         k_student,
+        k_student_xyear,
         discipline_action_id,
         discipline_date,
         index,
@@ -32,6 +33,7 @@ flatten_staff_keys as (
 agg_staff_keys as (
     select 
         k_student,
+        k_student_xyear,
         discipline_action_id,
         discipline_date,
         -- staff associations are most often singular.
@@ -39,13 +41,14 @@ agg_staff_keys as (
         max(case when index = 0 then k_staff else null end) as k_staff_single,
         array_agg(k_staff) as k_staff_array
     from flatten_staff_keys
-    group by 1,2,3
+    group by 1,2,3,4
 ),
 formatted as (
     -- this introduces a new grain: by action id and discipline type
     -- in most cases this doesn't actually change the grain, but it could
     select 
         dim_student.k_student,
+        dim_student.k_student_xyear,
         coalesce(
             dim_school__responsibility.k_school,
             dim_school__assignment.k_school) as k_school,
@@ -97,10 +100,14 @@ join_descriptor_interpretation as (
         -- flag the most severe discipline
         -- this will also handle if there are ties in severity and just choose the first option
         case
-            when 1 = row_number() over (partition by k_student, k_school, k_discipline_actions_event order by xwalk_discipline_actions.severity_order desc)
+            when xwalk_discipline_actions.severity_order is null
+                then null
+            when xwalk_discipline_actions.severity_order is not null 
+                and 1 = row_number() over (partition by k_student, k_student_xyear, k_school, k_discipline_actions_event 
+                                           order by xwalk_discipline_actions.severity_order desc)
                 then true
             else false
-        end as is_most_severe
+        end as is_most_severe_action
     from formatted
     left join xwalk_discipline_actions
         on formatted.discipline_action = xwalk_discipline_actions.discipline_action
