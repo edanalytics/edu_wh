@@ -25,7 +25,7 @@ participation_codes as (
         k_student,
         k_student_xyear,
         k_discipline_incident,
-        array_agg(participation_code) as participation_codes_array
+        array_agg(participation_code) within group (order by participation_code asc) as participation_codes_array
     from {{ ref('stg_ef3__student_discipline_incident_non_offender_associations__participation_codes') }}
     group by k_student, k_student_xyear, k_discipline_incident
 ),
@@ -40,7 +40,7 @@ formatted as (
         stg_stu_discipline_incident_non_offenders.incident_id,
         false as is_offender,
         -- there is typically only a single value here, choosing the first option for analytical use cases
-        participation_codes.participation_codes_array[0] as participation_code,
+        participation_codes.participation_codes_array[0]::string as participation_code,
         participation_codes.participation_codes_array
     from stg_stu_discipline_incident_non_offenders
     join participation_codes 

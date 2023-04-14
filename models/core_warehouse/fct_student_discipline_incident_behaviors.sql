@@ -28,7 +28,7 @@ participation_codes as (
         k_student,
         k_student_xyear,
         k_discipline_incident,
-        array_agg(participation_code) as participation_codes_array
+        array_agg(distinct participation_code) within group (order by participation_code asc) as participation_codes_array
     from {{ ref('stg_ef3__student_discipline_incident_behavior_associations__participation_codes') }}
     group by k_student, k_student_xyear, k_discipline_incident
 ),
@@ -58,7 +58,7 @@ formatted as (
             else false
         end as is_most_severe_behavior,
         -- there is typically only a single value here, choosing the first option for analytical use cases
-        participation_codes.participation_codes_array[0] as participation_code,
+        participation_codes.participation_codes_array[0]::string as participation_code,
         participation_codes.participation_codes_array
     from stg_stu_discipline_incident_behaviors
     left join participation_codes 
