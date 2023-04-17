@@ -17,7 +17,7 @@ models:
         tests: 
           - unique
       - name: tenant_code
-        description: "Code defining the Tenant (may be an LEA, SEA, etc.) of the EdFi ODS from which this record was pulled"
+        description: "Code defining the Tenant (may be an LEA, SEA, etc.) of the Ed-Fi ODS from which this record was pulled"
       - name: school_year
         description: "The school year passed to the Ed-Fi API when pulling this record from Course"
       - name: course_code
@@ -29,9 +29,9 @@ models:
                       non-departmentalized classes, it refers to any portion of the instruction for which a grade or report is assigned (e.g.,
                       reading, composition, spelling, and language arts)."
       - name: school_course_code
-        description: "Course code assigned by the school (sourced from Course.identificationCodes in EdFi)"
+        description: "Course code assigned by the school (sourced from Course.identificationCodes in Ed-Fi)"
       - name: state_course_code
-        description: "Course code assigned by the state (sourced from Course.identificationCodes in EdFi)"
+        description: "Course code assigned by the state (sourced from Course.identificationCodes in Ed-Fi)"
       - name: course_description
         description: "A description of the content standards and goals covered in the course. Reference may be made to state or national content standards."
       - name: ed_org_id

@@ -3,9 +3,15 @@ version: 2
 models: 
   - name: fct_student_assessment
     description: >
-      Student assessment records. The wide results columns are
-      determined based on the `normalized_score_name` column
-      from the seed table `xwalk_assessment_scores`.
+      ##### Overview:
+        This fact table defines student assessment records. The wide score results columns are determined based on the `normalized_score_name`
+        column from the seed table `xwalk_assessment_scores`.
+
+      ##### Primary Key:
+        `k_student_assessment` -- There is one record per student-assessment event
+
+      {{ doc(var('edu:custom_docs:fct_student_assessment')) if var('edu:custom_docs:fct_student_assessment', '') }}  
+
     config:
       tags: ['assessment']
       enabled: "{{ var('src:domain:assessment:enabled', True) }}"
@@ -16,18 +22,31 @@ models:
         tests: 
           - unique
       - name: k_assessment
+        description: Unique identifier of the assessment. Foreign key reference to `dim_assessment`.
       - name: k_student
+        description: Unique identifier for the student-year. Foreign key reference to `dim_student`.
       - name: school_year
+        description: The school year for which the assessment was administered to a student.	
       - name: administration_date
+        description: The date and time an assessment was completed by the student.
       - name: administration_end_date
+        description: 	The date and time an assessment administration ended.
       - name: event_description
+        description: Describes special events that occur before during or after the assessment session that may impact use of results.
       - name: administration_environment
+        description: The environment in which the test was administered.
       - name: administration_language
+        description: The language in which an assessment is written and/or administered.
       - name: event_circumstance
+        description: An unusual event occurred during the administration of the assessment. This could include fire alarm, student became ill, etc.
       - name: platform_type
+        description: The platform with which the assessment was delivered to the student during the assessment session.
       - name: reason_not_tested
+        description: 	The primary reason student is not tested.
       - name: retest_indicator
+        description: Indicator if the test was a retake.
       - name: when_assessed_grade_level
+        description: The grade level of a student when assessed.
       - name: v_other_results
         description: >
           This is an array of all additional score results that were not

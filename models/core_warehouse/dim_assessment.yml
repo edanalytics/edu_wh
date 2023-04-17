@@ -50,9 +50,9 @@ models:
       - name: content_standard
         description: An indication as to whether an assessment conforms to a standard (e.g., local standard, statewide standard, regional standard, association standard).
       - name: scores_array
-        description: An array of all score names associated with this assessment. Sourced from EdFi Assessment.scores.assessmentReportingMethodDescriptor
+        description: An array of all score names associated with this assessment. Sourced from Ed-Fi Assessment.scores.assessmentReportingMethodDescriptor
       - name: performance_levels_array
-        description: An array of all performance level names & values associated with this assessment. Sourced from EdFi Assessment.performanceLevels.assessmentReportingMethodDescriptor 
+        description: An array of all performance level names & values associated with this assessment. Sourced from Ed-Fi Assessment.performanceLevels.assessmentReportingMethodDescriptor 
                      and Assessment.performanceLevels.performanceLevelDescriptor
       - name: grades_array
         description: The grade level(s) for which an assessment is designed. The semantics of null is assumed to mean that the assessment is not associated with any grade level.
