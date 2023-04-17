@@ -3,7 +3,22 @@ version: 2
 models:
   - name: dim_student
     description: >
-      Defines students across years and some of their key characteristics.
+      ##### Overview:
+        This dimension table defines students across years and some of their key characteristics.
+
+      ##### Primary Key:
+        `k_student` -- There is one record per student and year (note that `k_student` is an annualized identifier)
+
+      ##### Important Business Rules:
+        `k_student` is annualized, meaning it is a surrogate key for [`student_unique_id` + `school_year`]. This reflects the 
+        analytical reality of K-12 accountability measures (most measures are annualized), and the common
+        demand to define student characteristics on a yearly basis (e.g. how many students were part of a Special Education Program *this year*).  
+
+        At times it will be useful to run longitudinal analysis linking a student to events across years. For that, use `k_student_xyear`,
+        a surrogate key for [`student_unique_id`].
+
+      {{ doc(var('edu:custom_docs:dim_student')) if var('edu:custom_docs:dim_student', '') }}  
+
     config:
       tags: ['core', 'special_ed', 'homeless', 'language_instruction', 'title_i']
     columns:
