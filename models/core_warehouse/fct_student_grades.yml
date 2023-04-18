@@ -3,17 +3,19 @@ version: 2
 models: 
   - name: fct_student_grades
     description: >
-      Student course grades by grading period within the school year.
+      ##### Overview:
+        This fact table contatns student course grades by grading period within the school year.
+        Note that not all grading periods indicate final grades, so averages across grading
+        periods may double-count some periods of time.  
 
-      Note that not all grading periods indicate final grades, so averages 
-      across grading periods may double-count some periods of time.
+      ##### Primary Key: 
+        `k_student, k_school, k_course_section, k_grading_period, grade_type` -- There is one 
+         record per student, school, course section, grading period, and grade type.
 
-      Note that `grade_type` is part of the Primary Key, meaning a student
-      may have multiple grades for the same course in the same grading period,
-      provided they have different grade types.
-
-
-      *Primary Key:* `k_student, k_school, k_course_section, k_grading_period, grade_type`
+      ##### Important Business Rules:
+        Note that `grade_type` is part of the Primary Key, meaning a student
+        may have multiple grades for the same course in the same grading period,
+        provided they have different grade types.
 
     config:
       tags: ['core']
