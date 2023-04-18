@@ -42,7 +42,6 @@ dim_program as (
 ),
 
 stacked as (
-
     {{ dbt_utils.union_relations(
 
         relations=stage_program_relations
@@ -59,6 +58,7 @@ stacked as (
 subset as (
   select
     stacked.k_student,
+    stacked.k_student_xyear,
     stacked.k_program,
     stacked.tenant_code,
     stacked.program_enroll_begin_date,
