@@ -10,10 +10,12 @@
                            where=\"association_type = 'school'\",
                            order_by='network_type')
         %}
+        {% if network_types is not none %}
         {% for network_type in network_types %} 
             alter table {{ this }} add constraint fk_{{this.name}}_{{network_type}}_network foreign key (k_network__{{network_type}}) references {{ ref('dim_network') }} (k_network)
             {%if not loop.last%};{%endif%}
-         {% endfor %}"
+        {% endfor %}
+        {% endif %}"
     ]
   )
 }}
