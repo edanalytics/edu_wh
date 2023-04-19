@@ -22,6 +22,7 @@ formatted as (
         dim_staff.k_staff,
         dim_course_section.k_course_section,
         stg_staff_section.tenant_code,
+        stg_staff_section.school_year,
         stg_staff_section.begin_date,
         stg_staff_section.end_date,
         stg_staff_section.classroom_position,

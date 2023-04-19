@@ -2,8 +2,23 @@
 ## New features
 ## Under the hood
 ## Fixes 
+
+# edu_wh v0.2.3
+## New features
+- Add models for education service centers
+- Add support for custom indicators on dim_school
+- More support for generic student programs
+## Under the hood
+- More robust creation of first/last day of school table for calendaring/enrollment logic
+- Generate foreign keys on optional school-network associations for BI tools
+## Fixes 
 - Implement "first day school" rule for single-calendar schools in fct_student_school_association
 - Allow extension columns to correctly be pulled into the stacked fct_program_service table
+- Fix join between staff assignments and staff-school associations
+
+# edu_wh v0.2.2
+## Fixes
+- Bugfix release: package specification
 
 # edu_wh v0.2.1
 ## New features
