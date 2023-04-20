@@ -3,9 +3,11 @@ version: 2
 models:
   - name: fct_student_language_instruction_program_association
     description: >
-      Student language instruction program enrollment information.
+      ##### Overview:
+        This fact table contains student language instruction program enrollment information.
 
-      *Primary Key:* `k_student, k_program`
+      ##### Primary Key:
+        `k_student, k_program` -- There is one record per student, year, and language instruction program.
 
     config:
       tags: ['language_instruction']

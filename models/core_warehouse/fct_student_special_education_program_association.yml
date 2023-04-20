@@ -3,9 +3,11 @@ version: 2
 models: 
   - name: fct_student_special_education_program_association
     description: >
-      Student special education program enrollment information.
+      ##### Overview: 
+        This fact table contains student special education program enrollment information.
 
-      *Primary Key:* `k_student, k_program`
+      ##### Primary Key:
+        `k_student, k_program` -- There is one record per student, year, and special education program.
 
     config:
       tags: ['special_ed']

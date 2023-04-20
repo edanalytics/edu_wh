@@ -3,10 +3,78 @@ version: 2
 models: 
   - name: fct_student_subgroup
     description: >
-      Long student subgroup assignments. Useful for aggregating analytics by the full universe of student groups.
-      This table is created by casting long the indicators and status columns in `dim_student`.
+      ##### Overview: 
+        This fact table contains long student subgroup assignments. It's useful for aggregating analytics
+        by the full universe of student groups -- for example, you can see attendance rates by race, gender, and 
+        special education status all in one query (see Example Use Cases below).
 
-      *Primary Key:* `k_student, k_subgroup`
+      ##### Primary Key:
+        `k_student, k_subgroup` -- There is one record per student, year, and subgroup. Subgroups are defined in [dim_subgroup](/#!/model/model.edu_wh.dim_subgroup).
+
+      ##### Example Use Cases:
+        To join `fct_student_subgroup` to other student-level info, simply join on `k_student`:
+        ```
+          FROM analytics.prod_wh.msr_student_cumulative_attendance att
+          JOIN analytics.prod_wh.fct_student_subgroup
+            ON att.k_student = fct_student_subgroup.k_student
+        ```
+
+        1. Find annual enrollment count by subgroup at North High.
+        Note, students count towards any schools they were enrolled at during the year, so if they left North High and went to South High,
+        they count toward both schools. The query uses `count(distinct enroll.k_student)` to avoid double-counting students who enrolled 
+        at the same school twice in one year.  
+          
+          ```
+            SELECT
+              enroll.k_school,
+              dim_school.school_id,
+              dim_school.school_name,
+              enroll.school_year,
+              dim_subgroup.k_subgroup,
+              dim_subgroup.subgroup_category,
+              dim_subgroup.subgroup_value,
+              count(distinct enroll.k_student) as total_unique_students
+            FROM analytics.prod_wh.fct_student_school_association enroll
+            JOIN analytics.prod_wh.fct_student_subgroup
+              ON enroll.k_student = fct_student_subgroup.k_student
+            JOIN analytics.prod_wh.dim_school
+              ON enroll.k_school = dim_school.k_school
+            JOIN analytics.prod_wh.dim_subgroup
+              ON fct_student_subgroup.k_subgroup = dim_subgroup.k_subgroup
+            WHERE dim_school.school_id = '{SCHOOL ID FOR NORTH HIGH}'
+            GROUP BY 1,2,3,4,5,6,7
+            ORDER by school_year, subgroup_category, subgroup_value;
+          ```
+
+
+        2. Find average annual attendance rates by subgroup at North High.
+        Note, `fct_student_subgroup` is a large table (it contains every student x every demographic group), so include filters on school, subgroup, etc. 
+        to make your query more efficient.  
+          
+          ```
+            SELECT
+              att.k_school,
+              dim_school.school_id,
+              dim_school.school_name,
+              att.school_year,
+              dim_subgroup.k_subgroup,
+              dim_subgroup.subgroup_category,
+              dim_subgroup.subgroup_value,
+              sum(days_attended) as total_days_attended,
+              sum(days_enrolled) as total_days_enrolled,
+              count(distinct att.k_student) as total_unique_students,
+              round(100* sum(days_attended) / sum(nullif(days_enrolled, 0)), 2) as attendance_rate
+            FROM analytics.prod_wh.msr_student_cumulative_attendance att
+            JOIN analytics.prod_wh.fct_student_subgroup
+              ON att.k_student = fct_student_subgroup.k_student
+            JOIN analytics.prod_wh.dim_school
+              ON att.k_school = dim_school.k_school
+            JOIN analytics.prod_wh.dim_subgroup
+              ON fct_student_subgroup.k_subgroup = dim_subgroup.k_subgroup
+            WHERE dim_school.school_id = '{SCHOOL ID FOR NORTH HIGH}'
+            GROUP BY 1,2,3,4,5,6,7
+            ORDER by school_year, subgroup_category, subgroup_value;
+        ```
 
     config:
       tags: ['core']
@@ -21,7 +89,3 @@ models:
       - name: tenant_code
       - name: school_year
       - name: k_subgroup
-      - name: subgroup_category
-        description: Category of subgroup. e.g. "grade_level". A column name in `dim_student`
-      - name: subgroup_value
-        description: Specific value found in `dim_student` for this student & subgroup_category. e.g. "Eighth grade"
