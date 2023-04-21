@@ -3,19 +3,52 @@ version: 2
 models: 
   - name: fct_student_program_service
     description: >
-     **Overview:**
-       This fact table provides student program services. It references any or all of the following models:
-      - [stg_ef3__stu_spec_ed__program_services](#!/model/model.edu_edfi_source.stg_ef3__stu_spec_ed__program_services),
-      - [stg_ef3__stu_lang_instr__program_services](#!/model/model.edu_edfi_source.stg_ef3__stu_lang_instr__program_services),
-      - [stg_ef3__stu_homeless__program_services](#!/model/model.edu_edfi_source.stg_ef3__stu_homeless__program_services),
-      - [stg_ef3__stu_title_i__program_services](#!/model/model.edu_edfi_source.stg_ef3__stu_title_i__program_services),
+     ##### Overview:
+       This fact table provides student program services, received as part of a program enrollment, like counseling or occupational therapy.
+       It references any or all of the following models:
+      - [stg_ef3__stu_spec_ed__program_services](#!/model/model.edu_edfi_source.stg_ef3__stu_spec_ed__program_services)
+      - [stg_ef3__stu_lang_instr__program_services](#!/model/model.edu_edfi_source.stg_ef3__stu_lang_instr__program_services)
+      - [stg_ef3__stu_homeless__program_services](#!/model/model.edu_edfi_source.stg_ef3__stu_homeless__program_services)
+      - [stg_ef3__stu_title_i__program_services](#!/model/model.edu_edfi_source.stg_ef3__stu_title_i__program_services)
 
-     **Primary Key:**
-       `k_student, k_program, program_begin_date, program_service` --
-       There is one record per student, program, program start date, and program service
+     ##### Primary Key:
+       `k_student, k_program, program_enroll_begin_date, program_service` --
+       There is one record per student, year, program, program start date, and program service
 
-     **Important business rules:**
-        - `program_begin_date` is included in the unique key, because a student may be associated with the same program at multiple times, and those associations may have different service designations.
+     ##### Important business rules:
+        - `program_enroll_begin_date` is included in the unique key, because a student may be associated with the same program at multiple times,
+           and those associations may have different service designations. When joining this table to `fct_student_{program_type}_program_association`,
+           always include `program_enroll_begin_date` in the join (see example query below).
+
+     ##### Example Use Cases:
+       1. Join Program Services to Student Special Education data to find students' Special Ed program enrollments and all of the services
+       they received as part of that program:  
+         
+        ```
+          SELECT
+            assoc.k_student,
+            assoc.school_year,
+            assoc.k_program,
+            dim_program.program_type,
+            dim_program.program_id,
+            dim_program.program_name,
+            assoc.program_enroll_begin_date,
+            assoc.program_enroll_end_date,
+            serv.program_service,
+            serv.service_begin_date,
+            serv.service_end_date
+          FROM analytics.prod_wh.fct_student_special_education_program_association assoc
+          JOIN analytics.prod_wh.dim_program
+            ON assoc.k_program = dim_program.k_program
+          -- left join because some programs may not have service designations
+          LEFT join analytics.prod_wh.fct_student_program_service serv
+            ON assoc.k_student = serv.k_student
+            AND assoc.k_program = serv.k_program
+            AND assoc.program_enroll_begin_date = serv.program_enroll_begin_date;
+        ```  
+         
+       (note, you can replace `fct_student_special_education_program_association` with other program types,
+       to see e.g. services associated with student homeless program enrollments instead)
 
     config:
       tags: ['special_ed', 'homeless', 'language_instruction', 'title_i']
