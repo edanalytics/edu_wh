@@ -21,7 +21,7 @@ models:
       tags: ['core']
     columns:
       - name: k_program
-        description: Defining key for programs. Surrogate key for [`api_year` + `ed_org_id + `program_name` + `program_type`]
+        description: Defining key for programs. Surrogate key for [`api_year` + `ed_org_id` + `program_name` + `program_type`]
         tests: 
           - unique
       - name: k_lea
