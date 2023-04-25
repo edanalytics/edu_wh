@@ -43,7 +43,15 @@ formatted as (
         fct_student_discipline_actions.k_discipline_actions_event,
         stu_discipline_incident_behaviors_actions.tenant_code,
         behaviors_array.behavior_types_array,
-        actions_array.discipline_actions_array
+        actions_array.discipline_actions_array,
+        -- we want to include the most severe behavior type and discipline action
+        -- only if both severity orders are defined
+        iff(fct_student_discipline_incident_behaviors.severity_order is not null and 
+            fct_student_discipline_actions.severity_order is not null, 
+            fct_student_discipline_incident_behaviors.behavior_type, null) as most_severe_behavior_type,
+        iff(fct_student_discipline_incident_behaviors.severity_order is not null and 
+            fct_student_discipline_actions.severity_order is not null, 
+            fct_student_discipline_actions.discipline_action, null) as most_severe_discipline_action
     from stu_discipline_incident_behaviors_actions
     join fct_student_discipline_actions
         on stu_discipline_incident_behaviors_actions.k_student = fct_student_discipline_actions.k_student
@@ -63,5 +71,8 @@ formatted as (
         on fct_student_discipline_actions.k_student = actions_array.k_student
         and fct_student_discipline_actions.k_student_xyear = actions_array.k_student_xyear
         and fct_student_discipline_actions.k_discipline_actions_event = actions_array.k_discipline_actions_event
+    -- in order to keep the grain of k_student, k_discipline_incident, and k_discipline_actions_event, we want to keep this subset 
+    -- even if we do not have the severity orders defined
+    qualify 1 = row_number() over (partition by stu_discipline_incident_behaviors_actions.k_student, fct_student_discipline_incident_behaviors.k_discipline_incident order by fct_student_discipline_actions.severity_order desc nulls last, fct_student_discipline_incident_behaviors.severity_order desc nulls last)
 )
 select * from formatted

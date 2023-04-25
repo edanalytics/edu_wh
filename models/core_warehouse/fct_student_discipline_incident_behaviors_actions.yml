@@ -6,7 +6,8 @@ models:
       This table links discipline actions to discipline incidents and behaviors.
       To keep the grain at a single student, incident, and discipline event but 
       also represent the multiple behaviors and actions, we included
-      both as lists.
+      both as lists. Additionally, we added included the most severe discipline 
+      action and behavior.
 
       Rows represent one behavior and discipline action per student,
       incident, and discipline event.
@@ -38,3 +39,7 @@ models:
         description: >
           An array of discipline actions, which are the type of action taken used to discipline 
           a student in response to a discipline incident.
+      - name: most_severe_behavior_type
+        description: The most severe behavior type for a student, incident, and actions event.
+      - name: most_severe_discipline_action
+        description: The most severe discipline action for a student, incident, and actions event.
