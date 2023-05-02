@@ -3,6 +3,23 @@
 ## Under the hood
 ## Fixes 
 
+# edu_wh v0.2.4
+## New features
+- New models covering the relationship between discipline incidents, actions, and behaviors
+- Extend documentation coverage
+## Under the hood
+- accordion_columns gains ability to coalesce null values with a default
+- Fill False instead of NULL in some student demographics
+## Migration
+- Configure non-offender codes. This allows for navigating the Ed-Fi deprecation
+    of the old student discipline model. The new model separates offenders from 
+    non-offendors, and this config allows us to apply the same logic to the 
+    now-deprecated model. Any `DisciplineIncidentParticipationCodeDescriptors` 
+    in use in `studentDisciplineIncidentAssociations` that refer to non-offenders
+    should be included in this list. See [here](https://github.com/edanalytics/edu_project_template/blob/d58d7ffd95cfe113852a15e5f724f9641363a593/dbt/dbt_project.yml#L58)
+- New crosswalk for ranking the severity of Behaviors (template [here](https://github.com/edanalytics/edu_project_template/blob/main/dbt/seeds/xwalk_discipline_behaviors.csv)). This
+    facilitates the analysis of incidents involving multiple behaviors.
+
 # edu_wh v0.2.3
 ## New features
 - Add models for education service centers
