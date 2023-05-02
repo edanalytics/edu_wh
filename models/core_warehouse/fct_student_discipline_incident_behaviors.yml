@@ -1,0 +1,62 @@
+version: 2
+
+models: 
+  - name: fct_student_discipline_incident_behaviors
+    description: >
+      This table describes disciplinary incidents and the associated behaviors.
+      Only students categorized as offenders of the incident are included in this table
+      as behaviors are only linked to offenders.
+
+      Rows represent one behavior for one student, school, and incident.
+
+      *Primary Key:* k_student, k_discipline_incident, behavior_type
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - k_student
+            - k_student_xyear
+            - k_discipline_incident
+            - behavior_type
+    columns:
+      - name: k_student
+      - name: k_student_xyear
+      - name: k_school
+      - name: k_discipline_incident
+        description: >
+          A key containing incident_id and school_id to represent a single discipline incident.
+      - name: tenant_code
+      - name: school_id
+      - name: incident_id
+        description: > 
+          Identifier for this discipline incident assigned by the originating software.
+      - name: behavior_type
+        description: >
+          Category of behavior describing the discipline incident. Examples include:
+          'Disorderly Conduct', 'Vandalism'.
+      - name: behavior_detailed_description
+      - name: is_offender
+        description: >
+          Flag for whether or not the student is categorized as an offender
+          of the incident. This will always be true for this table.
+      - name: severity_order
+        description: >
+          A ranking number for the severity of behavior, for selecting the most 
+          severe. Behaviors are grouped into levels by the 100s, from 0 to 4, and
+          then ranked within levels.
+          This is controlled in `xwalk_discipline_behaviors.csv`
+      - name: is_most_severe_behavior
+        description: >
+          A flag for whether the discipline behavior is the most severe for a student, 
+          discipline_id, and school_id (k_student, k_discipline_incident). 
+          In the case of a tie, the first record is chosen.
+      - name: participation_code
+        description: >
+          The role the student took in an incident, such as 'Offender', 'Witness'.
+          This comes from a list of participation codes but typically only
+          one is associated with a student/incident so we chose the 
+          first value for analytical purposes. The values in this table
+          will never be codes linked to non-offenders.
+      - name: participation_codes_array
+      
+        

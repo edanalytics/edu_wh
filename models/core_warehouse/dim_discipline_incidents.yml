@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: dim_discipline_incidents
+    description: >
+      Defines a discipline incident and all known characteristics, including the relevant behaviors.
+    columns:
+      - name: k_discipline_incident
+        description: Generated primary key composed of `tenant_code`, `api_year`, `incident_id`, and `school_id`.
+        tests: 
+          - unique
+      - name: k_school
+      - name: tenant_code
+      - name: incident_id
+      - name: incident_date
+      - name: has_multiple_behaviors
+        description: A flag for whether or not multiple behaviors were associated with this incident.
+      - name: case_number
+      - name: incident_cost
+      - name: incident_description
+      - name: was_reported_to_law_enforcement
+      - name: reporter_name
+      - name: reporter_description
+      - name: incident_location
+      - name: behavior_array
+        description: An array of the behaviors associated with this incident
