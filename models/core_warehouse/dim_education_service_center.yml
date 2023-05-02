@@ -1,0 +1,13 @@
+version: 2
+
+models:
+  - name: dim_education_service_center
+    description: >
+     ##### Overview:
+       This dimension table defines education service centers and the characteristics unique to them, like name, address, etc.
+
+     ##### Primary Key:
+       `k_education_service_center` -- There is one record per education service center
+
+    config:
+      tags: ['esc']

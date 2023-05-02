@@ -21,7 +21,7 @@ dim_school as (
   select * from {{ ref('dim_school') }}
 ),
 first_school_day as (
-  select * from {{ ref('bld_ef3__first_day_of_school') }}
+  select * from {{ ref('bld_ef3__school_calendar_windows') }}
 ),
 school_calendar_counts as (
   select
@@ -51,9 +51,11 @@ left join dim_calendar
 join first_school_day
   on dim_school.k_school = first_school_day.k_school
   and fct_stu_school_assoc.school_year = first_school_day.school_year
+  -- subset to school overall first date
+  and first_school_day.k_school_calendar is null
 where true 
 -- exclude students who exited before first day of school
-and (fct_stu_school_assoc.exit_withdraw_date > first_school_day.first_date
+and (fct_stu_school_assoc.exit_withdraw_date > first_school_day.first_school_day
 or fct_stu_school_assoc.exit_withdraw_date is null)
 
 group by 1,2,3

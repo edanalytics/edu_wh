@@ -1,0 +1,77 @@
+version: 2
+
+models:
+  - name: dim_course
+    description: >
+        ##### Overview:
+          Defines courses, their subject matter and instructional characteristics. To see where this course is offered and 
+          the characteristics of a particular course section offering, see [dim_course_section](#!/model/model.edu_wh.dim_course_section).
+
+        ##### Primary Key:
+          `k_course` - There is one record per course.
+    config:
+      tags: ['core']
+    columns:
+      - name: k_course
+        description: Defining key for course sections. Generated primary key composed of `tenant_code`, `api_year`, `course_code`, and `ed_org_id`.
+        tests: 
+          - unique
+      - name: tenant_code
+        description: "Code defining the Tenant (may be an LEA, SEA, etc.) of the Ed-Fi ODS from which this record was pulled"
+      - name: school_year
+        description: "The school year passed to the Ed-Fi API when pulling this record from Course"
+      - name: course_code
+        description: "A unique alphanumeric code assigned to a course."
+      - name: course_title
+        description: "The descriptive name given to a course of study offered in a school or other institution or organization. 
+                      In departmentalized classes at the elementary, secondary, and postsecondary levels (and for staff development activities),
+                      this refers to the name by which a course is identified (e.g., American History, English III). For elementary and other 
+                      non-departmentalized classes, it refers to any portion of the instruction for which a grade or report is assigned (e.g.,
+                      reading, composition, spelling, and language arts)."
+      - name: school_course_code
+        description: "Course code assigned by the school (sourced from Course.identificationCodes in Ed-Fi)"
+      - name: state_course_code
+        description: "Course code assigned by the state (sourced from Course.identificationCodes in Ed-Fi)"
+      - name: course_description
+        description: "A description of the content standards and goals covered in the course. Reference may be made to state or national content standards."
+      - name: ed_org_id
+        description: "A unique number or alphanumeric code assigned to an education organization by a school, school system, a state, or other agency or entity."
+      - name: ed_org_type
+        description: "The classification of the education agency within the geographic boundaries of a state according to the level of administrative and
+                      operational control granted by the state."
+      - name: academic_subject
+        description: "The intended major subject area of the course."
+      - name: career_pathway
+        description: "Indicates the career cluster or pathway the course is associated with as part of a CTE curriculum."
+      - name: course_defined_by
+        description: "Specifies whether the course was defined by the SEA, LEA, School, or national organization."
+      - name: gpa_applicability
+        description: "An indicator of whether or not the course being described is included in the computation of the student's grade point average, 
+                      and if so, if it is weighted differently from regular courses."
+      - name: date_course_adopted
+        description: "Date the course was adopted by the education agency."
+      - name: is_high_school_course_requirement
+        description: "An indication that this course may satisfy high school graduation requirements in the course's subject area."
+      - name: max_completions_for_credit
+        description: "Designates how many times the course may be taken with credit received by the student."
+      - name: maximum_available_credits
+        description: "The maximum amount of credit available to a student who successfully completes the course."
+      - name: maximum_available_credit_type
+        description: ""
+      - name: maximum_available_credit_conversion
+        description: ""
+      - name: minimum_available_credits
+        description: "The minimum amount of credit available to a student who successfully completes the course."
+      - name: minimum_available_credit_type
+        description: ""
+      - name: minimum_available_credit_conversion
+        description: ""
+      - name: number_of_parts
+        description: "The number of parts identified for a course."
+      - name: time_required_for_completion
+        description: "The actual or estimated number of clock minutes required for class completion. This number is especially important for career 
+                      and technical education classes and may represent (in minutes) the clock hour requirement of the class."
+
+
+
+    

@@ -23,6 +23,7 @@ xwalk_att_events as (
 formatted as (
     select 
         dim_student.k_student,
+        dim_student.k_student_xyear,
         dim_course_section.k_course_section,
         stg_stu_section_attendance.tenant_code,
         stg_stu_section_attendance.attendance_event_date,

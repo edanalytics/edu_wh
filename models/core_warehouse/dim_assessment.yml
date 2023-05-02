@@ -3,7 +3,15 @@ version: 2
 models:
   - name: dim_assessment
     description: >
-      Defines an assessment and all known characteristics.
+      ##### Overview:
+        Defines an assessment and all known characteristics. 
+
+      ##### Primary Key:
+        `k_assessment` - There is one record per assessment. See definition of `k_assessment` in column descriptions below.
+
+    config:
+      tags: ['assessment']
+      enabled: "{{ var('src:domain:assessment:enabled', True) }}"
     columns:
       - name: k_assessment
         description: Generated primary key composed of `tenant_code`, `api_year`, `academicSubjectDescriptor`, `assessmentIdentifier`, and `namespace`.
@@ -12,20 +20,39 @@ models:
       - name: tenant_code
       - name: school_year
       - name: assessment_identifier
+        description: A unique number or alphanumeric code assigned to an assessment.
       - name: namespace
+        description: 	Namespace for the assessment.
       - name: assessment_title
+        description: The title or name of the assessment.
       - name: academic_subject
+        description: The description of the content or subject area (e.g., arts, mathematics, reading, stenography, or a foreign language) of an assessment.
       - name: is_adaptive_assessment
+        description: 	Indicates that the assessment is adaptive.
       - name: assessment_family
+        description: The assessment family this assessment is a member of.
       - name: assessment_form
+        description: Identifies the form of the assessment, for example a regular versus makeup form, multiple choice versus constructed response, etc.
       - name: assessment_version
+        description: The version identifier for the assessment.
       - name: max_raw_score
+        description: The maximum raw score achievable across all assessment items that are correct and scored at the maximum.
       - name: nomenclature
+        description: 	Reflects the specific nomenclature used for assessment.
       - name: revision_date
+        description: 	The month, day, and year that the conceptual design for the assessment was most recently revised substantially.
       - name: assessment_category
+        description: The category of an assessment based on format and content.
       - name: assessment_period_begin_date
+        description: 	The first date the assessment is to be administered.
       - name: assessment_period_end_date
+        description: The last date the assessment is to be administered.
       - name: content_standard
+        description: An indication as to whether an assessment conforms to a standard (e.g., local standard, statewide standard, regional standard, association standard).
       - name: scores_array
+        description: An array of all score names associated with this assessment. Sourced from Ed-Fi Assessment.scores.assessmentReportingMethodDescriptor
       - name: performance_levels_array
+        description: An array of all performance level names & values associated with this assessment. Sourced from Ed-Fi Assessment.performanceLevels.assessmentReportingMethodDescriptor 
+                     and Assessment.performanceLevels.performanceLevelDescriptor
       - name: grades_array
+        description: The grade level(s) for which an assessment is designed. The semantics of null is assumed to mean that the assessment is not associated with any grade level.

@@ -1,0 +1,6 @@
+version: 2
+
+models:
+  - name: rls_school_access
+    config:
+      tags: ['core']

@@ -3,7 +3,15 @@ version: 2
 models:
   - name: dim_course_section
     description: >
-      Defines individual sections of a course, and all known characteristics.
+      ##### Overview:
+        Defines individual sections of a course, where and when they are offered, and all known characteristics. Note,
+        some characteristics are defined at the `course` level. You can find these in [dim_course](#!/model/model.edu_wh.dim_course).
+
+      ##### Primary Key:
+        `k_course_section` - There is one record per course section.
+      
+    config:
+      tags: ['core']
     columns:
       - name: k_course_section
         description: Defining key for course sections

@@ -3,10 +3,15 @@ version: 2
 models: 
   - name: fct_student_special_education_program_association
     description: >
-      Student special education program enrollment information.
+      ##### Overview: 
+        This fact table contains student special education program enrollment information.
 
-      *Primary Key:* `k_student, k_program`
+      ##### Primary Key:
+        `k_student, k_program` -- There is one record per student, year, and special education program.
 
+    config:
+      tags: ['special_ed']
+      enabled: "{{ var('src:program:special_ed:enabled', True) }}"
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
@@ -20,8 +25,8 @@ models:
       - name: k_school
       - name: tenant_code
       - name: school_year
-      - name: spec_ed_program_begin_date
-      - name: spec_ed_program_end_date
+      - name: program_enroll_begin_date
+      - name: program_enroll_end_date
       - name: is_idea_eligible
       - name: iep_begin_date
       - name: iep_end_date

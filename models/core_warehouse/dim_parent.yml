@@ -4,6 +4,8 @@ models:
   - name: dim_parent
     description: >
       Defines parents, some of their key characteristics, and their contact information.
+    config:
+      tags: ['core']
     columns:
       - name: k_parent
         description: Defining key for the parent, which is consistent across years.

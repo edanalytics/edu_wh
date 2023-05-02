@@ -1,0 +1,24 @@
+version: 2
+
+models:
+  - name: bld_ef3__attendance_sessions
+    config:
+      tags: ['core']
+  - name: bld_ef3__combine_gpas
+    config:
+      tags: ['core']
+  - name: bld_ef3__school_calendar_windows
+    config:
+      tags: ['core']
+  - name: bld_ef3__wide_ids_lea
+    config:
+      tags: ['core']
+  - name: bld_ef3__wide_ids_school
+    config:
+      tags: ['core']
+  - name: bld_ef3__wide_ids_staff
+    config:
+      tags: ['core']
+  - name: bld_ef3__wide_school_network_assoc
+    config:
+      tags: ['core']

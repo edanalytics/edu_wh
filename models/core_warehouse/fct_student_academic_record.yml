@@ -1,0 +1,6 @@
+version: 2
+
+models:
+  - name: fct_student_academic_record
+    config:
+      tags: ['core']

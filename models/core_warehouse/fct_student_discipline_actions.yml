@@ -12,6 +12,9 @@ models:
 
       *Primary Key:* k_student, k_student_xyear, k_discipline_actions_event, discipline_action
 
+    config:
+      tags: ['discipline']
+      enabled: "{{ var('src:domain:discipline:enabled', True) }}"
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:

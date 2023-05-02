@@ -3,16 +3,27 @@ version: 2
 models: 
   - name: fct_course_transcripts
     description: >
-      Course Transcripts contain the full historic record of student
-      course grades, though in less detail than `fct_student_grades`.
-      Transcripts contain only final grades, while the grade fact may contain
-      mid-period progress reports or even in progress grades.
+      ##### Overview:
+        Course Transcripts contain the full historic record of student course grades, though in less detail
+        than [fct_student_grades](#!/model/model.edu_wh.fct_student_grades). Transcripts contain only final grades, while the grade fact may contain
+        mid-period progress reports or even in progress grades.  
 
-      Rows represent a student's grade and associated details for one
-      attempt result in one course at one school during one academic term.
+       Rows represent a student's grade and associated details for one attempt result in one course at
+       one school during one academic term.
 
-      *Primary Key:* `k_course, k_student_academic_record, course_attempt_result`
+      ##### Primary Key:
+        `k_course, k_student_academic_record, course_attempt_result` -- There is one record per course,
+        student, education organization (usually school or LEA), academic term, and course attempt (e.g. Pass or Fail).
 
+      ##### Important Business Rules:
+        The `course_attempt_result` attribute is included in the unique key for each record. As a result, there may be multiple records
+        with the same values for `k_course` and `k_student_academic_record`, but different values for `course_attempt_result`.
+        For example, a student may have both passed and failed a course in a given term. Queries must consider the potential for multiple 
+        `course_attempt_result` values per combination of `k_course` and `k_student_academic_record`, and either aggregate the data 
+        or choose a specific `course_attempt_result` to avoid incorrect results.
+
+    config:
+      tags: ['core']
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
@@ -29,22 +40,38 @@ models:
       - name: school_year
       - name: academic_term
       - name: course_attempt_result
+        description: The result from the student's attempt to take the course, e.g. Pass or Fail
       - name: course_title
         description: >
           Course title as it appears in the transcript. May differ from the 
           title that appears in `dim_course`.
       - name: alternative_course_code
       - name: alternative_course_title
+        description: The descriptive name given to a course of study offered in the school, if different from the CourseTitle.
       - name: when_taken_grade_level
+        description: Student's grade level at time of course.
       - name: final_letter_grade_earned
+        description: The final indicator of student performance in a class as submitted by the instructor.
       - name: final_numeric_grade_earned
+        description: 	The final indicator of student performance in a class as submitted by the instructor.
       - name: earned_credits
+        description: The number of credits a student earned for completing a given course.
       - name: attempted_credits
+        description: The number of credits a student attempted and could earn for successfully completing a given course.
       - name: course_repeat_code
+        description: Indicates that an academic course has been repeated by a student and how that repeat is to be computed
+                     in the student's academic grade average.
       - name: method_credit_earned
+        description: The method the credits were earned.
       - name: earned_credit_type
+        description: The type of credits or units of value earned by the student for the completion of a course
       - name: earned_credit_conversion
+        description: Conversion factor that when multiplied by the number of credits is equivalent to Carnegie units.
       - name: attempted_credit_type
+        description: The type of credits or units of value attempted by the student for the completion of a course
       - name: attempted_credit_conversion
+        description: Conversion factor that when multiplied by the number of credits is equivalent to Carnegie units.
       - name: assigning_organization_identification_code
+        description: The organization code or name assigning the course identification code.
       - name: course_catalog_url
+        description: The URL for the course catalog that defines the course identification code.

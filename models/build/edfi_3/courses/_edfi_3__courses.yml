@@ -1,0 +1,21 @@
+version: 2
+
+models:
+  - name: bld_ef3__course_char__combined_long
+    config:
+      tags: ['core']
+  - name: bld_ef3__course_char__combined_wide
+    config:
+      tags: ['core']
+  - name: bld_ef3__course_char__course
+    config:
+      tags: ['core']
+  - name: bld_ef3__course_char__offering
+    config:
+      tags: ['core']
+  - name: bld_ef3__course_char__section
+    config:
+      tags: ['core']
+  - name: bld_ef3__wide_ids_course
+    config:
+      tags: ['core']

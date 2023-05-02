@@ -1,0 +1,40 @@
+version: 2
+
+models:
+  - name: fct_student_homeless_program_association
+    description: >
+      ##### Overview:
+        This fact table contains student homeless program enrollment information.
+
+      ##### Primary Key:
+        `k_student, k_program` -- There is one record per student, year, and homeless program.
+
+    config:
+      tags: ['homeless']
+      enabled: "{{ var('src:program:homeless:enabled', True) }}"
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - k_student
+            - k_program
+
+    columns:
+      - name: k_student
+      - name: k_student_xyear
+      - name: k_program
+      - name: k_lea
+      - name: k_school
+      - name: tenant_code
+      - name: school_year
+      - name: program_enroll_begin_date
+      - name: program_enroll_end_date
+      - name: is_awaiting_foster_care
+      - name: is_homeless_unaccompanied_youth
+      - name: homeless_primary_nighttime_residence
+      - name: is_served_outside_regular_session
+      - name: participation_status
+      - name: participation_status_designated_by
+      - name: participation_status_begin_date
+      - name: participation_status_end_date
+      - name: reason_exited

@@ -3,10 +3,25 @@ version: 2
 models:
   - name: dim_program
     description: >
-      Defines programs at the school and LEA level.
+      ##### Overview:
+        This dimension table defines programs that exist at the school and LEA level. It can be referenced by any or all of these fact tables, 
+        if they are populated in the ODS and enabled by this Stadium implementation:
+
+        - [fct_student_program_association](#!/model/model.edu_wh.fct_student_program_association)
+        - [fct_student_special_education_program_association](#!/model/model.edu_wh.fct_student_special_education_program_association)
+        - [fct_student_homeless_program_association](#!/model/model.edu_wh.fct_student_homeless_program_association)
+        - [fct_student_language_instruction_program_association](#!/model/model.edu_wh.fct_student_language_instruction_program_association)
+        - [fct_student_title_i_part_a_program_association](#!/model/model.edu_wh.fct_student_title_i_part_a_program_association)
+
+      ##### Primary Key:
+        `k_program` -- There is one record per program, education organization, and year
+
+
+    config:
+      tags: ['core']
     columns:
       - name: k_program
-        description: Defining key for programs.
+        description: Defining key for programs. Surrogate key for [`api_year` + `ed_org_id` + `program_name` + `program_type`]
         tests: 
           - unique
       - name: k_lea
@@ -23,7 +38,7 @@ models:
       - name: ed_org_type
         description: >
           The type of educational organization
-          e.g., School or LocalEducationlAgency.
+          e.g., School or LocalEducationAgency.
       - name: program_id
         description: The identifier for the program.
       - name: program_name

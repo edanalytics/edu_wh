@@ -20,6 +20,12 @@ dim_school as (
 dim_school_calendar as (
     select * from {{ ref('dim_school_calendar') }}
 ),
+dim_calendar_date as (
+    select * from {{ ref('dim_calendar_date') }}
+),
+bld_school_calendar_windows as (
+    select * from {{ ref('bld_ef3__school_calendar_windows') }}
+),
 single_calendar_schools as (
     -- some implementations may not provide a school calendar link because
     -- their system only allows one calendar per school anyway.
@@ -81,7 +87,19 @@ formatted as (
     left join single_calendar_schools
         on stg_stu_school.k_school = single_calendar_schools.k_school
         and stg_stu_school.school_year = single_calendar_schools.school_year
+    left join bld_school_calendar_windows
+        on stg_stu_school.k_school = bld_school_calendar_windows.k_school
+        and stg_stu_school.school_year = bld_school_calendar_windows.school_year
+        and equal_null(dim_school_calendar.k_school_calendar, bld_school_calendar_windows.k_school_calendar)
     where true
+    -- exclude students who exited before the first school day
+    and (exit_withdraw_date >= bld_school_calendar_windows.first_school_day
+        or exit_withdraw_date is null
+        or bld_school_calendar_windows.first_school_day is null
+        )
+    -- exclude students whose exit day is before their entry day
+    and (exit_withdraw_date >= entry_date
+        or exit_withdraw_date is null)
     -- exclude students who never actually enrolled
     {% set excl_withdraw_codes =  var('edu:enroll:exclude_withdraw_codes')  %}
     {% if excl_withdraw_codes | length -%}

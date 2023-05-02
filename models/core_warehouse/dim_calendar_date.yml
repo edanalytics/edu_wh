@@ -3,8 +3,15 @@ version: 2
 models:
   - name: dim_calendar_date
     description: >
-      Calendar dates as defined for a particular calendar at a particular school,
-      along with some slicing variables for ordering and grouping time.
+      ##### Overview: 
+        Calendar dates as defined for a particular calendar at a particular school,
+        along with some slicing variables for ordering and grouping time.
+
+      ##### Primary Key:
+        `k_calendar_date` - There is one record per individual day in a single calendar at a single school.
+
+    config:
+      tags: ['core']
     columns:
       - name: k_calendar_date
         description: >

@@ -1,0 +1,64 @@
+version: 2
+
+models:
+  - name: dim_staff
+    description: >
+     ##### Overview:
+       This dimension table defines staff and the characteristics unique to them, like name, email_address, etc.
+
+     ##### Primary Key:
+       `k_staff` -- There is one record per staff member
+
+     ##### Important Business Rules:
+       If the staff member has multiple email addresses in the ODS, this table selects one, using these rules:  
+       1. Never select if Ed-Fi Staff.ElectronicMail.DoNotPublishIndicator is True
+       2. Select address with ElectronicMailType = 'Work' if exists
+       3. Else, select first address found for this k_staff in (#!/model/model.edu_edfi_source.stg_ef3__staffs__emails)[stg_ef3__staffs__emails]
+
+    config:
+      tags: ['core']
+    columns:
+      - name: k_staff
+        description: "Primary key generated using `tenant_code` and `staff_unique_id`"
+      - name: tenant_code
+        description: "Code defining the Tenant (may be an LEA, SEA, etc.) of the Ed-Fi ODS from which this record was pulled"
+      - name: staff_unique_id
+        description: "A unique alphanumeric code assigned to a staff."
+      - name: district_staff_id
+        description: "Staff ID assigned by the district. Sourced from Ed-Fi staff.identificationCodes"
+      - name: state_staff_id
+        description: "Staff ID assigned by the state. Sourced from Ed-Fi staff.identificationCodes"
+      - name: login_id
+        description: "Aa login ID for the user; depending on implementation, this may be useful for security applications"
+      - name: email_address
+        description: "The electronic mail (e-mail) address listed for an individual or organization. See **Important Business Rules** section above."
+      - name: email_type
+        description: "The type of email listed for an individual or organization. For example: Home/Personal, Work, etc.)"
+      - name: display_name
+        description: "Staff Last Name + , + First Name"
+      - name: first_name
+        description: ""
+      - name: last_name
+        description: ""
+      - name: middle_name
+        description: ""
+      - name: personal_title_prefix
+        description: ""
+      - name: generation_code_suffix
+        description: ""
+      - name: birth_date
+        description: ""
+      - name: gender
+        description: ""
+      - name: highest_completed_level_of_education
+        description: "The extent of formal instruction an individual has received (e.g., the highest grade in school completed or its equivalent 
+                      or the highest degree received)"
+      - name: is_highly_qualified_teacher
+        description: "An indication of whether a teacher is classified as highly qualified for his/her assignment according to state or local definition. 
+                      This attribute indicates the teacher is highly qualified for ALL Sections being taught."
+      - name: years_of_prior_professional_experience
+        description: "The total number of years that an individual has previously held a similar professional position in one or more education
+                      institutions prior to the current school year."
+      - name: years_of_prior_teaching_experience
+        description: "The total number of years that an individual has previously held a teaching position in one or more education institutions
+                      prior to the current school year."

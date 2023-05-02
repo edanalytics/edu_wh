@@ -1,0 +1,15 @@
+version: 2
+
+models:
+  - name: attendance_freshness_test
+    config:
+      tags: ['core']
+  - name: invalid_enrollments
+    config:
+      tags: ['core']
+  - name: overlapping_enrollments
+    config:
+      tags: ['core']
+  - name: student_attendance_total_days
+    config:
+      tags: ['core']

@@ -1,0 +1,64 @@
+version: 2
+
+models:
+  - name: dim_school
+    description: >
+     ##### Overview:
+       This dimension table defines schools and the characteristics unique to them, like name, address, charter_status, etc.
+
+     ##### Primary Key:
+       `k_school` -- There is one record per school
+      
+     {{ doc(var('edu:custom_docs:dim_school')) if var('edu:custom_docs:dim_school', '') }}
+
+    config:
+      tags: ['core']
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - k_school
+    columns:
+      - name: k_school
+      - name: k_lea
+      - name: tenant_code
+      - name: school_id
+        description: The unique identifier assigned to a school.
+      - name: department_school_code
+      - name: local_school_code
+        description: Local school identifier
+      - name: state_school_code
+        description: State school identifier
+      - name: school_name
+      - name: school_short_name
+      - name: lea_name
+      - name: lea_id
+      - name: school_category
+        description: The category of school. For example - High School, Middle School, Elementary School.
+      - name: school_type
+        description: The type of education institution as classified by its primary focus. Fore example - Special Education, Regular, Alternative.
+      - name: operational_status
+        description: The current operational status of the education organization (e.g., active, inactive).
+      - name: administrative_funding_control
+        description: The type of education institution as classified by its funding source (e.g., public or private).
+      - name: title_i_part_a_school_designation
+        description: Denotes the Title I Part A designation for the school.
+      - name: charter_status
+        description: The category of charter school. For example - School Charter, Open Enrollment Charter.
+      - name: charter_approval_agency
+        description: The type of agency that approved the establishment or continuation of a charter school.
+      - name: magnet_type
+        description: Emphasis of magnet school. A magnet school is a school that has been designed to attract students of different racial/ethnic backgrounds for the purpose of reducing, preventing or eliminating racial isolation; and/or to provide an academic or social focus on a particular theme (e.g., science/math, performing arts, gifted/talented, or foreign language).
+      - name: website
+      - name: address_type
+      - name: street_address
+      - name: city
+      - name: name_of_county
+      - name: state_code
+      - name: postal_code
+      - name: building_site_number
+      - name: locale
+      - name: congressional_district
+      - name: county_fips_code
+        description: Definition The Federal Information Processing Standards (FIPS) numeric code for the county issued by the National Institute of Standards and Technology (NIST). Counties are considered to be the "first-order subdivisions" of each State and statistically equivalent entity, regardless of their local designations (county, parish, borough, etc.) Counties in different States will have the same code. A unique county number is created when combined with the 2-digit FIPS State Code.
+      - name: latitude
+      - name: longitude
