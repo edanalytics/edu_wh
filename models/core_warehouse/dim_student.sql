@@ -111,7 +111,8 @@ formatted as (
         {{ accordion_columns(
             source_table='bld_ef3__student_characteristics',
             exclude_columns=['tenant_code', 'api_year', 'k_student', 'k_student_xyear', 'ed_org_id'],
-            source_alias='stu_chars'
+            source_alias='stu_chars',
+            coalesce_value = 'FALSE'
         ) }}
 
         -- student indicators
@@ -125,7 +126,8 @@ formatted as (
         {{ accordion_columns(
             source_table='bld_ef3__student_programs',
             exclude_columns=['tenant_code', 'api_year', 'k_student', 'k_student_xyear', 'ed_org_id'],
-            source_alias='stu_programs'
+            source_alias='stu_programs',
+            coalesce_value = 'FALSE'
         ) }}
 
         -- intersection groups
