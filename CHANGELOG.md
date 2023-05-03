@@ -19,6 +19,7 @@
     should be included in this list. See [here](https://github.com/edanalytics/edu_project_template/blob/d58d7ffd95cfe113852a15e5f724f9641363a593/dbt/dbt_project.yml#L58)
 - New crosswalk for ranking the severity of Behaviors (template [here](https://github.com/edanalytics/edu_project_template/blob/main/dbt/seeds/xwalk_discipline_behaviors.csv)). This
     facilitates the analysis of incidents involving multiple behaviors.
+- `fct_discipline_actions` has been renamed to `fct_student_discipline_actions`. Any references to this model will need to be updated.
 
 # edu_wh v0.2.3
 ## New features
