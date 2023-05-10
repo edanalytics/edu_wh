@@ -25,7 +25,7 @@ bld_program_services as (
     select * From {{ ref ('bld_ef3__student_program__special_education__program_services')}}
 ),
 bld_disabilities as (
-    select * from {{ ref('bld_ef3__student_program__special_education_disabilities') }}
+    select * from {{ ref('bld_ef3__student_program__special_education__disabilities') }}
 )
 
 formatted as (
@@ -60,7 +60,7 @@ formatted as (
         
         stage.special_education_setting,
         bld_program_services.program_services as special_education_program_services,
-        bld_disabilities.primary_disability
+        bld_disabilities.disability_type as primary_disability
 
         
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_special_education_program_associations', flatten=False) }}

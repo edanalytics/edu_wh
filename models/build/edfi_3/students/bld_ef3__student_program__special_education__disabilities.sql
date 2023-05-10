@@ -11,13 +11,13 @@ primary_disability as (
 		ed_org_id,
 		k_lea,
 		k_school,
-		disability_type as primary_disability,
+		disability_type,
 		disabilitiy_source_type,
 		disability_diagnosis,
 		order_of_disability,
 		disability_designation
 	from stg_ef3__stu_spec_ed__disabilities
-	where order_of_disability = 1;
+	where order_of_disability = 1
 )
 
 select * from primary_disability
