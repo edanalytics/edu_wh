@@ -24,6 +24,9 @@ dim_program as (
 bld_program_services as (
     select * From {{ ref ('bld_ef3__student_program__special_education__program_services')}}
 ),
+bld_disabilities as (
+    select * from {{ ref('bld_ef3__student_program__special_education_disabilities') }}
+)
 
 formatted as (
     select
@@ -56,7 +59,9 @@ formatted as (
         stage.reason_exited,
         
         stage.special_education_setting,
-        bld_program_services.program_services as special_education_program_services
+        bld_program_services.program_services as special_education_program_services,
+        bld_disabilities.primary_disability
+
         
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_special_education_program_associations', flatten=False) }}
         
@@ -73,6 +78,8 @@ formatted as (
             on stage.k_student = bld_program_services.k_student
             and stage.k_program = bld_program_services.k_program
             and stage.program_enroll_begin_date = bld_program_services.program_enroll_begin_date
+        left join bld_disabilities
+            on stage.k_student = bld_disabilities.k_student
 )
 
 select * from formatted
