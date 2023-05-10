@@ -11,7 +11,7 @@ primary_disability as (
 		ed_org_id,
 		k_lea,
 		k_school,
-		disability_type,
+		disability_type as primary_disability,
 		disabilitiy_source_type,
 		disability_diagnosis,
 		order_of_disability,
