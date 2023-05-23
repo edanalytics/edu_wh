@@ -53,7 +53,7 @@ student_assessments_wide as (
         ) }}
         {%- endif %}
     from student_assessments
-    join student_assessments_long_results
+    left join student_assessments_long_results
         on student_assessments.k_student_assessment = student_assessments_long_results.k_student_assessment
         and student_assessments_long_results.normalized_score_name != 'other'
     left join object_agg_other_results
