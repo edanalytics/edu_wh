@@ -21,6 +21,7 @@ formatted as (
     select 
         dim_student.k_student,
         dim_student.k_student_xyear,
+        dim_course_section.k_school,
         dim_course_section.k_course_section,
         stg_stu_section.tenant_code,
         stg_stu_section.school_year,

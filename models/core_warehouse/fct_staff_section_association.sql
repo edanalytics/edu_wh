@@ -20,6 +20,7 @@ dim_course_section as (
 formatted as (
     select 
         dim_staff.k_staff,
+        dim_course_section.k_school,
         dim_course_section.k_course_section,
         stg_staff_section.tenant_code,
         stg_staff_section.school_year,
