@@ -64,7 +64,7 @@ joined as (
         on section.k_course_offering = offering.k_course_offering
     join dim_course 
         on offering.k_course = dim_course.k_course
-    join section_chars 
+    left join section_chars 
         on section.k_course_section = section_chars.k_course_section
 )
 select * from joined
