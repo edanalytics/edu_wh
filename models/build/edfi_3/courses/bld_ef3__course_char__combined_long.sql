@@ -1,61 +1,53 @@
--- since level characteristics can be defined at any of the three levels,
--- but are implied to override the parent from the bottom up,
--- we collapse across the three possible sources to arrive at 
--- one canonical set of characteristics per section
-
--- todo: how can we ensure all keys are always defined?
--- one step: make characteristic unfolding an outer?
-
-
--- todo: make test case for various definition scenarios,
--- check that this logic works
-with course_char as (
-    select * from {{ ref('bld_ef3__course_char__course') }}
+-- this model unpacks the characteristics payload from each of the 3 levels at 
+-- which it's defined, then combines the lists across the 3 levels before
+-- unpacking it back to section by characteristic grain
+with section_chars as (
+    select  
+        k_course_offering,
+        k_course_section,
+        array_agg({{ edu_edfi_source.extract_descriptor('value:sectionCharacteristicDescriptor::string') }}) as section_characteristic
+    from {{ ref('stg_ef3__sections') }}
+        , lateral flatten(v_section_characteristics, outer => true)
+    group by 1,2
+), 
+offering_chars as (
+    select 
+        k_course,
+        k_course_offering,
+        array_agg({{ edu_edfi_source.extract_descriptor('value:courseLevelCharacteristicDescriptor::string') }}) as offering_characteristic
+    from {{ ref('stg_ef3__course_offerings') }}
+        , lateral flatten(v_course_level_characteristics, outer => true)
+    group by 1,2
 ),
-offering_char as (
-    select * from {{ ref('bld_ef3__course_char__offering') }}
-),
-section_char as (
-    select * from {{ ref('bld_ef3__course_char__section') }}
+course_chars as (
+    select 
+        tenant_code, 
+        api_year,
+        k_course,
+        array_agg({{ edu_edfi_source.extract_descriptor('value:courseLevelCharacteristicDescriptor::string') }}) as course_characteristic
+    from {{ ref('stg_ef3__courses') }}
+        , lateral flatten(v_level_characteristics, outer => true)
+    group by 1,2,3
 ),
 joined as (
-    select 
-        coalesce(
-            section_char.tenant_code,
-            offering_char.tenant_code,
-            course_char.tenant_code
-        ) as tenant_code,
-        coalesce(
-            section_char.api_year,
-            offering_char.api_year,
-            course_char.api_year
-        ) as api_year,
-        coalesce(
-            offering_char.k_course,
-            course_char.k_course
-        ) as k_course,
-        coalesce(
-            section_char.k_course_offering,
-            offering_char.k_course_offering
-        ) as k_course_offering,
-        section_char.k_course_section,
-        coalesce(
-            section_char.course_level_characteristic,
-            offering_char.course_level_characteristic,
-            course_char.course_level_characteristic
-        ) as course_level_characteristic,
-        coalesce(
-            section_char.indicator_name,
-            offering_char.indicator_name,
-            course_char.indicator_name
-        ) as indicator_name
-    from section_char
-    full outer join offering_char
-        on section_char.k_course_offering = offering_char.k_course_offering
-        and section_char.course_level_characteristic = offering_char.course_level_characteristic
-    full outer join course_char
-        on offering_char.k_course = course_char.k_course
-        and offering_char.course_level_characteristic = course_char.course_level_characteristic
-        and section_char.course_level_characteristic = course_char.course_level_characteristic
+    select
+        course_chars.tenant_code,
+        course_chars.api_year,
+        course_chars.k_course,
+        offering_chars.k_course_offering,
+        section_chars.k_course_section,
+        -- combine and find distinct values across all levels
+        array_distinct(array_cat(course_characteristic, array_cat(offering_characteristic, section_characteristic))) as combined_chars
+    from course_chars 
+    join offering_chars 
+        on course_chars.k_course = offering_chars.k_course 
+    join section_chars 
+        on offering_chars.k_course_offering = section_chars.k_course_offering
 )
-select * from joined
+select 
+    tenant_code,
+    api_year,
+    k_course_section,
+    value::string as course_level_characteristic
+from joined 
+ , lateral flatten(combined_chars)
