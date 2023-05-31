@@ -18,7 +18,9 @@ section as (
 dim_course as (
     select * from {{ ref('dim_course') }}
 ),
--- todo: pivot characteristics wide
+section_chars as (
+    select * from {{ ref('bld_ef3__course_char__combined_wide') }}
+),
 joined as (
     select 
         section.k_course_section,
@@ -38,21 +40,32 @@ joined as (
         dim_course.academic_subject,
         dim_course.career_pathway,
         offering.instructional_time_planned,
+        section.is_official_attendance_period,
         section.sequence_of_course,
+
+        -- section characteristics
+        {{ accordion_columns(
+            source_table='bld_ef3__course_char__combined_wide',
+            exclude_columns=['tenant_code', 'api_year', 'k_course', 'k_course_offering', 'k_course_section'],
+            source_alias='section_chars',
+            coalesce_value = 'FALSE'
+        ) }}
+
         section.educational_environment_type,
         section.instruction_language,
         section.medium_of_instruction,
         section.population_served,
         section.available_credits,
-        section.available_credit_conversion,
         section.available_credit_type,
-        section.is_official_attendance_period
+        section.available_credit_conversion
         -- todo: add characteristic indicators
     from section
     join offering
         on section.k_course_offering = offering.k_course_offering
     join dim_course 
         on offering.k_course = dim_course.k_course
+    join section_chars 
+        on section.k_course_section = section_chars.k_course_section
 )
 select * from joined
 order by tenant_code, k_school, k_course_section
