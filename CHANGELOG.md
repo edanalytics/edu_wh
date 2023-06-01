@@ -1,7 +1,14 @@
 # Unreleased
 ## New features
+- Create wide indicators from course/section characteristics in `dim_course_section`
 ## Under the hood
+- Add defaults for discipline non-offender codes
+- Minor tweaks to documentation, configuration
+- Allow assessment results to come through even if they don't match a xwalk entry
+- Add `k_school` to more models
+- Add configuration to customize the preferred email address for staff
 ## Fixes 
+
 
 # edu_wh v0.2.4
 ## New features
