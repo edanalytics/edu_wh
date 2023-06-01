@@ -16,7 +16,7 @@ choose_email as (
     {{ row_pluck(ref('stg_ef3__staffs__emails'),
                 key='k_staff',
                 column='email_type',
-                preferred='Work',
+                preferred=var('edu:staff:preferred_email', 'Work'),
                 where='(do_not_publish is null or not do_not_publish)') }}
 ),
 -- emails
