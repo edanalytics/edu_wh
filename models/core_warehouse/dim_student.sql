@@ -14,11 +14,11 @@ with stg_student as (
 stu_demos as (
     select * from {{ ref('bld_ef3__choose_stu_demos') }}
 ),
+stu_immutable_demos as (
+    select * from {{ ref('bld_ef3__immutable_stu_demos') }}
+),
 stu_ids as (
     select * from {{ ref('bld_ef3__wide_ids_student') }}
-),
-stu_races as (
-    select * from {{ ref('bld_ef3__stu_race_ethnicity') }}
 ),
 stu_chars as (
     select * from {{ ref('bld_ef3__student_characteristics') }}
@@ -71,16 +71,15 @@ formatted as (
             exclude_columns=['tenant_code', 'api_year', 'k_student', 'k_student_xyear', 'ed_org_id'],
             source_alias='stu_ids'
         ) }}
-        stg_student.first_name,
-        stg_student.middle_name,
-        stg_student.last_name,
-        concat(stg_student.last_name, ', ', stg_student.first_name,
-            coalesce(' ' || left(stg_student.middle_name, 1), '')) as display_name,
-        stg_student.birth_date,
+        stu_immutable_demos.first_name,
+        stu_immutable_demos.middle_name,
+        stu_immutable_demos.last_name,
+        stu_immutable_demos.display_name,
+        stu_immutable_demos.birth_date,
         stu_demos.lep_code,
-        stu_demos.gender,
+        stu_immutable_demos.gender,
         stu_grade.entry_grade_level as grade_level,
-        stu_races.race_ethnicity,
+        stu_immutable_demos.race_ethnicity,
 
         -- student programs
         {% if var('src:program:special_ed:enabled', True) %}
@@ -149,19 +148,19 @@ formatted as (
         -- todo: bring in additional summarized attributes
 
        
-        stu_races.race_array,
-        concat(display_name, ' (', stg_student.student_unique_id, ')') as safe_display_name
+        stu_immutable_demos.race_array,
+        stu_immutable_demos.safe_display_name
 
     from stg_student
 
     join stu_demos
         on stg_student.k_student = stu_demos.k_student
+    join stu_immutable_demos
+        on stu_demos.k_student = stu_immutable_demos.k_student
+        and stu_demos.ed_org_id = stu_immutable_demos.ed_org_id
     left join stu_ids
         on stu_demos.k_student = stu_ids.k_student
         and stu_demos.ed_org_id = stu_ids.ed_org_id
-    left join stu_races
-        on stu_demos.k_student = stu_races.k_student
-        and stu_demos.ed_org_id = stu_races.ed_org_id
     left join stu_chars
         on stu_demos.k_student = stu_chars.k_student
         and stu_demos.ed_org_id = stu_chars.ed_org_id
