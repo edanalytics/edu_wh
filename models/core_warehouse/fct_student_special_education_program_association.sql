@@ -24,9 +24,10 @@ dim_program as (
 bld_program_services as (
     select * From {{ ref ('bld_ef3__student_program__special_education__program_services')}}
 ),
+
 bld_disabilities as (
     select * from {{ ref('bld_ef3__student_program__special_education__disabilities') }}
-)
+),
 
 formatted as (
     select
