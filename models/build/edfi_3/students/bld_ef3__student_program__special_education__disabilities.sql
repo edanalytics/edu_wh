@@ -3,20 +3,21 @@ with stage_disabilities as (
 ),
 
 primary_disability as (
-	select distinct
+	select
 		tenant_code,
 		api_year,
 		k_student,
-		k_student_year,
+		k_student_xyear,
 		ed_org_id,
 		k_lea,
 		k_school,
+		--program_enroll_begin_date,
 		disability_type,
-		disabilitiy_source_type,
+		disability_source_type,
 		disability_diagnosis,
 		order_of_disability,
 		disability_designation
-	from stg_ef3__stu_spec_ed__disabilities
+	from stage_disabilities
 	where order_of_disability = 1
 )
 
