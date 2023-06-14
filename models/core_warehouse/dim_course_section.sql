@@ -9,6 +9,8 @@
   )
 }}
 
+{% set custom_data_sources = var("edu:course_section:custom_data_sources") %}
+
 with offering as (
     select * from {{ ref('stg_ef3__course_offerings') }}
 ),
@@ -41,6 +43,16 @@ joined as (
         dim_course.career_pathway,
         offering.instructional_time_planned,
         section.is_official_attendance_period,
+
+        -- field from custom data source
+        {% if custom_data_sources is not none and custom_data_sources | length -%}
+          {%- for source in custom_data_sources -%}
+            {%- for indicator in custom_data_sources[source] -%}
+              {{ custom_data_sources[source][indicator]['where'] }} as {{ indicator }},
+            {%- endfor -%}
+          {%- endfor -%}
+        {%- endif %}
+
         section.sequence_of_course,
 
         -- section characteristics
@@ -66,6 +78,15 @@ joined as (
         on offering.k_course = dim_course.k_course
     left join section_chars 
         on section.k_course_section = section_chars.k_course_section
+    
+    -- custom data source
+    {% if custom_data_sources is not none and custom_data_sources | length -%}
+      {%- for source in custom_data_sources -%}
+        left join {{ ref(source) }}
+          on section.k_course_section = {{ source }}.k_course_section
+      {% endfor %}
+    {%- endif %}
+
 )
 select * from joined
 order by tenant_code, k_school, k_course_section
