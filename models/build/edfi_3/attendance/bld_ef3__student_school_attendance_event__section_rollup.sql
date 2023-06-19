@@ -1,5 +1,5 @@
-{% set course_section_attendance_filter = var("edu:attendance:course_section_attendance_filter") %}
-{% set class_period_attendance_filter = var("edu:attendance:class_period_attendance_filter") %}
+{% set course_section_attendance_filter = var("edu:attendance:course_section_attendance_filter", 'is_official_attendance_period=1') %}
+{% set class_period_attendance_filter = var("edu:attendance:class_period_attendance_filter", 'is_official_attendance_period=1') %}
 
 with school as (
     select * from {{ ref('dim_school') }}
