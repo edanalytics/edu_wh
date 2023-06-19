@@ -9,7 +9,7 @@
   )
 }}
 
-{% set custom_data_sources = var("edu:course_section:custom_data_sources") %}
+{% set custom_data_sources = var("edu:course_section:custom_data_sources", none) %}
 
 with offering as (
     select * from {{ ref('stg_ef3__course_offerings') }}

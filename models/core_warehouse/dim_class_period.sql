@@ -1,4 +1,4 @@
-{% set custom_data_sources = var("edu:class_period:custom_data_sources") %}
+{% set custom_data_sources = var("edu:class_period:custom_data_sources", none) %}
 
 with class_periods as (
     select * from {{ ref('stg_ef3__class_periods') }}
