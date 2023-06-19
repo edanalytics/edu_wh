@@ -98,7 +98,7 @@ daily_attendance as (
         max(attendance_event_reason) as attendance_event_reason, -- max may not work for all cases
         ifnull(sum(section_attendance.is_absent), 0) as periods_absent, 
         count(k_class_period) as periods_total,
-        iff(periods_absent / periods_total > 0.5, 1, 0) as is_absent,
+        iff(periods_absent / periods_total > 0.5, 1, 0) as is_absent, -- TODO make this logic configurable
         {# TODO check on the logic for aggregating the below fields
         they're null for jeffco so unclear how to handle these fields #}
         sum(event_duration) as event_duration,
