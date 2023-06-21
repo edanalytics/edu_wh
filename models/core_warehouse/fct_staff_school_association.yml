@@ -6,7 +6,7 @@ models:
       tags: ['core']
     description: >
      ##### Overview:
-       This fact table provides information on the associations between Staff and Schools. It includes both active and historic assignments.
+       This fact table provides information on the associations between Staff and Schools. It includes both active and historic associations.
 
      ##### Primary Key:
        `k_staff, school_year, k_school, program_assignment, staff_classification, begin_date` -- There is one record per staff, year, school, program assignment, classification, and association begin date.

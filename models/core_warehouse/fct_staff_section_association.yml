@@ -4,7 +4,7 @@ models:
   - name: fct_staff_section_association
     description: >
      ##### Overview:
-       This fact table provides information on the associations between Staff and Course Sections. It includes both active and historic assignments.
+       This fact table provides information on the associations between Staff and Course Sections. It includes both active and historic associations.
 
      ##### Primary Key:
        `k_staff, k_course_section` -- There is one record per staff and course section.
@@ -14,7 +14,7 @@ models:
        - the assignment is linked to the latest school year in the system,  
        - the `begin_date` is earlier than the current date,  
        - and the `end_date` is either null or later than the current date
-       
+
     config:
       tags: ['core']
     columns:
