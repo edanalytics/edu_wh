@@ -28,8 +28,8 @@ models:
           from fct_staff_school_association
           -- OPTIONAL FILTER TO ONLY ACTIVE STAFF
           where is_active_assignment
-          -- take latest exit, then latest entry, then if still ties, order by k_school to ensure consistency
-          qualify 1 = row_number() over(partition by k_staff order by end_date desc, begin_date desc, k_school)
+          -- take latest exit, latest entry, highest order of assignment. if still dupes (rare), order on k_school to be consistent
+          qualify 1 = row_number() over(partition by k_staff order by end_date desc, begin_date desc, order_of_assignment, k_school)
         )
         select
           dim_staff.staff_unique_id,
