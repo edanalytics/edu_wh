@@ -11,7 +11,7 @@ models:
 
     config:
       tags: ['special_ed']
-      enabled: "{{ var('src:program:special_ed:enabled', True) }}"
+      enabled: "{{ var('src:program:special_ed:enabled', True) }}" 
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
@@ -44,4 +44,6 @@ models:
       - name: reason_exited
       - name: special_education_setting
       - name: special_education_program_services
-      - name: primary_disability
+      - name: disability_type
+      - name: order_of_disability
+      - name: is_primary_disability
