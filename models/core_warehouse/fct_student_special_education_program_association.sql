@@ -63,10 +63,11 @@ formatted as (
         bld_program_services.program_services as special_education_program_services,
         stage_disabilities.disability_type,
         stage_disabilities.order_of_disability,
+        -- if there is no disability, then this flag will be null
         case
-            when stage_disabilities.order_of_disability IS NULL then NULL
-            when stage_disabilities.order_of_disability = 1 then 'TRUE'
-            else 'FALSE'
+            when stage_disabilities.order_of_disability is null then null
+            when stage_disabilities.order_of_disability = 1 then true
+            else false
         end as is_primary_disability
 
 
