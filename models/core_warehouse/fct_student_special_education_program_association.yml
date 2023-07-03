@@ -46,4 +46,3 @@ models:
       - name: special_education_program_services
       - name: disability_type
       - name: order_of_disability
-      - name: is_primary_disability

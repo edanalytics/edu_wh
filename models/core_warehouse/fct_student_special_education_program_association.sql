@@ -25,8 +25,8 @@ bld_program_services as (
     select * From {{ ref ('bld_ef3__student_program__special_education__program_services')}}
 ),
 
-stage_disabilities as (
-    select * from {{ ref('stg_ef3__stu_spec_ed__disabilities') }}
+bld_primary_disability as (
+    select * from {{ ref('bld_ef3__student_program__special_education__primary_disability') }}
 ),
 
 formatted as (
@@ -61,14 +61,8 @@ formatted as (
         
         stage.special_education_setting,
         bld_program_services.program_services as special_education_program_services,
-        stage_disabilities.disability_type,
-        stage_disabilities.order_of_disability,
-        -- if there is no disability, then this flag will be null
-        case
-            when stage_disabilities.order_of_disability is null then null
-            when stage_disabilities.order_of_disability = 1 then true
-            else false
-        end as is_primary_disability
+        bld_primary_disability.disability_type,
+        bld_primary_disability.order_of_disability
 
 
         
@@ -88,10 +82,10 @@ formatted as (
             and stage.k_program = bld_program_services.k_program
             and stage.program_enroll_begin_date = bld_program_services.program_enroll_begin_date
 
-        left join stage_disabilities
-            on stage.k_student = stage_disabilities.k_student
-            and stage.k_program = stage_disabilities.k_program
-            and stage.program_enroll_begin_date = stage_disabilities.program_enroll_begin_date
+        left join bld_primary_disability
+            on stage.k_student = bld_primary_disability.k_student
+            and stage.k_program = bld_primary_disability.k_program
+            and stage.program_enroll_begin_date = bld_primary_disability.program_enroll_begin_date
 )
 
 select * from formatted
