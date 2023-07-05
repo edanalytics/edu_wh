@@ -1,5 +1,10 @@
 # Unreleased
 ## New features
+## Under the hood
+## Fixes 
+
+# edu_wh v0.2.5
+## New features
 - Create wide indicators from course/section characteristics in `dim_course_section`
 ## Under the hood
 - Add defaults for discipline non-offender codes
@@ -8,8 +13,6 @@
 - Add `k_school` to more models
 - Add configuration to customize the preferred email address for staff
 - Restrict the relationships between tenant and LEAs/schools
-## Fixes 
-
 
 # edu_wh v0.2.4
 ## New features
