@@ -9,7 +9,9 @@
 with stg_lea as (
     select * from {{ ref('stg_ef3__local_education_agencies') }}
 ),
-
+tenant_lea_ownership as (
+    select * from {{ ref('bld_ef3__tenant_lea_ownership') }}
+),
 choose_address as (
     {{ row_pluck(ref('stg_ef3__local_education_agencies__addresses'),
                 key='k_lea',
@@ -46,6 +48,9 @@ formatted as (
     from stg_lea
     left join choose_address 
         on stg_lea.k_lea = choose_address.k_lea
+    join tenant_lea_ownership
+        on stg_lea.tenant_code = tenant_lea_ownership.tenant_code
+        and stg_lea.lea_id = tenant_lea_ownership.lea_id
 )
 select * from formatted
 order by tenant_code, k_lea

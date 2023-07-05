@@ -7,6 +7,7 @@
 - Allow assessment results to come through even if they don't match a xwalk entry
 - Add `k_school` to more models
 - Add configuration to customize the preferred email address for staff
+- Restrict the relationships between tenant and LEAs/schools
 ## Fixes 
 
 
