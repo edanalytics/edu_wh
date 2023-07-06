@@ -61,9 +61,7 @@ formatted as (
         
         stage.special_education_setting,
         bld_program_services.program_services as special_education_program_services,
-        bld_primary_disability.disability_type,
-        bld_primary_disability.order_of_disability
-
+        bld_primary_disability.disability_type as primary_disability_type
 
         
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_special_education_program_associations', flatten=False) }}
