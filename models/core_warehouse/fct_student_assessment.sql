@@ -46,7 +46,7 @@ student_assessments_wide as (
         {{ dbt_utils.pivot(
             'normalized_score_name',
             dbt_utils.get_column_values(ref('xwalk_assessment_scores'), 'normalized_score_name'),
-            then_value='score_result',
+            then_value='normalized_score_result',
             else_value='NULL',
             agg='max',
             quote_identifiers=False
