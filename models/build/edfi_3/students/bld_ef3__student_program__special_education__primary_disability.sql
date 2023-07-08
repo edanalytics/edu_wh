@@ -2,7 +2,7 @@ with stage_disabilities as (
 	select * from {{ ref('stg_ef3__stu_spec_ed__disabilities') }}
 ),
 
-primary_disability as (
+filtered as (
 	select
 		tenant_code,
 		school_year,
@@ -19,6 +19,16 @@ primary_disability as (
 		disability_designation
 	from stage_disabilities
 	where order_of_disability = 1
+),
+
+deduped as (
+	{{
+		dbt_utils.deduplicate(
+			relation='filtered',
+			partition_by='k_student, k_program, school_year, program_enroll_begin_date, order_of_disability',
+			order_by='disability_type, disability_designation'
+		)
+	}}
 )
 
-select * from primary_disability
+select * from deduped

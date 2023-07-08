@@ -44,5 +44,4 @@ models:
       - name: reason_exited
       - name: special_education_setting
       - name: special_education_program_services
-      - name: disability_type
-      - name: order_of_disability
+      - name: primary_disability_type
