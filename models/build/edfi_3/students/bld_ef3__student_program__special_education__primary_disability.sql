@@ -22,10 +22,11 @@ filtered as (
 ),
 
 deduped as (
+	--this order_by is not substantive, but is necessary for consistency
 	{{
 		dbt_utils.deduplicate(
 			relation='filtered',
-			partition_by='k_student, k_program, school_year, program_enroll_begin_date, order_of_disability',
+			partition_by='k_student, k_program, school_year, program_enroll_begin_date',
 			order_by='disability_type, disability_designation'
 		)
 	}}
