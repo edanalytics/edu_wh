@@ -69,6 +69,7 @@ merged_xwalk as (
         -- todo review my use of try_to_numeric here -- the idea is to allow numeric values to merge, otherwise don't merge without error
         and try_to_numeric(dedupe_results.score_result) >= xwalk_score_value_thresholds.lower_bound
         and try_to_numeric(dedupe_results.score_result) <= xwalk_score_value_thresholds.upper_bound
+        -- todo in future, may need to include subject & grade level in this join (with options to join across subjects)
 
 )
 select * from merged_xwalk
