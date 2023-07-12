@@ -14,6 +14,9 @@ with student_assessments_long_results as (
 student_assessments as (
     select * from {{ ref('stg_ef3__student_assessments') }}
 ),
+xwalk_assessment_seasons as (
+    select * from {{ ref('xwalk_assessment_seasons') }}
+),
 object_agg_other_results as (
     select
         k_student_assessment,
@@ -30,9 +33,11 @@ student_assessments_wide as (
         student_assessments.tenant_code,
         student_assessments.student_assessment_identifier,
         student_assessments.serial_number,
-        school_year,
-        administration_date,
-        administration_end_date,
+        student_assessments.school_year,
+        student_assessments.administration_date,
+        student_assessments.administration_end_date,
+        xwalk_assessment_seasons.season_name as administration_season,
+        xwalk_assessment_seasons.season_num as administration_season_num,
         event_description,
         administration_environment,
         administration_language,
@@ -46,8 +51,17 @@ student_assessments_wide as (
         {{ dbt_utils.pivot(
             'normalized_score_name',
             dbt_utils.get_column_values(ref('xwalk_assessment_scores'), 'normalized_score_name'),
+            then_value='score_result',
+            else_value='NULL',
+            agg='max',
+            quote_identifiers=False
+        ) }},
+        {{ dbt_utils.pivot(
+            'normalized_score_name',
+            dbt_utils.get_column_values(ref('xwalk_assessment_scores'), 'normalized_score_name'),
             then_value='normalized_score_result',
             else_value='NULL',
+            prefix='normalized_',
             agg='max',
             quote_identifiers=False
         ) }}
@@ -58,7 +72,11 @@ student_assessments_wide as (
         and student_assessments_long_results.normalized_score_name != 'other'
     left join object_agg_other_results
         on student_assessments.k_student_assessment = object_agg_other_results.k_student_assessment
-    {{ dbt_utils.group_by(n=18) }}
+    left join xwalk_assessment_seasons
+        on student_assessments.school_year = xwalk_assessment_seasons.school_year
+        and student_assessments.administration_date >= xwalk_assessment_seasons.start_date
+        and student_assessments.administration_date <= xwalk_assessment_seasons.end_date
+    {{ dbt_utils.group_by(n=20) }}
 )
 select *
 from student_assessments_wide
