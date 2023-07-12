@@ -45,7 +45,6 @@ merged_xwalk as (
         dedupe_results.k_student_assessment,
         dedupe_results.score_name as original_score_name,
         coalesce(xwalk_scores.normalized_score_name, 'other') as normalized_score_name,
-        -- todo should we rename this to original_?
         dedupe_results.score_result,
         coalesce(xwalk_score_value_thresholds.normalized_score_result::varchar,
                  xwalk_score_values.normalized_score_result::varchar,
