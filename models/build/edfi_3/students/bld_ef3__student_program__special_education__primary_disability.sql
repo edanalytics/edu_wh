@@ -15,8 +15,7 @@ filtered as (
 		disability_type,
 		disability_source_type,
 		disability_diagnosis,
-		order_of_disability,
-		disability_designation
+		order_of_disability
 	from stage_disabilities
 	where order_of_disability = 1
 ),
@@ -27,7 +26,7 @@ deduped as (
 		dbt_utils.deduplicate(
 			relation='filtered',
 			partition_by='k_student, k_program, school_year, program_enroll_begin_date',
-			order_by='disability_type, disability_designation'
+			order_by='disability_type'
 		)
 	}}
 )
