@@ -62,6 +62,7 @@ section_attendance as (
     from student_section_association
     inner join student_school_association
         on student_section_association.k_student = student_school_association.k_student
+        and student_section_association.k_school = student_school_association.k_school
     inner join course_section
         on student_section_association.k_course_section = course_section.k_course_section
     inner join sections__class_periods
