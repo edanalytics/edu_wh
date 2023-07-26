@@ -4,7 +4,7 @@ models:
   - name: fct_student_grades
     description: >
       ##### Overview:
-        This fact table contatns student course grades by grading period within the school year.
+        This fact table contains student course grades by grading period within the school year.
         Note that not all grading periods indicate final grades, so averages across grading
         periods may double-count some periods of time.  
 
@@ -17,8 +17,11 @@ models:
         may have multiple grades for the same course in the same grading period,
         provided they have different grade types.
 
+        Several columns e.g. `is_dorf`, `grade_sort_index` are sourced from **xwalk_letter_grades**.
+        See column descriptions below for more detail.
+
     config:
-      tags: ['core']
+      tags: ['core', 'course']
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
@@ -29,15 +32,27 @@ models:
             - grade_type
     columns:
       - name: k_student
+        description: Unique identifier for the student-year. Foreign key reference to [dim_student](#!/model/model.edu_wh.dim_student).
       - name: k_course_section
+        description: Unique identifier for the course section. Foreign key reference to [dim_course_section](#!/model/model.edu_wh.dim_course_section).
       - name: k_school
+        description: Unique identifier for the school. Foreign key reference to [dim_school](#!/model/model.edu_wh.dim_school).
       - name: k_grading_period
+        description: Unique identifier for the grading period. Foreign key reference to [dim_grading_period](#!/model/model.edu_wh.dim_grading_period).
       - name: grade_type
+        description: >
+          The type of grade in a report card or transcript (e.g., Final, 
+          Exam, Grading Period).
       - name: tenant_code
       - name: letter_grade_earned
       - name: numeric_grade_earned
       - name: diagnostic_statement
+        description: >
+          A statement provided by the teacher that provides information
+          in addition to the grade or assessment score.
       - name: performance_base_conversion
+        description: > 
+          A conversion of the level to a standard set of performance levels.
       - name: unweighted_gpa_points
         description: >
           A translation of letter_grade to a numeric grade point value.
