@@ -5,8 +5,8 @@ models:
     description: >
       ##### Overview:
         This fact table contains student course grades by grading period within the school year.
-        Note that not all grading periods indicate final grades, so averages across grading
-        periods may double-count some periods of time.  
+        Note, not all grading periods indicate final grades, so be careful when aggregating
+        grades across grading periods.
 
       ##### Primary Key: 
         `k_student, k_school, k_course_section, k_grading_period, grade_type` -- There is one 

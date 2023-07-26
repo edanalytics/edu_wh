@@ -8,12 +8,12 @@ models:
           the characteristics of a particular course section offering, see [dim_course_section](#!/model/model.edu_wh.dim_course_section).
 
         ##### Primary Key:
-          `k_course` - There is one record per course.
+          `k_course` - There is one record per course, year, and ed-org. (note that `k_course` is an annualized identifier)
     config:
       tags: ['core', 'course']
     columns:
       - name: k_course
-        description: Defining key for course sections. Generated primary key composed of `tenant_code`, `api_year`, `course_code`, and `ed_org_id`.
+        description: Defining key for courses. Generated primary key composed of `tenant_code`, `api_year`, `course_code`, and `ed_org_id`.
         tests: 
           - unique
       - name: tenant_code
