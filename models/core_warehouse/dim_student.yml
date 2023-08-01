@@ -67,4 +67,4 @@ models:
       - name: race_array
         description: A list of the student's races.
       - name: safe_display_name
-        description: Display name with student ID.
+        description: Display name with student ID, safe for use in grouping operations in a BI tool, to avoid combining students with the same name.
