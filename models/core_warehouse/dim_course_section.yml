@@ -9,35 +9,113 @@ models:
 
       ##### Primary Key:
         `k_course_section` - There is one record per course section.
+
+      ##### Important Business Rules:
+        The columns that begin with `is_` e.g. `is_ap` are generated dynamically based on the course characteristics 
+        configured in **xwalk_course_level_characteristics**
+        To populate these fields, we combine characteristics found in Course, Course Offering, and Sections, because it's
+        possible for implementations to populate characterstics at any of these three levels in Ed-Fi. The model that 
+        combines these characteristics is [bld_ef3__course_char__combined_long](#!/model/model.edu_wh.bld_ef3__course_char__combined_long)
+
       
     config:
-      tags: ['core']
+      tags: ['core', 'course']
     columns:
       - name: k_course_section
         description: Defining key for course sections
         tests: 
           - unique
       - name: k_course
+        description: >
+          Unique identifier for the course. Foreign key reference to 
+          [dim_course](#!/model/model.edu_wh.dim_course).
       - name: k_school
+        description: >
+          Unique identifier for the school. Foreign key reference to 
+          [dim_school](#!/model/model.edu_wh.dim_school).
       - name: k_session
+        description: >
+          Unique identifier for the session. Foreign key reference to 
+          [dim_session](#!/model/model.edu_wh.dim_session).
       - name: k_classroom
+        description: >
+          Unique identifier for the classroom. Foreign key reference to
+           [dim_classroom](#!/model/model.edu_wh.dim_classroom).
       - name: tenant_code
       - name: section_id
+        description: >
+          The local identifier assigned to a section.
       - name: section_name
+        description: >
+          A locally-defined name for the section, generally created to make the section 
+          more recognizable in informal contexts and generally distinct from the
+          section_id.
       - name: local_course_code
+        description: >
+          (sourced from Course Offering) -- the local code assigned by the School that 
+          identifies the course offering provided for the instruction of students.
       - name: local_course_title
+        description: >
+          (sourced from Course Offering) -- The descriptive name given to a course of
+           study offered in the school, if different from the course_title.
       - name: course_code
+        description: >
+          (sourced from Course) -- A unique alphanumeric code assigned to a course.
       - name: course_title
+        description: >
+          (sourced from Course) -- The descriptive name given to a course of study offered 
+          in a school or other institution or organization. In departmentalized classes at the 
+          elementary, secondary, and postsecondary levels (and for staff development activities),
+          this refers to the name by which a course is identified (e.g., American History,
+          English III). For elementary and other non-departmentalized classes, it refers to any
+          portion of the instruction for which a grade or report is assigned (e.g., reading, 
+          composition, spelling, and language arts).
       - name: school_year
       - name: session_name
+        description: >
+          (sourced from Course Offering) -- The session in which the course is offered at the school.
       - name: academic_subject
+        description: >
+          (sourced from Course) -- The intended major subject area of the course.
       - name: career_pathway
+        description: >
+          (sourced from Course) -- Indicates the career cluster or pathway the course is associated with as part of a CTE curriculum.
       - name: instructional_time_planned
+        description: >
+          (sourced from Course Offering) --	The planned total number of clock minutes of instruction 
+          for this course offering. Generally, this should be at least as many minutes as is required 
+          for completion by the related state- or district-defined course.
       - name: sequence_of_course
+        description: >
+          When a section is part of a sequence of parts for a course, the number of the sequence. 
+          If the course has only one part, the value of this section attribute should be 1.
       - name: educational_environment_type
+        description: >
+          The setting in which a child receives education and related services; for example: Center-based 
+          instruction, Home-based instruction, Hospital class, Mainstream Residential care and treatment facility
       - name: instruction_language
+        description: >
+          The primary language of instruction, if omitted English is assumed.
       - name: medium_of_instruction
+        description: >
+          The media through which teachers provide instruction to students and students and teachers 
+          communicate about instructional matters; for example: Technology-based instruction in classroom,
+          Correspondence instruction, Face-to-face instruction, Virtual/On-line Distance learning
       - name: population_served
+        description: >
+          The type of students the Section is offered and tailored to; for example: Bilingual students,
+          Remedial education students, Gifted and talented students, Career and Technical Education 
+          students, Special education students
       - name: available_credits
+        description: >
+          The amount of credit available to a student who successfully meets the objectives of the course. 
+          AvailableCredits are measured in Carnegie units, A course meeting every day for one period of the 
+          school day over the span of a school year offers one Carnegie unit. See publication: U.S. 
+          Department of Education, NCES, 2007-341, Secondary School Course Classification System: School 
+          Codes for the Exchange of Data (SCED).
       - name: available_credit_conversion
+        description: >
+          Conversion factor that when multiplied by the number of credits is equivalent to Carnegie units
       - name: available_credit_type
+        description: >
+          The type of credits or units of value awarded for the completion of a course.

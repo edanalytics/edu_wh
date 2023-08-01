@@ -2,5 +2,33 @@ version: 2
 
 models:
   - name: dim_grading_period
+    description: >
+        ##### Overview:
+          Defines grading periods (the periods for which grades are reported), their names, start and end dates.
+
+        ##### Primary Key:
+          `k_grading_period` - There is one record per grading period.
     config:
-      tags: ['core']
+      tags: ['core', 'course']
+    columns:
+      - name: k_grading_period
+        description: Generated primary key composed of 'grading_period', 'period_sequence', 'school_id', and 'school_year' (generated in [stg_ef3__grading_periods](#!/model/model.edu_edfi_source.stg_ef3__grading_periods))
+        tests: 
+          - unique
+      - name: k_school
+        description: Unique identifier for the school. Foreign key reference to [dim_school](#!/model/model.edu_wh.dim_school).
+      - name: tenant_code
+        description: Code defining the Tenant (may be an LEA, SEA, etc.) of the Ed-Fi ODS from which this record was pulled
+      - name: grading_period
+        description: The name of the period for which grades are reported.
+      - name: period_sequence
+        description: The sequential order of this period relative to other periods.
+      - name: school_year
+        description: The identifier for the grading period school year.
+      - name: begin_date
+        description: Month, day, and year of the first day of the grading period.
+      - name: end_date
+        description: Month, day, and year of the last day of the grading period.
+      - name: total_instructional_days
+        description: Total days available for educational instruction during the grading period.
+
