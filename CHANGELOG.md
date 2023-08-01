@@ -3,6 +3,11 @@
 ## Under the hood
 ## Fixes 
 
+# edu_wh v0.2.6
+## New features
+- Add primary disability on student special education program associations
+- Documentation improvements
+
 # edu_wh v0.2.5
 ## New features
 - Create wide indicators from course/section characteristics in `dim_course_section`
