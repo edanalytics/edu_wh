@@ -13,7 +13,7 @@ models:
        If the staff member has multiple email addresses in the ODS, this table selects one, using these rules:  
        1. Never select if Ed-Fi Staff.ElectronicMail.DoNotPublishIndicator is True
        2. Select address with ElectronicMailType = 'Work' if exists
-       3. Else, select first address found for this k_staff in (#!/model/model.edu_edfi_source.stg_ef3__staffs__emails)[stg_ef3__staffs__emails]
+       3. Else, select first address found for this k_staff in [stg_ef3__staffs__emails](#!/model/model.edu_edfi_source.stg_ef3__staffs__emails)
 
     config:
       tags: ['core']
