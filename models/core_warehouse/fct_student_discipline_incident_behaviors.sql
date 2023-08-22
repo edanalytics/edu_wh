@@ -38,6 +38,12 @@ formatted as (
         dim_student.k_student_xyear,
         dim_school.k_school,
         dim_discipline_incidents.k_discipline_incident,
+        -- add this for easier join back to discipline actions
+        {{ dbt_utils.surrogate_key(
+            ['k_student',
+             'k_discipline_incident',
+             'lower(behavior_type)']
+        ) }} as k_student_discipline_incident_behavior,
         stg_stu_discipline_incident_behaviors.tenant_code,
         stg_stu_discipline_incident_behaviors.school_id,
         stg_stu_discipline_incident_behaviors.incident_id,
