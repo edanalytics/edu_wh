@@ -10,6 +10,9 @@
 with stg_discipline_actions as (
     select * from {{ ref('stg_ef3__discipline_actions') }}
 ),
+bld_discipline_incident_associations as (
+    select * from {{ ref('bld_ef3__stu_discipline_action__stu_incident_behavior') }}
+),
 dim_student as (
     select * from {{ ref('dim_student') }}
 ),
@@ -72,10 +75,16 @@ formatted as (
         stg_discipline_actions.triggered_iep_placement_meeting,
         stg_discipline_actions.is_related_to_zero_tolerance_policy,
         stg_discipline_actions.discipline_action_length_difference_reason,
-        agg_staff_keys.k_staff_array
+        agg_staff_keys.k_staff_array,
+        bld_discipline_incident_associations.k_student_discipline_incident_behavior_array
     from stg_discipline_actions
     join dim_student 
         on stg_discipline_actions.k_student = dim_student.k_student
+    join bld_discipline_incident_associations
+        on stg_discipline_actions.k_student = bld_discipline_incident_associations.k_student
+        and stg_discipline_actions.k_student_xyear = bld_discipline_incident_associations.k_student_xyear
+        and stg_discipline_actions.discipline_action_id = bld_discipline_incident_associations.discipline_action_id
+        and stg_discipline_actions.discipline_date = bld_discipline_incident_associations.discipline_date
     left join dim_school as dim_school__assignment
         on stg_discipline_actions.k_school__assignment = dim_school__assignment.k_school
     left join dim_school as dim_school__responsibility
