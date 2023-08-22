@@ -17,7 +17,7 @@ fct_student_discipline_incident_behaviors as (
 fct_student_discipline_actions as (
     select * from {{ ref('fct_student_discipline_actions') }}
 ),
-behaviors_array as (
+{# behaviors_array as (
     select
         k_student,
         k_student_xyear,
@@ -34,7 +34,7 @@ actions_array as (
         array_agg(discipline_action) as discipline_actions_array
     from fct_student_discipline_actions
     group by 1,2,3
-),
+), #}
 formatted as (
     select
         stu_discipline_incident_behaviors_actions.k_student,
@@ -42,8 +42,10 @@ formatted as (
         fct_student_discipline_incident_behaviors.k_discipline_incident,
         fct_student_discipline_actions.k_discipline_actions_event,
         stu_discipline_incident_behaviors_actions.tenant_code,
-        behaviors_array.behavior_types_array,
-        actions_array.discipline_actions_array,
+        fct_student_discipline_incident_behaviors.behavior_type,
+        fct_student_discipline_actions.discipline_action,
+        {# behaviors_array.behavior_types_array,
+        actions_array.discipline_actions_array, #}
         -- we want to include the most severe behavior type and discipline action
         -- only if both severity orders are defined
         iff(fct_student_discipline_incident_behaviors.severity_order is not null and 
@@ -66,16 +68,13 @@ formatted as (
         -- due to the deprecated version where behavior type is not required,
         -- we need to be able to either merge by the behavior type or not
         and ifnull(stu_discipline_incident_behaviors_actions.behavior_type, 1) = iff(stu_discipline_incident_behaviors_actions.behavior_type is null, 1, fct_student_discipline_incident_behaviors.behavior_type)
-    join behaviors_array 
+    {# join behaviors_array 
         on fct_student_discipline_incident_behaviors.k_student = behaviors_array.k_student
         and fct_student_discipline_incident_behaviors.k_student_xyear = behaviors_array.k_student_xyear
         and fct_student_discipline_incident_behaviors.k_discipline_incident = behaviors_array.k_discipline_incident
     join actions_array
         on fct_student_discipline_actions.k_student = actions_array.k_student
         and fct_student_discipline_actions.k_student_xyear = actions_array.k_student_xyear
-        and fct_student_discipline_actions.k_discipline_actions_event = actions_array.k_discipline_actions_event
-    -- in order to keep the grain of k_student, k_discipline_incident, and k_discipline_actions_event, we want to keep this subset 
-    -- even if we do not have the severity orders defined
-    qualify 1 = row_number() over (partition by stu_discipline_incident_behaviors_actions.k_student, fct_student_discipline_incident_behaviors.k_discipline_incident order by fct_student_discipline_actions.severity_order desc nulls last, fct_student_discipline_incident_behaviors.severity_order desc nulls last)
+        and fct_student_discipline_actions.k_discipline_actions_event = actions_array.k_discipline_actions_event #}
 )
 select * from formatted
