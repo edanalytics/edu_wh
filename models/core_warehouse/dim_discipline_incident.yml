@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: dim_discipline_incidents
+  - name: dim_discipline_incident
     description: >
       Defines a discipline incident and all known characteristics, including the relevant behaviors.
     columns:

@@ -17,8 +17,8 @@ dim_student as (
 dim_school as (
     select * from {{ ref('dim_school') }}
 ),
-dim_discipline_incidents as (
-    select * from {{ ref('dim_discipline_incidents') }}
+dim_discipline_incident as (
+    select * from {{ ref('dim_discipline_incident') }}
 ),
 xwalk_discipline_behaviors as (
     select * from {{ ref('xwalk_discipline_behaviors') }}
@@ -37,11 +37,11 @@ formatted as (
         dim_student.k_student,
         dim_student.k_student_xyear,
         dim_school.k_school,
-        dim_discipline_incidents.k_discipline_incident,
+        dim_discipline_incident.k_discipline_incident,
         -- add this for easier join back to discipline actions
         {{ dbt_utils.surrogate_key(
             ['dim_student.k_student',
-             'dim_discipline_incidents.k_discipline_incident',
+             'dim_discipline_incident.k_discipline_incident',
              'lower(stg_stu_discipline_incident_behaviors.behavior_type)']
         ) }} as k_student_discipline_incident_behavior,
         stg_stu_discipline_incident_behaviors.tenant_code,
@@ -73,7 +73,7 @@ formatted as (
         and stg_stu_discipline_incident_behaviors.k_discipline_incident = participation_codes.k_discipline_incident
     join dim_student on stg_stu_discipline_incident_behaviors.k_student = dim_student.k_student
     join dim_school on stg_stu_discipline_incident_behaviors.k_school = dim_school.k_school
-    join dim_discipline_incidents on stg_stu_discipline_incident_behaviors.k_discipline_incident = dim_discipline_incidents.k_discipline_incident
+    join dim_discipline_incident on stg_stu_discipline_incident_behaviors.k_discipline_incident = dim_discipline_incident.k_discipline_incident
     left join xwalk_discipline_behaviors
         on stg_stu_discipline_incident_behaviors.behavior_type = xwalk_discipline_behaviors.behavior_type
 )
