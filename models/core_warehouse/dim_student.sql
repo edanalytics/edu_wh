@@ -156,7 +156,7 @@ formatted as (
     join stu_demos
         on stg_student.k_student = stu_demos.k_student
     join stu_immutable_demos
-        on stu_demos.k_student = stu_immutable_demos.k_student
+        on stu_demos.k_student_xyear = stu_immutable_demos.k_student_xyear
         and stu_demos.ed_org_id = stu_immutable_demos.ed_org_id
     left join stu_ids
         on stu_demos.k_student = stu_ids.k_student
