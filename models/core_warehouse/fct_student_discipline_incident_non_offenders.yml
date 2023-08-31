@@ -3,13 +3,13 @@ version: 2
 models: 
   - name: fct_student_discipline_incident_non_offenders
     description: >
-      This table describes the non-offenders associated to disciplinary incidents.
-      No behaviors are included in this table because behaviors are only linked
-      to offenders.
+      ##### Overview:
+        This table describes the non-offenders associated to disciplinary incidents.
+        No behaviors are included in this table because behaviors are only linked
+        to offenders.
 
-      Rows represent one student, school, and incident.
-
-      *Primary Key:* k_student, k_discipline_incident
+      ##### Primary Key:
+        `k_student, k_discipline_incident` -- There is one record per student, year, incident ID, and school.
 
     tests:
       - dbt_utils.unique_combination_of_columns:
