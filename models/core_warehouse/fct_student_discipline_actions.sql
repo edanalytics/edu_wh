@@ -1,7 +1,7 @@
 {{
   config(
     post_hook=[
-        "alter table {{ this }} add primary key (k_student, k_student_xyear, k_discipline_actions_event, discipline_action)",
+        "alter table {{ this }} add primary key (k_student, k_discipline_actions_event, discipline_action)",
         "alter table {{ this }} add constraint fk_{{ this.name }}_student foreign key (k_student) references {{ ref('dim_student') }}",
     ]
   )
@@ -57,6 +57,7 @@ formatted as (
             dim_school__assignment.k_school) as k_school,
         dim_school__assignment.k_school as k_school__assignment,
         dim_school__responsibility.k_school as k_school__responsibility,
+        stg_discipline_actions.school_year,
         {{ dbt_utils.surrogate_key(
             [
                 'stg_discipline_actions.tenant_code',
