@@ -39,7 +39,7 @@ deduped as (
         dbt_utils.deduplicate(
             relation='joined',
             partition_by='k_student_xyear',
-            order_by='api_year desc'
+            order_by='school_year desc'
         )
     }}
 )
