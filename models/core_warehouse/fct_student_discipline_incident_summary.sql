@@ -73,7 +73,7 @@ formatted as (
         and stu_discipline_incident_behaviors_actions.incident_id = fct_student_discipline_incident_behaviors.incident_id
         -- due to the deprecated version where behavior type is not required,
         -- we need to be able to either merge by the behavior type or not
-        and ifnull(stu_discipline_incident_behaviors_actions.behavior_type, 1) = iff(stu_discipline_incident_behaviors_actions.behavior_type is null, 1, fct_student_discipline_incident_behaviors.behavior_type)
+        and ifnull(stu_discipline_incident_behaviors_actions.behavior_type, '1') = iff(stu_discipline_incident_behaviors_actions.behavior_type is null, '1', fct_student_discipline_incident_behaviors.behavior_type)
     join behaviors_array 
         on fct_student_discipline_incident_behaviors.k_student = behaviors_array.k_student
         and fct_student_discipline_incident_behaviors.k_student_xyear = behaviors_array.k_student_xyear
