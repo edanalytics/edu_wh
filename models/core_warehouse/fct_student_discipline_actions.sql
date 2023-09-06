@@ -95,6 +95,11 @@ join_descriptor_interpretation as (
         xwalk_discipline_actions.is_iss,
         xwalk_discipline_actions.is_exp,
         xwalk_discipline_actions.is_minor,
+
+        -- bring in any additional custom columns from the xwalk table
+        {{ accordion_columns('xwalk_discipline_actions',
+            exclude_columns=['discipline_action','severity_order','is_oss','is_iss','is_exp','is_minor']) }}
+
         xwalk_discipline_actions.severity_order,
         -- for a specific discipline event (which can include multiple disciplines)
         -- flag the most severe discipline
