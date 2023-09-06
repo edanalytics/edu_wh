@@ -96,7 +96,7 @@ join_descriptor_interpretation as (
         xwalk_discipline_actions.is_exp,
         xwalk_discipline_actions.is_minor,
 
-        -- bring in any additional custom columns from the xwalk table
+        -- bring in any additional custom columns from xwalk, does nothing if there are no extra columns
         {{ accordion_columns('xwalk_discipline_actions',
             exclude_columns=['discipline_action','severity_order','is_oss','is_iss','is_exp','is_minor']) }}
 
