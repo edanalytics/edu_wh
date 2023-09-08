@@ -8,6 +8,9 @@
 
 {% set custom_data_sources = var("edu:stu_demos:custom_data_sources") %}
 
+{# customizable: extra indicators to create in the aggregate query #}
+{% set custom_program_agg_indicators = var('edu:special_ed:custom_program_agg_indicators', None) %}
+
 with stg_student as (
     select * from {{ ref('stg_ef3__students') }}
 ),
@@ -87,9 +90,11 @@ formatted as (
             {% for agg_type in var('edu:special_ed:agg_types') %}
                 coalesce(stu_special_ed.is_special_education_{{agg_type}}, false) as is_special_education_{{agg_type}},
             {% endfor %}
-            {% for custom_indicator in var('edu:special_ed:custom_program_agg_indicators') %}
-               coalesce(stu_special_ed.{{custom_indicator}}, false) as {{custom_indicator}},
-            {% endfor %}
+            {% if custom_program_agg_indicators is not none and custom_program_agg_indicators | length -%}
+                {% for custom_indicator in custom_program_agg_indicators %}
+                coalesce(stu_special_ed.{{custom_indicator}}, false) as {{custom_indicator}},
+                {% endfor %}
+            {% endif %}
         {% endif %}
 
         {% if var('src:program:language_instruction:enabled', True) %}
