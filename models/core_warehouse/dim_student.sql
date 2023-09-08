@@ -87,6 +87,9 @@ formatted as (
             {% for agg_type in var('edu:special_ed:agg_types') %}
                 coalesce(stu_special_ed.is_special_education_{{agg_type}}, false) as is_special_education_{{agg_type}},
             {% endfor %}
+            {% for custom_indicator in var('edu:special_ed:custom_program_agg_indicators') %}
+               coalesce(stu_special_ed.{{custom_indicator}}, false) as {{custom_indicator}},
+            {% endfor %}
         {% endif %}
 
         {% if var('src:program:language_instruction:enabled', True) %}
