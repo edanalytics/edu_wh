@@ -7,6 +7,8 @@
 {# customizable: the column that defines the end date for the homeless program #}
 {% set exit_date_column = var('edu:homeless:exit_date_column') %}
 
+{# customizable: extra indicators to create in the aggregate query #}
+{% set custom_program_agg_indicators = var('edu:homeless:custom_program_agg_indicators', None) %}
 
 with stage as (
     select * from {{ ref('stg_ef3__student_homeless_program_associations') }}
@@ -29,6 +31,13 @@ maxed as (
         max(
           {{ value_not_in_list(field='program_name', excluded_items=exclude_programs) }}
         ) as is_homeless_annual, -- the student had a homeless program enrollment any time during the year
+
+        -- custom homeless program agg indicators
+        {% if custom_program_agg_indicators is not none and custom_program_agg_indicators | length -%}
+          {%- for indicator in custom_program_agg_indicators -%}
+            {{ custom_program_agg_indicators[indicator]['agg_sql'] }} as {{ indicator }},
+          {%- endfor -%}
+        {%- endif %}
 
         max(is_awaiting_foster_care) as is_awaiting_foster_care,
         max(is_homeless_unaccompanied_youth) as is_homeless_unaccompanied_youth,
