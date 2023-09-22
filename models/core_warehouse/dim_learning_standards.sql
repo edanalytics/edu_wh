@@ -24,7 +24,7 @@ formatted as (
         stg_learning_standards.v_content_standard,
         stg_learning_standards.course_title, 
         stg_learning_standards.learning_standard_description,
-        stg_learning_standards.v_grade_level,
+        stg_learning_standards.v_grade_levels,
         stg_learning_standards.parent_learning_standard_reference,
         stg_learning_standards.success_criteria,
         stg_learning_standards.namespace,
