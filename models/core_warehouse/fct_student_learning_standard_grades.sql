@@ -41,7 +41,9 @@ formatted as (
         stg_grades_learning_standards.tenant_code,
         stg_grades_learning_standards.performance_base_conversion_descriptor as performance_base_conversion,
         stg_grades_learning_standards.letter_grade_earned,
-        stg_grades_learning_standards.numeric_grade_earned
+        stg_grades_learning_standards.numeric_grade_earned,
+        stg_grades_learning_standards.learning_standard_letter_grade_earned,
+        stg_grades_learning_standards.learning_standard_numeric_grade_earned
     from stg_grades_learning_standards
     join dim_learning_standards
         on stg_grades_learning_standards.learning_standard_id = dim_learning_standards.learning_standard_id
