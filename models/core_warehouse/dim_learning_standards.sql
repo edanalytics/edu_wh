@@ -29,8 +29,7 @@ formatted as (
         stg_learning_standards.success_criteria,
         stg_learning_standards.namespace,
         stg_learning_standards.uri,
-        stg_learning_standards.v_ext,
-        stg_learning_standards.academic_subject_descriptor
+        stg_learning_standards.v_ext
     from stg_learning_standards
 )
 select * from formatted
