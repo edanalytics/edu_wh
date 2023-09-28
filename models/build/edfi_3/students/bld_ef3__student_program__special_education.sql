@@ -34,7 +34,7 @@ maxed as (
         ) as is_special_education_annual, -- the student had a special education program enrollment any time during the year
 
         -- custom special ed program agg indicators
-        {% if custom_program_agg_indicators is not none and custom_program_agg_indicators | length -%}
+        {% if custom_program_agg_indicators -%}
           {%- for indicator in custom_program_agg_indicators -%}
             {{ custom_program_agg_indicators[indicator]['agg_sql'] }} as {{ indicator }},
           {%- endfor -%}

@@ -93,7 +93,7 @@ formatted as (
             {% for agg_type in var('edu:special_ed:agg_types') %}
                 coalesce(stu_special_ed.is_special_education_{{agg_type}}, false) as is_special_education_{{agg_type}},
             {% endfor %}
-            {% if custom_special_ed_program_agg_indicators is not none and custom_special_ed_program_agg_indicators | length -%}
+            {% if custom_special_ed_program_agg_indicators -%}
                 {% for custom_indicator in custom_special_ed_program_agg_indicators %}
                 coalesce(stu_special_ed.{{custom_indicator}}, false) as {{custom_indicator}},
                 {% endfor %}
@@ -104,7 +104,7 @@ formatted as (
             {% for agg_type in var('edu:language_instruction:agg_types') %}
                 coalesce(stu_language_instruction.is_english_language_learner_{{agg_type}}, false) as is_english_language_learner_{{agg_type}},
             {% endfor %}
-            {% if custom_language_instruction_program_agg_indicators is not none and custom_language_instruction_program_agg_indicators | length -%}
+            {% if custom_language_instruction_program_agg_indicators -%}
                 {% for custom_indicator in custom_language_instruction_program_agg_indicators %}
                 coalesce(stu_language_instruction.{{custom_indicator}}, false) as {{custom_indicator}},
                 {% endfor %}
@@ -115,7 +115,7 @@ formatted as (
             {% for agg_type in var('edu:homeless:agg_types') %}
                 coalesce(stu_homeless.is_homeless_{{agg_type}}, false) as is_homeless_{{agg_type}},
             {% endfor %}
-            {% if custom_homeless_program_agg_indicators is not none and custom_homeless_program_agg_indicators | length -%}
+            {% if custom_homeless_program_agg_indicators -%}
                 {% for custom_indicator in custom_homeless_program_agg_indicators %}
                 coalesce(stu_homeless.{{custom_indicator}}, false) as {{custom_indicator}},
                 {% endfor %}
@@ -126,7 +126,7 @@ formatted as (
             {% for agg_type in var('edu:title_i:agg_types') %}
                 coalesce(stu_title_i_part_a.is_title_i_{{agg_type}}, false) as is_title_i_{{agg_type}},
             {% endfor %}
-            {% if custom_title_i_program_agg_indicators is not none and custom_stitle_i_program_agg_indicators | length -%}
+            {% if custom_title_i_program_agg_indicators -%}
                 {% for custom_indicator in custom_title_i_program_agg_indicators %}
                 coalesce(stu_title_i_part_a.{{custom_indicator}}, false) as {{custom_indicator}},
                 {% endfor %}
