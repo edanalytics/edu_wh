@@ -50,10 +50,10 @@ actions_array as (
 ),
 formatted as (
     select
-        stu_discipline_incident_behaviors_actions.k_student,
-        stu_discipline_incident_behaviors_actions.k_student_xyear,
+        fct_student_discipline_actions.k_student,
+        fct_student_discipline_actions.k_student_xyear,
         fct_student_discipline_actions.k_discipline_actions_event,
-        stu_discipline_incident_behaviors_actions.tenant_code,
+        fct_student_discipline_actions.tenant_code,
         behaviors_array.behavior_types_array,
         actions_array.discipline_actions_array,
         -- we want to include the most severe behavior type and discipline action
@@ -89,6 +89,6 @@ formatted as (
         and fct_student_discipline_actions.discipline_date = behaviors_array.discipline_date
     -- in order to keep the grain of k_student and k_discipline_actions_event, we want to keep this subset 
     -- even if we do not have the severity orders defined
-    qualify 1 = row_number() over (partition by stu_discipline_incident_behaviors_actions.k_student, fct_student_discipline_actions.k_discipline_actions_event order by fct_student_discipline_actions.severity_order desc nulls last, fct_student_discipline_incident_behaviors.severity_order desc nulls last)
+    qualify 1 = row_number() over (partition by fct_student_discipline_actions.k_student, fct_student_discipline_actions.k_discipline_actions_event order by fct_student_discipline_actions.severity_order desc nulls last, fct_student_discipline_incident_behaviors.severity_order desc nulls last)
 )
 select * from formatted
