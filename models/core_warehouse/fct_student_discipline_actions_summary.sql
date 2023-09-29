@@ -64,12 +64,12 @@ formatted as (
         iff(fct_student_discipline_incident_behaviors.severity_order is not null and 
             fct_student_discipline_actions.severity_order is not null, 
             fct_student_discipline_actions.discipline_action, null) as most_severe_discipline_action
-    from stu_discipline_incident_behaviors_actions
-    join fct_student_discipline_actions
-        on stu_discipline_incident_behaviors_actions.k_student = fct_student_discipline_actions.k_student
-        and stu_discipline_incident_behaviors_actions.k_student_xyear = fct_student_discipline_actions.k_student_xyear
-        and stu_discipline_incident_behaviors_actions.discipline_action_id = fct_student_discipline_actions.discipline_action_id
-        and stu_discipline_incident_behaviors_actions.discipline_date = fct_student_discipline_actions.discipline_date
+    from fct_student_discipline_actions
+    left join stu_discipline_incident_behaviors_actions
+        on fct_student_discipline_actions.k_student = stu_discipline_incident_behaviors_actions.k_student
+        and fct_student_discipline_actions.k_student_xyear = stu_discipline_incident_behaviors_actions.k_student_xyear
+        and fct_student_discipline_actions.discipline_action_id = stu_discipline_incident_behaviors_actions.discipline_action_id
+        and fct_student_discipline_actions.discipline_date = stu_discipline_incident_behaviors_actions.discipline_date
     join fct_student_discipline_incident_behaviors
         on stu_discipline_incident_behaviors_actions.k_student = fct_student_discipline_incident_behaviors.k_student
         and stu_discipline_incident_behaviors_actions.k_student_xyear = fct_student_discipline_incident_behaviors.k_student_xyear
@@ -78,15 +78,15 @@ formatted as (
         -- due to the deprecated version where behavior type is not required,
         -- we need to be able to either merge by the behavior type or not
         and ifnull(stu_discipline_incident_behaviors_actions.behavior_type, '1') = iff(stu_discipline_incident_behaviors_actions.behavior_type is null, '1', fct_student_discipline_incident_behaviors.behavior_type)
-    join behaviors_array 
-        on fct_student_discipline_actions.k_student = behaviors_array.k_student
-        and fct_student_discipline_actions.k_student_xyear = behaviors_array.k_student_xyear
-        and fct_student_discipline_actions.discipline_action_id = behaviors_array.discipline_action_id
-        and fct_student_discipline_actions.discipline_date = behaviors_array.discipline_date
     join actions_array
         on fct_student_discipline_actions.k_student = actions_array.k_student
         and fct_student_discipline_actions.k_student_xyear = actions_array.k_student_xyear
         and fct_student_discipline_actions.k_discipline_actions_event = actions_array.k_discipline_actions_event
+    left join behaviors_array 
+        on fct_student_discipline_actions.k_student = behaviors_array.k_student
+        and fct_student_discipline_actions.k_student_xyear = behaviors_array.k_student_xyear
+        and fct_student_discipline_actions.discipline_action_id = behaviors_array.discipline_action_id
+        and fct_student_discipline_actions.discipline_date = behaviors_array.discipline_date
     -- in order to keep the grain of k_student and k_discipline_actions_event, we want to keep this subset 
     -- even if we do not have the severity orders defined
     qualify 1 = row_number() over (partition by stu_discipline_incident_behaviors_actions.k_student, fct_student_discipline_actions.k_discipline_actions_event order by fct_student_discipline_actions.severity_order desc nulls last, fct_student_discipline_incident_behaviors.severity_order desc nulls last)
