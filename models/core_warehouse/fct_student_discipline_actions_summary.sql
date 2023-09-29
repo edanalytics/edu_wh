@@ -70,7 +70,7 @@ formatted as (
         and fct_student_discipline_actions.k_student_xyear = stu_discipline_incident_behaviors_actions.k_student_xyear
         and fct_student_discipline_actions.discipline_action_id = stu_discipline_incident_behaviors_actions.discipline_action_id
         and fct_student_discipline_actions.discipline_date = stu_discipline_incident_behaviors_actions.discipline_date
-    join fct_student_discipline_incident_behaviors
+    left join fct_student_discipline_incident_behaviors
         on stu_discipline_incident_behaviors_actions.k_student = fct_student_discipline_incident_behaviors.k_student
         and stu_discipline_incident_behaviors_actions.k_student_xyear = fct_student_discipline_incident_behaviors.k_student_xyear
         and stu_discipline_incident_behaviors_actions.school_id = fct_student_discipline_incident_behaviors.school_id

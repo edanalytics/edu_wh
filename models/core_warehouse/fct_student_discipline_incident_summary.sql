@@ -69,7 +69,7 @@ formatted as (
         -- due to the deprecated version where behavior type is not required,
         -- we need to be able to either merge by the behavior type or not
         and ifnull(stu_discipline_incident_behaviors_actions.behavior_type, '1') = iff(stu_discipline_incident_behaviors_actions.behavior_type is null, '1', fct_student_discipline_incident_behaviors.behavior_type)
-    join fct_student_discipline_actions
+    left join fct_student_discipline_actions
         on stu_discipline_incident_behaviors_actions.k_student = fct_student_discipline_actions.k_student
         and stu_discipline_incident_behaviors_actions.k_student_xyear = fct_student_discipline_actions.k_student_xyear
         and stu_discipline_incident_behaviors_actions.discipline_action_id = fct_student_discipline_actions.discipline_action_id
