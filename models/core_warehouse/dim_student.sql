@@ -8,6 +8,12 @@
 
 {% set custom_data_sources = var("edu:stu_demos:custom_data_sources") %}
 
+{# customizable: extra indicators to create in the aggregate query #}
+{% set custom_special_ed_program_agg_indicators = var('edu:special_ed:custom_program_agg_indicators', None) %}
+{% set custom_homeless_program_agg_indicators = var('edu:homeless:custom_program_agg_indicators', None) %}
+{% set custom_language_instruction_program_agg_indicators = var('edu:language_instruction:custom_program_agg_indicators', None) %}
+{% set custom_title_i_program_agg_indicators = var('edu:title_i:custom_program_agg_indicators', None) %}
+
 with stg_student as (
     select * from {{ ref('stg_ef3__students') }}
 ),
@@ -87,24 +93,44 @@ formatted as (
             {% for agg_type in var('edu:special_ed:agg_types') %}
                 coalesce(stu_special_ed.is_special_education_{{agg_type}}, false) as is_special_education_{{agg_type}},
             {% endfor %}
+            {% if custom_special_ed_program_agg_indicators -%}
+                {% for custom_indicator in custom_special_ed_program_agg_indicators %}
+                coalesce(stu_special_ed.{{custom_indicator}}, false) as {{custom_indicator}},
+                {% endfor %}
+            {% endif %}
         {% endif %}
 
         {% if var('src:program:language_instruction:enabled', True) %}
             {% for agg_type in var('edu:language_instruction:agg_types') %}
                 coalesce(stu_language_instruction.is_english_language_learner_{{agg_type}}, false) as is_english_language_learner_{{agg_type}},
             {% endfor %}
+            {% if custom_language_instruction_program_agg_indicators -%}
+                {% for custom_indicator in custom_language_instruction_program_agg_indicators %}
+                coalesce(stu_language_instruction.{{custom_indicator}}, false) as {{custom_indicator}},
+                {% endfor %}
+            {% endif %}
         {% endif %}
 
         {% if var('src:program:homeless:enabled', True) %}
             {% for agg_type in var('edu:homeless:agg_types') %}
                 coalesce(stu_homeless.is_homeless_{{agg_type}}, false) as is_homeless_{{agg_type}},
             {% endfor %}
+            {% if custom_homeless_program_agg_indicators -%}
+                {% for custom_indicator in custom_homeless_program_agg_indicators %}
+                coalesce(stu_homeless.{{custom_indicator}}, false) as {{custom_indicator}},
+                {% endfor %}
+            {% endif %}
         {% endif %}
 
         {% if var('src:program:title_i:enabled', True) %}
             {% for agg_type in var('edu:title_i:agg_types') %}
                 coalesce(stu_title_i_part_a.is_title_i_{{agg_type}}, false) as is_title_i_{{agg_type}},
             {% endfor %}
+            {% if custom_title_i_program_agg_indicators -%}
+                {% for custom_indicator in custom_title_i_program_agg_indicators %}
+                coalesce(stu_title_i_part_a.{{custom_indicator}}, false) as {{custom_indicator}},
+                {% endfor %}
+            {% endif %}
         {% endif %}
 
         -- student characteristics

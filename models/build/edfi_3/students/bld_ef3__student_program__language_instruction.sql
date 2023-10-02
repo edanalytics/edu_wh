@@ -7,6 +7,8 @@
 {# customizable: the column that defines the end date for the language instruction program #}
 {% set exit_date_column = var('edu:language_instruction:exit_date_column') %}
 
+{# customizable: extra indicators to create in the aggregate query #}
+{% set custom_program_agg_indicators = var('edu:language_instruction:custom_program_agg_indicators', None) %}
 
 with stage as (
     select * from {{ ref('stg_ef3__student_language_instruction_program_associations') }}
@@ -29,6 +31,13 @@ maxed as (
         max(
           {{ value_not_in_list(field='program_name', excluded_items=exclude_programs) }}
         ) as is_english_language_learner_annual, -- the student had a language instruction program enrollment any time during the year
+
+        -- custom language instruction program agg indicators
+        {% if custom_program_agg_indicators -%}
+          {%- for indicator in custom_program_agg_indicators -%}
+            {{ custom_program_agg_indicators[indicator]['agg_sql'] }} as {{ indicator }},
+          {%- endfor -%}
+        {%- endif %}
 
         max(has_english_learner_participation) as has_english_learner_participation
 
