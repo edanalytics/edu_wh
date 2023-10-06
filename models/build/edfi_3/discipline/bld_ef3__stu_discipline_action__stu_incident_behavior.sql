@@ -6,6 +6,7 @@ stu_discipline_incident_behavior as (
 ),
 joined as (
     select
+        stu_discipline_incident_behaviors_actions.tenant_code,
         stu_discipline_incident_behaviors_actions.k_student,
         stu_discipline_incident_behaviors_actions.k_student_xyear,
         stu_discipline_incident_behaviors_actions.discipline_action_id,
@@ -26,6 +27,6 @@ joined as (
         -- due to the deprecated version where behavior type is not required,
         -- we need to be able to either merge by the behavior type or not
         and ifnull(stu_discipline_incident_behaviors_actions.behavior_type, '1') = iff(stu_discipline_incident_behaviors_actions.behavior_type is null, '1', stu_discipline_incident_behavior.behavior_type)
-    {{ dbt_utils.group_by(n=4) }}
+    {{ dbt_utils.group_by(n=5) }}
 )
 select * from joined
