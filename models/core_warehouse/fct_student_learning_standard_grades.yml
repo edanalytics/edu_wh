@@ -41,7 +41,8 @@ models:
           Unique identifier for a learning standard. Foreign key reference to [dim_learning_standards](#!/model/model.edu_wh.dim_learning_standards).
       - name: v_academic_subjects
         description: > 
-          This descriptor holds the description of the content or subject area (e.g., arts, mathematics, reading, stenography, or a foreign language).
+          This descriptor holds the description of the content or subject area (e.g., arts, mathematics, reading, stenography, 
+          or a foreign language).
       - name: grade_type
         description: > 
           The type of grade in a report card or transcript (e.g., Final, Exam, Grading Period).     
