@@ -86,6 +86,7 @@ formatted as (
         stu_demos.lep_code,
         stu_demos.gender,
         stu_grade.entry_grade_level as grade_level,
+        stu_grade.grade_level_integer,
         stu_races.race_ethnicity,
 
         -- student programs

@@ -56,6 +56,8 @@ models:
         description: The student's gender.
       - name: grade_level
         description: The student's grade level for the given year.
+      - name: grade_level_integer
+        description: The student's grade level represented as an integer.
       - name: race_ethnicity
         description: >
           A single value defining the student's race, which includes logic
