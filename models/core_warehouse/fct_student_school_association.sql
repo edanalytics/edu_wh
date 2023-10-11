@@ -92,11 +92,14 @@ formatted as (
         and stg_stu_school.school_year = bld_school_calendar_windows.school_year
         and equal_null(dim_school_calendar.k_school_calendar, bld_school_calendar_windows.k_school_calendar)
     where true
-    -- exclude students who exited before the first school day
-    and (exit_withdraw_date >= bld_school_calendar_windows.first_school_day
-        or exit_withdraw_date is null
-        or bld_school_calendar_windows.first_school_day is null
-        )
+   {% set excl_early_exit =  var('edu:enroll:exclude_exit_before_first_day', False)  %}
+   {% if excl_early_exit -%}
+      -- exclude students who exited before the first school day
+      and (exit_withdraw_date >= bld_school_calendar_windows.first_school_day
+          or exit_withdraw_date is null
+          or bld_school_calendar_windows.first_school_day is null
+          )
+    {% endif %}
     -- exclude students whose exit day is before their entry day
     and (exit_withdraw_date >= entry_date
         or exit_withdraw_date is null)
