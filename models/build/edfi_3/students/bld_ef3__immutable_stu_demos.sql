@@ -1,3 +1,11 @@
+{# If edu var has been configured to make demos immutable, set partition var to `k_student_xyear` so demos are unique by xyear #}
+{# otherwise, use k_student so demos are unique by student+year #}
+{%- if var('edu:stu_demos:make_demos_immutable', False) -%}
+    {%- set stu_partition_var = 'k_student_xyear' -%}
+{%- else -%}
+    {%- set stu_partition_var = 'k_student' -%}
+{%- endif -%}
+
 -- extract the most recent version of immutable student demographics
 -- so that our most current understanding of these values can be applied
 -- accross all historic years
@@ -38,7 +46,7 @@ deduped as (
         {{
         dbt_utils.deduplicate(
             relation='joined',
-            partition_by='k_student_xyear',
+                partition_by=stu_partition_var,
             order_by='school_year desc'
         )
     }}

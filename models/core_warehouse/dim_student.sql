@@ -6,7 +6,16 @@
   )
 }}
 
+{# Load custom data sources from var #}
 {% set custom_data_sources = var("edu:stu_demos:custom_data_sources") %}
+
+{# If edu var has been configured to make demos immutable, set join var to `k_student_xyear` bc demos are unique by xyear #}
+{# otherwise, use k_student bc demos are unique by student+year #}
+{%- if var('edu:stu_demos:make_demos_immutable', False) -%}
+    {%- set demos_join_var = 'k_student_xyear' -%}
+{%- else -%}
+    {%- set demos_join_var = 'k_student' -%}
+{%- endif -%}
 
 with stg_student as (
     select * from {{ ref('stg_ef3__students') }}
@@ -156,7 +165,7 @@ formatted as (
     join stu_demos
         on stg_student.k_student = stu_demos.k_student
     join stu_immutable_demos
-        on stu_demos.k_student_xyear = stu_immutable_demos.k_student_xyear
+        on stu_demos.{{demos_join_var}} = stu_immutable_demos.{{demos_join_var}}
         and stu_demos.ed_org_id = stu_immutable_demos.ed_org_id
     left join stu_ids
         on stu_demos.k_student = stu_ids.k_student
