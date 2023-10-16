@@ -15,7 +15,9 @@ models:
       ##### Important Business Rules:
         Note that `k_learning_standard` is part of the Primary Key, meaning a student
         may have multiple learning standard grades for the same course in the same grading period,
-        provided they have different learning standards.
+        provided they have different learning standards. Additionally, this model has a similar natural key 
+        to fct_student_grades, it is sourced from the same Ed-Fi Resource. 
+
 
     config:
       tags: ['core', 'course']
@@ -36,18 +38,14 @@ models:
         description: Unique identifier for the school. Foreign key reference to [dim_school](#!/model/model.edu_wh.dim_school).
       - name: k_grading_period
         description: Unique identifier for the grading period. Foreign key reference to [dim_grading_period](#!/model/model.edu_wh.dim_grading_period).
+      - name: grade_type
+        description: > 
+          The type of grade in a report card or transcript (e.g., Final, Exam, Grading Period).           
       - name: k_learning_standard
         description: >
           Unique identifier for a learning standard. Foreign key reference to [dim_learning_standards](#!/model/model.edu_wh.dim_learning_standards).
-      - name: v_academic_subjects
-        description: > 
-          This descriptor holds the description of the content or subject area (e.g., arts, mathematics, reading, stenography, 
-          or a foreign language).
-      - name: grade_type
-        description: > 
-          The type of grade in a report card or transcript (e.g., Final, Exam, Grading Period).     
       - name: tenant_code
-      - name: performance_base_conversion
+      - name: performance_base_conversion_descriptor
         description: > 
           A conversion of the level to a standard set of performance levels.
       - name: learning_standard_letter_grade_earned
