@@ -17,30 +17,32 @@ models:
         description: Unique identifier for a learning standard.
         tests: 
           - unique
+      - name: k_learning_standard__parent
+        description: A reference linking to a learning standard id.
       - name: tenant_code  
       - name: school_year
       - name: learning_standard_id
         description: A unique number or alphanumeric code assigned to a Learning Standard.
       - name: v_learning_standard_identification_codes
         description: >
-          A coding scheme that is used for identification and record-keeping purposes by schools, 
+          A list of coding schemes that are used for identification and record-keeping purposes by schools, 
           social services, or other agencies to refer to a learning Standard.
       - name: learning_standard_item_code
         description: >
           A unique number or alphanumeric code assigned to a space, room, site, building, individual, 
           organization, program, or institution by a school, school system, a state, or other agency or entity.
-      - name: learning_standard_category_descriptor
+      - name: learning_standard_category
         description: An additional classification of the type of a specific learning standard.
-      - name: learning_standard_scope_descriptor
+      - name: learning_standard_scope
         description: >
           Signals the scope of usage the standard. Does not necessarily relate the standard to the governing body.
       - name: v_academic_subjects
         description: > 
-          This descriptor holds the description of the content or subject area (e.g., arts, mathematics, reading, stenography, 
+          This list holds the description of the content or subject area (e.g., arts, mathematics, reading, stenography, 
           or a foreign language).
       - name: v_content_standard
         description: > 
-          An indication as to whether an assessment conforms to a standard (e.g., local standard, 
+          A list which indicates as to whether an assessment conforms to a standard (e.g., local standard, 
           statewide standard, regional standard, association standard)
       - name: course_title
         description: > 
@@ -53,10 +55,7 @@ models:
         description: A detailed description of the learning standard entity.
       - name: v_grade_levels
         description: > 
-          This descriptor defines the set of grade levels. The map to known Ed-Fi enumeration values is required.
-      - name: parent_learning_standard_reference
-        description: > 
-          A reference linking to a learning standard id.
+          This list defines the set of grade levels. The map to known Ed-Fi enumeration values is required.
       - name: success_criteria
         description: > 
           The criteria for competency-based completion of the achievement/award.
