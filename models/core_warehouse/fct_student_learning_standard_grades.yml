@@ -18,7 +18,15 @@ models:
         provided they have different learning standards. Additionally, this model has a similar natural key 
         to fct_student_grades, it is sourced from the same Ed-Fi Resource. 
 
-      {{ doc(var('edu:custom_docs:fct_student_learning_standard_grades')) if var('edu:custom_docs:fct_student_learning_standard_grades', '') }}
+      ##### Example Query:
+        To find the learning standard grades for one particular student, course section, school, and grading period:
+        ```
+          FROM analytics.prod_wh.fct_student_learning_standard_grades
+          WHERE k_student = [replace with k_student]
+            AND k_course_section = [replace with k_course_section]
+            AND k_school = [replace with k_school]
+            AND k_grading_period = [replace with k_grading_period];
+        ```
 
 
     config:
