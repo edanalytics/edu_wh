@@ -18,6 +18,8 @@ models:
         provided they have different learning standards. Additionally, this model has a similar natural key 
         to fct_student_grades, it is sourced from the same Ed-Fi Resource. 
 
+      {{ doc(var('edu:custom_docs:fct_student_learning_standard_grades')) if var('edu:custom_docs:fct_student_learning_standard_grades', '') }}
+
 
     config:
       tags: ['core', 'course']
