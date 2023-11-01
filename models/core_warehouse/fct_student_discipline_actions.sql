@@ -81,7 +81,8 @@ formatted as (
     from stg_discipline_actions
     join dim_student 
         on stg_discipline_actions.k_student = dim_student.k_student
-    join bld_discipline_incident_associations
+    -- not all discipline actions have an incident association, want to keep those records as well
+    left join bld_discipline_incident_associations
         on stg_discipline_actions.k_student = bld_discipline_incident_associations.k_student
         and stg_discipline_actions.k_student_xyear = bld_discipline_incident_associations.k_student_xyear
         and stg_discipline_actions.discipline_action_id = bld_discipline_incident_associations.discipline_action_id
