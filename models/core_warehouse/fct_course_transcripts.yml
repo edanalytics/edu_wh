@@ -5,10 +5,10 @@ models:
     description: >
       ##### Overview:
         Course Transcripts contain the full historic record of student course grades, though in less detail
-        than [fct_student_grades](#!/model/model.edu_wh.fct_student_grades). Transcripts contain only final grades, while the grade fact may contain
-        mid-period progress reports or even in progress grades.  
+        than [fct_student_grades](#!/model/model.edu_wh.fct_student_grades). Transcripts contain only final 
+        grades, while fct_student_grades may contain mid-period progress reports or in-progress grades.  
 
-       Rows represent a student's grade and associated details for one attempt result in one course at
+       Each record represents a student's grade and associated details for one attempt result in one course at
        one school during one academic term.
 
       ##### Primary Key:

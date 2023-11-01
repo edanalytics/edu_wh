@@ -4,3 +4,71 @@ models:
   - name: fct_staff_school_association
     config:
       tags: ['core']
+    description: >
+     ##### Overview:
+       This fact table provides information on the associations between Staff and Schools. It includes both active and historic associations.
+
+     ##### Primary Key:
+       `k_staff, school_year, k_school, program_assignment, staff_classification, begin_date` -- There is one record per staff, year, school, program assignment, classification, and association begin date.
+    
+     ##### Important Business Rules:
+       `staff_classification` and `begin_date` are part of the unique key, so be careful of duplicates when querying staff from this table.  
+
+       `is_active_assignment` is TRUE if:  
+       - the assignment is linked to the latest school year in the system,  
+       - the `begin_date` is earlier than the current date,  
+       - and the `end_date` is either null or later than the current date
+
+     ##### Example Use Cases:
+       Find the most recent school assignment for each staff member, and include their email address in the return.
+       Note, if the staff member is associated with two schools and they entered both on the same date, this will pick only one of those schools
+       ```
+        with most_recent_assoc as (
+          select *
+          from fct_staff_school_association
+          -- OPTIONAL FILTER TO ONLY ACTIVE STAFF
+          where is_active_assignment
+          -- take latest exit, latest entry, highest order of assignment. if still dupes (rare), order on k_school to be consistent
+          qualify 1 = row_number() over(partition by k_staff order by end_date desc, begin_date desc, order_of_assignment, k_school)
+        )
+        select
+          dim_staff.staff_unique_id,
+          dim_staff.email_address,
+          dim_staff.display_name,
+          dim_school.school_id,
+          dim_school.school_name,
+          most_recent_assoc.position_title,
+          most_recent_assoc.staff_classification,
+          most_recent_assoc.begin_date,
+          most_recent_assoc.end_date
+        from most_recent_assoc
+        join dim_staff 
+          on most_recent_assoc.k_staff = dim_staff.k_staff
+        join dim_school
+          on most_recent_assoc.k_school = dim_school.k_school
+       ```
+    columns:
+      - name: k_staff
+        description: "Unique key for staff, foreign key reference to `dim_staff`"
+      - name: k_lea
+      - name: k_school
+      - name: k_school_calendar
+      - name: tenant_code
+        description: "Code defining the Tenant (may be an LEA, SEA, etc.) of the EdFi ODS from which this record was pulled"
+      - name: school_year
+      - name: program_assignment
+        description: "The name of the program for which the individual is assigned; for example: Regular education Title I-Academic Title I-Non-Academic Special Education Bilingual/English as a Second Language.	"
+      - name: position_title
+        description: "The descriptive name of an individual's position."
+      - name: begin_date
+        description: "Month, day, and year of the start or effective date of a staff member's employment, contract, or relationship with the LEA."
+      - name: end_date
+        description: "Month, day, and year of the end or termination date of a staff member's employment, contract, or relationship with the LEA."
+      - name: full_time_equivalency
+        description: "The ratio between the hours of work expected in a position and the hours of work normally expected in a full-time position in the same setting."
+      - name: order_of_assignment
+        description: "Describes whether the assignment is this the staff member's primary assignment, secondary assignment, etc."
+      - name: staff_classification
+        description: "The titles of employment, official status, or rank of education staff."
+      - name: is_active_assignment
+        description: "Flags whether this assignment is currently active. See full description in **Important Business Rules** section above."

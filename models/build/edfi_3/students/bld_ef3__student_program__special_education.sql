@@ -7,6 +7,9 @@
 {# customizable: the column that defines the end date for the language instruction program #}
 {% set exit_date_column = var('edu:special_ed:exit_date_column') %}
 
+{# customizable: extra indicators to create in the aggregate query #}
+{% set custom_program_agg_indicators = var('edu:special_ed:custom_program_agg_indicators', None) %}
+
 
 with stage as (
     select * from {{ ref('stg_ef3__student_special_education_program_associations') }}
@@ -29,6 +32,13 @@ maxed as (
         max(
           {{ value_not_in_list(field='program_name', excluded_items=exclude_programs) }}
         ) as is_special_education_annual, -- the student had a special education program enrollment any time during the year
+
+        -- custom special ed program agg indicators
+        {% if custom_program_agg_indicators -%}
+          {%- for indicator in custom_program_agg_indicators -%}
+            {{ custom_program_agg_indicators[indicator]['agg_sql'] }} as {{ indicator }},
+          {%- endfor -%}
+        {%- endif %}
 
         max(is_idea_eligible) as is_idea_eligible,
         max(is_multiply_disabled) as is_multiply_disabled

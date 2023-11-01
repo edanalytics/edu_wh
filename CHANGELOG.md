@@ -1,5 +1,15 @@
 # Unreleased
 ## New features
+## Under the hood
+## Fixes 
+
+# edu_wh v0.2.6
+## New features
+- Add primary disability on student special education program associations
+- Documentation improvements
+
+# edu_wh v0.2.5
+## New features
 - Create wide indicators from course/section characteristics in `dim_course_section`
 ## Under the hood
 - Add defaults for discipline non-offender codes
@@ -7,8 +17,7 @@
 - Allow assessment results to come through even if they don't match a xwalk entry
 - Add `k_school` to more models
 - Add configuration to customize the preferred email address for staff
-## Fixes 
-
+- Restrict the relationships between tenant and LEAs/schools
 
 # edu_wh v0.2.4
 ## New features
