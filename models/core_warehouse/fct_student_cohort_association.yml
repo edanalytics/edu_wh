@@ -7,9 +7,7 @@ models:
         Student cohort enrollment information.
 
       ##### Primary Key:
-        `k_cohort` -- There is one record per cohort, education organization, and year
-
-      *Primary Key:* `k_student, k_cohort`
+        `k_student, k_cohort`
 
     config:
       tags: ['core']
@@ -28,3 +26,4 @@ models:
       - name: school_year
       - name: cohort_begin_date
       - name: cohort_end_date
+      - name: is_active_cohort_association
