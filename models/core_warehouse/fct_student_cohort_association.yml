@@ -10,7 +10,7 @@ models:
         `k_student, k_cohort`
 
     config:
-      tags: ['core']
+      tags: ['cohort']
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:

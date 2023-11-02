@@ -15,7 +15,7 @@ models:
 
 
     config:
-      tags: ['core']
+      tags: ['cohort']
     columns:
       - name: k_cohort
         description: Defining key for cohorts. Surrogate key for [`api_year` + `ed_org_id` + `cohort_id`]
