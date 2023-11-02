@@ -28,6 +28,7 @@ formatted as (
         stg_discipline_incidents.tenant_code,
         stg_discipline_incidents.incident_id,
         stg_discipline_incidents.incident_date,
+        stg_discipline_incidents.incident_time,
         -- adding an indicator for multiple behaviors for an incident
         case
             when array_size(stg_discipline_incidents.v_behaviors) > 1
