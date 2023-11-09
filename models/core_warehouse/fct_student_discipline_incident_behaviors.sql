@@ -63,6 +63,8 @@ formatted as (
                 then true
             else false
         end as is_most_severe_behavior,
+        -- bring in any additional custom columns from xwalk, does nothing if there are no extra columns
+        {{ accordion_columns('xwalk_discipline_behaviors', exclude_columns=['behavior_type', 'severity_order']) }}
         -- there is typically only a single value here, choosing the first option for analytical use cases
         participation_codes.participation_codes_array[0]::string as participation_code,
         participation_codes.participation_codes_array
