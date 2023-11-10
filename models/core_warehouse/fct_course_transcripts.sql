@@ -4,7 +4,6 @@
         "alter table {{ this }} add primary key (k_course, k_student_academic_record, course_attempt_result)",
         "alter table {{ this }} add constraint fk_{{ this.name }}_course foreign key (k_course) references {{ ref('dim_course') }}",
         "alter table {{ this }} add constraint fk_{{ this.name }}_academic_record foreign key (k_student_academic_record) references {{ ref('fct_student_academic_record') }}",
-        "alter table {{ this }} add constraint fk_{{ this.name }}_student foreign key (k_student) references {{ ref('dim_student') }}",
     ]
   )
 }}
@@ -24,7 +23,7 @@ formatted as (
         fct_student_academic_record.k_student_academic_record,
         fct_student_academic_record.k_lea,
         fct_student_academic_record.k_school,
-        fct_student_academic_record.k_student,
+        fct_student_academic_record.k_student_xyear,
         course_transcripts.tenant_code,
         fct_student_academic_record.school_year,
         fct_student_academic_record.academic_term,
