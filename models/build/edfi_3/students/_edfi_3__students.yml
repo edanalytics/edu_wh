@@ -44,10 +44,6 @@ models:
     config:
       tags: ['special_ed']
       enabled: "{{ var('src:program:special_ed:enabled', True) }}"
-  - name: bld_ef3__student_program__special_education__primary_disability
-    config:
-      tags: ['special_ed']
-      enabled: "{{ var('src:program:special_ed:enabled', True) }}"
   - name: bld_ef3__student_program__title_i_part_a
     config:
       tags: ['title_i']
