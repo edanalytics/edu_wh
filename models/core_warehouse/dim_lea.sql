@@ -24,13 +24,17 @@ formatted as (
         stg_lea.k_lea,
         stg_lea.k_lea__parent,
         stg_lea.k_sea,
+        {% if {{ var('src:ed_orgs:esc:enabled', True) }} %}
+        stg_lea.k_esc,
+        {% endif %}
         stg_lea.tenant_code,
         stg_lea.lea_id,
         stg_lea.lea_name,
         stg_lea.lea_short_name,
         stg_lea.parent_lea_id,
         stg_lea.lea_category,
-        stg_lea.education_service_center_id,
+        stg_lea.sea_id,
+        stg_lea.esc_id,
         stg_lea.operational_status,
         stg_lea.charter_status,
         choose_address.address_type,
