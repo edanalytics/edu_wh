@@ -3,6 +3,17 @@
 ## Under the hood
 ## Fixes 
 
+# edu_wh v0.2.7
+## New features
+- Add incident_time to dim_discipline_incidents
+- Allow some student demographics to be 'immutable', in the sense that they are stable across time
+- Allow custom indicators on program memberships
+## Under the hood
+- Make it optional to exclude student-school enrollments where the student exited before the first day of school
+- Allow a rule where multiple calendar codes must be assigned to a date for it to be counted as a school day
+
+
+
 # edu_wh v0.2.6
 ## New features
 - Add primary disability on student special education program associations
