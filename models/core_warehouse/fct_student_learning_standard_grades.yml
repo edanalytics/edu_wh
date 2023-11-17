@@ -55,7 +55,7 @@ models:
           The type of grade in a report card or transcript (e.g., Final, Exam, Grading Period).           
       - name: k_learning_standard
         description: >
-          Unique identifier for a learning standard. Foreign key reference to [dim_learning_standards](#!/model/model.edu_wh.dim_learning_standards).
+          Unique identifier for a learning standard. Foreign key reference to [dim_learning_standard](#!/model/model.edu_wh.dim_learning_standard).
       - name: tenant_code
       - name: performance_base_conversion_descriptor
         description: > 

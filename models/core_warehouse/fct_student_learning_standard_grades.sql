@@ -13,8 +13,8 @@
 with stg_grades_learning_standards as (
     select * from {{ ref('stg_ef3__grades__learning_standards') }}
 ),
-dim_learning_standards as (
-    select * from {{ ref('dim_learning_standards') }}
+dim_learning_standard as (
+    select * from {{ ref('dim_learning_standard') }}
 ),
 dim_student as (
     select * from {{ ref('dim_student') }}
@@ -36,14 +36,14 @@ formatted as (
         dim_school.k_school,
         dim_grading_period.k_grading_period,
         stg_grades_learning_standards.grade_type,
-        dim_learning_standards.k_learning_standard,
+        dim_learning_standard.k_learning_standard,
         stg_grades_learning_standards.tenant_code,
         stg_grades_learning_standards.performance_base_conversion_descriptor,
         stg_grades_learning_standards.learning_standard_letter_grade_earned,
         stg_grades_learning_standards.learning_standard_numeric_grade_earned
     from stg_grades_learning_standards
-    join dim_learning_standards
-        on stg_grades_learning_standards.k_learning_standard = dim_learning_standards.k_learning_standard
+    join dim_learning_standard
+        on stg_grades_learning_standards.k_learning_standard = dim_learning_standard.k_learning_standard
     join dim_student
         on stg_grades_learning_standards.k_student = dim_student.k_student
     join dim_school 
