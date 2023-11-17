@@ -41,6 +41,7 @@ models:
             - k_course_section
             - k_grading_period
             - k_learning_standard
+            - grade_type
     columns:
       - name: k_student
         description: Unique identifier for the student-year. Foreign key reference to [dim_student](#!/model/model.edu_wh.dim_student).

@@ -6,6 +6,7 @@
         "alter table {{ this }} add constraint fk_{{ this.name }}_student foreign key (k_student) references {{ ref('dim_student') }}",
         "alter table {{ this }} add constraint fk_{{ this.name }}_school foreign key (k_school) references {{ ref('dim_school') }}",
         "alter table {{ this }} add constraint fk_{{ this.name }}_course_section foreign key (k_course_section) references {{ ref('dim_course_section') }}",
+        "alter table {{ this }} add constraint fk_{{ this.name }}_course_section foreign key (k_learning_standard) references {{ ref('dim_learning_standard') }}",
     ]
   )
 }}
