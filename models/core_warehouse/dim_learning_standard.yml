@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: dim_learning_standards
+  - name: dim_learning_standard
     description: >
       ##### Overview:
         Defines individial attributes of a learning standard, who maintains them, when they were created, academic subjects related, 
