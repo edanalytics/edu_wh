@@ -10,13 +10,13 @@
 }}
 
 with fct_student_school_att as (
-    select * from {{ ref('fct_student_school_attendance_event') }}
+    select * from {{ ref(var("edu:attendance:daily_attendance_source", 'fct_student_school_attendance_event')) }}
 ),
 dim_calendar_date as (
     select * from {{ ref('dim_calendar_date') }}
 ),
-fct_student_school_assoc as (
-    select * from {{ ref('fct_student_school_association') }}
+bld_student_calendar as(
+    select * from {{ ref(var("edu:attendance:student_school_days_source", 'bld_ef3__student_school_days')) }}
 ),
 metric_absentee_categories as (
     select * from {{ ref('absentee_categories') }}
@@ -32,43 +32,25 @@ school_max_submitted as (
     from fct_student_school_att 
     join dim_calendar_date 
         on fct_student_school_att.k_calendar_date = dim_calendar_date.k_calendar_date
+    -- don't include dates in the future, as of run-time
+    where dim_calendar_date.calendar_date <= current_date()
     group by 1
 ),
-attendance_calendar as (
-    -- a dataset of all possible days on which school attendance could be recorded
-    select 
-        dim_calendar_date.k_school,
-        dim_calendar_date.k_school_calendar,
-        dim_calendar_date.k_calendar_date,
-        dim_calendar_date.school_year,
-        dim_calendar_date.calendar_date
-    from dim_calendar_date
-    join school_max_submitted
-        on dim_calendar_date.k_school = school_max_submitted.k_school
-    -- only include instructional days in the attendance calendar
-    where dim_calendar_date.is_school_day
-    -- don't include dates in the future, as of run-time
-    and dim_calendar_date.calendar_date <= current_date()
-    -- don't include dates beyond the max submitted attendance event by school
-    and dim_calendar_date.calendar_date <= school_max_submitted.max_date_by_school
-),
 stu_enr_att_cal as (
-    -- create an attendance calendar by student, conditional on enrollment
+    -- limit the student calendar to the date of the max submitted attendance event by school
     select 
-        enr.k_student,
-        enr.k_student_xyear,
-        enr.k_school,
-        enr.tenant_code,
-        enr.entry_date,
-        attendance_calendar.k_calendar_date,
-        attendance_calendar.calendar_date,
-        enr.exit_withdraw_date
-    from fct_student_school_assoc as enr
-    join attendance_calendar
-        on enr.k_school_calendar = attendance_calendar.k_school_calendar
-    -- keep days from enrollment to current-date/end of year to assist with rolling
-    -- absenteeism metrics forward post-enrollment
-    where attendance_calendar.calendar_date >= enr.entry_date
+        student_calendar.k_student,
+        student_calendar.k_student_xyear,
+        student_calendar.k_school,
+        student_calendar.tenant_code,
+        student_calendar.k_calendar_date,
+        student_calendar.calendar_date,
+        student_calendar.entry_date,
+        student_calendar.exit_withdraw_date
+    from bld_student_calendar as student_calendar
+    join school_max_submitted
+        on student_calendar.k_school = school_max_submitted.k_school
+    where student_calendar.calendar_date <= school_max_submitted.max_date_by_school
 ),
 fill_positive_attendance as (
     select 
