@@ -1,0 +1,67 @@
+version: 2
+
+models: 
+  - name: fct_network_association
+    description: >
+      ##### Overview:
+        This fact table describes associations between education organizations (LEAs or schools)
+        and networks.
+      
+      ##### Primary Key: 
+        `k_network, k_ed_org, ed_org_type` -- There is one record
+      per network, and education organization.
+
+      ##### Important Business Rules:
+        `is_active_association` is a convenience field to help avoid doing date math
+          
+      ##### Example Use Cases:
+        1. Get everything from dim_school, but only schools in a particular network.
+        ```
+          SELECT
+            dim_school.*
+          FROM dim_school
+            join fct_network_association na on dim_school.k_school=na.k_ed_org and na.ed_org_type='school'
+            join dim_network on dim_network.k_network=na.k_network
+          where dim_network.network_id=123
+        ```  
+          
+
+        {{ doc(var('edu:custom_docs:fct_network_association')) if var('edu:custom_docs:fct_network_association', '') }}
+
+
+    config:
+      tags: ['core']
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - k_network
+            - k_ed_org
+            - ed_org_type
+    columns:
+      - name: k_network
+        description: > 
+          The education organization network. This key defines a single network
+          (foreign key to dim_network)
+      - name: k_ed_org
+        description: > 
+          The education organization, which could be a school (from dim_school)
+          or an LEA (from dim_lea).
+      - name: ed_org_type
+        description: > 
+          Either the string "school" or the string "lea"
+      - name: tenant_code
+        description: > 
+          The tenant from which this association was derived
+      - name: network_id
+        description: > 
+          The ID of the network (same as dim_network.network_id)
+      - name: ed_org_id
+        description: > 
+          The ID of the LEA or school (same as dim_lea.lea_id or dim_school.school_id)
+      - name: begin_date
+        description: The month, day, and year on which the association begins.
+      - name: end_date
+        description: The month, day, and year on which the association ends (or null if not yet ended).
+      - name: is_active_association
+        description: >
+          Indicator for active associtiation: associations that haven't yey begun or have already ended have False.
