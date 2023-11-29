@@ -24,6 +24,7 @@ be resolved here, or resolved in the `student_assessment_dedupe` macro?
       select 
         fct_student_assessment.*,
         stu_sch.k_school,
+        stu_sch.entry_grade_level as grade_level__sch_assoc,
         '{{ rules_dict["rule_name"] }}' as sch_assoc_rule
       from {{ stu_assess_relation }} fct_student_assessment
       join {{ ref('dim_assessment') }} dim_assessment
@@ -47,6 +48,7 @@ be resolved here, or resolved in the `student_assessment_dedupe` macro?
     select 
       fct_student_assessment.*,
       stu_sch.k_school,
+      stu_sch.entry_grade_level as grade_level__sch_assoc,
       'tested_during_enroll' as sch_assoc_rule
     from {{ stu_assess_relation }} fct_student_assessment
     join {{ ref('dim_assessment') }} dim_assessment
