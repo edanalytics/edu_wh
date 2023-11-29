@@ -61,6 +61,7 @@ formatted as (
         stg_stu_sch_attend.attendance_event_category,
         stg_stu_sch_attend.attendance_event_reason,
         xwalk_att_events.is_absent,
+        xwalk_att_events.attendance_category_certainty_order,
         stg_stu_sch_attend.event_duration,
         stg_stu_sch_attend.school_attendance_duration,
         stg_stu_sch_attend.arrival_time,

@@ -15,6 +15,9 @@ with fct_student_school_att as (
 dim_calendar_date as (
     select * from {{ ref('dim_calendar_date') }}
 ),
+dim_session as (
+    select * from {{ ref('dim_session') }}
+),
 fct_student_school_assoc as (
     select * from {{ ref('fct_student_school_association') }}
 ),
@@ -80,7 +83,14 @@ fill_positive_attendance as (
             fct_student_school_att.k_session, 
             bld_attendance_sessions.k_session
         ) as k_session,
-        bld_attendance_sessions.total_instructional_days,
+        {# REVIEW #}
+        {# set total_instructional_days using dim_session for records that come from fct_student_school_att.
+           If left blank (as was previously), positively-filled records sort above negative attendance records in the dedupe below
+        #}
+        coalesce(
+            dim_session.total_instructional_days,
+            bld_attendance_sessions.total_instructional_days
+        ) as total_instructional_days,
         stu_enr_att_cal.tenant_code,
         stu_enr_att_cal.calendar_date,
         fct_student_school_att.attendance_event_reason,
@@ -108,6 +118,9 @@ fill_positive_attendance as (
                 when is_enrolled = 1 then fct_student_school_att.is_absent
                 else 1.0
             end, 0.0) as is_present,
+        {# if certainty order didn't join, default to 999, meaning should be sorted last, we are least certain that it's a "correction" #}
+        {# REVIEW is it better to sort opposite way than set to 999? #}
+        coalesce(fct_student_school_att.attendance_category_certainty_order, 999) as attendance_category_certainty_order,
         fct_student_school_att.event_duration,
         fct_student_school_att.school_attendance_duration
     from stu_enr_att_cal
@@ -115,6 +128,8 @@ fill_positive_attendance as (
         on stu_enr_att_cal.k_student = fct_student_school_att.k_student
         and stu_enr_att_cal.k_school = fct_student_school_att.k_school
         and stu_enr_att_cal.k_calendar_date = fct_student_school_att.k_calendar_date
+    left join dim_session
+        on fct_student_school_att.k_session = dim_session.k_session
     left join bld_attendance_sessions 
         on fct_student_school_att.k_session is null
         and stu_enr_att_cal.k_school = bld_attendance_sessions.k_school
@@ -136,7 +151,7 @@ positive_attendance_deduped as (
         dbt_utils.deduplicate(
             relation='fill_positive_attendance',
             partition_by='k_student, k_school, calendar_date',
-            order_by='is_enrolled desc, total_instructional_days'
+            order_by='is_enrolled desc, total_instructional_days, attendance_category_certainty_order, k_session'
         )
     }}
 ),
