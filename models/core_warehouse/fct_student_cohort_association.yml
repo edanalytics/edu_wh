@@ -1,0 +1,31 @@
+version: 2
+
+models:
+  - name: fct_student_cohort_association
+    description: >
+      ##### Overview:
+        Student cohort enrollment information.
+
+      ##### Primary Key:
+        `k_student, k_cohort, cohort_begin_date`
+
+    config:
+      tags: ['cohort']
+      enabled: "{{ var('src:domain:cohort:enabled', True) }}"
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - k_student
+            - k_cohort
+            - cohort_begin_date
+    columns:
+      - name: k_student
+      - name: k_student_xyear
+      - name: k_cohort
+      - name: k_lea
+      - name: k_school
+      - name: tenant_code
+      - name: school_year
+      - name: cohort_begin_date
+      - name: cohort_end_date
+      - name: is_active_cohort_association

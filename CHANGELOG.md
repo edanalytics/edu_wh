@@ -3,6 +3,15 @@
 ## Under the hood
 ## Fixes 
 
+# edu_wh v0.2.8
+## New features
+- Add `dim_learning_standard` and `fct_student_learning_standard_grades`
+    - For Learning Standard based grading, and for future support of learning standards in other areas of the warehouse
+- Add `dim_cohort` and `fct_student_cohort_association`
+    - Not widely in use, but intended to support more complex authorization models in the future
+## Under the hood
+- Allow overriding the source of daily attendance models, for more complex customizations of the daily attendance calculation
+
 # edu_wh v0.2.7
 ## New features
 - Add incident_time to dim_discipline_incidents

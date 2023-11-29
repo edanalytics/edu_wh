@@ -1,5 +1,5 @@
 with att_events as (
-    select * from {{ ref('fct_student_school_attendance_event') }}
+    select * from {{ ref(var("edu:attendance:daily_attendance_source", 'fct_student_school_attendance_event')) }}
 ),
 dim_calendar as (
     select * from {{ ref('dim_calendar_date') }}
