@@ -1,7 +1,7 @@
 {{
   config(
     post_hook=[
-        "alter table {{ this }} add primary key (k_student, k_school, k_calendar_date)",
+        "alter table {{ this }} add primary key (k_student, k_school, calendar_date)",
         "alter table {{ this }} add constraint fk_{{ this.name }}_student foreign key (k_student) references {{ ref('dim_student') }}",
         "alter table {{ this }} add constraint fk_{{ this.name }}_school foreign key (k_school) references {{ ref('dim_school') }}",
         "alter table {{ this }} add constraint fk_{{ this.name }}_calendar_date foreign key (k_calendar_date) references {{ ref('dim_calendar_date') }}",
@@ -161,6 +161,7 @@ cumulatives as (
         positive_attendance_deduped.k_student_xyear,
         positive_attendance_deduped.k_school,
         positive_attendance_deduped.k_calendar_date,
+        positive_attendance_deduped.calendar_date,
         positive_attendance_deduped.k_session,
         positive_attendance_deduped.tenant_code,
         positive_attendance_deduped.attendance_event_category,
