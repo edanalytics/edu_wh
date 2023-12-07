@@ -24,9 +24,9 @@ most_recent_k_student as (
     qualify school_year = max(school_year) over (partition by k_student_xyear)
 ),
 {# associate all historic assessment records with the most recent k_student for the given k_student_xyear.
-   this is the case for 
-    a) historic records that DO NOT have associated rostering data 
-    b) historic records that DO have associate rostering data
+   NOTE this includes both:
+    a) stu-assess records that DO NOT have dim_student records for the year of the assessment
+    b) stu-assess records that DO have dim_student records for the year of the assessment
 #}
 joined as (
     select
