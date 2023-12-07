@@ -11,10 +11,12 @@ find_grade_level as (
     qualify 1 = row_number() over(
         partition by k_student, school_year
         order by 
-            -- days enrolled, descending
+            -- latest entry date
+            entry_date desc
+            -- tie break on longer
             (coalesce(exit_withdraw_date, current_date()) - entry_date) desc,
-            -- tie break on grade level alpha
-            entry_grade_level
+            -- tie break on grade level reverse alpha
+            entry_grade_level desc
     )
 )
 select * from find_grade_level
