@@ -8,15 +8,28 @@ PARAM xwalk_assessment_performance_level_thresholds: xwalk to convert a score to
 TODO: figure out cleaner and/or more configurable way to handle the joins to xwalks
 #}
 {% macro stu_assess_performance_levels(stu_assess_relation='fct_student_assessment',
-                                                      pl_rules=var('edu:assessment_reporting:pl_rules', {}),  
-                                                      xwalk_assessment_performance_level_values='xwalk_assessment_performance_level_values',
-                                                      xwalk_assessment_performance_level_thresholds= 'xwalk_assessment_performance_level_thresholds') %}
+                                       pl_rules=var('edu:assessment_reporting:pl_rules', {}),  
+                                       xwalk_assessment_performance_level_values='xwalk_assessment_performance_level_values',
+                                       xwalk_assessment_performance_level_thresholds= 'xwalk_assessment_performance_level_thresholds',
+                                       assess_title_var=var('edu:assessment_reporting:adj_assess_title_var', 'dim_assessment.assessment_title')
+                                       ) %}
 
   xwalk_assessment_performance_level_thresholds as (
     select * from {{ ref(xwalk_assessment_performance_level_thresholds) }}
   ),
   xwalk_assessment_performance_level_values as (
     select * from {{ ref(xwalk_assessment_performance_level_values) }}
+  ),
+  stu_assess_adj_titles as (
+    select
+      stu_assess.*,
+      {{ stu_assess_labels(label_rules=var('edu:assessment_reporting:adj_assess_title_rules', {}),
+                          label_var=assess_title_var
+                          ) 
+      }} as {{ assess_title_var }}
+    from {{ stu_assess_relation }} stu_assess
+    join {{ ref('dim_assessment') }} dim_assessment
+      on stu_assess.k_assessment = dim_assessment.k_assessment
   ),
   stu_assess_pls as (
     select 
@@ -25,7 +38,7 @@ TODO: figure out cleaner and/or more configurable way to handle the joins to xwa
       pl_values.performance_level_int as performance_level__int,
       pl_values.performance_level_display_name as performance_level__display_name,
       pl_values.is_proficient as performance_level__is_proficient
-    from {{ stu_assess_relation }} stu_assess
+    from stu_assess_adj_titles stu_assess
     join {{ ref('dim_assessment') }} dim_assessment
       on stu_assess.k_assessment = dim_assessment.k_assessment
     {# TODO should these joins be configurable? cleaner? both?
@@ -38,6 +51,8 @@ TODO: figure out cleaner and/or more configurable way to handle the joins to xwa
       -- equal_null is used because some assess don't have e.g. academic_subject and the xwalk should leave academic_subject blank in that case
       and equal_null(dim_assessment.academic_subject, pl_thresh.academic_subject)
       and equal_null(stu_assess.when_assessed_grade_level, pl_thresh.assessed_grade_level)
+      {# TODO better way to have custom joins by "title"? add configurable join conditions? #}
+       and equal_null({{assess_title_var}}, pl_thresh.assessment_title) 
       {# TODO config the score column #}
       and stu_assess.scale_score >= pl_thresh.lower_bound
       and stu_assess.scale_score <= pl_thresh.upper_bound
