@@ -1,0 +1,124 @@
+version: 2
+
+models: 
+  - name: fct_student_full_assessment_history
+    description: >
+      ##### Overview:
+        This fact table defines a complete history student assessment records, including those that are from years prior to or beyond what's
+        available in dim_student. The most common use of this table is for showing a complete history of assessments for a current 
+        student in a longitudinal student view. For example, say your implementation is based on 3 years of Ed-Fi data, 2021-2023, 
+        but you have assessment history dating back to 2016. If you have correctly side-loaded years 2016-2020 into raw.edfi3.student_assessments,
+        all records 2016-2023 will be available here in `fct_student_full_assessment_history`, whereas only years 2021-2023 will be
+        available in [fct_student_assessment](#!/model/model.edu_wh.fct_student_assessment).
+
+      ##### Primary Key:
+        `k_student_assessment` -- There is one record per student-assessment event.
+
+      ##### Important Business Rules:
+        Because this table contains years of data beyond what's in `dim_student`, `k_student` does NOT necessarily represent the year
+        of the assessment. It is derived as the **latest k_student available for each k_student_xyear** (see the Code below). To find 
+        the year the assessment took place, use column `school_year__assessment`.
+        
+        For example, if you have assessment data for student A for years 2018-2023, and rostering (dim_student) data for student A
+        for years 2021-2023, this table will contain rows with `school_year__assessment` values 2018-2023, but each will have the same
+        value for `k_student`, which aligns with the `dim_student` record for school year 2023. So if you join to `dim_student`, be 
+        aware that you are assigning demographics from the year 2023 to assessment records for all years 2018-2023.
+
+      ##### Example Use Cases:
+        1. Find a student's full history of results on the NWEA Map assessment, including demographics from the latest year
+        ```
+          SELECT
+            fct.tenant_code,
+            dim_student.k_student,
+            dim_student.safe_display_name,
+            dim_student.gender,
+            dim_assessment.k_assessment,
+            dim_assessment.assessment_title,
+            dim_assessment.academic_subject,
+            fct.school_year__assessment,
+            dim_student.school_year as school_year__demographics,
+            fct.administration_date,
+            fct.scale_score,
+            fct.performance_level
+          FROM analytics.prod_wh.fct_student_full_assessment_history fct
+          JOIN analytics.prod_wh.dim_student
+            ON fct.k_student = dim_student.k_student
+          JOIN analytics.prod_wh.dim_assessment
+            ON fct.k_assessment = dim_assessment.k_assessment
+          WHERE dim_assessment.assessment_identifier = 'NWEA-Map'
+          ORDER BY k_student, school_year__assessment, academic_subject
+        ```
+        2. Find a student's full history of results on the NWEA Map assessment, including demographics from the year of the assessment
+        **where available** (note, for certain years they will not be available).
+        ```
+           SELECT
+            fct.tenant_code,
+            dim_student.k_student,
+            dim_student.safe_display_name,
+            dim_student.gender,
+            dim_assessment.k_assessment,
+            dim_assessment.assessment_title,
+            dim_assessment.academic_subject,
+            fct.school_year__assessment,
+            dim_student.school_year as school_year__demographics,
+            fct.administration_date,
+            fct.scale_score,
+            fct.performance_level
+          FROM analytics.prod_wh.fct_student_full_assessment_history fct
+          LEFT JOIN analytics.prod_wh.dim_student
+            ON fct.k_student_xyear = dim_student.k_student_xyear
+            AND fct.school_year__assessment = dim_student.school_year
+          JOIN analytics.prod_wh.dim_assessment
+            ON fct.k_assessment = dim_assessment.k_assessment
+          WHERE dim_assessment.assessment_identifier = 'NWEA-Map'
+          ORDER BY k_student, school_year__assessment, academic_subject
+        ```
+
+    config:
+      tags: ['assessment']
+      enabled: "{{ var('src:domain:assessment:enabled', True) }}"
+    columns:
+      - name: k_student_assessment
+        description: >
+          Generated primary key composed of `tenant_code`, `api_year`, and `studentAssessmentIdentifier`.
+        tests: 
+          - unique
+      - name: k_assessment
+        description: Unique identifier of the assessment. Foreign key reference to `dim_assessment`.
+      - name: k_student
+        description: Unique identifier for the most recently available (see Important Business Rules above for more detail)
+           student-year. Foreign key reference to `dim_student`.
+      - name: k_student_xyear
+        description: Unique identifier for the student, across all years.
+      - name: school_year__asssessment
+        description: The school year for which the assessment was administered to a student.	
+      - name: administration_date
+        description: The date and time an assessment was completed by the student.
+      - name: administration_end_date
+        description: 	The date and time an assessment administration ended.
+      - name: event_description
+        description: Describes special events that occur before during or after the assessment session that may impact use of results.
+      - name: administration_environment
+        description: The environment in which the test was administered.
+      - name: administration_language
+        description: The language in which an assessment is written and/or administered.
+      - name: event_circumstance
+        description: An unusual event occurred during the administration of the assessment. This could include fire alarm, student became ill, etc.
+      - name: platform_type
+        description: The platform with which the assessment was delivered to the student during the assessment session.
+      - name: reason_not_tested
+        description: 	The primary reason student is not tested.
+      - name: retest_indicator
+        description: Indicator if the test was a retake.
+      - name: when_assessed_grade_level
+        description: The grade level of a student when assessed.
+      - name: v_other_results
+        description: >
+          This is an array of all additional score results that were not
+          mapped in the seed table `xwalk_assessment_scores`.
+      - name: scale_score
+        description: >
+          One of the results columns that could exist if mapped in the seed table `xwalk_assessment_scores`.
+      - name: sem
+        description: >
+          One of the results columns that could exist if mapped in the seed table `xwalk_assessment_scores`.
