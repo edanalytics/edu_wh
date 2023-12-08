@@ -13,7 +13,7 @@ TODO: are we sure that rules will always be at level of assess_id & namespace? w
     Could we make more flexible by adding arguments to the macro?
 #}
 {% macro stu_assess_dedupe(stu_assess_relation='fct_student_assessment',
-                                          dedupe_rules=var('edu:assessment_reporting:dedupe_rules', {})) %}
+                           dedupe_rules=var('edu:assessment_reporting:dedupe_rules', {})) %}
 
 {# default to empty string '', so if none configured, sql below compiles to `not in ('')`, which is valid and should return all rows 
         is there a cleaner way to handle this? #}

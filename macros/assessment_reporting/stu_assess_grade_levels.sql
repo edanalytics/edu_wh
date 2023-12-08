@@ -4,8 +4,8 @@ to map grade levels to a normalized format, and choose the source of grade level
 
 #}
 {% macro stu_assess_grade_levels(stu_assess_relation='fct_student_assessment',
-                                                grade_level_rules=var('edu:assessment_reporting:grade_level_rules', none),
-                                                xwalk_assessment_grade_levels='xwalk_assessment_grade_levels') %}
+                                 grade_level_rules=var('edu:assessment_reporting:grade_level_rules', none),
+                                 xwalk_assessment_grade_levels='xwalk_assessment_grade_levels') %}
 
   xwalk_assessment_grade_levels as (
     select * from {{ ref(xwalk_assessment_grade_levels) }}

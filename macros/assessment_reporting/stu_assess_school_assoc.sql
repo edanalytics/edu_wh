@@ -13,9 +13,9 @@ be resolved here, or resolved in the `student_assessment_dedupe` macro?
 
 #}
 {% macro stu_assess_school_assoc(stu_assess_relation='fct_student_assessment',
-                                         sch_assoc_rules=var('edu:assessment_reporting:sch_assoc_rules', {}),
-                                         dedupe_partition_by='k_student_assessment,k_school',
-                                         dedupe_order_by='entry_date,exit_withdraw_date desc') %}
+                                 sch_assoc_rules=var('edu:assessment_reporting:sch_assoc_rules', {}),
+                                 dedupe_partition_by='k_student_assessment,k_school',
+                                 dedupe_order_by='entry_date,exit_withdraw_date desc') %}
 {# default to empty string '', so if none configured, sql below compiles to `not in ('')`, which is valid and should return all rows 
         is there a cleaner way to handle this? #}
 {%- set rules_applied = ["''"] -%}                        
