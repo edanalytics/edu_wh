@@ -4,6 +4,8 @@
         "alter table {{ this }} add primary key (k_course, k_student_academic_record, course_attempt_result)",
         "alter table {{ this }} add constraint fk_{{ this.name }}_course foreign key (k_course) references {{ ref('dim_course') }}",
         "alter table {{ this }} add constraint fk_{{ this.name }}_academic_record foreign key (k_student_academic_record) references {{ ref('fct_student_academic_record') }}",
+        "alter table {{ this }} add constraint fk_{{ this.name }}_student foreign key (k_student) references {{ ref('dim_student') }}",
+        "alter table {{ this }} add constraint fk_{{ this.name }}_school foreign key (k_school) references {{ ref('dim_school') }}",
     ]
   )
 }}
@@ -17,6 +19,16 @@ dim_course as (
 fct_student_academic_record as (
     select * from {{ ref('fct_student_academic_record') }}
 ),
+dim_student as (
+    select * from {{ ref('dim_student') }}
+),
+most_recent_k_student as (
+    select 
+        k_student_xyear,
+        k_student
+    from dim_student
+    qualify school_year = max(school_year) over (partition by k_student_xyear) 
+),
 formatted as (
     select 
         course_transcripts.k_course,
@@ -24,6 +36,7 @@ formatted as (
         fct_student_academic_record.k_lea,
         fct_student_academic_record.k_school,
         fct_student_academic_record.k_student_xyear,
+        most_recent_k_student.k_student,
         course_transcripts.tenant_code,
         fct_student_academic_record.school_year,
         fct_student_academic_record.academic_term,
@@ -47,5 +60,7 @@ formatted as (
     from course_transcripts
     join fct_student_academic_record
         on course_transcripts.k_student_academic_record = fct_student_academic_record.k_student_academic_record
+    join most_recent_k_student
+        on stg_academic_record.k_student_xyear = most_recent_k_student.k_student_xyear
 )
 select * from formatted
