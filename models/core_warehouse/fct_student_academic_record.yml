@@ -2,5 +2,54 @@ version: 2
 
 models:
   - name: fct_student_academic_record
+    description: >
+      ##### Overview:
+        Represents the cumulative record of academic achievement for a student, up to the specified academic term.
+
+      ##### Primary Key:
+        `k_student_academic_record` -- There is one record per student, education organization (usually school or LEA), 
+        and academic term.
+
+      ##### Important Business Rules:
+        The `k_student` key corresponds to the student's most recent `dim_student` record. For example, if a student was most recently
+        enrolled in 2021, then `k_student` will correspond to the 2021 `dim_student record` for all academic record records, regardless
+        of the year of the academic record. To join to the `dim_student` record corresponding to the year of the academic record if it  
+        exists, see this sample query:
+        ```
+        SELECT *
+        FROM analytics.prod_wh.fct_student_academic_record
+        LEFT JOIN analytics.prod_wh.dim_student
+          ON fct_student_academic_record.k_student_xyear = dim_student.k_student_xyear
+          AND fct_student_academic_record.school_year = dim_student.school_year
+        ```
+
     config:
       tags: ['core']
+    columns:
+      - name: k_student_academic_record
+      - name: k_student_xyear
+        description: Defining key for the student, which is consistent across years.
+      - name: k_student
+        description: Defining key for the most recent yearly student record
+      - name: k_lea
+      - name: k_school
+      - name: tenant_code
+      - name: school_year
+      - name: academic_term
+      - name: session_earned_credits
+      - name: session_attempted_credits
+      - name: cumulative_earned_credits
+      - name: cumulative_attempted_credits
+      - name: projected_graduation_date
+      - name: class_rank
+      - name: class_rank_total_students
+      - name: class_percent_rank
+      - name: class_rank_date
+      - name: cumulative_earned_credit_type
+      - name: cumulative_earned_credit_conversion
+      - name: cumulative_attempted_credit_type
+      - name: cumulative_attempted_credit_conversion
+      - name: session_earned_credit_type
+      - name: session_earned_credit_conversion
+      - name: session_attempted_credit_type
+      - name: session_attempted_credit_conversion

@@ -1,0 +1,42 @@
+version: 2
+
+models:
+  - name: fct_student_gpa
+    description: >
+      ##### Overview:
+        Represents a historical record of student grade point averages, including cumulative and non-cumulative measures.
+
+      ##### Primary Key:
+        `k_student_academic_record, gpa_type, is_cumulative` -- There is one record per student, education organization (usually school 
+        or LEA), academic term, GPA type (such as weighted or unweighted), and cumulative/non-cumulative indicator.
+
+      ##### Important Business Rules:
+        The `k_student` key corresponds to the student's most recent `dim_student` record. For example, if a student was most recently
+        enrolled in 2021, then `k_student` will correspond to the 2021 `dim_student record` for all GPA records, regardless of the year 
+        of the transcript. To join to the `dim_student` record corresponding to the year of the transcript if it exists, see this sample 
+        query:
+        ```
+        SELECT *
+        FROM analytics.prod_wh.fct_student_gpa
+        LEFT JOIN analytics.prod_wh.dim_student
+          ON fct_student_gpa.k_student_xyear = dim_student.k_student_xyear
+          AND fct_student_gpa.school_year = dim_student.school_year
+        ```
+
+    config:
+      tags: ['core']
+    columns:
+      - name: k_student_academic_record
+      - name: k_student_xyear
+        description: Defining key for the student, which is consistent across years.
+      - name: k_student
+        description: Defining key for the most recent yearly student record
+      - name: k_lea
+      - name: k_school
+      - name: tenant_code
+      - name: school_year
+      - name: academic_term
+      - name: gpa_type
+      - name: gpa_value
+      - name: is_cumulative
+      - name: max_gpa_value

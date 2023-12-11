@@ -22,6 +22,18 @@ models:
         `course_attempt_result` values per combination of `k_course` and `k_student_academic_record`, and either aggregate the data 
         or choose a specific `course_attempt_result` to avoid incorrect results.
 
+        The `k_student` key corresponds to the student's most recent `dim_student` record. For example, if a student was most recently
+        enrolled in 2021, then `k_student` will correspond to the 2021 `dim_student record` for all course transcript records, regardless
+        of the year of the transcript. To join to the `dim_student` record corresponding to the year of the transcript if it exists, see 
+        this sample query:
+        ```
+        SELECT *
+        FROM analytics.prod_wh.fct_course_transcripts 
+        LEFT JOIN analytics.prod_wh.dim_student
+          ON fct_course_transcripts.k_student_xyear = dim_student.k_student_xyear
+          AND fct_course_transcripts.school_year = dim_student.school_year
+        ```
+
     config:
       tags: ['core']
     tests:
@@ -35,7 +47,10 @@ models:
       - name: k_student_academic_record
       - name: k_lea
       - name: k_school
+      - name: k_student_xyear
+        description: Defining key for the student, which is consistent across years.
       - name: k_student
+        description: Defining key for the most recent yearly student record
       - name: tenant_code
       - name: school_year
       - name: academic_term
