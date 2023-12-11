@@ -3,7 +3,6 @@
     post_hook=[
         "alter table {{ this }} add primary key (k_student_academic_record)",
         "alter table {{ this }} add constraint fk_{{ this.name }}_student foreign key (k_student) references {{ ref('dim_student') }}",
-        "alter table {{ this }} add constraint fk_{{ this.name }}_school foreign key (k_school) references {{ ref('dim_school') }}",
     ]
   )
 }}
@@ -55,7 +54,7 @@ formatted as (
     from stg_academic_record
     left join dim_school
         on stg_academic_record.k_school = dim_school.k_school
-    join most_recent_k_student
+    left join most_recent_k_student
         on stg_academic_record.k_student_xyear = most_recent_k_student.k_student_xyear
 )
 select * from formatted

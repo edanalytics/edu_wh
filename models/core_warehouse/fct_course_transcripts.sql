@@ -5,7 +5,6 @@
         "alter table {{ this }} add constraint fk_{{ this.name }}_course foreign key (k_course) references {{ ref('dim_course') }}",
         "alter table {{ this }} add constraint fk_{{ this.name }}_academic_record foreign key (k_student_academic_record) references {{ ref('fct_student_academic_record') }}",
         "alter table {{ this }} add constraint fk_{{ this.name }}_student foreign key (k_student) references {{ ref('dim_student') }}",
-        "alter table {{ this }} add constraint fk_{{ this.name }}_school foreign key (k_school) references {{ ref('dim_school') }}",
     ]
   )
 }}
@@ -61,6 +60,6 @@ formatted as (
     join fct_student_academic_record
         on course_transcripts.k_student_academic_record = fct_student_academic_record.k_student_academic_record
     join most_recent_k_student
-        on stg_academic_record.k_student_xyear = most_recent_k_student.k_student_xyear
+        on fct_student_academic_record.k_student_xyear = most_recent_k_student.k_student_xyear
 )
 select * from formatted

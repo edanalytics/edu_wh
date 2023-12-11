@@ -4,7 +4,6 @@
         "alter table {{ this }} add primary key (k_student_academic_record, gpa_type, is_cumulative)",
         "alter table {{ this }} add constraint fk_{{ this.name }}_academic_record foreign key (k_student_academic_record) references {{ ref('fct_student_academic_record') }}",
         "alter table {{ this }} add constraint fk_{{ this.name }}_student foreign key (k_student) references {{ ref('dim_student') }}",
-        "alter table {{ this }} add constraint fk_{{ this.name }}_school foreign key (k_school) references {{ ref('dim_school') }}",
     ]
   )
 }}
@@ -43,7 +42,7 @@ formatted as (
     join academic_record
         on combined_gpas.k_student_academic_record = academic_record.k_student_academic_record
     join most_recent_k_student
-        on stg_academic_record.k_student_xyear = most_recent_k_student.k_student_xyear
+        on academic_record.k_student_xyear = most_recent_k_student.k_student_xyear
 )
 select * from formatted
 order by tenant_code, k_student
