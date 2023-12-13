@@ -10,6 +10,19 @@ models:
       ##### Primary Key:
         `k_student_assessment` -- There is one record per student-assessment event
 
+      ##### Example of querying "other results":
+      Any score that are not included in the wide score results columns are listed in the `v_other_results` column. They can be included
+      as wide columns in a query like this:
+      ```
+          SELECT 
+            fsa.*, 
+            fsa.v_other_results:"{NAME OF SCORE}"::int as name_of_score
+          FROM analytics.prod_wh.fct_student_assessment fsa
+          JOIN analytics.prod_wh.dim_assessment da
+            ON fsa.k_assessment = da.k_assessment
+          WHERE da.assessment_identifier = '{ASSESSMENT IDENTIFIER}'
+        ```
+
       {{ doc(var('edu:custom_docs:fct_student_assessment')) if var('edu:custom_docs:fct_student_assessment', '') }}  
 
     config:
