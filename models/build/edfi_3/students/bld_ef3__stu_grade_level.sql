@@ -12,7 +12,7 @@ find_grade_level as (
         partition by k_student, school_year
         order by 
             -- latest entry date
-            entry_date desc
+            entry_date desc,
             -- tie break on longer
             (coalesce(exit_withdraw_date, current_date()) - entry_date) desc,
             -- tie break on grade level reverse alpha
