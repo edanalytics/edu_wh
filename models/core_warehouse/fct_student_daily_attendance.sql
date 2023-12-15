@@ -118,9 +118,6 @@ fill_positive_attendance as (
                 when is_enrolled = 1 then fct_student_school_att.is_absent
                 else 1.0
             end, 0.0) as is_present,
-        {# if certainty order didn't join, default to 999, meaning should be sorted last, we are least certain that it's a "correction" #}
-        {# REVIEW is it better to sort opposite way than set to 999? #}
-        coalesce(fct_student_school_att.attendance_category_certainty_order, 999) as attendance_category_certainty_order,
         fct_student_school_att.event_duration,
         fct_student_school_att.school_attendance_duration
     from stu_enr_att_cal
@@ -151,7 +148,7 @@ positive_attendance_deduped as (
         dbt_utils.deduplicate(
             relation='fill_positive_attendance',
             partition_by='k_student, k_school, calendar_date',
-            order_by='is_enrolled desc, total_instructional_days, attendance_category_certainty_order, k_session'
+            order_by='is_enrolled desc, total_instructional_days, attendance_event_category, k_session'
         )
     }}
 ),
