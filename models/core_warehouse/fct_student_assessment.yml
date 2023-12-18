@@ -10,7 +10,7 @@ models:
       ##### Primary Key:
         `k_student_assessment` -- There is one record per student-assessment event
 
-      ##### Example of querying "other results":
+      ##### Example Use Cases:
       Any score that are not included in the wide score results columns are listed in the `v_other_results` column. They can be included
       as wide columns in a query like this:
       ```
