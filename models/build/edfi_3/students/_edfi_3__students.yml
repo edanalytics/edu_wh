@@ -4,6 +4,12 @@ models:
   - name: bld_ef3__choose_stu_demos
     config:
       tags: ['core']
+  - name: bld_ef3__immutable_stu_demos
+    config:
+      tags: ['core']
+  - name: bld_ef3__most_recent_student_record
+    config:
+      tags: ['core']
   - name: bld_ef3__stu_grade_level
     config:
       tags: ['core']
