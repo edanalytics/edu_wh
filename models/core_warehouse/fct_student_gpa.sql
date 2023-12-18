@@ -18,11 +18,7 @@ dim_student as (
     select * from {{ ref('dim_student') }}
 ),
 most_recent_k_student as (
-    select 
-        k_student_xyear,
-        k_student
-    from dim_student
-    qualify school_year = max(school_year) over (partition by k_student_xyear) 
+    select * from {{ ref('bld_ef3__most_recent_student_record') }}
 ),
 formatted as (
     select 

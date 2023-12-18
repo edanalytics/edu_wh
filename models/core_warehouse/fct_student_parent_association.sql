@@ -19,9 +19,7 @@ dim_parent as (
 ),
 -- the goal here is to find the most recent student record
 most_recent_k_student as (
-    select k_student
-    from dim_student
-    qualify school_year = max(school_year) over (partition by k_student_xyear) 
+    select * from {{ ref('bld_ef3__most_recent_student_record') }}
 ),
 formatted as (
     select 
