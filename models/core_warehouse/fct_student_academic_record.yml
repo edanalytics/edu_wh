@@ -16,7 +16,6 @@ models:
         of the year of the academic record. 
 
       ##### Example Use Cases:
-
         To join to the `dim_student` record corresponding to the student's most recent `dim_student` record:
         ```
         SELECT *
