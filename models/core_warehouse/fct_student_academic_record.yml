@@ -13,8 +13,19 @@ models:
       ##### Important Business Rules:
         The `k_student` key corresponds to the student's most recent `dim_student` record. For example, if a student was most recently
         enrolled in 2021, then `k_student` will correspond to the 2021 `dim_student record` for all academic record records, regardless
-        of the year of the academic record. To join to the `dim_student` record corresponding to the year of the academic record if it  
-        exists, see this sample query:
+        of the year of the academic record. 
+
+      ##### Example Use Cases:
+
+        To join to the `dim_student` record corresponding to the student's most recent `dim_student` record:
+        ```
+        SELECT *
+        FROM analytics.prod_wh.fct_student_academic_record
+        INNER JOIN analytics.prod_wh.dim_student
+          ON fct_student_academic_record.k_student = dim_student.k_student
+        ```
+
+        To join to the `dim_student` record corresponding to the year of the academic record if it exists:
         ```
         SELECT *
         FROM analytics.prod_wh.fct_student_academic_record
