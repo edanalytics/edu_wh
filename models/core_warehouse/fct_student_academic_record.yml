@@ -37,19 +37,36 @@ models:
       - name: school_year
       - name: academic_term
       - name: session_earned_credits
+        description: The number of credits an individual earned in this session.
       - name: session_attempted_credits
+        description: The number of credits an individual attempted to earn in this session.
       - name: cumulative_earned_credits
+        description: The cumulative number of credits an individual earns by completing courses or examinations during his or her enrollment in the current school as well as those credits transferred from schools in which the individual had been previously enrolled. 
       - name: cumulative_attempted_credits
+        description: The cumulative number of credits an individual attempts to earn by taking courses during his or her enrollment in the current school as well as those credits transferred from schools in which the individual had been previously enrolled.
       - name: projected_graduation_date
+        description: The month and year the student is projected to graduate.
       - name: class_rank
+        description: The academic rank of a student in relation to his or her graduating class (e.g., 1st, 2nd, 3rd).
       - name: class_rank_total_students
+        description: 	The total number of students in the student's graduating class.
       - name: class_percent_rank
+        description: The academic percentage rank of a student in relation to his or her graduating class (e.g., 95%, 80%, 50%).
       - name: class_rank_date
+        description: 	Date class ranking was determined.
       - name: cumulative_earned_credit_type
+        description: The type of credits or units of value awarded for the completion of a course.
       - name: cumulative_earned_credit_conversion
+        description: Conversion factor that when multiplied by the number of credits is equivalent to Carnegie units.
       - name: cumulative_attempted_credit_type
+        description: The type of credits or units of value awarded for the completion of a course.
       - name: cumulative_attempted_credit_conversion
+        description: Conversion factor that when multiplied by the number of credits is equivalent to Carnegie units.
       - name: session_earned_credit_type
+        description: The type of credits or units of value awarded for the completion of a course.
       - name: session_earned_credit_conversion
+        description: Conversion factor that when multiplied by the number of credits is equivalent to Carnegie units.
       - name: session_attempted_credit_type
+        description: The type of credits or units of value awarded for the completion of a course.
       - name: session_attempted_credit_conversion
+        description: Conversion factor that when multiplied by the number of credits is equivalent to Carnegie units.

@@ -37,6 +37,10 @@ models:
       - name: school_year
       - name: academic_term
       - name: gpa_type
+        description: The system used for calculating the grade point average for an individual.
       - name: gpa_value
+        description: The value of the grade points earned divided by the number of credits attempted.
       - name: is_cumulative
+        description: Indicator of whether or not the Grade Point Average value is cumulative.
       - name: max_gpa_value
+        description: The maximum value for the grade point average.
