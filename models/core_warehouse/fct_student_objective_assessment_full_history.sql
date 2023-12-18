@@ -36,7 +36,7 @@ joined as (
       bld_stu_obj_assess.k_student_assessment,
       bld_stu_obj_assess.k_assessment,
       most_recent_k_student.k_student,
-      bld_stu_obj_assess.school_year as school_year__assessment,
+      bld_stu_obj_assess.school_year,
       {{ dbt_utils.star(from=ref('bld_ef3__student_objective_assessment'),
                         except=['k_student_objective_assessment','k_objective_assessment','k_student_assessment','k_assessment','k_student','school_year'],
                         relation_alias='bld_stu_obj_assess') }}

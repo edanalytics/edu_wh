@@ -10,6 +10,12 @@ models:
       ##### Primary Key:
         `k_student_assessment` -- There is one record per student-assessment event
 
+      ##### Important Business Rules:
+        Note, the only records available in `fct_student_assessment` are those for which the student-year of the assessment record
+        match an existing student-year in `dim_student`. To see a "full history" of assessment records, (e.g., for assessment 
+        records from years prior to the earliest Ed-Fi ODS) see
+        [fct_student_assessment_full_history](#!/model/model.edu_wh.fct_student_assessment_full_history).
+
       {{ doc(var('edu:custom_docs:fct_student_assessment')) if var('edu:custom_docs:fct_student_assessment', '') }}  
 
     config:

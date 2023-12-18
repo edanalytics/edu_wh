@@ -1,77 +1,91 @@
 version: 2
 
 models: 
-  - name: fct_student_full_assessment_history
+  - name: fct_student_assessment_full_history
     description: >
       ##### Overview:
         This fact table defines a complete history student assessment records, including those that are from years prior to or beyond what's
         available in dim_student. The most common use of this table is for showing a complete history of assessments for a current 
         student in a longitudinal student view. For example, say your implementation is based on 3 years of Ed-Fi data, 2021-2023, 
-        but you have assessment history dating back to 2016. If you have correctly side-loaded years 2016-2020 into raw.edfi3.student_assessments,
-        all records 2016-2023 will be available here in `fct_student_full_assessment_history`, whereas only years 2021-2023 will be
-        available in [fct_student_assessment](#!/model/model.edu_wh.fct_student_assessment).
+        but you have assessment history dating back to 2016. If you have correctly side-loaded years 2016-2020 into 
+        `raw.edfi3.student_assessments`, all records 2016-2023 will be available here in `fct_student_assessment_full_history`,
+        whereas only years 2021-2023 will be available in [fct_student_assessment](#!/model/model.edu_wh.fct_student_assessment).
 
       ##### Primary Key:
         `k_student_assessment` -- There is one record per student-assessment event.
 
       ##### Important Business Rules:
-        Because this table contains years of data beyond what's in `dim_student`, `k_student` does NOT necessarily represent the year
-        of the assessment. It is derived as the **latest k_student available for each k_student_xyear** (see the Code below). To find 
-        the year the assessment took place, use column `school_year__assessment`.
+        Because this table contains years of data beyond what's in `dim_student`, `k_student` does NOT necessarily align with the year
+        of the assessment. `k_student` here instead aligns with the **latest k_student available for each k_student_xyear** 
+        (see the Code below). To find the year the assessment took place, use column `fct_student_assessment_full_history.school_year`.
         
-        For example, if you have assessment data for student A for years 2018-2023, and rostering (dim_student) data for student A
-        for years 2021-2023, this table will contain rows with `school_year__assessment` values 2018-2023, but each will have the same
-        value for `k_student`, which aligns with the `dim_student` record for school year 2023. So if you join to `dim_student`, be 
-        aware that you are assigning demographics from the year 2023 to assessment records for all years 2018-2023.
+        For example, if you have assessment data for student A for years 2016-2023, and rostering (dim_student) data for student A
+        for years 2021-2023, this table will contain rows with `school_year` values 2016-2023, but each will have the same
+        value for `k_student`, which aligns with the `dim_student` record for school year 2023. So if you join to 
+        `dim_student`, be aware that you are assigning demographics from the year 2023\* to assessment records for all years 
+        2016-2023, and `dim_student.school_year` will often not equal `fct_student_assessment_full_history.school_year`.
+
+        *However, the logic for "latest year" is decided per-student. So to continue the above example, if student B graduated in 2022,
+        their value for `fct_student_assessment_full_history.k_student` will instead align with 2022 (because 2023 is not avaialable
+        for student B).
+
+        If `fct_student_assessment_full_history.school_year` is null, `school_year` must be empty in the raw 
+        student assessment data. That column is optional in Ed-Fi, but we strongly encourage all vendors to populate it as 
+        the source of truth for "the school year in which the assessment was taken".
 
       ##### Example Use Cases:
-        1. Find a student's full history of results on the NWEA Map assessment, including demographics from the latest year
+        1. Find a student's full history of results on the NWEA Map assessment, including demographics **from the latest year**
         ```
           SELECT
             fct.tenant_code,
-            dim_student.k_student,
+            fct.k_student,
             dim_student.safe_display_name,
             dim_student.gender,
             dim_assessment.k_assessment,
             dim_assessment.assessment_title,
             dim_assessment.academic_subject,
-            fct.school_year__assessment,
+            -- school year of the assessment
+            fct.school_year,
+            -- school year of the demographics
             dim_student.school_year as school_year__demographics,
             fct.administration_date,
             fct.scale_score,
             fct.performance_level
-          FROM analytics.prod_wh.fct_student_full_assessment_history fct
+          FROM analytics.prod_wh.fct_student_assessment_full_history fct
           JOIN analytics.prod_wh.dim_student
             ON fct.k_student = dim_student.k_student
           JOIN analytics.prod_wh.dim_assessment
             ON fct.k_assessment = dim_assessment.k_assessment
           WHERE dim_assessment.assessment_identifier = 'NWEA-Map'
-          ORDER BY k_student, school_year__assessment, academic_subject
+          ORDER BY k_student, school_year, academic_subject
         ```
-        2. Find a student's full history of results on the NWEA Map assessment, including demographics from the year of the assessment
-        **where available** (note, for certain years they will not be available).
+
+        2. Find a student's full history of results on the NWEA Map assessment, including demographics **from the year of the assessment**
+        (where available).
         ```
            SELECT
             fct.tenant_code,
-            dim_student.k_student,
+            fct.k_student,
             dim_student.safe_display_name,
             dim_student.gender,
             dim_assessment.k_assessment,
             dim_assessment.assessment_title,
             dim_assessment.academic_subject,
-            fct.school_year__assessment,
+            -- school year of the assessment
+            fct.school_year,
+            -- school year of the demographics
             dim_student.school_year as school_year__demographics,
             fct.administration_date,
             fct.scale_score,
             fct.performance_level
-          FROM analytics.prod_wh.fct_student_full_assessment_history fct
+          FROM analytics.prod_wh.fct_student_assessment_full_history fct
           LEFT JOIN analytics.prod_wh.dim_student
             ON fct.k_student_xyear = dim_student.k_student_xyear
-            AND fct.school_year__assessment = dim_student.school_year
+            AND fct.school_year = dim_student.school_year
           JOIN analytics.prod_wh.dim_assessment
             ON fct.k_assessment = dim_assessment.k_assessment
           WHERE dim_assessment.assessment_identifier = 'NWEA-Map'
-          ORDER BY k_student, school_year__assessment, academic_subject
+          ORDER BY k_student, school_year, academic_subject
         ```
 
     config:
@@ -90,7 +104,7 @@ models:
            student-year. Foreign key reference to `dim_student`.
       - name: k_student_xyear
         description: Unique identifier for the student, across all years.
-      - name: school_year__asssessment
+      - name: school_year
         description: The school year for which the assessment was administered to a student.	
       - name: administration_date
         description: The date and time an assessment was completed by the student.

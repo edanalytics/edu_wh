@@ -1,0 +1,54 @@
+version: 2
+
+models: 
+  - name: fct_student_objective_assessment_full_history
+    description: >
+      ##### Overview:
+        This model displays a "complete history" of student-objective-assessment results. See 
+        [fct_student_objective_assessment](#!/model/model.edu_wh.fct_student_objective_assessment) for detail
+        on student objective assessments, and see
+        [fct_student_assessment_full_history](#!/model/model.edu_wh.fct_student_assessment_full_history)
+        for detail on what "full history" means.
+
+      ##### Primary Key:
+        `k_student_objective_assessment` -- There is one record per student-assessment event and objective assessment.
+      
+    config:
+        tags: ['assessment']
+        enabled: "{{ var('src:domain:assessment:enabled', True) }}"
+    columns:
+        - name: k_student_objective_assessment
+          description: >
+            Generated primary key composed of `tenant_code`, `api_year`, `studentAssessmentIdentifier`, and `objectiveAssessmentIdentificationCode`.
+          tests: 
+            - unique
+        - name: k_objective_assessment
+        - name: k_student_assessment
+        - name: k_assessment
+        - name: k_student
+          description: Unique identifier for the most recently available (see Important Business Rules above for more detail)
+            student-year. Foreign key reference to `dim_student`.
+        - name: k_student_xyear
+          description: Unique identifier for the student, across all years.
+        - name: school_year
+          description: The school year for which the assessment was administered to a student.
+        - name: administration_date
+        - name: administration_end_date
+        - name: event_description
+        - name: administration_environment
+        - name: administration_language
+        - name: event_circumstance
+        - name: platform_type
+        - name: reason_not_tested
+        - name: retest_indicator
+        - name: when_assessed_grade_level
+        - name: v_other_results
+          description: >
+            This is an array of all additional score results that were not
+            mapped in the seed table `xwalk_objective_assessment_scores`.
+        - name: scale_score
+          description: >
+            One of the results columns that could exist if mapped in the seed table `xwalk_objective_assessment_scores`.
+        - name: sem
+          description: >
+            One of the results columns that could exist if mapped in the seed table `xwalk_objective_assessment_scores`.

@@ -3,9 +3,20 @@ version: 2
 models: 
   - name: fct_student_objective_assessment
     description: >
-      Student objective assessment records. The wide results columns are
-      determined based on the `normalized_score_name` column
-      from the seed table `xwalk_objective_assessment_scores`.
+      ##### Overview:
+        Student objective assessment records. The wide results columns are determined based on the `normalized_score_name` column
+        from the seed table `xwalk_objective_assessment_scores`.
+
+      ##### Primary Key:
+        `k_student_objective_assessment` -- There is one record per student-assessment event and objective assessment.
+
+      ##### Important Business Rules:
+        Note, the only records available in `fct_student_objective_assessment` are those for which the student-year of the 
+        assessment record match an existing student-year in `dim_student`. To see a "full history" of assessment records,
+        (e.g., for assessment records from years prior to the earliest Ed-Fi ODS) see
+        [fct_student_objective_assessment_full_history](#!/model/model.edu_wh.fct_student_objective_assessment_full_history).
+
+
     config:
       tags: ['assessment']
       enabled: "{{ var('src:domain:assessment:enabled', True) }}"
