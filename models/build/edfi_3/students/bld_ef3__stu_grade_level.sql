@@ -14,7 +14,7 @@ find_grade_level as (
             -- latest entry date
             entry_date desc,
             -- tie break on longer
-            (coalesce(exit_withdraw_date, current_date()) - entry_date) desc,
+            exit_withdraw_date desc nulls first,
             -- tie break on grade level reverse alpha
             entry_grade_level desc
     )
