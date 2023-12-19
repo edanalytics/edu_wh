@@ -11,7 +11,7 @@ models:
         `k_student_assessment` -- There is one record per student-assessment event
 
       ##### Example Use Cases:
-      Any score that are not included in the wide score results columns are listed in the `v_other_results` column. They can be included
+      Any scores that are not included in the wide score results columns are listed in the `v_other_results` column. They can be included
       as wide columns in a query like this:
       ```
           SELECT 
