@@ -1,3 +1,13 @@
+{{
+  config(
+    post_hook=[
+        "alter table {{ this }} add primary key (k_class_period)",
+    ]
+  )
+}}
+{# Load custom data sources from var #}
+{% set custom_data_sources = var("edu:class_period:custom_data_sources") %}
+
 with class_periods as (
     select * from {{ ref('stg_ef3__class_periods') }}
 ),
@@ -33,9 +43,24 @@ formatted as (
         end as end_time,
         timediff(minutes, start_time, end_time) as period_duration
 
+        -- custom indicators
+        {% if custom_data_sources is not none and custom_data_sources | length -%}
+          {%- for source in custom_data_sources -%}
+            {%- for indicator in custom_data_sources[source] -%}
+              , {{ custom_data_sources[source][indicator]['where'] }} as {{ indicator }}
+            {%- endfor -%}
+          {%- endfor -%}
+        {%- endif %}
     from class_periods
     join dim_school
         on class_periods.k_school = dim_school.k_school
+    -- custom data sources
+    {% if custom_data_sources is not none and custom_data_sources | length -%}
+      {%- for source in custom_data_sources -%}
+        left join {{ ref(source) }}
+          on class_periods.k_class_period = {{ source }}.k_class_period
+      {% endfor %}
+    {%- endif %}
 )
 select * from formatted
 order by tenant_code, k_school, k_class_period
