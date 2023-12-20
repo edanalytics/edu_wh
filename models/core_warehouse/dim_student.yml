@@ -64,7 +64,7 @@ models:
         description: The student's special education status for the given year.
       - name: is_special_education_active
         description: The student's special education status based on the current date.
-      - name: is_most_recent_entry
+      - name: is_latest_record
         description: Denotes the most recent record of a student's demographic values by school year.
       - name: race_array
         description: A list of the student's races.
