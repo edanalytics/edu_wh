@@ -17,9 +17,6 @@ academic_record as (
 dim_student as (
     select * from {{ ref('dim_student') }}
 ),
-most_recent_k_student as (
-    select * from {{ ref('bld_ef3__most_recent_student_record') }}
-),
 formatted as (
     select 
         academic_record.k_student_academic_record,
@@ -37,8 +34,6 @@ formatted as (
     from combined_gpas 
     join academic_record
         on combined_gpas.k_student_academic_record = academic_record.k_student_academic_record
-    join most_recent_k_student
-        on academic_record.k_student_xyear = most_recent_k_student.k_student_xyear
 )
 select * from formatted
 order by tenant_code, k_student

@@ -21,9 +21,6 @@ fct_student_academic_record as (
 dim_student as (
     select * from {{ ref('dim_student') }}
 ),
-most_recent_k_student as (
-    select * from {{ ref('bld_ef3__most_recent_student_record') }}
-),
 formatted as (
     select 
         course_transcripts.k_course,
@@ -55,7 +52,5 @@ formatted as (
     from course_transcripts
     join fct_student_academic_record
         on course_transcripts.k_student_academic_record = fct_student_academic_record.k_student_academic_record
-    join most_recent_k_student
-        on fct_student_academic_record.k_student_xyear = most_recent_k_student.k_student_xyear
 )
 select * from formatted

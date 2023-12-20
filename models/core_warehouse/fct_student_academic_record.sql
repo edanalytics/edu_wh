@@ -16,9 +16,6 @@ dim_school as (
 dim_student as (
     select * from {{ ref('dim_student') }}
 ),
-most_recent_k_student as (
-    select * from {{ ref('bld_ef3__most_recent_student_record') }}
-),
 formatted as (
     select 
         stg_academic_record.k_student_academic_record,
@@ -50,7 +47,5 @@ formatted as (
     from stg_academic_record
     left join dim_school
         on stg_academic_record.k_school = dim_school.k_school
-    left join most_recent_k_student
-        on stg_academic_record.k_student_xyear = most_recent_k_student.k_student_xyear
 )
 select * from formatted
