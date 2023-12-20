@@ -14,16 +14,16 @@ models:
         `k_student` is an annualized student identifier, so it will be null unless there is a student record for the relevant school year.
 
       ##### Example Use Cases:
-        To join to `dim_student` without dropping the records where `k_student` is null (i.e., those without `dim_student` data for the
-        year of the academic record), it is necessary to join on `k_student_xyear` and include some logic to determine which year of
-        student data should be used. One way to do this is using the `is_latest_record` indicator. For example, if a student was most recently
-        enrolled in 2021, then all academic records - regardless of the year of the data - will be joined to the 2021 `dim_student` record. 
+        To join to `dim_student` without dropping the records where `k_student` is null (i.e., those without `dim_student` data for the year 
+        of the academic record), it is necessary to join on `k_student_xyear` and include some logic to determine which year of student data 
+        should be used. One way to do this is using the `is_most_recent_entry` indicator. For example, if a student was most recently enrolled 
+        in 2021, then all academic records - regardless of the year of the data - will be joined to the 2021 `dim_student` record. 
         ```
         SELECT *
         FROM analytics.prod_wh.fct_student_academic_record
         LEFT JOIN analytics.prod_wh.dim_student
           ON fct_student_academic_record.k_student_xyear = dim_student.k_student_xyear
-        WHERE dim_student.is_latest_record = True
+        WHERE dim_student.is_most_recent_entry = True
         ```
 
     config:
