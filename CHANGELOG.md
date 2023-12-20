@@ -3,6 +3,15 @@
 ## Under the hood
 ## Fixes 
 
+
+# edu_wh v0.2.9
+## New features
+- Add ability to extend `dim_course` and `dim_class_period` with external data sources
+- Add an `is_latest_record` indicator to `dim_student` to identify the demographics from the most recent school year in which a student appeared
+## Under the hood
+- In `dim_student`, choose the grade level from the most recent school enrollment, rather than the longest duration. This better aligns with grade transition patterns seen in the wild.
+
+
 # edu_wh v0.2.8
 ## New features
 - Add `dim_learning_standard` and `fct_student_learning_standard_grades`
@@ -11,6 +20,7 @@
     - Not widely in use, but intended to support more complex authorization models in the future
 ## Under the hood
 - Allow overriding the source of daily attendance models, for more complex customizations of the daily attendance calculation
+
 
 # edu_wh v0.2.7
 ## New features
