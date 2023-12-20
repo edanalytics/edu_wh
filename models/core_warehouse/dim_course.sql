@@ -7,7 +7,7 @@
 }}
 
 {# Load custom data sources from var #}
-{% set custom_data_sources = var("edu:course:custom_data_sources") %}
+{% set custom_data_sources = var("edu:course:custom_data_sources", []) %}
 
 with stg_course as (
     select * from {{ ref('stg_ef3__courses') }}
