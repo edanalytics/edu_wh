@@ -18,9 +18,6 @@ dim_course as (
 fct_student_academic_record as (
     select * from {{ ref('fct_student_academic_record') }}
 ),
-dim_student as (
-    select * from {{ ref('dim_student') }}
-),
 formatted as (
     select 
         course_transcripts.k_course,
@@ -28,7 +25,7 @@ formatted as (
         fct_student_academic_record.k_lea,
         fct_student_academic_record.k_school,
         fct_student_academic_record.k_student_xyear,
-        most_recent_k_student.k_student,
+        fct_student_academic_record.k_student,
         course_transcripts.tenant_code,
         fct_student_academic_record.school_year,
         fct_student_academic_record.academic_term,

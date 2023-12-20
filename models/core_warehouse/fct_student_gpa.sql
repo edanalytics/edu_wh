@@ -14,14 +14,11 @@ with combined_gpas as (
 academic_record as (
     select * from {{ ref('fct_student_academic_record') }}
 ),
-dim_student as (
-    select * from {{ ref('dim_student') }}
-),
 formatted as (
     select 
         academic_record.k_student_academic_record,
         academic_record.k_student_xyear,
-        most_recent_k_student.k_student,
+        academic_record.k_student,
         academic_record.k_lea,
         academic_record.k_school,
         academic_record.tenant_code,
