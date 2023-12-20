@@ -16,22 +16,25 @@ models:
         student, education organization (usually school or LEA), academic term, and course attempt (e.g. Pass or Fail).
 
       ##### Important Business Rules:
+        `k_student` is an annualized student identifier, so it will be null unless there is a student record for the relevant school year.
+
         The `course_attempt_result` attribute is included in the unique key for each record. As a result, there may be multiple records
         with the same values for `k_course` and `k_student_academic_record`, but different values for `course_attempt_result`.
         For example, a student may have both passed and failed a course in a given term. Queries must consider the potential for multiple 
         `course_attempt_result` values per combination of `k_course` and `k_student_academic_record`, and either aggregate the data 
         or choose a specific `course_attempt_result` to avoid incorrect results.
 
-        The `k_student` key corresponds to the student's most recent `dim_student` record. For example, if a student was most recently
-        enrolled in 2021, then `k_student` will correspond to the 2021 `dim_student record` for all course transcript records, regardless
-        of the year of the transcript. To join to the `dim_student` record corresponding to the year of the transcript if it exists, see 
-        this sample query:
+      ##### Example Use Cases:
+        To join to `dim_student` without dropping the records where `k_student` is null (i.e., those without `dim_student` data for the
+        year of the transcript record), it is necessary to join on `k_student_xyear` and include some logic to determine which year of
+        student data should be used. One way to do this is using the `is_latest_record` indicator. For example, if a student was most recently
+        enrolled in 2021, then all transcript records - regardless of the year of the data - will be joined to the 2021 `dim_student` record. 
         ```
         SELECT *
-        FROM analytics.prod_wh.fct_course_transcripts 
+        FROM analytics.prod_wh.fct_course_transcripts
         LEFT JOIN analytics.prod_wh.dim_student
           ON fct_course_transcripts.k_student_xyear = dim_student.k_student_xyear
-          AND fct_course_transcripts.school_year = dim_student.school_year
+        WHERE dim_student.is_latest_record = True
         ```
 
     config:
@@ -50,7 +53,7 @@ models:
       - name: k_student_xyear
         description: Defining key for the student, which is consistent across years.
       - name: k_student
-        description: Defining key for the most recent yearly student record
+        description: Defining key for the student in this school year.
       - name: tenant_code
       - name: school_year
       - name: academic_term
