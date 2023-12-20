@@ -49,6 +49,13 @@ stu_programs as (
 stu_grade as (
     select * from {{ ref('bld_ef3__stu_grade_level') }}
 ),
+latest_k_student as (
+    select 
+        k_student,
+        true as is_latest
+    from stg_student
+    qualify api_year = max(api_year) over (partition by k_student_xyear) 
+),
 
 -- student programs
 {% if var('src:program:special_ed:enabled', True) %}
@@ -186,7 +193,8 @@ formatted as (
 
        
         stu_immutable_demos.race_array,
-        stu_immutable_demos.safe_display_name
+        stu_immutable_demos.safe_display_name,
+        coalesce(latest_k_student.is_latest, false) as is_latest_record
 
     from stg_student
 
@@ -210,6 +218,8 @@ formatted as (
     left join stu_grade
         on stu_demos.k_student = stu_grade.k_student
         and stg_student.api_year = stu_grade.school_year
+    left join latest_k_student
+        on stg_student.k_student = latest_k_student.k_student
 
     -- student programs
     {% if var('src:program:special_ed:enabled', True) %}
