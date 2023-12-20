@@ -182,8 +182,9 @@ formatted as (
             {%- endfor -%}
           {%- endfor -%}
         {%- endif %}
-        -- todo: bring in additional summarized attributes
 
+        -- add indicator of most recent demographic entry
+        stg_student.api_year = max(stg_student.api_year) over(partition by k_student_xyear) as is_most_recent_entry,
        
         stu_immutable_demos.race_array,
         stu_immutable_demos.safe_display_name
