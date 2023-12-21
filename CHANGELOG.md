@@ -10,7 +10,7 @@
 - Add an `is_latest_record` indicator to `dim_student` to identify the demographics from the most recent school year in which a student appeared
 ## Under the hood
 - In `dim_student`, choose the grade level from the most recent school enrollment, rather than the longest duration. This better aligns with grade transition patterns seen in the wild.
-
+- Deprecate the `rls` schema in favor of extensions that cover this use-case
 
 # edu_wh v0.2.8
 ## New features
