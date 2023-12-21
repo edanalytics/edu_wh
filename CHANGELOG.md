@@ -3,6 +3,9 @@
 ## Under the hood
 ## Fixes 
 
+# edu_wh v0.2.10
+## Fixes 
+- Bugfix release
 
 # edu_wh v0.2.9
 ## New features
