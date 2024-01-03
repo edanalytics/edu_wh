@@ -17,8 +17,9 @@ TODO: are we sure that rules will always be at level of assess_id & namespace? w
 
 {# default to empty string '', so if none configured, sql below compiles to `not in ('')`, which is valid and should return all rows 
         is there a cleaner way to handle this? #}
-{%- set rules_applied = ["''"] -%}                        
-{%- for key, rules_dict in dedupe_rules.items() -%}
+{%- set rules_applied = ["''"] %} 
+  with
+{%- for key, rules_dict in dedupe_rules.items() %}
   fct_student_assessment_{{key}} as (
       select 
         fct_student_assessment.*
@@ -37,22 +38,23 @@ TODO: are we sure that rules will always be at level of assess_id & namespace? w
               order_by=rules_dict["order_by"]
           )
       }}
-  ),
-  {%- set rules_applied = rules_applied.append("'"~rules_dict['assessment_identifier']~'__'~rules_dict["namespace"]~"'") -%}
+  ){%- if not loop.last -%},{%- endif -%}
+  {%- set _ = rules_applied.append("'{}__{}'".format(rules_dict['assessment_identifier'], rules_dict['namespace'])) -%}
+
 {%- endfor %}
-  stu_assess_dedupe as (
-    {% for key in dedupe_rules %}
-    select *
-    from deduped_{{key}}
-    union all
-    {% endfor -%}
+  
+  {% for key in dedupe_rules %}
+  select *
+  from deduped_{{key}}
+  union all
+  {% endfor -%}
   {# stack with assessments that don't have a dedupe rule configured #}
   {# todo: add a section for default (x-assessment) dedupe rule? should that be allowed if there's assess-specific rules configured? #}
-    select 
-      fct_student_assessment.*
-    from {{ stu_assess_relation }} fct_student_assessment
-    join {{ ref('dim_assessment') }} dim_assessment
-      on fct_student_assessment.k_assessment = dim_assessment.k_assessment
-    where dim_assessment.assessment_identifier||'__'||dim_assessment.namespace not in ({{rules_applied|join(',')}})
-  )
+  select 
+    fct_student_assessment.*
+  from {{ stu_assess_relation }} fct_student_assessment
+  join {{ ref('dim_assessment') }} dim_assessment
+    on fct_student_assessment.k_assessment = dim_assessment.k_assessment
+  where dim_assessment.assessment_identifier||'__'||dim_assessment.namespace not in ({{rules_applied|join(',')}})
+  
 {% endmacro %}
