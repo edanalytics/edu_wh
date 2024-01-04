@@ -33,12 +33,14 @@ Cons:
 with fct_student_assessment as (
     select * from {{ ref('fct_student_assessment') }}
 ),
-{# call macro to association stu-assess to schools, based on config in dbt project #}
-{{stu_assess_school_assoc(stu_assess_relation='fct_student_assessment')}}
-,
-{# call macro to run dedupe, based on config in dbt project #}
-{{stu_assess_dedupe(stu_assess_relation='stu_assess_sch')}}
-,
+stu_assess_sch as (
+  {# call macro to association stu-assess to schools, based on config in dbt project #}
+  {{stu_assess_school_assoc(stu_assess_relation='fct_student_assessment')}}
+),
+stu_assess_dedupe as (
+  {# call macro to run dedupe, based on config in dbt project #}
+  {{stu_assess_dedupe(stu_assess_relation='stu_assess_sch')}}
+),
 {# call macro to add assessment season #}
 {{stu_assess_seasons(stu_assess_relation='stu_assess_dedupe')}}
 ,
