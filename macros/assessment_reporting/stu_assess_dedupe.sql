@@ -20,59 +20,59 @@ TODO: are we sure that rules will always be at level of assess_id & namespace? w
                                       default_rules={}) %}
 
 
-{# LOOP over config, create dedupe CTE for each assessment #}
-{# default to empty string '', so if none configured, sql below compiles to `not in ('')`, which is valid and should return all rows 
-        is there a cleaner way to handle this? #}
-{%- set rules_applied = ["''"] -%} 
-with
-{%- for key, rules_dict in rules_by_assess.items() %}
-  stu_assess_dedupe_{{key}} as (
-    select 
-      stu_assess.*
-    from {{ stu_assess_relation }} stu_assess
-    join {{ ref('dim_assessment') }} dim_assessment
-      on stu_assess.k_assessment = dim_assessment.k_assessment
-    where dim_assessment.assessment_identifier = '{{ rules_dict["assessment_identifier"] }}'
-      and dim_assessment.namespace = '{{ rules_dict["namespace"] }}'
-  ),
-  deduped_{{key}} as (
-    {%- set this_relation = 'stu_assess_dedupe_'~key -%}
-    {{
-        dbt_utils.deduplicate(
-            relation=this_relation,
-            partition_by=rules_dict["partition_by"],
-            order_by=rules_dict["order_by"]
-        )
-    }}
-  ),
-  {%- set _ = rules_applied.append("'{}__{}'".format(rules_dict['assessment_identifier'], rules_dict['namespace'])) -%}
+  {# LOOP over config, create dedupe CTE for each assessment #}
+  {# default to empty string '', so if none configured, sql below compiles to `not in ('')`, which is valid and should return all rows 
+          is there a cleaner way to handle this? #}
+  {%- set rules_applied = ["''"] -%} 
+  with
+  {%- for key, rules_dict in rules_by_assess.items() %}
+    stu_assess_dedupe_{{key}} as (
+      select 
+        stu_assess.*
+      from {{ stu_assess_relation }} stu_assess
+      join {{ ref('dim_assessment') }} dim_assessment
+        on stu_assess.k_assessment = dim_assessment.k_assessment
+      where dim_assessment.assessment_identifier = '{{ rules_dict["assessment_identifier"] }}'
+        and dim_assessment.namespace = '{{ rules_dict["namespace"] }}'
+    ),
+    deduped_{{key}} as (
+      {%- set this_relation = 'stu_assess_dedupe_'~key -%}
+      {{
+          dbt_utils.deduplicate(
+              relation=this_relation,
+              partition_by=rules_dict["partition_by"],
+              order_by=rules_dict["order_by"]
+          )
+      }}
+    ),
+    {%- set _ = rules_applied.append("'{}__{}'".format(rules_dict['assessment_identifier'], rules_dict['namespace'])) -%}
 
-{%- endfor %}
-  stu_assess_dedupe_default as (
-    select 
-      stu_assess.*
-    from {{ stu_assess_relation }} stu_assess
-    join {{ ref('dim_assessment') }} dim_assessment
-      on stu_assess.k_assessment = dim_assessment.k_assessment
-    where dim_assessment.assessment_identifier||'__'||dim_assessment.namespace not in ({{rules_applied|join(',')}})
-  )
-{# STACK each dedupe CTE from loop #}
-{% for key in rules_by_assess %}
-  select *
-  from deduped_{{key}}
-  union all
-{% endfor -%}
-  {# STACK with default: assessments that don't have a dedupe rule configured #}
-  {%- if default_rules %}
-    {{
-        dbt_utils.deduplicate(
-            relation='stu_assess_dedupe_default',
-            partition_by=default_rules["partition_by"],
-            order_by=default_rules["order_by"]
-        )
-    }}
-  {%- else %}
+  {%- endfor %}
+    stu_assess_dedupe_default as (
+      select 
+        stu_assess.*
+      from {{ stu_assess_relation }} stu_assess
+      join {{ ref('dim_assessment') }} dim_assessment
+        on stu_assess.k_assessment = dim_assessment.k_assessment
+      where dim_assessment.assessment_identifier||'__'||dim_assessment.namespace not in ({{rules_applied|join(',')}})
+    )
+  {# STACK each dedupe CTE from loop #}
+  {% for key in rules_by_assess %}
+    select *
+    from deduped_{{key}}
+    union all
+  {% endfor -%}
+    {# STACK with default: assessments that don't have a dedupe rule configured #}
+    {%- if default_rules %}
+      {{
+          dbt_utils.deduplicate(
+              relation='stu_assess_dedupe_default',
+              partition_by=default_rules["partition_by"],
+              order_by=default_rules["order_by"]
+          )
+      }}
+    {%- else %}
     select * from stu_assess_dedupe_default
-  {%- endif -%}
+    {%- endif -%}
 
 {% endmacro %}

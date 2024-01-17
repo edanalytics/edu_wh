@@ -1,6 +1,7 @@
 {# 
-    This macro is used by assessment reporting models to create adjusted titles/labels for assessments, based
-    on config set by the stadium implementation.
+    This macro takes configuration inputs and generates adjusted titles/labels for assessments, to be used either
+    as a final display name for the assessment, or as an intermediate join variable for xwalks with more assessment
+    metadata.
 
     This might be used in cases where dim_assessment.assessment_title is not specific enough to make 
     judgements on certain business rules. For example, for assessment_title 'My State Assessment', some
@@ -10,7 +11,7 @@
     Example configuration:
     ```
     'bi:assessment_labels':
-      'my_state assessment':
+      'my_state_assessment':
         'MY STATE ASSESS HS COURSE EXAMS':
             label: "concat_ws(' ', dim_assessment.assessment_title, v_other_results:Course)"
             when: v_other_results:Course != 'no_course'
@@ -40,7 +41,7 @@
     versions of label columns, too.
 
 #}
-{%- macro stu_assess_labels(stu_assess_relation='fct_student_assessment',
+{%- macro stu_assess_labels(stu_assess_relation,
                             label_rules={},
                             label_var='assessment_label',
                             default_label='dim_assessment.assessment_title') -%}
@@ -52,11 +53,11 @@
     {# loop over assessment ids & labels configured to have an adjusted title #}
     {% for assessment_identifier in label_rules -%}
 
-        {%- for label in label_rules[assessment_identifier] -%}
+        {%- for subset in label_rules[assessment_identifier] -%}
 
             when dim_assessment.assessment_identifier = '{{ assessment_identifier }}'
-                and {{ label_rules[assessment_identifier][label]['when'] }}
-              then {{ label_rules[assessment_identifier][label][label_var] }} 
+                and {{ label_rules[assessment_identifier][subset]['when'] }}
+              then {{ label_rules[assessment_identifier][subset][label_var] }} 
 
         {% endfor -%}
         

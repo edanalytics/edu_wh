@@ -10,8 +10,7 @@ For specific configurations based on different assessment rules, see "stu_assess
                                   join_rule='stu_assess.k_student = stu_sch.k_student',
                                   filter='where true',
                                   dedupe_partition_by='k_student_assessment,k_school',
-                                  dedupe_order_by='entry_date,exit_withdraw_date desc') -%}
-               
+                                  dedupe_order_by='entry_date,exit_withdraw_date desc') %}
   select 
     stu_assess.*,
     stu_sch.k_school,
@@ -28,7 +27,6 @@ For specific configurations based on different assessment rules, see "stu_assess
       partition by {{ dedupe_partition_by }}
       order by {{ dedupe_order_by }}
     ) = 1
-
 {%- endmacro -%}
 
 {# MACRO FOR ASSESSMENT-SPECIFIC RULES
@@ -46,41 +44,47 @@ To achieve this, configure the rules for each assessment in a dbt variable, then
                                                             'join_rule': 'stu_assess.k_student = stu_sch.k_student',
                                                             'filter': 'where true',
                                                             'dedupe_partition_by': 'k_student_assessment,k_school',
-                                                            'dedupe_order_by': 'entry_date,exit_withdraw_date desc'}) -%}
+                                                            'dedupe_order_by': 'entry_date,exit_withdraw_date desc'}) %}
 
-{# LOOP over config, create a sch-assoc CTE for each assessment #}
-{# default to empty string '', so if none configured, sql below compiles to `not in ('')`, which is valid and should return all rows 
-        is there a cleaner way to handle this? #}
-{%- set rules_applied = ["''"] -%} 
-{%- for key, rules_dict in rules_by_assess.items() %}
-  {%- if loop.first -%} with {% endif %}
-  stu_assess_sch_{{key}} as (
-    {{ stu_assess_school_assoc(stu_assess_relation=stu_assess_relation,
-                               stu_sch_relation=stu_sch_relation,
-                               rule_name=rules_dict['rule_name'],
-                               join_rule=rules_dict['join_rule'],
-                               filter="where dim_assessment.assessment_identifier = '{}'
-                                        and dim_assessment.namespace = '{}'".format(rules_dict["assessment_identifier"], rules_dict["namespace"]),
-                               dedupe_partition_by=rules_dict['dedupe_partition_by'],
-                               dedupe_order_by=rules_dict['dedupe_order_by']
-    ) }}
-  ){%- if not loop.last -%},{%- endif -%}
-  {%- set _ = rules_applied.append("'{}__{}'".format(rules_dict['assessment_identifier'], rules_dict['namespace'])) -%}
-{%- endfor %}
-{# STACK each sch-assoc CTE from loop #}
-{%- for key in rules_by_assess %}
-  select *
-  from stu_assess_sch_{{key}}
-  union all
-{%- endfor %}
-  {# STACK with default rule for assessments that don't have a stu-school-assoc rule configured #}
-  {{ stu_assess_school_assoc(stu_assess_relation=stu_assess_relation,
-                             stu_sch_relation=stu_sch_relation,
-                             rule_name=default_rules['rule_name'],
-                             join_rule=default_rules['join_rule'],
-                             filter="where dim_assessment.assessment_identifier||'__'||dim_assessment.namespace not in ({})".format(rules_applied|join(',')),
-                             dedupe_partition_by=default_rules['dedupe_partition_by'],
-                             dedupe_order_by=default_rules['dedupe_order_by']
-    ) }}
+  {# LOOP over config, create a sch-assoc CTE for each assessment #}
+  {# default to empty string '', so if none configured, sql below compiles to `not in ('')`, which is valid and should return all rows 
+          is there a cleaner way to handle this? #}
+  {%- set rules_applied = ["''"] -%} 
+  {%- for key, rules_dict in rules_by_assess.items() %}
+    {%- if loop.first -%} with {% endif %}
+    stu_assess_sch_{{key}} as (
+      {{ 
+        edu_wh.stu_assess_school_assoc(
+            stu_assess_relation=stu_assess_relation,
+            stu_sch_relation=stu_sch_relation,
+            rule_name=rules_dict['rule_name'],
+            join_rule=rules_dict['join_rule'],
+            filter="where dim_assessment.assessment_identifier = '{}'
+                    and dim_assessment.namespace = '{}'".format(rules_dict["assessment_identifier"], rules_dict["namespace"]),
+            dedupe_partition_by=rules_dict['dedupe_partition_by'],
+            dedupe_order_by=rules_dict['dedupe_order_by']
+      ) 
+      }}
+    ){%- if not loop.last -%},{%- endif -%}
+    {%- set _ = rules_applied.append("'{}__{}'".format(rules_dict['assessment_identifier'], rules_dict['namespace'])) -%}
+  {%- endfor %}
+  {# STACK each sch-assoc CTE from loop #}
+  {%- for key in rules_by_assess %}
+    select *
+    from stu_assess_sch_{{key}}
+    union all
+  {%- endfor %}
+    {# STACK with default rule for assessments that don't have a stu-school-assoc rule configured #}
+    {{ 
+      edu_wh.stu_assess_school_assoc(
+          stu_assess_relation=stu_assess_relation,
+          stu_sch_relation=stu_sch_relation,
+          rule_name=default_rules['rule_name'],
+          join_rule=default_rules['join_rule'],
+          filter="where dim_assessment.assessment_identifier||'__'||dim_assessment.namespace not in ({})".format(rules_applied|join(',')),
+          dedupe_partition_by=default_rules['dedupe_partition_by'],
+          dedupe_order_by=default_rules['dedupe_order_by']
+      ) 
+    }}
 
 {%- endmacro -%}
