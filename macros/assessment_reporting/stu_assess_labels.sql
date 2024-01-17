@@ -41,8 +41,7 @@
     versions of label columns, too.
 
 #}
-{%- macro stu_assess_labels(stu_assess_relation,
-                            label_rules={},
+{%- macro stu_assess_labels(label_rules={},
                             label_var='assessment_label',
                             default_label='dim_assessment.assessment_title') -%}
 
