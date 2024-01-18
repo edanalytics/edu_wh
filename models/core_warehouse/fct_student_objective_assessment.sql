@@ -1,3 +1,5 @@
+-- depends_on: {{ ref('xwalk_objective_assessment_score_values') }}
+-- depends_on: {{ ref('xwalk_objective_assessment_score_value_thresholds') }}
 {{
   config(
     post_hook=[
@@ -49,6 +51,18 @@ student_obj_assessments_wide as (
             dbt_utils.get_column_values(ref('xwalk_objective_assessment_scores'), 'normalized_score_name'),
             then_value='score_result',
             else_value='NULL',
+            agg='max',
+            quote_identifiers=False
+        ) }},
+        {#- find distinct score names that are in one of the normalize_result xwalks (distinct scores to add normalized_ column for) -#}
+        {% set normalized_names_values = dbt_utils.get_column_values(ref('xwalk_objective_assessment_score_values'), 'normalized_score_name') or [] %}
+        {% set normalized_names_thresholds = dbt_utils.get_column_values(ref('xwalk_objective_assessment_score_value_thresholds'), 'normalized_score_name') or [] %}
+        {{ dbt_utils.pivot(
+            'normalized_score_name',
+            (normalized_names_values + normalized_names_thresholds) | unique,
+            then_value='normalized_score_result',
+            else_value='NULL',
+            prefix='normalized_',
             agg='max',
             quote_identifiers=False
         ) }}
