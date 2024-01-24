@@ -10,7 +10,7 @@
 }}
 
 with fct_student_school_att as (
-    select * from {{ ref('fct_student_school_attendance_event') }}
+    select * from {{ ref(var("edu:attendance:daily_attendance_source", 'fct_student_school_attendance_event')) }}
 ),
 dim_calendar_date as (
     select * from {{ ref('dim_calendar_date') }}

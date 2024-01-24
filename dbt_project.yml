@@ -1,7 +1,7 @@
 config-version: 2
 
 name: 'edu_wh'
-version: '0.2.5'
+version: '0.2.10'
 require-dbt-version: [">=1.0.0", "<2.0.0"]
 
 # This setting configures which "profile" dbt uses for this project.
@@ -25,8 +25,6 @@ models:
     +materialized: table
     build:
       +schema: build
-    rls:
-      +schema: rls
     core_warehouse:
       +schema: wh
     qc:
@@ -70,6 +68,8 @@ vars:
   # threshold and minimum enrolled days for chronic absence definition
   'edu:attendance:chronic_absence_threshold': 90
   'edu:attendance:chronic_absence_min_days': 20
+  # number of is_school_day calendar events required to mark a school day
+  'edu:attendance:num_school_day_calendar_events': 1
 
   # withdraw codes that should exclude students from enrollment altogether
   'edu:enroll:exclude_withdraw_codes': ['No show', 'Invalid enrollment']

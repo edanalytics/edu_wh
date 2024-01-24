@@ -7,6 +7,8 @@
 {# customizable: the column that defines the end date for the title_i program #}
 {% set exit_date_column = var('edu:title_i:exit_date_column') %}
 
+{# customizable: extra indicators to create in the aggregate query #}
+{% set custom_program_agg_indicators = var('edu:title_i:custom_program_agg_indicators', None) %}
 
 with stage as (
     select * from {{ ref('stg_ef3__student_title_i_part_a_program_associations') }}
@@ -29,6 +31,13 @@ maxed as (
         max(
           {{ value_not_in_list(field='program_name', excluded_items=exclude_programs) }}
         ) as is_title_i_annual, -- the student had a title_i program enrollment any time during the year
+
+        -- custom title i program agg indicators
+        {% if custom_program_agg_indicators -%}
+          {%- for indicator in custom_program_agg_indicators -%}
+            {{ custom_program_agg_indicators[indicator]['agg_sql'] }} as {{ indicator }},
+          {%- endfor -%}
+        {%- endif %}
 
         max(title_i_part_a_participant_status) as title_i_part_a_participant_status
 

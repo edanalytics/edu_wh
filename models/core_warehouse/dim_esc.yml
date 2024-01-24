@@ -1,0 +1,14 @@
+version: 2
+
+models:
+  - name: dim_esc
+    description: >
+     ##### Overview:
+       This dimension table defines Education Service Centers and the characteristics unique to them, like name, address, etc.
+
+     ##### Primary Key:
+       `k_esc` -- There is one record per Education Service Center
+
+    config:
+      tags: ['esc']
+      enabled: "{{ var('src:ed_orgs:esc:enabled', True) }}"

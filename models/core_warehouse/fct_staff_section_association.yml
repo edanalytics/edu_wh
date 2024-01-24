@@ -2,5 +2,40 @@ version: 2
 
 models:
   - name: fct_staff_section_association
+    description: >
+     ##### Overview:
+       This fact table provides information on the associations between Staff and Course Sections. It includes both active and historic associations.
+
+     ##### Primary Key:
+       `k_staff, k_course_section` -- There is one record per staff and course section.
+    
+     ##### Important Business Rules:
+       `is_active_assignment` is TRUE if:  
+       - the assignment is linked to the latest school year in the system,  
+       - the `begin_date` is earlier than the current date,  
+       - and the `end_date` is either null or later than the current date
+
     config:
       tags: ['core']
+    columns:
+      - name: k_staff
+        description: "Unique key for staff, foreign key reference to `dim_staff`"
+      - name: k_course_section
+        description: "Foreign key reference to [dim_course_section](#!/model/model.edu_wh.dim_course_section)."
+      - name: tenant_code
+        description: "Code defining the Tenant (may be an LEA, SEA, etc.) of the EdFi ODS from which this record was pulled"
+      - name: school_year
+      - name: begin_date
+        description: "Month, day, and year of the start or effective date of a staff member's employment, contract, or relationship with the LEA."
+      - name: end_date
+        description: "Month, day, and year of the end or termination date of a staff member's employment, contract, or relationship with the LEA."
+      - name: classroom_position
+        description: "The type of position the Staff member holds in the specific class/section; for example: Teacher of Record, Assistant Teacher, Support Teacher, Substitute Teacher..."
+      - name: is_highly_qualified_teacher
+        description: "An indication of whether a teacher is classified as highly qualified for his/her assignment according to state definition. This attribute indicates the teacher is highly qualified for this section being taught."
+      - name: percentage_contribution
+        description: "Indicates the percentage of the total scheduled course time, academic standards, and/or learning activities delivered in this section by this staff member. A teacher of record designation may be based solely or partially on this contribution percentage."
+      - name: teacher_student_data_link_exclusion
+        description: "Indicates that the entire section is excluded from calculation of value-added or growth attribution calculations used for a particular teacher evaluation."
+      - name: is_active_assignment
+        description: "Flags whether this assignment is currently active. See full description in **Important Business Rules** section above."

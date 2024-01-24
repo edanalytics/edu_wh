@@ -19,6 +19,8 @@ models:
         - "absentee category" is calculated here for each student & day, and reflected in `absentee_category_rank` (integer) and `absentee_category_label` (string).
         It categorizes students using their **cumulative** attendance rate in comparison to thresholds set by the seed table `absentee_categories`.
       
+     {{ doc(var('edu:custom_docs:fct_student_daily_attendance')) if var('edu:custom_docs:fct_student_daily_attendance', '') }}
+
     config:
       tags: ['core']
     tests:

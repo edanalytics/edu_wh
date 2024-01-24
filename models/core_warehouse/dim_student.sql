@@ -6,7 +6,24 @@
   )
 }}
 
+{# Load custom data sources from var #}
 {% set custom_data_sources = var("edu:stu_demos:custom_data_sources") %}
+
+
+{# If edu var has been configured to make demos immutable, set join var to `k_student_xyear` bc demos are unique by xyear #}
+{# otherwise, use k_student bc demos are unique by student+year #}
+{%- if var('edu:stu_demos:make_demos_immutable', False) -%}
+    {%- set demos_join_var = 'k_student_xyear' -%}
+{%- else -%}
+    {%- set demos_join_var = 'k_student' -%}
+{%- endif -%}
+
+{# customizable: extra indicators to create in the aggregate query #}
+{% set custom_special_ed_program_agg_indicators = var('edu:special_ed:custom_program_agg_indicators', None) %}
+{% set custom_homeless_program_agg_indicators = var('edu:homeless:custom_program_agg_indicators', None) %}
+{% set custom_language_instruction_program_agg_indicators = var('edu:language_instruction:custom_program_agg_indicators', None) %}
+{% set custom_title_i_program_agg_indicators = var('edu:title_i:custom_program_agg_indicators', None) %}
+
 
 with stg_student as (
     select * from {{ ref('stg_ef3__students') }}
@@ -14,11 +31,11 @@ with stg_student as (
 stu_demos as (
     select * from {{ ref('bld_ef3__choose_stu_demos') }}
 ),
+stu_immutable_demos as (
+    select * from {{ ref('bld_ef3__immutable_stu_demos') }}
+),
 stu_ids as (
     select * from {{ ref('bld_ef3__wide_ids_student') }}
-),
-stu_races as (
-    select * from {{ ref('bld_ef3__stu_race_ethnicity') }}
 ),
 stu_chars as (
     select * from {{ ref('bld_ef3__student_characteristics') }}
@@ -71,40 +88,59 @@ formatted as (
             exclude_columns=['tenant_code', 'api_year', 'k_student', 'k_student_xyear', 'ed_org_id'],
             source_alias='stu_ids'
         ) }}
-        stg_student.first_name,
-        stg_student.middle_name,
-        stg_student.last_name,
-        concat(stg_student.last_name, ', ', stg_student.first_name,
-            coalesce(' ' || left(stg_student.middle_name, 1), '')) as display_name,
-        stg_student.birth_date,
+        stu_immutable_demos.first_name,
+        stu_immutable_demos.middle_name,
+        stu_immutable_demos.last_name,
+        stu_immutable_demos.display_name,
+        stu_immutable_demos.birth_date,
         stu_demos.lep_code,
-        stu_demos.gender,
+        stu_immutable_demos.gender,
         stu_grade.entry_grade_level as grade_level,
-        stu_races.race_ethnicity,
+        stu_immutable_demos.race_ethnicity,
 
         -- student programs
         {% if var('src:program:special_ed:enabled', True) %}
             {% for agg_type in var('edu:special_ed:agg_types') %}
                 coalesce(stu_special_ed.is_special_education_{{agg_type}}, false) as is_special_education_{{agg_type}},
             {% endfor %}
+            {% if custom_special_ed_program_agg_indicators -%}
+                {% for custom_indicator in custom_special_ed_program_agg_indicators %}
+                coalesce(stu_special_ed.{{custom_indicator}}, false) as {{custom_indicator}},
+                {% endfor %}
+            {% endif %}
         {% endif %}
 
         {% if var('src:program:language_instruction:enabled', True) %}
             {% for agg_type in var('edu:language_instruction:agg_types') %}
                 coalesce(stu_language_instruction.is_english_language_learner_{{agg_type}}, false) as is_english_language_learner_{{agg_type}},
             {% endfor %}
+            {% if custom_language_instruction_program_agg_indicators -%}
+                {% for custom_indicator in custom_language_instruction_program_agg_indicators %}
+                coalesce(stu_language_instruction.{{custom_indicator}}, false) as {{custom_indicator}},
+                {% endfor %}
+            {% endif %}
         {% endif %}
 
         {% if var('src:program:homeless:enabled', True) %}
             {% for agg_type in var('edu:homeless:agg_types') %}
                 coalesce(stu_homeless.is_homeless_{{agg_type}}, false) as is_homeless_{{agg_type}},
             {% endfor %}
+            {% if custom_homeless_program_agg_indicators -%}
+                {% for custom_indicator in custom_homeless_program_agg_indicators %}
+                coalesce(stu_homeless.{{custom_indicator}}, false) as {{custom_indicator}},
+                {% endfor %}
+            {% endif %}
         {% endif %}
 
         {% if var('src:program:title_i:enabled', True) %}
             {% for agg_type in var('edu:title_i:agg_types') %}
                 coalesce(stu_title_i_part_a.is_title_i_{{agg_type}}, false) as is_title_i_{{agg_type}},
             {% endfor %}
+            {% if custom_title_i_program_agg_indicators -%}
+                {% for custom_indicator in custom_title_i_program_agg_indicators %}
+                coalesce(stu_title_i_part_a.{{custom_indicator}}, false) as {{custom_indicator}},
+                {% endfor %}
+            {% endif %}
         {% endif %}
 
         -- student characteristics
@@ -146,22 +182,23 @@ formatted as (
             {%- endfor -%}
           {%- endfor -%}
         {%- endif %}
-        -- todo: bring in additional summarized attributes
 
+        -- add indicator of most recent demographic entry
+        stg_student.api_year = max(stg_student.api_year) over(partition by stg_student.k_student_xyear) as is_latest_record,
        
-        stu_races.race_array,
-        concat(display_name, ' (', stg_student.student_unique_id, ')') as safe_display_name
+        stu_immutable_demos.race_array,
+        stu_immutable_demos.safe_display_name
 
     from stg_student
 
     join stu_demos
         on stg_student.k_student = stu_demos.k_student
+    join stu_immutable_demos
+        on stu_demos.{{demos_join_var}} = stu_immutable_demos.{{demos_join_var}}
+        and stu_demos.ed_org_id = stu_immutable_demos.ed_org_id
     left join stu_ids
         on stu_demos.k_student = stu_ids.k_student
         and stu_demos.ed_org_id = stu_ids.ed_org_id
-    left join stu_races
-        on stu_demos.k_student = stu_races.k_student
-        and stu_demos.ed_org_id = stu_races.ed_org_id
     left join stu_chars
         on stu_demos.k_student = stu_chars.k_student
         and stu_demos.ed_org_id = stu_chars.ed_org_id

@@ -1,0 +1,47 @@
+version: 2
+
+models:
+  - name: dim_cohort
+    description: >
+      ##### Overview:
+        This dimension table defines cohorts that exist at the school and LEA level. It can be referenced by any or all of these fact tables, 
+        if they are populated in the ODS and enabled by this Stadium implementation:
+
+        - [fct_student_cohort_association](#!/model/model.edu_wh.fct_student_cohort_association)
+        - [fct_staff_cohort_association](#!/model/model.edu_wh.fct_staff_cohort_association)
+
+      ##### Primary Key:
+        `k_cohort` -- There is one record per cohort, education organization, and year
+
+
+    config:
+      tags: ['cohort']
+      enabled: "{{ var('src:domain:cohort:enabled', True) }}"
+    columns:
+      - name: k_cohort
+        description: Defining key for cohorts. Surrogate key for [`api_year` + `ed_org_id` + `cohort_id`]
+        tests: 
+          - unique
+      - name: k_lea
+        description: Association to the LEA with the cohort.
+      - name: k_school
+        description: Association to the school with the cohort.
+      - name: tenant_code
+      - name: school_year
+        description: > 
+          School year specified by Spring year.
+          e.g., the 2021-2022 year would be 2022.
+      - name: ed_org_id
+        description: The identifier for the educational organization with the cohort.
+      - name: ed_org_type
+        description: >
+          The type of educational organization
+          e.g., School or LocalEducationAgency.
+      - name: cohort_id
+        description: The identifier for the cohort.
+      - name: cohort_description
+        description: The description of the cohort and its purpose
+      - name: cohort_scope
+        description: The scope of cohort (e.g., school, district, classroom)
+      - name: cohort_type
+        description: The type or category of the cohort (e.g., academic intervention, classroom breakout).
