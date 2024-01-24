@@ -2,5 +2,74 @@ version: 2
 
 models:
   - name: fct_student_academic_record
+    description: >
+      ##### Overview:
+        Represents the cumulative record of academic achievement for a student, up to the specified academic term.
+
+      ##### Primary Key:
+        `k_student_academic_record` -- There is one record per student, education organization (usually school or LEA), 
+        and academic term.
+
+      ##### Important Business Rules:
+        `k_student` is an annualized student identifier, so it will be null unless there is a student record for the relevant school year.
+
+      ##### Example Use Cases:
+        To join to `dim_student` without dropping the records where `k_student` is null (i.e., those without `dim_student` data for the year 
+        of the academic record), it is necessary to join on `k_student_xyear` and include some logic to determine which year of student data 
+        should be used. One way to do this is using the `is_latest_record` indicator. For example, if a student was most recently enrolled 
+        in 2021, then all academic records - regardless of the year of the data - will be joined to the 2021 `dim_student` record. 
+        ```
+        SELECT *
+        FROM analytics.prod_wh.fct_student_academic_record
+        LEFT JOIN analytics.prod_wh.dim_student
+          ON fct_student_academic_record.k_student_xyear = dim_student.k_student_xyear
+        WHERE dim_student.is_latest_record = True
+        ```
+
     config:
       tags: ['core']
+    columns:
+      - name: k_student_academic_record
+      - name: k_student_xyear
+        description: Defining key for the student, which is consistent across years.
+      - name: k_student
+        description: Defining key for the student in this school year.
+      - name: k_lea
+      - name: k_school
+      - name: tenant_code
+      - name: school_year
+      - name: academic_term
+      - name: session_earned_credits
+        description: The number of credits an individual earned in this session.
+      - name: session_attempted_credits
+        description: The number of credits an individual attempted to earn in this session.
+      - name: cumulative_earned_credits
+        description: The cumulative number of credits an individual earns by completing courses or examinations during his or her enrollment in the current school as well as those credits transferred from schools in which the individual had been previously enrolled. 
+      - name: cumulative_attempted_credits
+        description: The cumulative number of credits an individual attempts to earn by taking courses during his or her enrollment in the current school as well as those credits transferred from schools in which the individual had been previously enrolled.
+      - name: projected_graduation_date
+        description: The month and year the student is projected to graduate.
+      - name: class_rank
+        description: The academic rank of a student in relation to his or her graduating class (e.g., 1st, 2nd, 3rd).
+      - name: class_rank_total_students
+        description: 	The total number of students in the student's graduating class.
+      - name: class_percent_rank
+        description: The academic percentage rank of a student in relation to his or her graduating class (e.g., 95%, 80%, 50%).
+      - name: class_rank_date
+        description: 	Date class ranking was determined.
+      - name: cumulative_earned_credit_type
+        description: The type of credits or units of value awarded for the completion of a course.
+      - name: cumulative_earned_credit_conversion
+        description: Conversion factor that when multiplied by the number of credits is equivalent to Carnegie units.
+      - name: cumulative_attempted_credit_type
+        description: The type of credits or units of value awarded for the completion of a course.
+      - name: cumulative_attempted_credit_conversion
+        description: Conversion factor that when multiplied by the number of credits is equivalent to Carnegie units.
+      - name: session_earned_credit_type
+        description: The type of credits or units of value awarded for the completion of a course.
+      - name: session_earned_credit_conversion
+        description: Conversion factor that when multiplied by the number of credits is equivalent to Carnegie units.
+      - name: session_attempted_credit_type
+        description: The type of credits or units of value awarded for the completion of a course.
+      - name: session_attempted_credit_conversion
+        description: Conversion factor that when multiplied by the number of credits is equivalent to Carnegie units.

@@ -10,18 +10,18 @@
 with stg_academic_record as (
     select * from {{ ref('stg_ef3__student_academic_records') }}
 ),
-dim_student as (
-    select * from {{ ref('dim_student') }}
-),
 dim_school as (
     select * from {{ ref('dim_school') }}
+),
+dim_student as (
+    select * from {{ ref('dim_student') }}
 ),
 formatted as (
     select 
         stg_academic_record.k_student_academic_record,
-        stg_academic_record.k_student,
-        -- fill district if record is specified at school level
-        coalesce(stg_academic_record.k_lea, dim_school.k_lea) as k_lea,
+        dim_student.k_student,  -- will be null if no dim_student record for this 
+        stg_academic_record.k_student_xyear,
+        coalesce(stg_academic_record.k_lea, dim_school.k_lea) as k_lea,  -- fill district if record is specified at school level
         stg_academic_record.k_school,
         stg_academic_record.tenant_code,
         stg_academic_record.school_year,
@@ -44,9 +44,10 @@ formatted as (
         stg_academic_record.session_attempted_credit_type,
         stg_academic_record.session_attempted_credit_conversion
     from stg_academic_record
-    join dim_student
-        on stg_academic_record.k_student = dim_student.k_student
     left join dim_school
         on stg_academic_record.k_school = dim_school.k_school
+    left join dim_student
+        on stg_academic_record.k_student_xyear = dim_student.k_student_xyear
+        and stg_academic_record.school_year = dim_student.school_year
 )
 select * from formatted

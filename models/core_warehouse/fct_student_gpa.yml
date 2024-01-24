@@ -1,0 +1,49 @@
+version: 2
+
+models:
+  - name: fct_student_gpa
+    description: >
+      ##### Overview:
+        Represents a historical record of student grade point averages, including cumulative and non-cumulative measures.
+
+      ##### Primary Key:
+        `k_student_academic_record, gpa_type, is_cumulative` -- There is one record per student, education organization (usually school 
+        or LEA), academic term, GPA type (such as weighted or unweighted), and cumulative/non-cumulative indicator.
+
+      ##### Important Business Rules:
+        `k_student` is an annualized student identifier, so it will be null unless there is a student record for the relevant school year.
+
+      ##### Example Use Cases:
+        To join to `dim_student` without dropping the records where `k_student` is null (i.e., those without `dim_student` data for the
+        year of the GPA record), it is necessary to join on `k_student_xyear` and include some logic to determine which year of student 
+        data should be used. One way to do this is using the `is_latest_record` indicator. For example, if a student was most recently
+        enrolled in 2021, then all GPA records - regardless of the year of the data - will be joined to the 2021 `dim_student` record. 
+        ```
+        SELECT *
+        FROM analytics.prod_wh.fct_student_gpa
+        LEFT JOIN analytics.prod_wh.dim_student
+          ON fct_student_gpa.k_student_xyear = dim_student.k_student_xyear
+        WHERE dim_student.is_latest_record = True
+        ```
+
+    config:
+      tags: ['core']
+    columns:
+      - name: k_student_academic_record
+      - name: k_student_xyear
+        description: Defining key for the student, which is consistent across years.
+      - name: k_student
+        description: Defining key for the student in this school year.
+      - name: k_lea
+      - name: k_school
+      - name: tenant_code
+      - name: school_year
+      - name: academic_term
+      - name: gpa_type
+        description: The system used for calculating the grade point average for an individual.
+      - name: gpa_value
+        description: The value of the grade points earned divided by the number of credits attempted.
+      - name: is_cumulative
+        description: Indicator of whether or not the Grade Point Average value is cumulative.
+      - name: max_gpa_value
+        description: The maximum value for the grade point average.
