@@ -1,7 +1,7 @@
 {{
   config(
     post_hook=[
-        "alter table {{ this }} add primary key (k_student, k_school, k_calendar_date)",
+        "alter table {{ this }} add primary key (k_student, k_school, calendar_date)",
         "alter table {{ this }} add constraint fk_{{ this.name }}_student foreign key (k_student) references {{ ref('dim_student') }}",
         "alter table {{ this }} add constraint fk_{{ this.name }}_school foreign key (k_school) references {{ ref('dim_school') }}",
         "alter table {{ this }} add constraint fk_{{ this.name }}_calendar_date foreign key (k_calendar_date) references {{ ref('dim_calendar_date') }}",
@@ -14,6 +14,9 @@ with fct_student_school_att as (
 ),
 dim_calendar_date as (
     select * from {{ ref('dim_calendar_date') }}
+),
+dim_session as (
+    select * from {{ ref('dim_session') }}
 ),
 fct_student_school_assoc as (
     select * from {{ ref('fct_student_school_association') }}
@@ -80,7 +83,14 @@ fill_positive_attendance as (
             fct_student_school_att.k_session, 
             bld_attendance_sessions.k_session
         ) as k_session,
-        bld_attendance_sessions.total_instructional_days,
+        {# REVIEW #}
+        {# set total_instructional_days using dim_session for records that come from fct_student_school_att.
+           If left blank (as was previously), positively-filled records sort above negative attendance records in the dedupe below
+        #}
+        coalesce(
+            dim_session.total_instructional_days,
+            bld_attendance_sessions.total_instructional_days
+        ) as total_instructional_days,
         stu_enr_att_cal.tenant_code,
         stu_enr_att_cal.calendar_date,
         fct_student_school_att.attendance_event_reason,
@@ -115,6 +125,8 @@ fill_positive_attendance as (
         on stu_enr_att_cal.k_student = fct_student_school_att.k_student
         and stu_enr_att_cal.k_school = fct_student_school_att.k_school
         and stu_enr_att_cal.k_calendar_date = fct_student_school_att.k_calendar_date
+    left join dim_session
+        on fct_student_school_att.k_session = dim_session.k_session
     left join bld_attendance_sessions 
         on fct_student_school_att.k_session is null
         and stu_enr_att_cal.k_school = bld_attendance_sessions.k_school
@@ -136,7 +148,7 @@ positive_attendance_deduped as (
         dbt_utils.deduplicate(
             relation='fill_positive_attendance',
             partition_by='k_student, k_school, calendar_date',
-            order_by='is_enrolled desc, total_instructional_days'
+            order_by='is_enrolled desc, total_instructional_days, attendance_event_category, k_session'
         )
     }}
 ),
@@ -146,6 +158,7 @@ cumulatives as (
         positive_attendance_deduped.k_student_xyear,
         positive_attendance_deduped.k_school,
         positive_attendance_deduped.k_calendar_date,
+        positive_attendance_deduped.calendar_date,
         positive_attendance_deduped.k_session,
         positive_attendance_deduped.tenant_code,
         positive_attendance_deduped.attendance_event_category,
