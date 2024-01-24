@@ -3,14 +3,117 @@ version: 2
 models: 
   - name: fct_student_discipline_actions
     description: >
-      This table describes disciplinary actions taken by the school, such as 
-      suspensions. 
-      The incidents and behaviors leading to those actions are not yet
-      covered in the warehouse model. 
+      ##### Overview:
+        This student fact table describes disciplinary actions taken by the school, and their characteristics, including the 
+        specific type(s) of discipline (e.g. phone call, suspension).
 
-      Rows represent one disciplinary action for one student on one date.
+      ##### Primary Key: 
+        `k_student, k_discipline_actions_event, discipline_action` -- There is one record per student, year, action ID, discipline date, and discipline action.
 
-      *Primary Key:* k_student, k_student_xyear, k_discipline_actions_event, discipline_action
+      ##### Important Business Rules:
+        Note that `discipline_action` is included in the unique key. In cases where multiple actions are taken, each one recieves its own
+        record in this table.
+
+        For instance, a district might respond to an incident with both a phone call home and a suspension. Because the phone call and 
+        suspension are stored as separate records, metrics like "count of suspensions" or "count of issued phone calls" are easy to calculate. (see Example Query 1)
+
+        Note that `k_school` is always equal to `k_school_responsibility`. In some cases, there is a separate school referenced, `k_school_assignment`. 
+        See the column descriptions below for more info.
+
+        The columns `is_iss`, `is_oss`, `is_exp`, `is_minor`, and `severity_order` are sourced from **xwalk_discipline_actions**, and are useful
+        for analytical queries like "count of suspensions". See the column descriptions below for more info.
+
+      ##### Example Queries:
+        1. Count the number of Actions, by Type of Action, issued by school A on May 2nd, 2023:
+        ```
+          WITH counts as (
+            select
+              fct.k_school,
+              fct.discipline_date,
+              fct.discipline_action,
+              fct.is_iss,
+              fct.is_oss,
+              count(*) n_actions
+            from analytics.prod_wh.fct_student_discipline_actions fct
+            group by 1,2,3,4,5
+          ) 
+          SELECT
+            dim_school.school_id,
+            dim_school.school_name,
+            counts.discipline_date,
+            counts.discipline_action,
+            counts.is_iss,
+            counts.is_oss,
+            counts.n_actions
+          FROM counts
+          JOIN analytics.prod_wh.dim_school 
+            on counts.k_school = dim_school.k_school
+          WHERE counts.discipline_date = '2022-05-02'
+            and dim_school.school_id = 'A_school_id';
+        ```  
+
+            
+        2. (Advanced) Calculate suspension rate by school & year
+        ```
+          -- First, assign each student to a single school for each year
+          -- NOTE, you may want to change the rules for school assignment, depending on your use case
+          WITH stu_school as (
+            SELECT
+              *,
+              
+              -- fill in exit date with June 30th if was left blank (end of school year)
+              case when exit_withdraw_date is null 
+                then school_year || '-06-30' 
+                else exit_withdraw_date 
+              end as inferred_exit_withdraw_date,
+              
+              -- calculate length of enrollment using inferred exit. This is used in the qualify statement below
+              datediff('days', entry_date, inferred_exit_withdraw_date) as n_days_enrolled
+              
+            FROM analytics.prod_wh.fct_student_school_association 
+            -- SUBSET: only include primary enrollments
+            WHERE is_primary_school 
+            -- DEDUPE: subset to the longest enrollment, break ties with latest exit, then break ties with k_school (arbitrary but consistent)
+            QUALIFY 1 = row_number() over(partition by k_student
+                                          order by n_days_enrolled desc,
+                                                  exit_withdraw_date desc,
+                                                  k_school)
+          ),
+
+          -- Next, JOIN stu-school assigns to discipline data. 
+          -- and AGGREGATE to stu-school level (count the action events per stu-school)
+          stu_school_disc_counts as (
+            SELECT
+              stu_school.k_student,
+              stu_school.k_school,
+              stu_school.school_year,
+              sum(coalesce(is_oss::int, 0)) as n_oss,
+              sum(coalesce(is_iss::int, 0)) as n_iss,
+              -- RULE: ISS and OSS both count toward suspensions
+              n_oss + n_iss as n_suspensions,
+              n_suspensions > 0 as has_any_suspension
+            FROM stu_school
+            -- left join to keep students without any discipline actions
+            --> RULE: school of discipline action much match school of assignment
+            LEFT JOIN analytics.prod_wh.fct_student_discipline_actions disc
+              on stu_school.k_student = disc.k_student 
+              and stu_school.k_school = disc.k_school
+            -- AGG by stu & school
+            GROUP BY stu_school.k_student, stu_school.k_school, stu_school.school_year
+          )
+
+          -- Finally, AGG to school level (calc the suspension rate per school & year)
+          SELECT
+            k_school,
+            school_year, 
+            sum(has_any_suspension::int) as n_students_suspended,
+            count(*) as n_students_enrolled,
+            round(100*n_students_suspended/n_students_enrolled, 2) as suspension_rate
+          FROM stu_school_disc_counts
+          -- (optional) join dim_school here to get school IDs/names
+          -- (optional) join fct_student_subgroup to aggregate by student subgroups
+          GROUP BY k_school, school_year;
+        ```
 
     config:
       tags: ['discipline']
@@ -62,20 +165,26 @@ models:
           It is possible to associate multiple staff with a discipline action, 
           though this rarely happens in practice. If there are multiple staff,
           this list will contain each key, and `k_staff` will contain the first.
+      - name: k_student_discipline_incident_behavior_array
+        description: >
+          This list contains all of the `k_student_discipline_incident_behavior` values
+          associated to this discipline action, as defined by 
+          studentDisciplineIncidentBehaviorAssociations. This allows for joins
+          to `fct_student_discipline_incident_behaviors`.
       - name: is_oss
-        description: Is this an Out of School Suspension?
+        description: Is this an Out of School Suspension? Determined via **xwalk_discipline_actions**
       - name: is_iss
-        description: Is this an In School Suspension?
+        description: Is this an In School Suspension? Determined via **xwalk_discipline_actions**
       - name: is_exp
-        description: Is this an Expulsion?
+        description: Is this an Expulsion? Determined via **xwalk_discipline_actions**
       - name: is_minor
-        description: Is this a minor disciplinary action?
+        description: Is this a minor disciplinary action? Determined via **xwalk_discipline_actions**
       - name: severity_order
         description: >
           A ranking number for the severity of action, for selecting the most 
           severe. Actions are grouped into levels by the 100s, from 0 to 4, and
           then ranked within levels.
-          This is controlled in `xwalk_discipline_actions.csv`
+          This is determined via **xwalk_discipline_actions**
       - name: is_most_severe_action
         description: >
           A flag for whether the discipline action is the most severe for a student, 

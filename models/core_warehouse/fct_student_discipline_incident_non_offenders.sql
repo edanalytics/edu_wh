@@ -17,8 +17,8 @@ dim_student as (
 dim_school as (
     select * from {{ ref('dim_school') }}
 ),
-dim_discipline_incidents as (
-    select * from {{ ref('dim_discipline_incidents') }}
+dim_discipline_incident as (
+    select * from {{ ref('dim_discipline_incident') }}
 ),
 participation_codes as (
     select
@@ -34,7 +34,7 @@ formatted as (
         dim_student.k_student,
         dim_student.k_student_xyear,
         dim_school.k_school,
-        dim_discipline_incidents.k_discipline_incident,
+        dim_discipline_incident.k_discipline_incident,
         stg_stu_discipline_incident_non_offenders.tenant_code,
         stg_stu_discipline_incident_non_offenders.school_id,
         stg_stu_discipline_incident_non_offenders.incident_id,
@@ -49,7 +49,7 @@ formatted as (
         and stg_stu_discipline_incident_non_offenders.k_discipline_incident = participation_codes.k_discipline_incident
     join dim_student on stg_stu_discipline_incident_non_offenders.k_student = dim_student.k_student
     join dim_school on stg_stu_discipline_incident_non_offenders.k_school = dim_school.k_school
-    join dim_discipline_incidents on stg_stu_discipline_incident_non_offenders.k_discipline_incident = dim_discipline_incidents.k_discipline_incident
+    join dim_discipline_incident on stg_stu_discipline_incident_non_offenders.k_discipline_incident = dim_discipline_incident.k_discipline_incident
 )
 select *
 from formatted

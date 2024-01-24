@@ -1,18 +1,21 @@
 version: 2
 
 models: 
-  - name: fct_student_discipline_incident_behaviors_actions
+  - name: fct_student_discipline_incident_summary
     description: >
-      This table links discipline actions to discipline incidents and behaviors.
-      To keep the grain at a single student, incident, and discipline event but 
-      also represent the multiple behaviors and actions, we included
-      both as lists. Additionally, we added included the most severe discipline 
-      action and behavior.
+      This table provides a summary of student discipline incidents
+      by linking discipline incidents to all associated discipline 
+      actions, regardless of whether the discipline actions belong 
+      to different discipline action events. To keep the grain at a single 
+      student and discipline incident but also represent the multiple 
+      behaviors and actions, we included both as lists. Additionally, 
+      we included the most severe discipline action (across all 
+      associated discipline action events) and the most severe behavior 
+      (for a discipline incident).
 
-      Rows represent one behavior and discipline action per student,
-      incident, and discipline event.
+      Rows represent a student and discipline incident.
 
-      *Primary Key:* k_student, k_student_xyear, k_discipline_incident, k_discipline_actions_event
+      *Primary Key:* k_student, k_student_xyear, k_discipline_incident
 
     tests:
       - dbt_utils.unique_combination_of_columns:
@@ -20,14 +23,10 @@ models:
             - k_student
             - k_student_xyear
             - k_discipline_incident
-            - k_discipline_actions_event
     columns:
       - name: k_student
       - name: k_student_xyear
       - name: k_discipline_incident
-        description: >
-          A key containing incident_id and school_id to represent a single discipline incident.
-      - name: k_discipline_actions_event
         description: >
           A key containing discipline_action_id and discipline_date to represent a single discipline event.
       - name: tenant_code
@@ -40,6 +39,6 @@ models:
           An array of discipline actions, which are the type of action taken used to discipline 
           a student in response to a discipline incident.
       - name: most_severe_behavior_type
-        description: The most severe behavior type for a student, incident, and actions event.
+        description: The most severe behavior type for a student discipline incident.
       - name: most_severe_discipline_action
-        description: The most severe discipline action for a student, incident, and actions event.
+        description: The most severe discipline action for a student discipline incident.

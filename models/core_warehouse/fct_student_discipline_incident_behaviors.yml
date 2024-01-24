@@ -3,13 +3,13 @@ version: 2
 models: 
   - name: fct_student_discipline_incident_behaviors
     description: >
-      This table describes disciplinary incidents and the associated behaviors.
-      Only students categorized as offenders of the incident are included in this table
-      as behaviors are only linked to offenders.
+      ##### Overview:
+        This student fact table describes disciplinary incidents and the associated behaviors.
+        Only students categorized as offenders of the incident are included in this table, because 
+        behaviors are only linked to offenders.
 
-      Rows represent one behavior for one student, school, and incident.
-
-      *Primary Key:* k_student, k_discipline_incident, behavior_type
+      ##### Primary Key:
+        `k_student, k_discipline_incident, behavior_type` -- There is one record per student, year, incident ID, school, and behavior.
 
     tests:
       - dbt_utils.unique_combination_of_columns:
