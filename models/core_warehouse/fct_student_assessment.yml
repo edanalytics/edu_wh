@@ -4,24 +4,39 @@ models:
   - name: fct_student_assessment
     description: >
       ##### Overview:
-        This fact table defines student assessment records. The wide score results columns are determined based on the `normalized_score_name`
-        column from the seed table `xwalk_assessment_scores`.
+        This fact table defines student assessment records.
 
       ##### Primary Key:
         `k_student_assessment` -- There is one record per student-assessment event
 
+      ##### Important Business Rules:
+        The wide score results columns are determined based on the `normalized_score_name`
+        column from the seed table `xwalk_assessment_scores`.
+
+        `k_student` is an annualized student identifier, so it will be null unless there is a student record for the relevant school year.
+        We INCLUDE records with null `k_student` to enable analysis of current students' full history of assessments. Therefore,
+        users CAN use `fct_student_assessment` to answer "What is the longitudinal trend in test scores for my current students?"
+
+        However, `k_student_xyear` is a x-year student identifier, and we EXCLUDE records where `k_student_xyear` is null,
+        because we have no way to identify the students. Therefore, users CAN NOT use `fct_student_assessment` to answer 
+        "What is the longitudinal trend in test scores for students who were english learners at the time of the test?",
+        UNLESS every year of assessment data has a corresponding & complete set of identifying data in `dim_student`.
+        Often, this means you should only run longitudinal analysis on years for which you have populated an Ed-Fi ODS, 
+        or a supplementary data source.
+
+
       ##### Example Use Cases:
-      Any scores that are not included in the wide score results columns are listed in the `v_other_results` column. They can be included
-      as wide columns in a query like this:
-      ```
-          SELECT 
-            fsa.*, 
-            fsa.v_other_results:"{NAME OF SCORE}"::int as name_of_score
-          FROM analytics.prod_wh.fct_student_assessment fsa
-          JOIN analytics.prod_wh.dim_assessment da
-            ON fsa.k_assessment = da.k_assessment
-          WHERE da.assessment_identifier = '{ASSESSMENT IDENTIFIER}'
+        Any scores that are not included in the wide score results columns are listed in the `v_other_results` column. They can be included
+        as wide columns in a query like this:
         ```
+            SELECT 
+              fsa.*, 
+              fsa.v_other_results:"{NAME OF SCORE}"::int as name_of_score
+            FROM analytics.prod_wh.fct_student_assessment fsa
+            JOIN analytics.prod_wh.dim_assessment da
+              ON fsa.k_assessment = da.k_assessment
+            WHERE da.assessment_identifier = '{ASSESSMENT IDENTIFIER}'
+          ```
 
       {{ doc(var('edu:custom_docs:fct_student_assessment')) if var('edu:custom_docs:fct_student_assessment', '') }}  
 
