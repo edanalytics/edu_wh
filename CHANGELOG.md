@@ -3,6 +3,33 @@
 ## Under the hood
 ## Fixes 
 
+# edu_wh v0.3.0
+## New features
+- Standardize ESC naming and add `k_esc` reference to `dim_lea`
+- Add integer grade level to `dim_student` and `fct_student_school_association`
+- Add `k_student_xyear` to `fct_student_assessment`, `fct_course_transcripts`, `fct_student_academic_record`, and `fct_student_gpa`.
+- Discipline updates:
+   - Add ability to report all disciplines/behaviors for a single discipline action event and all disciplines/behaviors for a single discipline incident in new, separated models.
+   - See more info in PR description [#75](https://github.com/edanalytics/edu_wh/pull/75/files)
+- Add some comments for existing value tests
+- Add feature to conditionally remove xyear enrollments in `fct_student_school_association`
+## Under the hood
+- Make `k_student` null where not joinable to `dim_student`, for  `fct_student_assessment`, `fct_course_transcripts`, `fct_student_academic_record`, and `fct_student_gpa`.
+## Fixes 
+- Fix unique key of `fct_student_school_attendance_event` and `fct_student_section_attendance_event` to reflect unique key in Ed-Fi.
+   - Note: The unique key of `fct_student_daily_attendance` remains the same `(k_student, k_school, calendar_date)`. But the way we deduplicate to this point has changed to be more consistent
+   - The scale of impact of this fix depends on how often duplicates are found on `(k_student, k_school, calendar_date)` in the underlying data. See new test `analytics.prod_dbt_test__audit.attendance_event_duplicates` for more information.
+## Migration
+- Update packages.yml version range for edu_wh to `[ ">=0.3.0, "<0.4.0" ]`
+- Configure xwalk_grade_levels. Can copy directly from project template [here](https://github.com/edanalytics/edu_project_template/blob/main/dbt/seeds/xwalk_grade_levels.csv),
+  but also check your implementation's grade level descriptors ```select * from analytics.prod_stage.int_ef3__deduped_descriptors
+  where namespace ilike '%GradeLevelDescriptor%';```. If this shows custom/local descriptors, make sure to add those to the xwalk.
+- (requires Snowflake sysadmin or transformer_prod permissions) Drop the following deprecated tables:
+   - `analytics.prod_wh.dim_education_service_center`
+   - `analytics.prod_wh.dim_discipline_incidents`
+   - `analytics.prod_wh.fct_student_discipline_incident_behaviors_actions`
+  
+  
 # edu_wh v0.2.10
 ## Fixes 
 - Bugfix release
