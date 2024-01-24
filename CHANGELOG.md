@@ -3,6 +3,39 @@
 ## Under the hood
 ## Fixes 
 
+# edu_wh v0.2.10
+## Fixes 
+- Bugfix release
+
+# edu_wh v0.2.9
+## New features
+- Add ability to extend `dim_course` and `dim_class_period` with external data sources
+- Add an `is_latest_record` indicator to `dim_student` to identify the demographics from the most recent school year in which a student appeared
+## Under the hood
+- In `dim_student`, choose the grade level from the most recent school enrollment, rather than the longest duration. This better aligns with grade transition patterns seen in the wild.
+- Deprecate the `rls` schema in favor of extensions that cover this use-case
+
+# edu_wh v0.2.8
+## New features
+- Add `dim_learning_standard` and `fct_student_learning_standard_grades`
+    - For Learning Standard based grading, and for future support of learning standards in other areas of the warehouse
+- Add `dim_cohort` and `fct_student_cohort_association`
+    - Not widely in use, but intended to support more complex authorization models in the future
+## Under the hood
+- Allow overriding the source of daily attendance models, for more complex customizations of the daily attendance calculation
+
+
+# edu_wh v0.2.7
+## New features
+- Add incident_time to dim_discipline_incidents
+- Allow some student demographics to be 'immutable', in the sense that they are stable across time
+- Allow custom indicators on program memberships
+## Under the hood
+- Make it optional to exclude student-school enrollments where the student exited before the first day of school
+- Allow a rule where multiple calendar codes must be assigned to a date for it to be counted as a school day
+
+
+
 # edu_wh v0.2.6
 ## New features
 - Add primary disability on student special education program associations

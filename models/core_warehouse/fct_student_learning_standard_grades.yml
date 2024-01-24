@@ -1,0 +1,65 @@
+version: 2
+
+models: 
+  - name: fct_student_learning_standard_grades
+    description: >
+      ##### Overview:
+        This fact table contains student learning standard grades by grading period within the school year.
+        Note, not all grading periods indicate final grades, so be careful when aggregating
+        grades across grading periods.
+
+      ##### Primary Key: 
+        `k_student, k_school, k_course_section, k_grading_period, k_learning_standard` -- There is one 
+         record per student, school, course section, grading period, and learning standard.
+
+      ##### Important Business Rules:
+        Note that `k_learning_standard` is part of the Primary Key, meaning a student
+        may have multiple learning standard grades for the same course in the same grading period,
+        provided they have different learning standards. Additionally, this model has a similar natural key 
+        to fct_student_grades, it is sourced from the same Ed-Fi Resource. 
+
+      ##### Example Query:
+        To find the learning standard grades for one particular student, course section, school, and grading period:
+        ```
+          FROM analytics.prod_wh.fct_student_learning_standard_grades
+          WHERE k_student = [replace with k_student]
+            AND k_course_section = [replace with k_course_section]
+            AND k_school = [replace with k_school]
+            AND k_grading_period = [replace with k_grading_period];
+        ```
+
+      {{ doc(var('edu:custom_docs:fct_student_learning_standard_grades')) if var('edu:custom_docs:fct_student_learning_standard_grades', '') }}
+
+
+    config:
+      tags: ['core', 'course']
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - k_student
+            - k_school
+            - k_course_section
+            - k_grading_period
+            - k_learning_standard
+            - grade_type
+    columns:
+      - name: k_student
+        description: Unique identifier for the student-year. Foreign key reference to [dim_student](#!/model/model.edu_wh.dim_student).
+      - name: k_course_section
+        description: Unique identifier for the course section. Foreign key reference to [dim_course_section](#!/model/model.edu_wh.dim_course_section).
+      - name: k_school
+        description: Unique identifier for the school. Foreign key reference to [dim_school](#!/model/model.edu_wh.dim_school).
+      - name: k_grading_period
+        description: Unique identifier for the grading period. Foreign key reference to [dim_grading_period](#!/model/model.edu_wh.dim_grading_period).
+      - name: grade_type
+        description: > 
+          The type of grade in a report card or transcript (e.g., Final, Exam, Grading Period).           
+      - name: k_learning_standard
+        description: >
+          Unique identifier for a learning standard. Foreign key reference to [dim_learning_standard](#!/model/model.edu_wh.dim_learning_standard).
+      - name: tenant_code
+      - name: performance_base_conversion_descriptor
+        description: > 
+          A conversion of the level to a standard set of performance levels.
+      - name: learning_standard_letter_grade_earned
+      - name: learning_standard_numeric_grade_earned

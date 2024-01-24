@@ -98,11 +98,13 @@ formatted as (
     left join xwalk_grade_levels
         on stg_stu_school.entry_grade_level = xwalk_grade_levels.grade_level
     where true
-    -- exclude students who exited before the first school day
-    and (exit_withdraw_date >= bld_school_calendar_windows.first_school_day
-        or exit_withdraw_date is null
-        or bld_school_calendar_windows.first_school_day is null
-        )
+   {% if var('edu:enroll:exclude_exit_before_first_day', True) -%}
+      -- exclude students who exited before the first school day
+      and (exit_withdraw_date >= bld_school_calendar_windows.first_school_day
+          or exit_withdraw_date is null
+          or bld_school_calendar_windows.first_school_day is null
+          )
+    {% endif %}
     -- exclude students whose exit day is before their entry day
     and (exit_withdraw_date >= entry_date
         or exit_withdraw_date is null)

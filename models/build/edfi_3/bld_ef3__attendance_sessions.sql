@@ -10,7 +10,7 @@ with dim_session as (
     select * from {{ ref('dim_session') }}
 ),
 fct_student_sch_attend as (
-    select * from {{ ref('fct_student_school_attendance_event') }}
+    select * from {{ ref(var("edu:attendance:daily_attendance_source", 'fct_student_school_attendance_event')) }}
 ),
 joined as (
     select 
