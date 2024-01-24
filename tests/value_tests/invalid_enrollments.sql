@@ -1,3 +1,21 @@
+/*
+**What is this test?**
+This test finds records where student-school association data have 
+"invalid" values, because the student:
+a) exited before the first day of school (sometimes "invalid" for analytics)
+b) exited before entry date (should be impossible)
+c) have a withdraw code that denotes an invalid enrollment record
+
+**When is this important to resolve?**
+Sometimes these records will simply be reality, e.g. students who withdraw
+before the school year starts. However, if these reflect data errors from the
+source system (likely the case for b) above), they should be resolved.
+
+**How to resolve?**
+Determine from the source system whether these records are accurate, and if not,
+debug the source system or contact its administrator.
+*/
+
 {{
   config(
       store_failures = true,

@@ -1,3 +1,22 @@
+/*
+**What is this test?**
+This test finds records of overlapping associations for a given
+student-school. For example, Student A has enrollments at North High
+for windows Sept 1st -> June 20th and Sept 8th -> June 20th. It's likely
+that one of these records is incorrect, since they overlap within a single school.
+
+**When is this important to resolve?**
+This is technically allowed by the Ed-Fi model if the records have different 
+begin dates, but often times they are data errors that should be resolved.
+It's especially important if fct_student_school_association is being used 
+by dashboards or analytical queries.
+
+**How to resolve?**
+If the overlapping records are mistaken duplicates, they should be addressed 
+either by source system debugging, or deletion of incorrect records from
+the ODS.
+*/
+
 {{
   config(
       store_failures = true,
