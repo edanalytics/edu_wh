@@ -121,5 +121,8 @@ formatted as (
       -- keep rows with no exit_withdraw
       or stg_stu_school.exit_withdraw_type is null) 
     {% endif %}
+    {% if var('edu:enroll:exclude_cross_year_enrollments', False)%}
+    and dim_student.school_year = stg_stu_school.school_year
+    {% endif %}
 )
 select * from formatted
