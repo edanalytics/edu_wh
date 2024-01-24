@@ -24,7 +24,11 @@ find_grade_level as (
 ),
 join_grade_integer as (
     select
-        *
+        tenant_code,
+        k_student,
+        school_year,
+        entry_grade_level,
+        grade_level_integer 
     from find_grade_level
     left join xwalk_grade_levels
         on find_grade_level.entry_grade_level = xwalk_grade_levels.grade_level
