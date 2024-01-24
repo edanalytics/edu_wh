@@ -109,6 +109,9 @@ models:
           The grade level or primary instructional level at which a student enters
           and receives services in a school or an educational institution during a
           given academic session.	
+      - name: grade_level_integer
+        description: > 
+          The grade level or primary instructional level represented as an integer.
       - name: entry_grade_level_reason
         description: > 
           The primary reason as to why a staff member determined that a student

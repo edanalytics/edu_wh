@@ -26,6 +26,9 @@ dim_calendar_date as (
 bld_school_calendar_windows as (
     select * from {{ ref('bld_ef3__school_calendar_windows') }}
 ),
+xwalk_grade_levels as (
+    select * from {{ ref('xwalk_grade_levels')}}
+),
 single_calendar_schools as (
     -- some implementations may not provide a school calendar link because
     -- their system only allows one calendar per school anyway.
@@ -64,6 +67,7 @@ formatted as (
             true, false
         ) as is_active_enrollment,
         stg_stu_school.entry_grade_level,
+        xwalk_grade_levels.grade_level_integer,
         stg_stu_school.entry_grade_level_reason,
         stg_stu_school.entry_type,
         stg_stu_school.exit_withdraw_type,
@@ -91,6 +95,8 @@ formatted as (
         on stg_stu_school.k_school = bld_school_calendar_windows.k_school
         and stg_stu_school.school_year = bld_school_calendar_windows.school_year
         and equal_null(dim_school_calendar.k_school_calendar, bld_school_calendar_windows.k_school_calendar)
+    left join xwalk_grade_levels
+        on stg_stu_school.entry_grade_level = xwalk_grade_levels.grade_level
     where true
    {% if var('edu:enroll:exclude_exit_before_first_day', True) -%}
       -- exclude students who exited before the first school day
