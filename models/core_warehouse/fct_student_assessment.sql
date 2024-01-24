@@ -29,9 +29,9 @@ student_assessments_wide as (
     select
         student_assessments.k_student_assessment,
         student_assessments.k_assessment,
-        student_assessments.k_student_xyear,
         -- use dim_student.k_student. NOTE, will be null when no corresponding demographics found (e.g. historic year of assessment data)
         dim_student.k_student,
+        student_assessments.k_student_xyear,
         student_assessments.tenant_code,
         student_assessments.student_assessment_identifier,
         student_assessments.serial_number,
