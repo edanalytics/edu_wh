@@ -19,8 +19,8 @@ dim_student as (
 formatted as (
     select 
         stg_academic_record.k_student_academic_record,
-        stg_academic_record.k_student_xyear,
         dim_student.k_student,  -- will be null if no dim_student record for this 
+        stg_academic_record.k_student_xyear,
         coalesce(stg_academic_record.k_lea, dim_school.k_lea) as k_lea,  -- fill district if record is specified at school level
         stg_academic_record.k_school,
         stg_academic_record.tenant_code,

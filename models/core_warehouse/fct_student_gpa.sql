@@ -17,8 +17,8 @@ academic_record as (
 formatted as (
     select 
         academic_record.k_student_academic_record,
-        academic_record.k_student_xyear,
         academic_record.k_student,
+        academic_record.k_student_xyear,
         academic_record.k_lea,
         academic_record.k_school,
         academic_record.tenant_code,
