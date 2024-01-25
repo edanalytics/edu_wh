@@ -15,6 +15,9 @@ with student_obj_assessments_long_results as (
 student_obj_assessments as (
     select * from {{ ref('stg_ef3__student_objective_assessments') }}
 ),
+dim_student as (
+    select * from {{ ref('dim_student') }}
+),
 object_agg_other_results as (
     select
         k_student_objective_assessment,
@@ -29,9 +32,10 @@ student_obj_assessments_wide as (
         student_obj_assessments.k_objective_assessment,
         student_obj_assessments.k_student_assessment,
         student_obj_assessments.k_assessment,
-        student_obj_assessments.k_student,
+        dim_student.k_student,
+        student_obj_assessments.k_student_xyear,
         student_obj_assessments.tenant_code,
-        school_year,
+        student_obj_assessments.school_year,
         administration_date,
         administration_end_date,
         event_description,
@@ -59,7 +63,15 @@ student_obj_assessments_wide as (
         and student_obj_assessments_long_results.normalized_score_name != 'other'
     left join object_agg_other_results
         on student_obj_assessments.k_student_objective_assessment = object_agg_other_results.k_student_objective_assessment
-    {{ dbt_utils.group_by(n=18) }}
+    -- left join to allow 'historic' records (assess records with no corresponding stu demographics)
+    left join dim_student
+        on student_obj_assessments.k_student = dim_student.k_student
+    -- FILTER to students who EVER have a record in dim_student
+    where student_obj_assessments.k_student_xyear in (
+        select distinct k_student_xyear
+        from dim_student
+    )
+    {{ dbt_utils.group_by(n=19) }}
 )
 select *
 from student_obj_assessments_wide

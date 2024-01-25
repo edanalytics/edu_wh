@@ -3,9 +3,27 @@ version: 2
 models: 
   - name: fct_student_objective_assessment
     description: >
-      Student objective assessment records. The wide results columns are
-      determined based on the `normalized_score_name` column
-      from the seed table `xwalk_objective_assessment_scores`.
+      ##### Overview:
+        This fact table defines student objective assessment records.
+
+      ##### Primary Key:
+        `k_student_objective_assessment` -- There is one record per student-objective assessment event
+
+      ##### Important Business Rules:
+        The wide score results columns are determined based on the `normalized_score_name`
+        column from the seed table `xwalk_assessment_scores`.
+
+        `k_student` is an annualized student identifier, so it will be null unless there is a student record for the relevant school year.
+        We INCLUDE records with null `k_student` to enable analysis of current students' full history of assessments. Therefore,
+        users CAN use `fct_student_objective_assessment` to answer "What is the longitudinal trend in test scores for my current students?"
+        
+        However, `k_student_xyear` is a x-year student identifier, and we EXCLUDE records where `k_student_xyear` is null,
+        because we have no way to identify the students. Therefore, users CAN NOT use `fct_student_objective_assessment` to answer 
+        "What is the longitudinal trend in test scores for students who were english learners at the time of the test?",
+        UNLESS every year of assessment data has a corresponding & complete set of identifying data in `dim_student`.
+        Often, this means you should only run longitudinal analysis on years for which you have populated an Ed-Fi ODS, 
+        or a supplementary data source.
+
     config:
       tags: ['assessment']
       enabled: "{{ var('src:domain:assessment:enabled', True) }}"
