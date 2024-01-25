@@ -24,6 +24,7 @@
 - Configure xwalk_grade_levels. Can copy directly from project template [here](https://github.com/edanalytics/edu_project_template/blob/main/dbt/seeds/xwalk_grade_levels.csv),
   but also check your implementation's grade level descriptors ```select * from analytics.prod_stage.int_ef3__deduped_descriptors
   where namespace ilike '%GradeLevelDescriptor%';```. If this shows custom/local descriptors, make sure to add those to the xwalk.
+   - After running the xwalk, you can also do a check for missing values with ```select * from analytics.prod_wh.dim_student where grade_level_integer is null;```
 - (requires Snowflake sysadmin or transformer_prod permissions) Drop the following deprecated tables:
    - `analytics.prod_wh.dim_education_service_center`
    - `analytics.prod_wh.dim_discipline_incidents`
