@@ -24,7 +24,7 @@ formatted as (
         stg_lea.k_lea,
         stg_lea.k_lea__parent,
         stg_lea.k_sea,
-        {% if {{ var('src:ed_orgs:esc:enabled', True) }} %}
+        {% if var('src:ed_orgs:esc:enabled', True) %}
         stg_lea.k_esc,
         {% endif %}
         stg_lea.tenant_code,
