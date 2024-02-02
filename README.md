@@ -22,7 +22,7 @@ Include the following in your `packages.yml` file:
 ```
 packages:
   - package: edanalytics/edu_wh
-    version: [">=0.2.7", "<0.3.0"]
+    version: [">=0.3.0", "<0.4.0"]
 ```
 
 > **Note**
