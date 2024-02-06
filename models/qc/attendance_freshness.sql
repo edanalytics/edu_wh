@@ -6,8 +6,9 @@ dim_calendar as (
 )
 select
     att_events.tenant_code,
+    att_events.k_school,
     max(calendar_date) as max_date
 from att_events
 join dim_calendar
     on att_events.k_calendar_date = dim_calendar.k_calendar_date
-group by 1
+group by all
