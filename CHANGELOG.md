@@ -3,6 +3,11 @@
 ## Under the hood
 ## Fixes 
 
+# edu_wh v0.3.1
+## New features
+- Add `dim_staff.race_ethnicity`, using rules analogous to `dim_student.race_ethnicity`
+
+
 # edu_wh v0.3.0
 ## New features
 - Standardize ESC naming and add `k_esc` reference to `dim_lea`
