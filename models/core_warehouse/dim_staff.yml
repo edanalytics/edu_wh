@@ -53,6 +53,7 @@ models:
       - name: race_ethnicity
         description: >
           A single value defining the staff's race, which includes logic
+          for multi-racial staffs and Hispanic or Latino staffs.
       - name: highest_completed_level_of_education
         description: "The extent of formal instruction an individual has received (e.g., the highest grade in school completed or its equivalent 
                       or the highest degree received)"
