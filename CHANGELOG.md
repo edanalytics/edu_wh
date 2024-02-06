@@ -20,7 +20,7 @@
    - Note: The unique key of `fct_student_daily_attendance` remains the same `(k_student, k_school, calendar_date)`. But the way we deduplicate to this point has changed to be more consistent
    - The scale of impact of this fix depends on how often duplicates are found on `(k_student, k_school, calendar_date)` in the underlying data. See new test `analytics.prod_dbt_test__audit.attendance_event_duplicates` for more information.
 ## Migration
-- Update packages.yml version range for edu_wh to `[ ">=0.3.0, "<0.4.0" ]`
+- Update packages.yml version range for edu_wh to `[ ">=0.3.0", "<0.4.0" ]`
 - Configure xwalk_grade_levels. Can copy directly from project template [here](https://github.com/edanalytics/edu_project_template/blob/main/dbt/seeds/xwalk_grade_levels.csv),
   but also check your implementation's grade level descriptors ```select * from analytics.prod_stage.int_ef3__deduped_descriptors
   where namespace ilike '%GradeLevelDescriptor%';```. If this shows custom/local descriptors, make sure to add those to the xwalk.
