@@ -32,10 +32,13 @@ optional_manual_override as (
         --     where: column_select
 
         select
-            tenant_code,
-            k_student,
-            school_year,
-            coalesce(var('edu:stu_demos:grade_level_override')['where'], entry_grade_level) as entry_grade_level
+            enrollment_source.tenant_code,
+            enrollment_source.k_student,
+            enrollment_source.school_year,
+            coalesce(
+                override_source.var('edu:stu_demos:grade_level_override')['where'],
+                enrollment_source.entry_grade_level
+            ) as entry_grade_level
 
         from find_grade_level as enrollment_source
 
