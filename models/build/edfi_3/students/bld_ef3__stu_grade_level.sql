@@ -36,7 +36,7 @@ optional_manual_override as (
             enrollment_source.k_student,
             enrollment_source.school_year,
             coalesce(
-                override_source.var('edu:stu_demos:grade_level_override')['where'],
+                var('edu:stu_demos:grade_level_override')['where'],
                 enrollment_source.entry_grade_level
             ) as entry_grade_level
 
