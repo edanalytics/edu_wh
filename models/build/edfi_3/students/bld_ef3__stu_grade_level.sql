@@ -36,7 +36,7 @@ optional_manual_override as (
             enrollment_source.k_student,
             enrollment_source.school_year,
             coalesce(
-                var('edu:stu_demos:grade_level_override')['where'],
+                {{ var('edu:stu_demos:grade_level_override')['where'] }},
                 enrollment_source.entry_grade_level
             ) as entry_grade_level
 
@@ -60,6 +60,6 @@ join_grade_integer as (
         grade_level_integer 
     from optional_manual_override
     left join xwalk_grade_levels
-        on find_grade_level.entry_grade_level = xwalk_grade_levels.grade_level
+        on optional_manual_override.entry_grade_level = xwalk_grade_levels.grade_level
 )
 select * from join_grade_integer
