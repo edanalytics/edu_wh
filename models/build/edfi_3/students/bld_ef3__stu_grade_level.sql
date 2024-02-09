@@ -25,9 +25,11 @@ find_grade_level as (
 
 -- In some implementations, enrolled grade level is not always equivalent to "true grade level".
 optional_manual_override as (
-    {% if not var('edu:stu_demos:grade_level_override', False) %}
-        select * from find_grade_level
-    {% else %}
+    {% if var('edu:stu_demos:grade_level_override', False) %}
+        -- Expected YAML format:
+        -- 'edu:stu_demos:grade_level_override':
+        --     source: model_name
+        --     where: column_select
 
         select
             tenant_code,
@@ -39,6 +41,9 @@ optional_manual_override as (
 
             left join {{ ref(var('edu:stu_demos:grade_level_override')['source']) }} as override_source
             on enrollment_source.k_student = override_source.k_student
+
+    {% else %}
+        select * from find_grade_level
 
     {% endif %}
 ),
