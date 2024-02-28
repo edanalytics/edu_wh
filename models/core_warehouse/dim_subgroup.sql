@@ -32,7 +32,9 @@ stu_long_subgroup as (
           'display_name',
           'birth_date',
           'race_array',
-          'safe_display_name'
+          'safe_display_name',
+          'full_address',
+          'home_language'
        ],
        remove = stu_id_cols,
        field_name='subgroup_category',
