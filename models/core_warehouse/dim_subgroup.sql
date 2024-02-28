@@ -33,7 +33,6 @@ stu_long_subgroup as (
           'birth_date',
           'race_array',
           'safe_display_name',
-          'full_address',
           'home_language'
        ],
        remove = stu_id_cols,
