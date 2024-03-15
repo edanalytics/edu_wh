@@ -5,7 +5,7 @@
 }}
 
 {# bring in the customizable column name for language use from dim_student, defaults as home_language #}
-{% set language_use_name = var('edu:stu_language:language_use_col_name') %}
+{% set language_use_name = var('edu:stu_language:language_uses') %}
 
 with dim_student as (
     select * from {{ ref('dim_student') }}

@@ -1,17 +1,14 @@
 with stg_student_emails as (
     select * from {{ ref('stg_ef3__stu_ed_org__emails') }}
 ),
-email_types as (
-    select * from {{ ref('xwalk_student_email_types') }}
-),
-emails_wide as (
+email_wide as (
   select 
     k_student,
     tenant_code
-    {%- if not is_empty_model('xwalk_student_email_types') -%},
+    {%- if not is_empty_model('stg_ef3__stu_ed_org__emails') -%},
     {{ dbt_utils.pivot(
-      'normalized_email_type',
-      dbt_utils.get_column_values(ref('xwalk_student_email_types'), 'normalized_email_type'),
+      'email_type',
+      dbt_utils.get_column_values(ref('stg_ef3__stu_ed_org__emails'), 'email_type', order_by = 'email_type'),
       agg='max',
       then_value='email_address',
       else_value='null',
@@ -20,8 +17,6 @@ emails_wide as (
     ) }}
     {%- endif %}
   from stg_student_emails
-  join email_types 
-    on stg_student_emails.email_type = email_types.original_email_type
   group by k_student, tenant_code
 )
-select * from emails_wide
+select * from email_wide

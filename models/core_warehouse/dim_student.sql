@@ -25,7 +25,7 @@
 {% set custom_title_i_program_agg_indicators = var('edu:title_i:custom_program_agg_indicators', None) %}
 
 {# Load customizable column name for language use, defaults as home_language #}
-{% set language_use_name = var('edu:stu_language:language_use_col_name') %}
+{% set language_use_name = var('edu:stu_language:language_uses') %}
 
 with stg_student as (
     select * from {{ ref('stg_ef3__students') }}
@@ -52,7 +52,7 @@ stu_grade as (
     select * from {{ ref('bld_ef3__stu_grade_level') }}
 ),
 stu_language as (
-    select * from {{ ref('bld_ef3__choose_stu_language')}}
+    select * from {{ ref('bld_ef3__student_wide_languages')}}
 ),
 -- student programs
 {% if var('src:program:special_ed:enabled', True) %}
@@ -192,8 +192,12 @@ formatted as (
         stg_student.api_year = max(stg_student.api_year) over(partition by stg_student.k_student_xyear) as is_latest_record,
        
         stu_immutable_demos.race_array,
-        stu_immutable_demos.safe_display_name,
-        stu_language.code_value as {{ language_use_name }}
+        stu_immutable_demos.safe_display_name
+        {%- if language_use_name is not none and language_use_name | length -%}
+          {%- for language_use in language_use_name -%}
+            , stu_language.{{ language_use }} as {{ language_use }}
+          {%- endfor -%}
+        {%- endif %}
     from stg_student
 
     join stu_demos

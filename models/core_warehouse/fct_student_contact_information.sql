@@ -5,7 +5,7 @@ stu_emails_wide as (
     select * from {{ ref('bld_ef3__student_wide_emails') }}
 ),
 stu_address_wide as (
-    select * from {{ ref('bld_ef3__student_wide_address') }}
+    select * from {{ ref('bld_ef3__student_wide_addresses') }}
 ),
 dim_student as (
     select * from {{ ref('dim_student') }}
@@ -26,7 +26,7 @@ select
             source_alias='stu_emails_wide'
     ) }} 
     {{ accordion_columns(
-            source_table='bld_ef3__student_wide_address',
+            source_table='bld_ef3__student_wide_addresses',
             exclude_columns=["k_student", "tenant_code"],
             source_alias='stu_address_wide'
     ) }} 

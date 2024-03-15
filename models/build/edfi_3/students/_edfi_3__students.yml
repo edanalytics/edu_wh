@@ -61,6 +61,18 @@ models:
   - name: bld_ef3__wide_ids_student
     config:
       tags: ['core']
-  - name: bld_ef3__choose_stu_languages
+  - name: bld_ef3__student_wide_addresses
     config:
       tags: ['core']
+  - name: bld_ef3__student_wide_emails
+    config:
+      tags: ['core']
+  - name: bld_ef3__student_wide_languages
+    config:
+      tags: ['core']
+  - name: bld_ef3__student_wide_phone_numbers
+    config:
+      tags: ['core']
+
+
+
