@@ -7,7 +7,7 @@ the grain of dim_student could be blown up in a dangerous way, because of the jo
 Immediately, if any rows are returned.
 
 **How to resolve?**
-Update the model used as a custom data source to ensure it is unique on k_student (or make a build model for that purpose).
+Update the model used as a grade_level_override source to ensure it is unique on k_student (or make a build model for that purpose).
 
 */
 {{
@@ -18,7 +18,6 @@ Update the model used as a custom data source to ensure it is unique on k_studen
 }}
 
 {% if var('edu:stu_demos:grade_level_override', False) -%}
-  -- if custom data sources are configured, loop over them and count duplicates
   {% set source = var('edu:stu_demos:grade_level_override')['source'] %}
   select
     '{{source}}' as data_source,
@@ -28,7 +27,7 @@ Update the model used as a custom data source to ensure it is unique on k_studen
   group by 1,2
   having count(*) > 1
 {%- else %}
-  -- if no custom data sources configured, force test to return a zero row table
+  -- if no custom grade_level_override configured, force test to return a zero row table
   select top 0 *
   from (select
           null as data_source,
