@@ -42,6 +42,7 @@ optional_manual_override as (
 
         from find_grade_level as enrollment_source
 
+            -- Note, dbt test "grade_level_override_unique_on_k_student" is configured to fail if this override_source is not unique by k_student
             left join {{ ref(var('edu:stu_demos:grade_level_override')['source']) }} as override_source
             on enrollment_source.k_student = override_source.k_student
 
