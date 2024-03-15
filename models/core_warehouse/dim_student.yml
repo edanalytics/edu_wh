@@ -72,3 +72,5 @@ models:
         description: A list of the student's races.
       - name: safe_display_name
         description: Display name with student ID, safe for use in grouping operations in a BI tool, to avoid combining students with the same name.
+      - name: has_hispanic_latino_ethnicity
+        description: The student's status for having Hispanic/Latino ethnicity
