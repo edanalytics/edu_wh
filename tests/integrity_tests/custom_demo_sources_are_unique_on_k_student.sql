@@ -1,5 +1,14 @@
 /*
-Find cases where a custom demographic source is not unique on k_student. This will break dim_student when the source is joined.
+**What is this test?**
+This test finds records where a custom demographic data source is NOT unique on k_student. If true,
+the grain of dim_student could be blown up in a dangerous way, because of the join in the dim_student model.
+
+**When is this important to resolve?**
+Immediately, if any rows are returned.
+
+**How to resolve?**
+Update the model used as a custom data source to ensure it is unique on k_student (or make a build model for that purpose).
+
 */
 {{
   config(
