@@ -36,9 +36,9 @@ student_assessments_wide as (
         student_assessments.student_assessment_identifier,
         student_assessments.serial_number,
         {% if var('edu:school_year:dates_xwalk_enabled', False) %}
-        coalesce(student_assessments.school_year, dates_xwalk.school_year, {{derive_school_year('administration_date')}}) as school_year,
+        coalesce(student_assessments.school_year, dates_xwalk.school_year, {{derive_school_year('student_assessments.administration_date')}}) as school_year,
         {% else %}
-        coalesce(student_assessments.school_year, {{derive_school_year('administration_date')}}) as school_year,
+        coalesce(student_assessments.school_year, {{derive_school_year('student_assessments.administration_date')}}) as school_year,
         {% endif %}
         administration_date,
         administration_end_date,
