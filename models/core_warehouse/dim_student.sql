@@ -98,6 +98,7 @@ formatted as (
         stu_grade.entry_grade_level as grade_level,
         stu_grade.grade_level_integer,
         stu_immutable_demos.race_ethnicity,
+        stu_immutable_demos.has_hispanic_latino_ethnicity,
 
         -- student programs
         {% if var('src:program:special_ed:enabled', True) %}
@@ -188,8 +189,7 @@ formatted as (
         stg_student.api_year = max(stg_student.api_year) over(partition by stg_student.k_student_xyear) as is_latest_record,
        
         stu_immutable_demos.race_array,
-        stu_immutable_demos.safe_display_name,
-        stu_immutable_demos.has_hispanic_latino_ethnicity
+        stu_immutable_demos.safe_display_name
 
     from stg_student
 
