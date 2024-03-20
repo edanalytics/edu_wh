@@ -25,7 +25,7 @@
 {% set custom_title_i_program_agg_indicators = var('edu:title_i:custom_program_agg_indicators', None) %}
 
 {# Load customizable column name for language use, defaults as home_language #}
-{% set language_use_name = var('edu:stu_language:language_uses') %}
+{% set language_use_types = var('edu:stu_language:language_use_types', None) %}
 
 with stg_student as (
     select * from {{ ref('stg_ef3__students') }}
@@ -193,8 +193,8 @@ formatted as (
        
         stu_immutable_demos.race_array,
         stu_immutable_demos.safe_display_name
-        {%- if language_use_name is not none and language_use_name | length -%}
-          {%- for language_use in language_use_name -%}
+        {%- if language_use_types is not none and language_use_types | length -%}
+          {%- for language_use in language_use_types -%}
             , stu_language.{{ language_use }} as {{ language_use }}
           {%- endfor -%}
         {%- endif %}

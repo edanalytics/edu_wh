@@ -5,7 +5,7 @@
 }}
 
 {# bring in the customizable column name for language use from dim_student, defaults as home_language #}
-{% set language_use_name = var('edu:stu_language:language_uses') %}
+{% set language_use_types = var('edu:stu_language:language_use_types', []) %}
 
 with dim_student as (
     select * from {{ ref('dim_student') }}
@@ -36,9 +36,8 @@ stu_long_subgroup as (
           'display_name',
           'birth_date',
           'race_array',
-          'safe_display_name',
-          language_use_name
-       ],
+          'safe_display_name'
+       ] + language_use_types,
        remove = stu_id_cols,
        field_name='subgroup_category',
        value_name='subgroup_value'
