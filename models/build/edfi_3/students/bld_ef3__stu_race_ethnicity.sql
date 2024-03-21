@@ -26,7 +26,8 @@ select
         when array_size(race_array) = 1
             then race_array[0]
         else '{{ var("edu:stu_demos:race_unknown_code") }}'
-    end as race_ethnicity
+    end as race_ethnicity,
+    stg_stu_ed_org.has_hispanic_latino_ethnicity
 from build_array
 join stg_stu_ed_org
     on build_array.k_student = stg_stu_ed_org.k_student
