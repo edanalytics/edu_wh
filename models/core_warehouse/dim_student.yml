@@ -73,4 +73,4 @@ models:
       - name: safe_display_name
         description: Display name with student ID, safe for use in grouping operations in a BI tool, to avoid combining students with the same name.
       - name: has_hispanic_latino_ethnicity
-        description: The student's status for having Hispanic/Latino ethnicity
+        description: An indication that the individual traces his or her origin or descent to Mexico, Puerto Rico, Cuba, Central, and South America, and other Spanish cultures, regardless of race. The term, "Spanish origin," can be used in addition to "Hispanic or Latino."
