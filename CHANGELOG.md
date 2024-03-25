@@ -7,7 +7,6 @@
 ## New features
 - Add `has_hispanic_latino_ethnicity` to `dim_student`. Also include in this in fields that are "immutable" (consistent across years), assuming variable `edu:stu_demos:make_demos_immutable` is set to `True`.
 - Add configurable student language columns to `dim_student`.
-- Add configurable student address column to `dim_student`.
 - Add new table `fct_student_contact_information`, which includes student addresses, email addresses, phone, and languages. This gives more detailed contact info than `dim_student`, and can be given different security rules than `dim_student`.
 - Add configurable custom override for student grade level (some source other than student-school-assoc in Ed-Fi). Use variable `edu:stu_demos:grade_level_override` to configure a data source and column.
 - Add configurable logic for override of NULL `school_year` in `fct_student_assessment` and `fct_student_objective_assessment`. By default, compare administration_dates to 8/1 to determine year, but allow for override of threshold or an optional xwalk by year.
