@@ -24,7 +24,9 @@
 {% set custom_language_instruction_program_agg_indicators = var('edu:language_instruction:custom_program_agg_indicators', None) %}
 {% set custom_title_i_program_agg_indicators = var('edu:title_i:custom_program_agg_indicators', None) %}
 
-
+{# Load customizable column name for language use, defaults as home_language #}
+{% set language_use_types = var('edu:stu_demos:language_use_types', None) %}
+  
 with stg_student as (
     select * from {{ ref('stg_ef3__students') }}
 ),
@@ -49,7 +51,9 @@ stu_programs as (
 stu_grade as (
     select * from {{ ref('bld_ef3__stu_grade_level') }}
 ),
-
+stu_language as (
+    select * from {{ ref('bld_ef3__student_wide_languages')}}
+),
 -- student programs
 {% if var('src:program:special_ed:enabled', True) %}
     stu_special_ed as (
@@ -184,12 +188,18 @@ formatted as (
           {%- endfor -%}
         {%- endif %}
 
+        -- student languages
+        {% if language_use_types is not none and language_use_types | length -%}
+          {%- for language_use in language_use_types -%}
+            stu_language.{{ language_use }},
+          {%- endfor -%}
+        {%- endif %}
+
         -- add indicator of most recent demographic entry
         stg_student.api_year = max(stg_student.api_year) over(partition by stg_student.k_student_xyear) as is_latest_record,
        
         stu_immutable_demos.race_array,
         stu_immutable_demos.safe_display_name
-
     from stg_student
 
     join stu_demos
@@ -212,6 +222,8 @@ formatted as (
     left join stu_grade
         on stu_demos.k_student = stu_grade.k_student
         and stg_student.api_year = stu_grade.school_year
+    left join stu_language
+        on stg_student.k_student = stu_language.k_student
 
     -- student programs
     {% if var('src:program:special_ed:enabled', True) %}

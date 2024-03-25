@@ -1,0 +1,22 @@
+version: 2
+
+models:
+  - name: fct_student_contact_information
+    description: >
+      ##### Overview:
+        Student contact information, including address, email, phone, and language.
+
+      ##### Primary Key:
+        `k_student`
+
+    config:
+      tags: ['core']
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - k_student
+    columns:
+      - name: k_student
+      - name: k_student_xyear
+      - name: tenant_code
+      - name: school_year
