@@ -36,10 +36,6 @@ vars:
   'edu:stu_demos:hispanic_latino_code': Latinx
   'edu:stu_demos:race_unknown_code': Unknown
 
-  # default language use home language
-  'edu:stu_language:language_use_types': 
-    - home_language
-    
   # custom intersections of other demographic groupings
   'edu:stu_demos:intersection_groups': Null
   # custom data sources for student characteristics. must contain and be unique by `k_student`

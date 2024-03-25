@@ -11,6 +11,9 @@ stu_emails_wide as (
 stu_address_wide as (
     select * from {{ ref('bld_ef3__student_wide_addresses') }}
 ),
+stu_language_wide as (
+    select * from {{ ref('bld_ef3__student_wide_languages') }}
+),
 dim_student as (
     select * from {{ ref('dim_student') }}
 ), 
@@ -37,6 +40,11 @@ select
             source_alias='stu_emails_wide'
     ) }} 
     {{ accordion_columns(
+            source_table='bld_ef3__student_wide_languages',
+            exclude_columns=["k_student", "tenant_code"],
+            source_alias='stu_language_wide'
+    ) }} 
+    {{ accordion_columns(
             source_table='bld_ef3__student_wide_addresses',
             exclude_columns=["k_student", "tenant_code"],
             source_alias='stu_address_wide'
@@ -54,5 +62,6 @@ select
 from dim_student 
 left join stu_phone_wide    on dim_student.k_student = stu_phone_wide.k_student 
 left join stu_emails_wide   on dim_student.k_student = stu_emails_wide.k_student 
+left join stu_language_wide on dim_student.k_student = stu_language_wide.k_student
 left join stu_address_wide  on dim_student.k_student = stu_address_wide.k_student
 left join choose_address    on stu_address_wide.k_student = choose_address.k_student
