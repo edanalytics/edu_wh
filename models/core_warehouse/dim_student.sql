@@ -26,8 +26,7 @@
 
 {# Load customizable column name for language use, defaults as home_language #}
 {% set language_use_types = var('edu:stu_demos:language_use_types', None) %}
-{% set address_types = var('edu:stu_demos:address_types', None) %}
-
+  
 with stg_student as (
     select * from {{ ref('stg_ef3__students') }}
 ),
