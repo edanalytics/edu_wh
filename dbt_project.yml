@@ -78,6 +78,3 @@ vars:
   'edu:discipline:non_offender_codes': ['Victim', 'Witness', 'Reporter']
 
   'edu:schools:custom_indicators': Null
-
-  'edu:school_year:start_month': '08'
-  'edu:school_year:start_day': '01'
