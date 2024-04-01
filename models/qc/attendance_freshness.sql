@@ -12,3 +12,4 @@ from att_events
 join dim_calendar
     on att_events.k_calendar_date = dim_calendar.k_calendar_date
 group by all
+having max_date <= current_date()
