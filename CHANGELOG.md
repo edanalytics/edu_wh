@@ -13,6 +13,7 @@
 ## Under the hood
 - Correct dbt docs for unique key of `fct_student_daily_attendance`.
 - Add `k_school` to grain of qc model `attendance_freshness`.
+- Restrict `attendance_freshness` model to current or past dates
 ## Fixes
 - Remove `is_latest_record` from auto-creation of subgroups for `dim_subgroup` and `fct_student_subgroup`.
 
