@@ -35,6 +35,7 @@ joined as (
             stg_student.first_name,
             coalesce(' ' || left(stg_student.middle_name, 1), '')
             )"
+          )
         }} as display_name,
         concat(display_name, ' (', stg_student.student_unique_id, ')') as safe_display_name,
         stg_student.birth_date,
