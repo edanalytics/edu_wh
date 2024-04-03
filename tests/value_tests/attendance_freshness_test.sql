@@ -18,7 +18,8 @@ or if there are errors pushing data from source system to ODS.
       severity       = 'warn'
     )
 }}
-select *
+select *,
+  current_date() - max_date as days_since_last_attendance_event
 from {{ ref('attendance_freshness') }}
 where (current_date() - max_date) > 7
 -- try to avoid warnings when school is out
