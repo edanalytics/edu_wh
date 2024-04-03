@@ -7,7 +7,7 @@ models:
        This fact table provides student daily attendance, computed using full-day attendance as reported in `studentSchoolAttendanceEvents`.
 
      ##### Primary Key:
-       k_student, k_school, k_calendar_date
+       k_student, k_school, calendar_date -- There is one record per student, school, and calendar date.
 
      ##### Important business rules:
         - "chronic absence" is calculated here for each student & day, and reflected in boolean column `is_chronic_absentee`.
@@ -28,11 +28,12 @@ models:
           combination_of_columns:
             - k_student
             - k_school
-            - k_calendar_date
+            - calendar_date
     columns:
       - name: k_student
       - name: k_school
       - name: k_calendar_date
+      - name: calendar_date
       - name: k_session
       - name: tenant_code
       - name: attendance_event_category
