@@ -28,8 +28,15 @@ joined as (
         stg_student.first_name,
         stg_student.middle_name,
         stg_student.last_name,
-        concat(stg_student.last_name, ', ', stg_student.first_name,
-            coalesce(' ' || left(stg_student.middle_name, 1), '')) as display_name,
+        {# stu_display_name logic: prefer SQL from this dbt variable, but default to "concat(...)" #}
+        {{ var('edu:stu_demos:display_name_sql',
+          "concat(
+            stg_student.last_name, ', ',
+            stg_student.first_name,
+            coalesce(' ' || left(stg_student.middle_name, 1), '')
+            )"
+          )
+        }} as display_name,
         concat(display_name, ' (', stg_student.student_unique_id, ')') as safe_display_name,
         stg_student.birth_date,
         stu_demos.gender,
