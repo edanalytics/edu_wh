@@ -76,7 +76,7 @@ student_assessments_wide as (
     {% if var('edu:school_year:assessment_dates_xwalk_enabled', False) %}
     left join {{ ref('xwalk_assessment_school_year_dates') }} dates_xwalk
         -- note: between means A >= X AND A <= Y, so date upper/lower bounds should not overlap across years
-        on student_assessments.administration_date between start_date::date and end_date::date
+        on student_assessments.administration_date between dates_xwalk.start_date::date and dates_xwalk.end_date::date 
         -- we want to allow for the school year cutoffs to differ by assessment 
         -- but also allow those fields to remain null if xwalk is desired but not to differ across assessments
         and ifnull(dates_xwalk.assessment_identifier, '1') = iff(dates_xwalk.assessment_identifier is null, '1', student_assessments.assessment_identifier)
