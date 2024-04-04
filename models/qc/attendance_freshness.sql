@@ -13,5 +13,5 @@ from att_events
 join dim_calendar
     on att_events.k_calendar_date = dim_calendar.k_calendar_date
 where calendar_date <= current_date()
-group by all
+group by att_events.tenant_code, att_events.k_school, dim_calendar.school_year
 qualify dim_calendar.school_year = max(dim_calendar.school_year) over(partition by att_events.tenant_code)
