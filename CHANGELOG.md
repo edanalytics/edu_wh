@@ -1,7 +1,5 @@
 # Unreleased
 ## New features
-- Add new table `fct_student_contact_information`, which includes student addresses, email addresses, phone, and languages. This gives more detailed contact info than `dim_student`, and can be given different security rules than `dim_student`.
-  - Note: was originally planned for v0.3.2, but we need to think more about the correct structure for this table.
 ## Under the hood
 ## Fixes 
 
