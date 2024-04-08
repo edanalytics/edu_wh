@@ -3,6 +3,21 @@
 ## Under the hood
 ## Fixes 
 
+# edu_wh v0.3.2
+## New features
+- Add `has_hispanic_latino_ethnicity` to `dim_student`. Also include in this in fields that are "immutable" (consistent across years), assuming variable `edu:stu_demos:make_demos_immutable` is set to `True`.
+- Add configurable student language columns to `dim_student`.
+- Add configurable custom override for student grade level (some source other than student-school-assoc in Ed-Fi). Use variable `edu:stu_demos:grade_level_override` to configure a data source and column.
+- Add configurable logic for override of `school_year` in `fct_student_assessment` and `fct_student_objective_assessment` (e.g. if NULL, use thresholds to populate). By default, no override is done, but options were added to use a global variable `edu:school_year:start_month`, `edu:school_year:start_day`, or use a xwalk of date ranges `xwalk_assessment_school_year_dates`.
+- Make `stu_display_name` configurable (e.g. include suffix or preferred_name)
+## Under the hood
+- Correct dbt docs for unique key of `fct_student_daily_attendance`.
+- Add `k_school` to grain of qc model `attendance_freshness`.
+  - Also restrict `attendance_freshness` model to current or past dates
+  - And add column `days_since_last_attendance_event` to `attednance_freshness_test`
+## Fixes
+- Remove `is_latest_record` from auto-creation of subgroups for `dim_subgroup` and `fct_student_subgroup`.
+
 # edu_wh v0.3.1
 ## New features
 - Add `dim_staff.race_ethnicity`, using rules analogous to `dim_student.race_ethnicity`
