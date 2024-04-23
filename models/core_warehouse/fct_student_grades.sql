@@ -34,6 +34,7 @@ formatted as (
         dim_course_section.k_course_section,
         dim_school.k_school,
         dim_grading_period.k_grading_period,
+        stg_grades.school_year,
         stg_grades.grade_type,
         stg_grades.tenant_code,
         stg_grades.letter_grade_earned,
