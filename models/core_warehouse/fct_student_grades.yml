@@ -39,6 +39,7 @@ models:
         description: Unique identifier for the school. Foreign key reference to [dim_school](#!/model/model.edu_wh.dim_school).
       - name: k_grading_period
         description: Unique identifier for the grading period. Foreign key reference to [dim_grading_period](#!/model/model.edu_wh.dim_grading_period).
+      - name: school_year
       - name: grade_type
         description: >
           The type of grade in a report card or transcript (e.g., Final, 
