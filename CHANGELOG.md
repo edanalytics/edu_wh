@@ -1,4 +1,5 @@
 # Unreleased
+- Feature: Add column `school_year` to `fct_student_grades`
 ## New features
 ## Under the hood
 ## Fixes 
