@@ -28,7 +28,9 @@ select
         else '{{ var("edu:stu_demos:race_unknown_code") }}'
     end as race_ethnicity,
     stg_stu_ed_org.has_hispanic_latino_ethnicity
-from build_array
-join stg_stu_ed_org
-    on build_array.k_student = stg_stu_ed_org.k_student
-    and build_array.ed_org_id = stg_stu_ed_org.ed_org_id
+from stg_stu_ed_org
+-- this join order is necessary because students with missing race/ethnicity 
+--     data are not included in stg_ef3__stu_ed_org__races -> build_array
+left join build_array
+    on stg_stu_ed_org.k_student = build_array.k_student
+    and stg_stu_ed_org.ed_org_id = build_array.ed_org_id
