@@ -85,6 +85,10 @@ models:
         description: The type of credits or units of value earned by the student for the completion of a course
       - name: earned_credit_conversion
         description: Conversion factor that when multiplied by the number of credits is equivalent to Carnegie units.
+      - name: earned_additional_credit_type
+        description: The type of credits or units of value awarded for the completion of a course.
+      - name: earned_additional_credit
+        description: The value of credits or units of value awarded for the completion of a course
       - name: attempted_credit_type
         description: The type of credits or units of value attempted by the student for the completion of a course
       - name: attempted_credit_conversion

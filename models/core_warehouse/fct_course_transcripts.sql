@@ -42,6 +42,8 @@ formatted as (
         course_transcripts.method_credit_earned,
         course_transcripts.earned_credit_type,
         course_transcripts.earned_credit_conversion,
+        {{ edu_edfi_source.extract_descriptor('value:additionalCreditTypeDescriptor::string') }} as earned_additional_credit_type,
+        value:credits as earned_additional_credit,
         course_transcripts.attempted_credit_type,
         course_transcripts.attempted_credit_conversion,
         course_transcripts.assigning_organization_identification_code,
@@ -49,5 +51,6 @@ formatted as (
     from course_transcripts
     join fct_student_academic_record
         on course_transcripts.k_student_academic_record = fct_student_academic_record.k_student_academic_record
+    , lateral flatten(input=>v_earned_additional_credits)
 )
 select * from formatted
