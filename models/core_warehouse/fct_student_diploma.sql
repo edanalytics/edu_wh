@@ -4,17 +4,19 @@ with stg_diplomas as (
     select * from {{ ref('stg_ef3__student_academic_records__diplomas') }}
 ),
 
-stg_academic_records as (
-      select * from {{ ref('stg_ef3__student_academic_records') }}
+stu_academic_records as (
+      select * from {{ ref('fct_student_academic_record') }}
 
 ), 
 
 joined_diploma as (
     select
-        stg_diplomas.tenant_code, 
-        stg_diplomas.api_year, 
-        stg_academic_records.k_student,
-        stg_academic_records.school_year, 
+        stg_diplomas.tenant_code,  
+        stu_academic_records.k_student,
+        stu_academic_records.k_student_xyear,
+        stu_academic_records.k_lea, 
+        stu_academic_records.k_school, 
+        stu_academic_records.school_year, 
         diploma_type, 
         diploma_award_date, 
         diploma_description,
@@ -31,9 +33,7 @@ joined_diploma as (
         issuer_name, 
         issuer_origin_url
     from stg_diplomas 
-    join stg_academic_records on stg_diplomas.k_student_academic_record = stg_academic_records.k_student_academic_record
-                              and stg_diplomas.tenant_code = stg_academic_records.tenant_code
-                              and stg_diplomas.api_year = stg_academic_records.api_year
+    join stu_academic_records on stg_diplomas.k_student_academic_record = stu_academic_records.k_student_academic_record
 
 ),
 
@@ -41,7 +41,7 @@ dedupe_diplomas as (
     {{ 
         dbt_utils.deduplicate(
             relation='joined_diploma',
-            partition_by='diploma_type, diploma_award_date',
+            partition_by='k_student, k_student_xyear, school_year, k_lea, k_school, diploma_type, diploma_award_date',
             order_by = 'diploma_type'
         )
     }}
