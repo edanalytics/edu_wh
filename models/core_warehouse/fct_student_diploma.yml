@@ -9,9 +9,12 @@ models:
     tests:
     
     columns:
-      - name: tenant_code    
-      - name: school_year 
+      - name: tenant_code
       - name: k_student
+      - name: k_student_xyear
+      - name: k_lea
+      - name: k_school
+      - name: school_year
       - name: diploma_type
         description: The type of diploma/credential that is awarded to a student in recognition of his/her completion of the curricular requirements.
       - name: diploma_award_date

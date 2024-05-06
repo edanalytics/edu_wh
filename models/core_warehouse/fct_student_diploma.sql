@@ -48,3 +48,4 @@ dedupe_diplomas as (
 
 )
 select * from dedupe_diplomas
+order by tenant_code, k_student
