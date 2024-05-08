@@ -1,20 +1,25 @@
 version: 2
 
 models: 
-  - name: fct_student_diplomas
+  - name: fct_student_diploma
     description: >
-      
-      *Primary Key:* k_student
+      This fact table contains information about diploma/credentials that is awarded to a student. 
+
+      *Primary Key:* k_student, k_student_xyear, school_year, k_school, diploma_type, diploma_award_date -- There is one record
+      per student, school, year, diploma type and award date.
 
     tests:
     
     columns:
       - name: tenant_code
       - name: k_student
+        description: Defining key for the student in this school year.
       - name: k_student_xyear
+        description: Defining key for the student, which is consistent across years.
       - name: k_lea
       - name: k_school
       - name: school_year
+        description: The school year for which the diploma was awarded to a student.
       - name: diploma_type
         description: The type of diploma/credential that is awarded to a student in recognition of his/her completion of the curricular requirements.
       - name: diploma_award_date

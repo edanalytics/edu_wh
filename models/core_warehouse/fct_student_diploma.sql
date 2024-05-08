@@ -12,6 +12,10 @@ stu_academic_records as (
 joined_diploma as (
     select
         stg_diplomas.tenant_code,  
+        -- we pull k_student, k_student_xyear from stu_academic record to ensure we are 
+        -- including historical student records from years prior where the student is not in dim_student. 
+        -- This logic is already implemented in fct_student_academic_record, we pull this in to avoid 
+        -- duplicating the logic.
         stu_academic_records.k_student,
         stu_academic_records.k_student_xyear,
         stu_academic_records.k_lea, 
@@ -33,7 +37,8 @@ joined_diploma as (
         issuer_name, 
         issuer_origin_url
     from stg_diplomas 
-    join stu_academic_records on stg_diplomas.k_student_academic_record = stu_academic_records.k_student_academic_record
+    join stu_academic_records 
+        on stg_diplomas.k_student_academic_record = stu_academic_records.k_student_academic_record
 
 ),
 
