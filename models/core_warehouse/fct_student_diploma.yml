@@ -3,9 +3,11 @@ version: 2
 models: 
   - name: fct_student_diploma
     description: >
-      This fact table contains information about diploma/credentials that is awarded to a student. 
+      ##### Overview:
+       This fact table contains information about diploma/credentials that is awarded to a student. 
 
-      *Primary Key:* k_student, k_student_xyear, school_year, k_school, diploma_type, diploma_award_date -- There is one record
+      ##### Primary Key:
+       `k_student, k_student_xyear, school_year, k_school, diploma_type, diploma_award_date` -- There is one record
       per student, school, year, diploma type and award date.
 
     tests:
