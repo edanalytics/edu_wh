@@ -8,12 +8,21 @@ models:
 
       ##### Primary Key:
        `k_student, k_student_xyear, school_year, k_school, diploma_type, diploma_award_date` -- There is one record
-      per student, school, year, diploma type and award date.
-      
-     {{ doc(var('edu:custom_docs:fct_student_diploma')) if var('edu:custom_docs:fct_student_diploma', '') }}
+       per student, school, year, diploma type and award date.
+
+      {{ doc(var('edu:custom_docs:fct_student_diploma')) if var('edu:custom_docs:fct_student_diploma', '') }}
 
     tests:
-    
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - k_student
+            - k_student_xyear
+            - school_year
+            - k_lea
+            - k_school
+            - diploma_type
+            - diploma_award_date
+          
     columns:
       - name: tenant_code
       - name: k_student
