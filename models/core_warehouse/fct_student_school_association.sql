@@ -81,6 +81,8 @@ formatted as (
         stg_stu_school.entry_date = max(stg_stu_school.entry_date) over(
             partition by stg_stu_school.k_student, stg_stu_school.k_school
         ) as is_latest_annual_entry
+        {# add any extension columns configured from stg_ef3__student_school_associations #}
+        {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_school_associations', flatten=False) }}
     from stg_stu_school
     join dim_student
         on stg_stu_school.k_student = dim_student.k_student

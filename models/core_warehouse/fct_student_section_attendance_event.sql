@@ -36,6 +36,8 @@ formatted as (
         stg_stu_section_attendance.arrival_time,
         stg_stu_section_attendance.departure_time,
         stg_stu_section_attendance.educational_environment
+        {# add any extension columns configured from stg_ef3__student_section_attendance_events #}
+        {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_section_attendance_events', flatten=False) }}
     from stg_stu_section_attendance
     join dim_student
         on stg_stu_section_attendance.k_student = dim_student.k_student

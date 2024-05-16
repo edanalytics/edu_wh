@@ -37,6 +37,8 @@ formatted as (
         stg_stu_parent.is_living_with,
         stg_stu_parent.is_primary_contact,
         stg_stu_parent.is_legal_guardian
+        {# add any extension columns configured from stg_ef3__student_parent_associations #}
+        {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_parent_associations', flatten=False) }}
     from stg_stu_parent
     -- subset to only the stu/parent records associated with the most recent student records
     join most_recent_k_student

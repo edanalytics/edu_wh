@@ -43,6 +43,8 @@ formatted as (
         stg_stu_section.teacher_student_data_link_exclusion,
         stg_stu_section.attempt_status,
         stg_stu_section.repeat_identifier
+        {# add any extension columns configured from stg_ef3__student_section_associations #}
+        {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_section_associations', flatten=False) }}
     from stg_stu_section
     join dim_student 
         on stg_stu_section.k_student = dim_student.k_student

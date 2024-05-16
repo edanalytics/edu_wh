@@ -42,6 +42,8 @@ formatted as (
         stg_grades_learning_standards.performance_base_conversion_descriptor,
         stg_grades_learning_standards.learning_standard_letter_grade_earned,
         stg_grades_learning_standards.learning_standard_numeric_grade_earned
+        {# add any extension columns configured from stg_ef3__grades__learning_standards #}
+        {{ edu_edfi_source.extract_extension(model_name='stg_ef3__grades__learning_standards', flatten=False) }}
     from stg_grades_learning_standards
     join dim_learning_standard
         on stg_grades_learning_standards.k_learning_standard = dim_learning_standard.k_learning_standard

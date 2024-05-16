@@ -44,6 +44,8 @@ formatted as (
         letter_grade_xwalk.exclude_from_gpa,
         letter_grade_xwalk.is_dorf,
         letter_grade_xwalk.grade_sort_index
+        {# add any extension columns configured from stg_ef3__grades #}
+        {{ edu_edfi_source.extract_extension(model_name='stg_ef3__grades', flatten=False) }}
     from stg_grades
     join dim_student
         on stg_grades.k_student = dim_student.k_student
