@@ -12,6 +12,13 @@ High level description your PR, and why you're making it. Is this linked to slac
 issue, a continuation to a previous PR? Link it here if relevant (use the "#" symbol for issues/PRs).
 -->
 
+## Note any breaking changes introduced by this PR:
+<!---
+Describe any breaking changes that are introduced. Take a wide approach to what might be 'breaking'. One example of a 'hidden' breaking change could be adding a new column. For most applications, this will not cause error, but if someone has configured a downstream query that references this column name from elsewhere, their query could break.
+
+Make sure to include these breaking changes in the CHANGELOG.md
+-->
+
 ## PR Merge Priority:
 <!---
 This checklist helps the reviewers understand the level of priority for merging this PR.
