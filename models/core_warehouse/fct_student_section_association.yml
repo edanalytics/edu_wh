@@ -2,5 +2,46 @@ version: 2
 
 models:
   - name: fct_student_section_association
+    description: >
+      ##### Overview:
+        This fact table describes student section enrollments. Note that there can be multiple records per student+section, e.g., if they left the section and later re-enrolled with a different begin date.
+
+      ##### Primary Key:
+        `k_student, k_course_section, begin_date` -- There is one record per student, section, and begin date.
+
+      ##### Important Business Rules:
+        `is_active_enrollment` helps find unclosed enrollments in the current year
+
     config:
       tags: ['core']
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - k_student
+            - k_course_section
+            - begin_date
+    columns:
+      - name: k_student
+        description: "Unique key for student + year, foreign key reference to `dim_student`"
+      - name: k_student_xyear
+        description: "Unique key for student, consistent across years"
+      - name: k_school
+        description: "Unique key for school, foreign key reference to `dim_school`"
+      - name: k_course_section
+        description: "Unique key for course section, foreign key reference to `dim_course_section`"
+      - name: tenant_code
+      - name: school_year
+      - name: begin_date
+        description: Month, day, and year of the student's entry or assignment to the section.
+      - name: end_date
+        description: Month, day, and year of the withdrawal or exit of the student from the section.
+      - name: is_homeroom
+        description: Indicates the section is the student's homeroom. Homeroom period may the convention for taking daily attendance.
+      - name: is_active_enrollment
+        description: "Indicator for active enrollment: enrollment is in the current school year and has begun but not yet ended."
+      - name: teacher_student_data_link_exclusion
+        description: Indicates that the student-section combination is excluded from calculation of value-added or growth attribution calculations used for a particular teacher evaluation.
+      - name: attempt_status
+        description: An indication of the student's completion status for the section.
+      - name: repeat_identifier
+        description: An indication as to whether a student has previously taken a given course.
