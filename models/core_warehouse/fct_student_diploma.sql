@@ -1,14 +1,9 @@
-
-
 with stg_diplomas as (
     select * from {{ ref('stg_ef3__student_academic_records__diplomas') }}
 ),
-
 stu_academic_records as (
       select * from {{ ref('fct_student_academic_record') }}
-
 ), 
-
 joined_diploma as (
     select
         stg_diplomas.tenant_code,  
@@ -21,6 +16,7 @@ joined_diploma as (
         stu_academic_records.k_lea, 
         stu_academic_records.k_school, 
         stu_academic_records.school_year, 
+        stu_academic_records.academic_term,
         diploma_type, 
         diploma_award_date, 
         diploma_description,
@@ -39,18 +35,35 @@ joined_diploma as (
     from stg_diplomas 
     join stu_academic_records 
         on stg_diplomas.k_student_academic_record = stu_academic_records.k_student_academic_record
-
 ),
-
+{% if var('edu:xwalk_academic_terms:enabled', False) %}
+xwalk_academic_terms as (
+    select * from {{ ref('xwalk_academic_terms') }}
+),
+joined_with_xwalk as (
+    select
+        diplomas.*,
+        xwalk_academic_terms.sort_index
+    from joined_diploma diplomas
+    left join xwalk_academic_terms 
+        on diplomas.academic_term = xwalk_academic_terms.academic_term
+),
+{% else %}
+joined_with_xwalk as (
+    select
+        *,
+        NULL as sort_index
+    from joined_diploma
+),
+{% endif %}
 dedupe_diplomas as (
-    {{ 
-        dbt_utils.deduplicate(
-            relation='joined_diploma',
-            partition_by='k_student, k_student_xyear, school_year, k_lea, k_school, diploma_type, diploma_award_date',
-            order_by = 'diploma_type'
-        )
-    }}
-
+     {{
+            dbt_utils.deduplicate(
+                relation='joined_with_xwalk',
+                partition_by='k_student, k_student_xyear, school_year, k_lea, k_school, diploma_type, diploma_award_date',
+                order_by = "coalesce(sort_index, 99)" if var('edu:xwalk_academic_terms:enabled', False) else "academic_term"
+            )
+        }}
 )
 select * from dedupe_diplomas
 order by tenant_code, k_student
