@@ -1,7 +1,8 @@
 # Unreleased
 ## New features
 ## Under the hood
-## Fixes 
+## Fixes
+  - Modify the join in `bld_ef3__stu_race_ethnicity` so that people with unknown race are included
 
 # edu_wh v0.3.2
 ## New features
