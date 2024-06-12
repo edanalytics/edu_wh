@@ -1,3 +1,9 @@
+{{
+  config(
+      store_failures = true,
+      severity       = 'warn'
+    )
+}}
 with stg_diplomas as (
     select * from {{ ref('stg_ef3__student_academic_records__diplomas') }}
 ),
