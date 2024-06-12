@@ -1,0 +1,49 @@
+version: 2
+
+models:
+  - name: dim_graduation_plans
+    description: >
+        ##### Overview:
+          Defines graduation plans, which outline the required credits, credits by subject, credits by course, and other criteria required for graduation.
+
+        ##### Primary Key:
+          `k_graduation_plan` - There is one record per graduation plan (plan type + ed_org_id + school_year)
+    config:
+      tags: ['core']
+    columns:
+      - name: k_graduation_plan
+        description: Generated primary key composed of 'graduation_plan_type', 'ed_org_id', and 'graduation_school_year' (generated in [stg_ef3__graduation_plans](#!/model/model.edu_edfi_source.stg_ef3__graduation_plans))
+        tests: 
+          - unique
+      - name: tenant_code
+        description: Code defining the Tenant (may be an LEA, SEA, etc.) of the Ed-Fi ODS from which this record was pulled
+      - name: school_year
+        description: The identifier for the grading period school year.
+      - name: k_lea
+        description: Association to the LEA with the cohort.
+      - name: k_school
+        description: Unique identifier for the school. Foreign key reference to [dim_school](#!/model/model.edu_wh.dim_school).
+      - name: ed_org_id
+        description: The identifier for the educational organization with the cohort.
+      - name: ed_org_type
+        description: The type of educational organization e.g., School or LocalEducationAgency.
+      - name: graduation_school_year
+        description: The school year the student is expected to graduate.
+      - name: graduation_plan_type
+        description: The type of academic plan the student is following for graduation.
+      - name: total_required_credit_type
+        description: The type of credits or units of value awarded for the completion of a course.
+      - name: total_required_credit_conversion
+        description: Conversion factor that when multiplied by the number of credits is equivalent to Carnegie units.
+      - name: total_required_credits
+        description: The value of credits or units of value awarded for the completion of a course.
+      - name: is_individual_plan
+        description: An indicator of whether the graduation plan is tailored for an individual.
+      - name: v_credits_by_credit_categories
+        description: Details the required number of credits in various credit categories.
+      - name: v_credits_by_courses
+        description: Details the specific credits required by individual courses within the graduation plan.
+      - name: v_credits_by_subjects
+        description: Details the specific credits required by subject area (e.g., mathematics, science, humanities).
+      - name: v_required_assessments
+        description: Details any assessments or exams that must be passed to fulfill the graduation plan.
