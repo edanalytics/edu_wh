@@ -1,16 +1,18 @@
 /*
 **What is this test?**
-This test finds records where there are multiple academic term for the same diploma type. This also 
+This test finds records where the same diploma type is repeated across every term. 
 This test shows how the deduplication is being handled in fct_student_diploma, but the duplicates
 may point to data quality issues that could be addressed in the source system or ODS.
 
 **When is this important to resolve?**
-This data came from student academic records, which is tied to academic terms. This means 
+This data came from student academic records, which are linked to academic terms. This means 
 that the same diploma data is duplicated on every academic term of the school year when it 
 was awarded. If this test determines that a diploma has been duplicated many times over, it 
-is important to resolve this data issue so to avoid a warehouse model blowing up. 
+is important to resolve this data issue so to avoid a warehouse model from blowing up. 
 
 **How to resolve?**
+Determine whether this test has uncovered the behavior of these duplicates. 
+Depending on the diagnosis from the underlying data, you may raise issue in the source system.  
 
 */
 
