@@ -33,7 +33,7 @@ joined_diploma as (
         evidence_statement, 
         image_url, 
         issuer_name, 
-        issuer_origin_url,
+        issuer_origin_url
         {# add any extension columns configured from stg_ef3__student_academic_records__diplomas #}
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_academic_records__diplomas', flatten=False) }}
     from stg_diplomas 
