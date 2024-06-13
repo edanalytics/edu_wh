@@ -1,3 +1,19 @@
+/*
+**What is this test?**
+This test finds records where there are multiple academic term for the same diploma type. This also 
+This test shows how the deduplication is being handled in fct_student_diploma, but the duplicates
+may point to data quality issues that could be addressed in the source system or ODS.
+
+**When is this important to resolve?**
+This data came from student academic records, which is tied to academic terms. This means 
+that the same diploma data is duplicated on every academic term of the school year when it 
+was awarded. If this test determines that a diploma has been duplicated many times over, it 
+is important to resolve this data issue so to avoid a warehouse model blowing up. 
+
+**How to resolve?**
+
+*/
+
 {{
   config(
       store_failures = true,
@@ -28,7 +44,7 @@ count_duplicates as (
         diploma_award_date, 
         count(*) over (partition by k_student, k_student_xyear, school_year, k_lea, k_school, diploma_type, diploma_award_date) as n_duplicates,
         row_number() over (partition by k_student, k_student_xyear, school_year, k_lea, k_school, diploma_type, diploma_award_date
-            order by {% if var('edu:xwalk_academic_terms:enabled', False) %} coalesce(sort_index, 99) {% else %} academic_term {% endif %}) = 1 as is_kept_in_fct_student_diploma
+            order by {% if var('edu:xwalk_academic_terms:enabled', False) %} sort_index nulls last {% else %} academic_term {% endif %}) = 1 as is_kept_in_fct_student_diploma
     from stg_diplomas
     join stu_academic_records 
         on stg_diplomas.k_student_academic_record = stu_academic_records.k_student_academic_record

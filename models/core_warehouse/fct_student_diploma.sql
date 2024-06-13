@@ -33,7 +33,9 @@ joined_diploma as (
         evidence_statement, 
         image_url, 
         issuer_name, 
-        issuer_origin_url
+        issuer_origin_url,
+        {# add any extension columns configured from stg_ef3__student_academic_records__diplomas #}
+        {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_academic_records__diplomas', flatten=False) }}
     from stg_diplomas 
     join stu_academic_records 
         on stg_diplomas.k_student_academic_record = stu_academic_records.k_student_academic_record
@@ -62,7 +64,7 @@ dedupe_diplomas as (
             dbt_utils.deduplicate(
                 relation='joined_with_xwalk',
                 partition_by='k_student, k_student_xyear, school_year, k_lea, k_school, diploma_type, diploma_award_date',
-                order_by = "coalesce(sort_index, 99)" if xwalk_academic_term_enabled else "academic_term"
+                order_by = "sort_index nulls last" if xwalk_academic_term_enabled else "academic_term"
             )
         }}
 )
