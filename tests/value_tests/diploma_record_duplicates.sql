@@ -39,15 +39,13 @@ xwalk_academic_terms as (
 {% endif %}
 count_duplicates as (
     select
-        stg_diplomas.tenant_code,  
         stu_academic_records.k_student,
         stu_academic_records.k_student_xyear,
         stu_academic_records.k_lea, 
         stu_academic_records.k_school, 
         stu_academic_records.school_year, 
         stu_academic_records.academic_term,
-        diploma_type, 
-        diploma_award_date, 
+        stg_diplomas.*, 
         count(*) over (partition by k_student, k_student_xyear, school_year, k_lea, k_school, diploma_type, diploma_award_date) as n_duplicates,
         row_number() over (partition by k_student, k_student_xyear, school_year, k_lea, k_school, diploma_type, diploma_award_date
             order by {% if var('edu:xwalk_academic_terms:enabled', False) %} sort_index nulls last {% else %} academic_term {% endif %}) = 1 as is_kept_in_fct_student_diploma
