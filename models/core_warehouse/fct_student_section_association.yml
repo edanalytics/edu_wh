@@ -32,16 +32,16 @@ models:
       - name: tenant_code
       - name: school_year
       - name: begin_date
-        description: Month, day, and year of the student's entry or assignment to the section.
+        description: "Month, day, and year of the student's entry or assignment to the section."
       - name: end_date
-        description: Month, day, and year of the withdrawal or exit of the student from the section.
+        description: "Month, day, and year of the withdrawal or exit of the student from the section."
       - name: is_homeroom
-        description: Indicates the section is the student's homeroom. Homeroom period may the convention for taking daily attendance.
+        description: "Indicates the section is the student's homeroom. Homeroom period may the convention for taking daily attendance."
       - name: is_active_enrollment
         description: "Indicator for active enrollment: enrollment is in the current school year and has begun but not yet ended."
       - name: teacher_student_data_link_exclusion
-        description: Indicates that the student-section combination is excluded from calculation of value-added or growth attribution calculations used for a particular teacher evaluation.
+        description: "Indicates that the student-section combination is excluded from calculation of value-added or growth attribution calculations used for a particular teacher evaluation."
       - name: attempt_status
-        description: An indication of the student's completion status for the section.
+        description: "An indication of the student's completion status for the section."
       - name: repeat_identifier
-        description: An indication as to whether a student has previously taken a given course.
+        description: "An indication as to whether a student has previously taken a given course."
