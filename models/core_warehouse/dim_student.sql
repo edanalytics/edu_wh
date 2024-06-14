@@ -98,6 +98,7 @@ formatted as (
         stu_grade.entry_grade_level as grade_level,
         stu_grade.grade_level_integer,
         stu_immutable_demos.race_ethnicity,
+        stu_immutable_demos.has_hispanic_latino_ethnicity,
 
         -- student programs
         {% if var('src:program:special_ed:enabled', True) %}
@@ -235,6 +236,7 @@ formatted as (
     {% endif %}
 
     -- custom data sources
+    -- Note, dbt test "custom_demo_sources_are_unique_on_k_student" is configured to fail if any not unique by k_student
     {% if custom_data_sources is not none and custom_data_sources | length -%}
       {%- for source in custom_data_sources -%}
         left join {{ ref(source) }}

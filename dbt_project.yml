@@ -1,7 +1,7 @@
 config-version: 2
 
 name: 'edu_wh'
-version: '0.3.0'
+version: '0.3.2'
 require-dbt-version: [">=1.0.0", "<2.0.0"]
 
 # This setting configures which "profile" dbt uses for this project.
@@ -40,6 +40,9 @@ vars:
   'edu:stu_demos:intersection_groups': Null
   # custom data sources for student characteristics. must contain and be unique by `k_student`
   'edu:stu_demos:custom_data_sources': Null
+
+  # Optional override logic when enrollment grade level != true grade level.
+  'edu:stu_demos:grade_level_override': Null
   
   # rules for inclusion in program associations
   # Begin and end dates to use for cutoffs, and a list of program names to exclude

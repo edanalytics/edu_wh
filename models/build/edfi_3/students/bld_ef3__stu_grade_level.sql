@@ -22,6 +22,36 @@ find_grade_level as (
             entry_grade_level desc
     )
 ),
+
+-- In some implementations, enrolled grade level is not always equivalent to "true grade level".
+optional_manual_override as (
+    {% if var('edu:stu_demos:grade_level_override', False) %}
+        -- Expected YAML format:
+        -- 'edu:stu_demos:grade_level_override':
+        --     source: model_name
+        --     where: column_select
+
+        select
+            enrollment_source.tenant_code,
+            enrollment_source.k_student,
+            enrollment_source.school_year,
+            coalesce(
+                {{ var('edu:stu_demos:grade_level_override')['where'] }}::string,
+                enrollment_source.entry_grade_level
+            ) as entry_grade_level
+
+        from find_grade_level as enrollment_source
+
+            -- Note, dbt test "grade_level_override_unique_on_k_student" is configured to fail if this override_source is not unique by k_student
+            left join {{ ref(var('edu:stu_demos:grade_level_override')['source']) }} as override_source
+            on enrollment_source.k_student = override_source.k_student
+
+    {% else %}
+        select * from find_grade_level
+
+    {% endif %}
+),
+
 join_grade_integer as (
     select
         tenant_code,
@@ -29,8 +59,8 @@ join_grade_integer as (
         school_year,
         entry_grade_level,
         grade_level_integer 
-    from find_grade_level
+    from optional_manual_override
     left join xwalk_grade_levels
-        on find_grade_level.entry_grade_level = xwalk_grade_levels.grade_level
+        on optional_manual_override.entry_grade_level = xwalk_grade_levels.grade_level
 )
 select * from join_grade_integer

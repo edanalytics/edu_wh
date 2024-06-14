@@ -20,21 +20,18 @@ pivoted as (
         k_student_xyear,
         ed_org_id
         {%- if not is_empty_model('xwalk_student_indicators') -%},
-          {{ alias_pivot(column='indicator_name',
-                      cmp_col_name='original_indicator_name',
-                      alias_col_name='dim_stu_name',
-                      xwalk_ref='xwalk_student_indicators',
-                      agg='min',
-                      null_false=False,
-                      cast=null,
-                      then_value='indicator_value',
-                      else_value='null',
-                      quote_identifiers=False) }}
+          {{ ea_pivot(
+                column='dim_stu_name',
+                values=dbt_utils.get_column_values(ref('xwalk_student_indicators'), 'dim_stu_name'),
+                agg='min',
+                then_value='indicator_value',
+                else_value='null',
+            ) }}
         {% endif %}
     from stu_ind
     left join xwalk_stu_ind 
         on stu_ind.indicator_name = xwalk_stu_ind.original_indicator_name
-    group by 1,2,3,4,5
+    group by all
 )
 select 
     tenant_code,
