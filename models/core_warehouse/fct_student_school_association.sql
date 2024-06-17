@@ -72,7 +72,10 @@ formatted as (
         stg_stu_school.entry_type,
         stg_stu_school.exit_withdraw_type,
         stg_stu_school.class_of_school_year,
+        stg_stu_school.k_graduation_plan,
         stg_stu_school.graduation_plan_type,
+        stg_stu_school.v_alternative_graduation_plans,
+        stg_stu_school.v_education_plans,
         stg_stu_school.residency_status,
         -- column to choose the latest record for multiple enrollments 
         -- at the same school in the same year
