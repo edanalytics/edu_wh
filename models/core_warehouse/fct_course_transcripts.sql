@@ -45,7 +45,8 @@ formatted as (
         course_transcripts.attempted_credit_type,
         course_transcripts.attempted_credit_conversion,
         course_transcripts.assigning_organization_identification_code,
-        course_transcripts.course_catalog_url
+        course_transcripts.course_catalog_url,
+        course_transcripts.v_earned_additional_credits
     from course_transcripts
     join fct_student_academic_record
         on course_transcripts.k_student_academic_record = fct_student_academic_record.k_student_academic_record
