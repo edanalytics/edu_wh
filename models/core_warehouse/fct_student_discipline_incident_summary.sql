@@ -60,6 +60,10 @@ formatted as (
         iff(fct_student_discipline_incident_behaviors.severity_order is not null and 
             fct_student_discipline_actions.severity_order is not null, 
             fct_student_discipline_actions.discipline_action, null) as most_severe_discipline_action
+        {# add any extension columns configured from stg_ef3__discipline_actions__student_discipline_incident_behaviors #}
+        {{ edu_edfi_source.extract_extension(model_name='stg_ef3__discipline_actions__student_discipline_incident_behaviors', flatten=False) }}
+        {# add any extension columns configured from stg_ef3__discipline_actions__disciplines #}
+        {{ edu_edfi_source.extract_extension(model_name='stg_ef3__discipline_actions__disciplines', flatten=False) }}
     from fct_student_discipline_incident_behaviors
     left join stu_discipline_incident_behaviors_actions
         on fct_student_discipline_incident_behaviors.k_student = stu_discipline_incident_behaviors_actions.k_student

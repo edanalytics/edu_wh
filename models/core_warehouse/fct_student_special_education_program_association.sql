@@ -36,12 +36,10 @@ formatted as (
         dim_program.k_program,
         dim_program.k_lea,
         dim_program.k_school,
-        
         stage.tenant_code,
         dim_program.school_year,
         stage.program_enroll_begin_date,
         stage.program_enroll_end_date,
-        
         stage.is_idea_eligible,
         stage.iep_begin_date,
         stage.iep_end_date,
@@ -51,21 +49,17 @@ formatted as (
         stage.is_multiply_disabled,
         stage.school_hours_per_week,
         stage.spec_ed_hours_per_week,
-        
         stage.is_served_outside_regular_session,
         stage.participation_status_designated_by,
         stage.participation_status_begin_date,
         stage.participation_status_end_date,
         stage.participation_status,
         stage.reason_exited,
-        
         stage.special_education_setting,
         bld_program_services.program_services as special_education_program_services,
         bld_primary_disability.disability_type as primary_disability_type
-
-        
+        {# add any extension columns configured from stg_ef3__student_special_education_program_associations #}
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_special_education_program_associations', flatten=False) }}
-        
     from stage
     
         inner join dim_student

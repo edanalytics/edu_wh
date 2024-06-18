@@ -42,9 +42,8 @@ formatted as (
         stage.participation_status_begin_date,
         stage.participation_status_end_date,
         stage.reason_exited
-
+        {# add any extension columns configured from stg_ef3__student_language_instruction_program_associations #}
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_language_instruction_program_associations', flatten=False) }}
-
     from stage
 
         inner join dim_student

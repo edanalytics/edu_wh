@@ -78,6 +78,8 @@ formatted as (
         stg_discipline_actions.discipline_action_length_difference_reason,
         agg_staff_keys.k_staff_array,
         bld_discipline_incident_associations.k_student_discipline_incident_behavior_array
+        {# add any extension columns configured from stg_ef3__discipline_actions #}
+        {{ edu_edfi_source.extract_extension(model_name='stg_ef3__discipline_actions', flatten=False) }}
     from stg_discipline_actions
     join dim_student 
         on stg_discipline_actions.k_student = dim_student.k_student

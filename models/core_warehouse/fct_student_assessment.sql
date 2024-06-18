@@ -64,6 +64,8 @@ student_assessments_wide as (
             quote_identifiers=False
         ) }}
         {%- endif %}
+        {# add any extension columns configured from stg_ef3__student_assessments #}
+        {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_assessments', flatten=False) }}
     from student_assessments
     left join student_assessments_long_results
         on student_assessments.k_student_assessment = student_assessments_long_results.k_student_assessment

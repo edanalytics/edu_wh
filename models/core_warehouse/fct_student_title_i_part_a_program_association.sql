@@ -27,23 +27,19 @@ formatted as (
         dim_program.k_program,
         dim_program.k_lea,
         dim_program.k_school,
-
         stage.tenant_code,
         dim_program.school_year,
         stage.program_enroll_begin_date,
         stage.program_enroll_end_date,
-
         stage.title_i_part_a_participant_status,
-
         stage.is_served_outside_regular_session,
         stage.participation_status,
         stage.participation_status_designated_by,
         stage.participation_status_begin_date,
         stage.participation_status_end_date,
         stage.reason_exited
-
+        {# add any extension columns configured from stg_ef3__student_title_i_part_a_program_associations #}
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_title_i_part_a_program_associations', flatten=False) }}
-
     from stage
 
         inner join dim_student

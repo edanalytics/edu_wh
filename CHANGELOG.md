@@ -1,5 +1,7 @@
 # Unreleased
 ## New features
+- Add macro call that brings through extensions to all fct tables that directly reference a stg table. See [here](https://github.com/edanalytics/edu_wh/blob/124636845754dbcde89ebcfea2c39dfa8b1679b0/models/core_warehouse/fct_course_transcripts.sql#L50) for example. 
+    - Note: this may break in certain edge cases, if your implementation has existing configured extensions whose names collide with column names that already exist in the related fct table. This should be rare.
 ## Under the hood
 ## Fixes
   - Modify the join in `bld_ef3__stu_race_ethnicity` so that people with unknown race are included
