@@ -36,6 +36,6 @@ format_deprecated_gpas as (
         null           as max_gpa_value
     from deprecated_gpas
 )
-select * from current_gpas
+select * from format_current_gpas
 union all
 select * from format_deprecated_gpas
