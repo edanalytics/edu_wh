@@ -42,7 +42,8 @@ joined as (
         stu_demos.gender,
         stu_races.race_ethnicity,
         stu_races.race_array,
-        stu_races.has_hispanic_latino_ethnicity
+        stu_races.has_hispanic_latino_ethnicity,
+        stu_races.test_col
     from stg_student
     join stu_demos
         on stg_student.k_student = stu_demos.k_student
