@@ -13,10 +13,12 @@ build_array as (
     group by 1,2
 )
 select 
+    stg_stu_ed_org.k_student,
+    stg_stu_ed_org.ed_org_id,
     stg_stu_ed_org.tenant_code,
     stg_stu_ed_org.api_year,
     stg_stu_ed_org.k_student_xyear,
-    build_array.*,
+    build_array.race_array,
     -- build single value race_ethnicity
     case 
         when stg_stu_ed_org.has_hispanic_latino_ethnicity
@@ -27,8 +29,7 @@ select
             then race_array[0]
         else '{{ var("edu:stu_demos:race_unknown_code") }}'
     end as race_ethnicity,
-    stg_stu_ed_org.has_hispanic_latino_ethnicity,
-    stg_stu_ed_org.has_hispanic_latino_ethnicity as test_col
+    stg_stu_ed_org.has_hispanic_latino_ethnicity
 from stg_stu_ed_org
 -- this join order is necessary because students with missing race/ethnicity 
 --     data are not included in stg_ef3__stu_ed_org__races -> build_array
