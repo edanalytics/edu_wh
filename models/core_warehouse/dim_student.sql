@@ -99,7 +99,7 @@ formatted as (
         stu_grade.grade_level_integer,
         stu_immutable_demos.race_ethnicity,
         stu_immutable_demos.has_hispanic_latino_ethnicity,
-        stu_immutable_demos.test,
+        stu_immutable_demos.test_col,
 
         -- student programs
         {% if var('src:program:special_ed:enabled', True) %}
