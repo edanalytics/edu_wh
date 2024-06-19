@@ -1,10 +1,23 @@
 # Unreleased
 ## New features
+
+## Under the hood
+
+# edu_wh v0.3.3
+## New features
+- Add `fct_student_diploma` and a companion test for monitoring deduplicated data - `diploma_record_duplicates`
+- Add `dim_graduation_plan` and reference via `fct_student_school_association.k_graduation_plan`
+- Add some notes to dbt docs for `fct_student_special_education_program_association` and `fct_student_section_association`
+- Add `v_earned_additional_credits` to `fct_course_transcript`
+## Fixes
+- Modify the join in `bld_ef3__stu_race_ethnicity` so that students with unknown race are included and `{{ var("edu:stu_demos:race_unknown_code") }}` is correctly applied
+## Under the hood
+- Rework and rename pivot macro to `ea_pivot()` to simplify usage
+- Add `k_lea` and `k_school` to `dim_course`. Note - downstream queries that reference `k_lea` or `k_school` without an explicit qualified column reference may break due to this change.
 - Add macro call that brings through extensions to all fct tables that directly reference a stg table. See [here](https://github.com/edanalytics/edu_wh/blob/124636845754dbcde89ebcfea2c39dfa8b1679b0/models/core_warehouse/fct_course_transcripts.sql#L50) for example. 
     - Note: this may break in certain edge cases, if your implementation has existing configured extensions whose names collide with column names that already exist in the related fct table. This should be rare.
-## Under the hood
-## Fixes
-  - Modify the join in `bld_ef3__stu_race_ethnicity` so that people with unknown race are included
+- Add extension columns (optional, if configured) to all fct tables. If no extensions configured, this code compiles to nothing.
+
 
 # edu_wh v0.3.2
 ## New features
