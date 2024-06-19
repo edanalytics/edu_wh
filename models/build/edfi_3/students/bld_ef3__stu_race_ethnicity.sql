@@ -13,10 +13,12 @@ build_array as (
     group by 1,2
 )
 select 
+    stg_stu_ed_org.k_student,
+    stg_stu_ed_org.ed_org_id,
     stg_stu_ed_org.tenant_code,
     stg_stu_ed_org.api_year,
     stg_stu_ed_org.k_student_xyear,
-    build_array.*,
+    build_array.race_array,
     -- build single value race_ethnicity
     case 
         when stg_stu_ed_org.has_hispanic_latino_ethnicity
