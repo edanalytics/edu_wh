@@ -40,6 +40,9 @@ formatted as (
         stg_parent.maiden_name,
         stg_parent.personal_title_prefix,
         stg_parent.generation_code_suffix,
+        stg_parent.preferred_first_name,
+        stg_parent,preferred_last_name,
+        stg_parent.gender_identity,
         stg_parent.sex,
         stg_parent.highest_completed_level_of_education,
         {{ accordion_columns(
