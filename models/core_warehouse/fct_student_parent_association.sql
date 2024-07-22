@@ -9,7 +9,9 @@
 }}
 
 with stg_stu_parent as (
-    select * from {{ ref('stg_ef3__student_parent_associations') }}
+    -- parents were renamed to contacts in Data Standard v5.0
+    -- the contacts staging tables contain both parent and contact records
+    select * from {{ ref('stg_ef3__student_contact_associations') }}
 ),
 dim_student as (
     select * from {{ ref('dim_student') }}
@@ -37,8 +39,8 @@ formatted as (
         stg_stu_parent.is_living_with,
         stg_stu_parent.is_primary_contact,
         stg_stu_parent.is_legal_guardian
-        {# add any extension columns configured from stg_ef3__student_parent_associations #}
-        {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_parent_associations', flatten=False) }}
+        {# add any extension columns configured from stg_ef3__student_contact_associations #}
+        {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_contact_associations', flatten=False) }}
     from stg_stu_parent
     -- subset to only the stu/parent records associated with the most recent student records
     join most_recent_k_student
@@ -47,6 +49,6 @@ formatted as (
     join dim_student 
         on stg_stu_parent.k_student_xyear = dim_student.k_student_xyear
     join dim_parent
-        on stg_stu_parent.k_parent = dim_parent.k_parent
+        on stg_stu_parent.k_contact = dim_parent.k_parent
 )
 select * from formatted

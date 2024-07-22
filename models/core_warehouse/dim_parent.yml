@@ -4,6 +4,9 @@ models:
   - name: dim_parent
     description: >
       Defines parents, some of their key characteristics, and their contact information.
+
+      The Parents resource in Ed-Fi was renamed to Contacts in Data Standard v5.0. This model
+      includes records from both the Parents and Contacts resources.
     config:
       tags: ['core']
     columns:
