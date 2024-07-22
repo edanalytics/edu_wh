@@ -1,7 +1,9 @@
 # Unreleased
 ## New features
+- Add `preferred_first_name`, `preferred_last_name`, and `gender_identity` columns to `dim_parent`.
 
 ## Under the hood
+- Change the source of `dim_parent` to `stg_ef3__contacts` and `fct_student_parent_association` to `stg_ef3__student_contact_associations` due to the rename from parent to contact in Ed-Fi data standard v5.0.
 
 # edu_wh v0.3.3
 ## New features

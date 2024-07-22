@@ -11,10 +11,10 @@ with stg_parent as (
     -- the contacts staging tables contain both parent and contact records
     select * from {{ ref('stg_ef3__contacts') }}
 ),
-contact_phones_wide as (
+parent_phones_wide as (
     select * from {{ ref('bld_ef3__parent_wide_phone_numbers') }}
 ),
-contact_emails_wide as (
+parent_emails_wide as (
     select * from {{ ref('bld_ef3__parent_wide_emails') }}
 ),
 choose_address as (
@@ -41,26 +41,26 @@ formatted as (
         stg_parent.personal_title_prefix,
         stg_parent.generation_code_suffix,
         stg_parent.preferred_first_name,
-        stg_parent,preferred_last_name,
+        stg_parent.preferred_last_name,
         stg_parent.gender_identity,
         stg_parent.sex,
         stg_parent.highest_completed_level_of_education,
         {{ accordion_columns(
             source_table='bld_ef3__parent_wide_phone_numbers',
             exclude_columns=["k_parent", "tenant_code"],
-            source_alias='contact_phones_wide'
+            source_alias='parent_phones_wide'
         ) }}
         {{ accordion_columns(
             source_table='bld_ef3__parent_wide_emails',
             exclude_columns=["k_parent", "tenant_code"],
-            source_alias='contact_emails_wide'
+            source_alias='parent_emails_wide'
         ) }}
         choose_address.full_address
     from stg_parent
-    left join contact_phones_wide
-      on stg_parent.k_contact = contact_phones_wide.k_parent --k_contact has been renamed back to k_parent in the build models
-    left join contact_emails_wide
-      on stg_parent.k_contact = contact_emails_wide.k_parent
+    left join parent_phones_wide
+      on stg_parent.k_contact = parent_phones_wide.k_parent --k_contact has been renamed back to k_parent in the build models
+    left join parent_emails_wide
+      on stg_parent.k_contact = parent_emails_wide.k_parent
     left join choose_address
         on stg_parent.k_contact = choose_address.k_contact
 )
