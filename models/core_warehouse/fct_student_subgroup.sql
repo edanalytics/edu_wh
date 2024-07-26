@@ -66,7 +66,7 @@ keyed as (
     stu_long_subgroup.tenant_code,
     stu_long_subgroup.school_year
   from stu_long_subgroup_with_all stu_long_subgroup
-  -- todo: use dbt_utils.surrogate_key() instead?
+  -- todo: use dbt_utils.generate_surrogate_key() instead?
   -- lower() is because unpivot makes values capitalized
   join dim_subgroup
     on lower(stu_long_subgroup.subgroup_category) = lower(dim_subgroup.subgroup_category)

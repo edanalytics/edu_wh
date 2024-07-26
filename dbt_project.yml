@@ -31,6 +31,7 @@ models:
       +schema: qc
 
 vars:
+  surrogate_key_treat_nulls_as_empty_strings: true
   # labels for generated race/ethnicity groups
   'edu:stu_demos:multiple_races_code': Multiple
   'edu:stu_demos:hispanic_latino_code': Latinx
