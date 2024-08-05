@@ -1,2 +1,3 @@
 packages:
-  - local: '~/code/edu/edu_edfi_source'
+  - git: "https://github.com/edanalytics/edu_edfi_source"
+    revision: feature/contacts
