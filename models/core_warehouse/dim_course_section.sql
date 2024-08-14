@@ -9,6 +9,9 @@
   )
 }}
 
+{# Load custom data sources from var #}
+{% set custom_data_sources = var("edu:course_section:custom_data_sources", []) %}
+  
 with offering as (
     select * from {{ ref('stg_ef3__course_offerings') }}
 ),
@@ -59,6 +62,14 @@ joined as (
         section.available_credit_type,
         section.available_credit_conversion
         -- todo: add characteristic indicators
+        -- custom indicators
+        {% if custom_data_sources is not none and custom_data_sources | length -%}
+          {%- for source in custom_data_sources -%}
+            {%- for indicator in custom_data_sources[source] -%}
+              , {{ custom_data_sources[source][indicator]['where'] }} as {{ indicator }}
+            {%- endfor -%}
+          {%- endfor -%}
+        {%- endif %}
     from section
     join offering
         on section.k_course_offering = offering.k_course_offering
@@ -66,6 +77,13 @@ joined as (
         on offering.k_course = dim_course.k_course
     left join section_chars 
         on section.k_course_section = section_chars.k_course_section
+    -- custom data sources
+    {% if custom_data_sources is not none and custom_data_sources | length -%}
+      {%- for source in custom_data_sources -%}
+        left join {{ ref(source) }}
+          on stg_course.k_course_section = {{ source }}.k_course_section
+      {% endfor %}
+    {%- endif %}
 )
 select * from joined
 order by tenant_code, k_school, k_course_section
