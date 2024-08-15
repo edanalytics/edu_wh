@@ -15,7 +15,7 @@
 with offering as (
     select * from {{ ref('stg_ef3__course_offerings') }}
 ),
-section as (
+stg_ef3__sections as (
     select * from {{ ref('stg_ef3__sections') }}
 ),
 dim_course as (
@@ -26,14 +26,14 @@ section_chars as (
 ),
 joined as (
     select 
-        section.k_course_section,
+        stg_ef3__sections.k_course_section,
         dim_course.k_course,
         offering.k_school,
         offering.k_session,
-        section.k_location as k_classroom,
-        section.tenant_code,
-        section.section_id,
-        section.section_name,
+        stg_ef3__sections.k_location as k_classroom,
+        stg_ef3__sections.tenant_code,
+        stg_ef3__sections.section_id,
+        stg_ef3__sections.section_name,
         offering.local_course_code,
         offering.local_course_title,
         dim_course.course_code,
@@ -43,8 +43,8 @@ joined as (
         dim_course.academic_subject,
         dim_course.career_pathway,
         offering.instructional_time_planned,
-        section.is_official_attendance_period,
-        section.sequence_of_course,
+        stg_ef3__sections.is_official_attendance_period,
+        stg_ef3__sections.sequence_of_course,
 
         -- section characteristics
         {{ accordion_columns(
@@ -54,13 +54,13 @@ joined as (
             coalesce_value = 'FALSE'
         ) }}
 
-        section.educational_environment_type,
-        section.instruction_language,
-        section.medium_of_instruction,
-        section.population_served,
-        section.available_credits,
-        section.available_credit_type,
-        section.available_credit_conversion
+        stg_ef3__sections.educational_environment_type,
+        stg_ef3__sections.instruction_language,
+        stg_ef3__sections.medium_of_instruction,
+        stg_ef3__sections.population_served,
+        stg_ef3__sections.available_credits,
+        stg_ef3__sections.available_credit_type,
+        stg_ef3__sections.available_credit_conversion
         -- todo: add characteristic indicators
         -- custom indicators
         {% if custom_data_sources is not none and custom_data_sources | length -%}
@@ -70,18 +70,20 @@ joined as (
             {%- endfor -%}
           {%- endfor -%}
         {%- endif %}
-    from section
+    from stg_ef3__sections
     join offering
-        on section.k_course_offering = offering.k_course_offering
+        on stg_ef3__sections.k_course_offering = offering.k_course_offering
     join dim_course 
         on offering.k_course = dim_course.k_course
     left join section_chars 
-        on section.k_course_section = section_chars.k_course_section
+        on stg_ef3__sections.k_course_section = section_chars.k_course_section
     -- custom data sources
     {% if custom_data_sources is not none and custom_data_sources | length -%}
       {%- for source in custom_data_sources -%}
+      {%- if source != 'stg_ef3__sections' -%}
         left join {{ ref(source) }}
-          on stg_course.k_course_section = {{ source }}.k_course_section
+          on stg_ef3__sections.k_course_section = {{ source }}.k_course_section
+      {%- endif -%}
       {% endfor %}
     {%- endif %}
 )
