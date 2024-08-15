@@ -17,7 +17,7 @@ Update the model used as a custom data source to ensure it is unique on k_course
     )
 }}
 
-{% set custom_data_sources = var("edu:course_section:custom_data_sources") %}
+{% set custom_data_sources = var("edu:course_section:custom_data_sources", None) %}
 {% if custom_data_sources is not none and custom_data_sources | length -%}
   -- if custom data sources are configured, loop over them and count duplicates
   with
