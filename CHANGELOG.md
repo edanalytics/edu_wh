@@ -3,6 +3,10 @@
 
 ## Under the hood
 
+# edu_wh v0.3.4
+## Fixes
+- Fix `bld_ef3__wide_school_network_assoc` to group across years, to correctly remove duplicates on `k_school`. Previously, incorrect duplicate records were created in `dim_school` in cases where multiple network types are configured in `xwalk_network_association_types`.
+
 # edu_wh v0.3.3
 ## New features
 - Add `fct_student_diploma` and a companion test for monitoring deduplicated data - `diploma_record_duplicates`
