@@ -46,9 +46,15 @@ models:
         description: ""
       - name: generation_code_suffix
         description: ""
+      - name: preferred_first_name
+        description: ""
+      - name: preferred_last_name
+        description: ""
       - name: birth_date
         description: ""
       - name: gender
+        description: ""
+      - name: gender_identity
         description: ""
       - name: race_ethnicity
         description: >
