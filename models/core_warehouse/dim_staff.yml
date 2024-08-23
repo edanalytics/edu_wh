@@ -55,7 +55,7 @@ models:
       - name: gender
         description: ""
       - name: gender_identity
-        description: ""
+        description: "The gender the staff member identifies themselves as."
       - name: race_ethnicity
         description: >
           A single value defining the staff's race, which includes logic
