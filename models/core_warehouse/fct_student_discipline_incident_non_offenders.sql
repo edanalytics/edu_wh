@@ -1,6 +1,9 @@
 {{
   config(
     post_hook=[
+        "alter table {{ this }} alter column k_student set not null",
+        "alter table {{ this }} alter column k_student_xyear set not null",
+        "alter table {{ this }} alter column k_discipline_incident set not null",
         "alter table {{ this }} add primary key (k_student, k_student_xyear, k_discipline_incident)",
         "alter table {{ this }} add constraint fk_{{ this.name }}_student foreign key (k_student) references {{ ref('dim_student') }}",
         "alter table {{ this }} add constraint fk_{{ this.name }}_school foreign key (k_school) references {{ ref('dim_school') }}"
@@ -21,13 +24,20 @@ dim_discipline_incident as (
     select * from {{ ref('dim_discipline_incident') }}
 ),
 participation_codes as (
-    select
-        k_student,
-        k_student_xyear,
-        k_discipline_incident,
-        array_agg(participation_code) within group (order by participation_code asc) as participation_codes_array
-    from {{ ref('stg_ef3__student_discipline_incident_non_offender_associations__participation_codes') }}
-    group by k_student, k_student_xyear, k_discipline_incident
+    select distinct
+        k_student, k_student_xyear, k_discipline_incident,
+        array_agg(participation_code) over (
+            partition by k_student, k_student_xyear, k_discipline_incident
+            order by r rows between unbounded preceding and unbounded following) as participation_codes_array
+    from (
+            select
+                k_student,
+                k_student_xyear,
+                k_discipline_incident,
+                participation_code,
+                row_number() over (partition by k_student, k_student_xyear, k_discipline_incident order by participation_code asc) as r
+            from {{ ref('stg_ef3__student_discipline_incident_non_offender_associations__participation_codes') }}
+    ) x
 ),
 formatted as (
     select 

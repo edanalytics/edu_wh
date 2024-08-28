@@ -1,6 +1,7 @@
 {{
   config(
     post_hook=[
+        "alter table {{ this }} alter column k_lea set not null",
         "alter table {{ this }} add primary key (k_lea)",
     ]
   )
@@ -54,7 +55,7 @@ formatted as (
         on stg_lea.k_lea = choose_address.k_lea
     join tenant_lea_ownership
         on stg_lea.tenant_code = tenant_lea_ownership.tenant_code
-        and stg_lea.lea_id = tenant_lea_ownership.lea_id
+        and stg_lea.lea_id = cast(tenant_lea_ownership.lea_id as int)
 )
 select * from formatted
 order by tenant_code, k_lea

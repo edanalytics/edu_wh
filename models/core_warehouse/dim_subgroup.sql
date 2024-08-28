@@ -20,6 +20,7 @@ xwalk_subgroup_category_display_names as (
 stu_long_subgroup as (
     {{ dbt_utils.unpivot(
        relation=ref('dim_student'),
+       cast_to='string',
        exclude=[
           'k_student',
           'k_student_xyear',

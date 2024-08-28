@@ -1,6 +1,7 @@
 {{
   config(
     post_hook=[
+        "alter table {{ this }} alter column k_class_period set not null",
         "alter table {{ this }} add primary key (k_class_period)",
     ]
   )
@@ -23,25 +24,25 @@ formatted as (
         class_periods.class_period_name,
         class_periods.is_official_attendance_period,
         -- if there is only one start time, extract it, else leave null
-        case when array_size(v_meeting_times) = 1
+        case when size(try_cast(v_meeting_times as array<string>)) = 1
         then
             -- convert to military time for time math, if it isn't
             -- (assume class periods will not be scheduled between 1 and 6 AM)
             case 
-                when date_part(hour, v_meeting_times[0]['startTime']::time) between 1 and 6
-                then timeadd(hours, 12, v_meeting_times[0]['startTime']::time)
-                else v_meeting_times[0]['startTime']::time
+                when date_part('HOUR', v_meeting_times:[0].startTime::timestamp) between 1 and 6
+                then dateadd(HOUR, 12, v_meeting_times:[0].startTime::timestamp)
+                else v_meeting_times:[0].startTime::timestamp
             end
         end as start_time,
-        case when array_size(v_meeting_times) = 1
+        case when size(try_cast(v_meeting_times as array<string>)) = 1
         then 
             case 
-                when date_part(hour, v_meeting_times[0]['endTime']::time) between 1 and 6
-                then timeadd(hours, 12, v_meeting_times[0]['endTime']::time)
-                else v_meeting_times[0]['endTime']::time
+                when date_part('HOUR', v_meeting_times:[0].endTime::timestamp) between 1 and 6
+                then dateadd(HOUR, 12, v_meeting_times:[0].endTime::timestamp)
+                else v_meeting_times:[0].endTime::timestamp
             end
         end as end_time,
-        timediff(minutes, start_time, end_time) as period_duration
+        timediff(MINUTE, start_time, end_time) as period_duration
 
         -- custom indicators
         {% if custom_data_sources is not none and custom_data_sources | length -%}

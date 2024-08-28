@@ -1,6 +1,7 @@
 {{
   config(
     post_hook=[
+        "alter table {{ this }} alter column k_calendar_date set not null",
         "alter table {{ this }} add primary key (k_calendar_date)",
         "alter table {{ this }} add constraint fk_{{ this.name }}_school_calendar foreign key (k_school_calendar) references {{ ref('dim_school_calendar') }}",
         "alter table {{ this }} add constraint fk_{{ this.name }}_school foreign key (k_school) references {{ ref('dim_school') }}",
@@ -64,8 +65,8 @@ augmented as (
         -- incrementing count of school days within the year
         row_number() over(partition by k_school_calendar, is_school_day
                           order by calendar_date) as day_of_school_year,
-        dayname(calendar_date) as week_day,
-        week(calendar_date) as week_of_calendar_year
+        date_format(calendar_date, 'E') as week_day,
+        weekofyear(calendar_date) as week_of_calendar_year
     from formatted
 ),
 -- find the week of the first day of school, for calculating week of school year

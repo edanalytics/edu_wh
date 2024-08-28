@@ -1,6 +1,7 @@
 {{
   config(
     post_hook=[
+        "alter table {{ this }} alter column k_discipline_incident set not null",
         "alter table {{ this }} add primary key (k_discipline_incident)",
         "alter table {{ this }} add constraint fk_{{ this.name }}_school foreign key (k_school) references {{ ref('dim_school') }}",
     ]
@@ -16,8 +17,13 @@ dim_school as (
 behaviors as (
     select
         k_discipline_incident,
-        array_agg(object_construct('behavior_type', behavior_type,
-                                   'behavior_detailed_description', behavior_detailed_description)) as behavior_array
+        parse_json(
+            to_json(
+                array_agg(
+                    named_struct('behavior_type', behavior_type, 'behavior_detailed_description', behavior_detailed_description)
+                )
+            )
+        )  as behavior_array
     from {{ ref('stg_ef3__discipline_incidents__behaviors') }}
     group by k_discipline_incident
 ),
@@ -31,7 +37,7 @@ formatted as (
         stg_discipline_incidents.incident_time,
         -- adding an indicator for multiple behaviors for an incident
         case
-            when array_size(stg_discipline_incidents.v_behaviors) > 1
+            when size(try_cast(stg_discipline_incidents.v_behaviors as array<string>)) > 1
                 then true
             else false 
         end as has_multiple_behaviors,
