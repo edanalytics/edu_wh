@@ -19,8 +19,8 @@ or if there are errors pushing data from source system to ODS.
     )
 }}
 select *,
-  current_date() - max_date as days_since_last_attendance_event
+  datediff(max_date, current_date()) as days_since_last_attendance_event
 from {{ ref('attendance_freshness') }}
-where (current_date() - max_date) > 7
+where datediff(max_date, current_date()) > 7
 -- try to avoid warnings when school is out
-and monthname(current_date()) not in ('Jul', 'Aug')
+    and date_format(current_date(), 'MMM') not in ('Jul', 'Aug')

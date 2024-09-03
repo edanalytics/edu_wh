@@ -48,7 +48,7 @@ summarized as (
     select 
         k_school,
         k_student,
-        count(distinct calendar_date)
+        count(distinct calendar_date) as n_distinct_calendar_dates
     from counted
     group by 1,2
 )
