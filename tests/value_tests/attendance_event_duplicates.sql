@@ -29,7 +29,7 @@ dim_school_calendar as (
 ),
 dim_session as (
     select * from {{ ref('dim_session') }}
-)
+),
 d_aec_counts as (
     select k_student, k_school, k_calendar_date,
         count(distinct attendance_event_category) as n_unique_attendance_event_categories
