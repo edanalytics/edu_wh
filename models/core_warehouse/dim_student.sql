@@ -193,9 +193,9 @@ formatted as (
 
     from stg_student
 
-    join stu_demos
+    {% if var('edu:stu_demos:optional_in_dim_student', False) %} left {% endif %} join stu_demos
         on stg_student.k_student = stu_demos.k_student
-    join stu_immutable_demos
+    {% if var('edu:stu_demos:optional_in_dim_student', False) %} left {% endif %} join stu_immutable_demos
         on stu_demos.{{demos_join_var}} = stu_immutable_demos.{{demos_join_var}}
         and stu_demos.ed_org_id = stu_immutable_demos.ed_org_id
     left join stu_ids

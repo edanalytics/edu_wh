@@ -32,6 +32,7 @@ models:
 
 vars:
   # labels for generated race/ethnicity groups
+  'edu:stu_demos:optional_in_dim_student': False
   'edu:stu_demos:multiple_races_code': Multiple
   'edu:stu_demos:hispanic_latino_code': Latinx
   'edu:stu_demos:race_unknown_code': Unknown
