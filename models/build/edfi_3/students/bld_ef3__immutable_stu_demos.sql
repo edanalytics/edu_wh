@@ -44,7 +44,7 @@ joined as (
         stu_races.race_array,
         stu_races.has_hispanic_latino_ethnicity
     from stg_student
-    join stu_demos
+    {% if not var('edu:stu_demos:require_strict', True) %}left {% endif %}join stu_demos
         on stg_student.k_student = stu_demos.k_student
     left join stu_races
         on stu_demos.k_student = stu_races.k_student
