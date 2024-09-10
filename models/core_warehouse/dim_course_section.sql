@@ -53,6 +53,7 @@ joined as (
 
         section.educational_environment_type,
         section.instruction_language,
+        section.section_type,
         section.medium_of_instruction,
         section.population_served,
         section.available_credits,
