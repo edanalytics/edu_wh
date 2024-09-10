@@ -3,14 +3,16 @@ version: 2
 models: 
   - name: fct_student_school_attendance_event
     description: >
-      Raw school-level attendance events.
+      ##### Overview:
+        Defines student-school-level attendance events.
 
-      Since attendance is generally recorded only in the negative, this is 
-      typically a table of absences only. To find full daily attendance records,
-      see `fct_student_daily_attendance` or the aggregations thereof.
+        Since attendance is generally recorded only in the negative, this is 
+        typically a table of absences only. To find full daily attendance records,
+        see `fct_student_daily_attendance` or the aggregations thereof.
 
 
-      *Primary Key:* `k_student, k_school, k_calendar_date`
+      ##### Primary Key:
+        `k_student, k_school, k_calendar_date, k_session, attendance_event_category`
 
     config:
       tags: ['core']
