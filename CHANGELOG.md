@@ -1,5 +1,6 @@
 # Unreleased
 ## New features
+- Add `section_type` descriptor to `dim_section`
 
 ## Under the hood
 
