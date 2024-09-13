@@ -1,5 +1,10 @@
 # Unreleased
 ## New features
+## Under the hood
+## Fixes
+
+# edu_wh v0.3.5
+## New features
 - Add support for custom indicators on `dim_course_section`, and companion audit table for testing uniqueness of custom data sources
 - Add `section_type` descriptor column to `dim_section` (Ed-Fi Data Standard v5.0 addition)
 - Add `preferred_first_name`, `preferred_last_name`, and `gender_identity` columns to `dim_staff` (Ed-Fi Data Standard v5.0 additions)
@@ -10,7 +15,6 @@
 ## Fixes
 - Fix model name in yaml documentation file for `dim_graduation_plan`
 - Fix unique key test for recently changed unique key fo `fct_student_school_attendance_event`
-
 
 # edu_wh v0.3.4
 ## Fixes
