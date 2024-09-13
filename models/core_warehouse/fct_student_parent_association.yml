@@ -9,6 +9,10 @@ models:
       student record, subsetting to parent associations from that year, then applying the
       information to all other years (for cross-year analytical/reporting purposes).
 
+      The Parents resource in Ed-Fi was renamed to Contacts in Data Standard v5.0. This model
+      includes records from both the StudentParentAssociations and StudentContactAssociations
+      resources.
+
       *Primary Key:* `k_student, k_parent`
     config:
       tags: ['core']
