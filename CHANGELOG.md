@@ -1,7 +1,8 @@
 # Unreleased
 ## New features
-
 ## Under the hood
+- Add additional foreign key declarations to `fct_student_discipline_actions`, `fct_student_discipline_actions_summary`, `fct_student_discipline_incident_behaviors`
+## Fixes 
 
 # edu_wh v0.3.4
 ## Fixes
