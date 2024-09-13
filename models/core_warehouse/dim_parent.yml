@@ -4,6 +4,9 @@ models:
   - name: dim_parent
     description: >
       Defines parents, some of their key characteristics, and their contact information.
+
+      The Parents resource in Ed-Fi was renamed to Contacts in Data Standard v5.0. This model
+      includes records from both the Parents and Contacts resources.
     config:
       tags: ['core']
     columns:
@@ -31,6 +34,9 @@ models:
         description: The parent's maiden name
       - name: personal_title_prefix
       - name: generation_code_suffix
+      - name: preferred_first_name
+      - name: preferred_last_name
+      - name: gender_identity
       - name: sex
       - name: highest_completed_level_of_education
       - name: full_address
