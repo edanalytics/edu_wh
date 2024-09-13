@@ -1,7 +1,14 @@
 # Unreleased
 ## New features
-- Add new fields to `dim_staff` from Ed-Fi Data Standard v5.0 additions
+- Add `preferred_first_name`, `preferred_last_name`, and `gender_identity` columns to `dim_staff` (Ed-Fi Data Standard v5.0 additions)
+- Add `preferred_first_name`, `preferred_last_name`, and `gender_identity` columns to `dim_parent` (Ed-Fi Data Standard v5.0 additions)
 ## Under the hood
+- Change the source of `dim_parent` to `stg_ef3__contacts` and `fct_student_parent_association` to `stg_ef3__student_contact_associations` due to the rename from parent to contact in Ed-Fi data standard v5.0.
+- Add additional foreign key declarations to `fct_student_discipline_actions`, `fct_student_discipline_actions_summary`, `fct_student_discipline_incident_behaviors`
+## Fixes
+- Fix model name in yaml documentation file for `dim_graduation_plan`
+- Fix unique key test for recently changed unique key fo `fct_student_school_attendance_event`
+
 
 # edu_wh v0.3.4
 ## Fixes
