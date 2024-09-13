@@ -1,6 +1,6 @@
 # Unreleased
 ## New features
-
+- Add new fields to `dim_staff` from Ed-Fi Data Standard v5.0 additions
 ## Under the hood
 
 # edu_wh v0.3.4
