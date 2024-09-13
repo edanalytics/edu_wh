@@ -1,7 +1,8 @@
 # Unreleased
 ## New features
-
 ## Under the hood
+## Fixes
+- Fix unique key test for recently changed unique key fo `fct_student_school_attendance_event`
 
 # edu_wh v0.3.3
 ## New features
