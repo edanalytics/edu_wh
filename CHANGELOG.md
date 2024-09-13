@@ -1,5 +1,6 @@
 # Unreleased
 ## New features
+- Add support for custom indicators on `dim_course_section`, and companion audit table for testing uniqueness of custom data sources
 - Add `section_type` descriptor column to `dim_section` (Ed-Fi Data Standard v5.0 addition)
 - Add `preferred_first_name`, `preferred_last_name`, and `gender_identity` columns to `dim_staff` (Ed-Fi Data Standard v5.0 additions)
 - Add `preferred_first_name`, `preferred_last_name`, and `gender_identity` columns to `dim_parent` (Ed-Fi Data Standard v5.0 additions)
