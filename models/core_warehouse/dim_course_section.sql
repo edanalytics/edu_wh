@@ -58,9 +58,11 @@ joined as (
         stg_ef3__sections.instruction_language,
         stg_ef3__sections.medium_of_instruction,
         stg_ef3__sections.population_served,
+        stg_ef3__sections.section_type,
         stg_ef3__sections.available_credits,
         stg_ef3__sections.available_credit_type,
         stg_ef3__sections.available_credit_conversion
+
         -- todo: add characteristic indicators
         -- custom indicators
         {% if custom_data_sources is not none and custom_data_sources | length -%}
