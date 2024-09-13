@@ -1,8 +1,13 @@
 # Unreleased
 ## New features
+## Under the hood
+- Add additional foreign key declarations to `fct_student_discipline_actions`, `fct_student_discipline_actions_summary`, `fct_student_discipline_incident_behaviors`
 ## Fixes
 - Fix model name in yaml documentation file for `dim_graduation_plan`
-## Under the hood
+
+# edu_wh v0.3.4
+## Fixes
+- Fix `bld_ef3__wide_school_network_assoc` to group across years, to correctly remove duplicates on `k_school`. Previously, incorrect duplicate records were created in `dim_school` in cases where multiple network types are configured in `xwalk_network_association_types`.
 
 # edu_wh v0.3.3
 ## New features
