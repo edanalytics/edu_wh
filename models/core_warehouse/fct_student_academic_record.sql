@@ -43,6 +43,8 @@ formatted as (
         stg_academic_record.session_earned_credit_conversion,
         stg_academic_record.session_attempted_credit_type,
         stg_academic_record.session_attempted_credit_conversion
+        {# add any extension columns configured from stg_ef3__student_academic_records #}
+        {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_academic_records', flatten=False) }}
     from stg_academic_record
     left join dim_school
         on stg_academic_record.k_school = dim_school.k_school

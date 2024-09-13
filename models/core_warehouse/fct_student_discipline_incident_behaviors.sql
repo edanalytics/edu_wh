@@ -69,6 +69,8 @@ formatted as (
         -- there is typically only a single value here, choosing the first option for analytical use cases
         participation_codes.participation_codes_array[0]::string as participation_code,
         participation_codes.participation_codes_array
+        {# add any extension columns configured from stg_ef3__student_discipline_incident_behavior_associations #}
+        {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_discipline_incident_behavior_associations', flatten=False) }}
     from stg_stu_discipline_incident_behaviors
     left join participation_codes 
         on stg_stu_discipline_incident_behaviors.k_student = participation_codes.k_student

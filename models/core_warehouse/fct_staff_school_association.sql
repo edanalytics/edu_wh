@@ -52,6 +52,10 @@ formatted as (
                  lea_assign.order_of_assignment) as order_of_assignment,
         coalesce(school_assign.staff_classification, 
                  lea_assign.staff_classification) as staff_classification
+        {# add any extension columns configured from stg_ef3__staff_school_associations #}
+        {{ edu_edfi_source.extract_extension(model_name='stg_ef3__staff_school_associations', flatten=False) }}
+        {# add any extension columns configured from stg_ef3__staff_education_organization_assignment_associations #}
+        {{ edu_edfi_source.extract_extension(model_name='stg_ef3__staff_education_organization_assignment_associations', flatten=False) }}
     from stg_staff_school
     join dim_school 
         on stg_staff_school.k_school = dim_school.k_school

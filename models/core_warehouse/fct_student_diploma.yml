@@ -1,0 +1,64 @@
+version: 2
+
+models: 
+  - name: fct_student_diploma
+    description: >
+      ##### Overview:
+       This fact table contains information about diploma/credentials that is awarded to a student. 
+
+      ##### Primary Key:
+       `k_student, k_student_xyear, school_year, k_school, diploma_type, diploma_award_date` -- There is one record
+       per student, school, year, diploma type and award date.
+
+      {{ doc(var('edu:custom_docs:fct_student_diploma')) if var('edu:custom_docs:fct_student_diploma', '') }}
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - k_student
+            - k_student_xyear
+            - school_year
+            - k_lea
+            - k_school
+            - diploma_type
+            - diploma_award_date
+          
+    columns:
+      - name: tenant_code
+      - name: k_student
+        description: Defining key for the student in this school year.
+      - name: k_student_xyear
+        description: Defining key for the student, which is consistent across years.
+      - name: k_lea
+      - name: k_school
+      - name: school_year
+        description: The school year for which the diploma was awarded to a student.
+      - name: diploma_type
+        description: The type of diploma/credential that is awarded to a student in recognition of his/her completion of the curricular requirements.
+      - name: diploma_award_date
+        description: The month, day, and year on which the student met graduation requirements and was awarded a diploma.
+      - name: diploma_description
+        description: The description of diploma given to the student for accomplishments.
+      - name: diploma_level_descriptor
+      - name: achievement_category_descriptor
+      - name: achievement_category_system
+        description: The system that defines the categories by which an achievement is attributed to the learner.
+      - name: achievement_title
+        description: 	The title assigned to the achievement.
+      - name: criteria
+        description: The criteria for competency-based completion of the achievement/award.
+      - name: criteria_url
+        description: The Uniform Resource Locator (URL) for the unique address of a web page describing the competency-based completion criteria for the achievement/award.
+      - name: is_cte_completer
+        description: Indicated a student who reached a state-defined threshold of vocational education and who attained a high school diploma or its recognized state equivalent or GED.
+      - name: diploma_award_expires_date
+        description: Date on which the award expires.
+      - name: evidence_statement
+        description: 	A statement or reference describing the evidence that the learner met the criteria for attainment of the Achievement.
+      - name: image_url
+        description: The Uniform Resource Locator (URL) for the unique address of an image representing an award or badge associated with the Achievement.
+      - name: issuer_name
+        description: The name of the agent, entity, or institution issuing the element.
+      - name: issuer_origin_url
+        description: 	The Uniform Resource Locator (URL) from which the award was issued.
+  

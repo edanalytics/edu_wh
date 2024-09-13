@@ -26,6 +26,8 @@ formatted as (
             source_table='bld_ef3__wide_ids_course', 
             exclude_columns=['tenant_code', 'api_year', 'k_course']) }}
         stg_course.course_description,
+        stg_course.k_lea,
+        stg_course.k_school,
         stg_course.ed_org_id,
         stg_course.ed_org_type,
         stg_course.academic_subject,

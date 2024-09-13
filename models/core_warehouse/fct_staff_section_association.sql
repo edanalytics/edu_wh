@@ -42,6 +42,8 @@ formatted as (
             and stg_staff_section.begin_date <= current_date(),
             true, false
         ) as is_active_assignment
+        {# add any extension columns configured from stg_ef3__staff_section_associations #}
+        {{ edu_edfi_source.extract_extension(model_name='stg_ef3__staff_section_associations', flatten=False) }}
     from stg_staff_section
     join dim_staff 
         on stg_staff_section.k_staff = dim_staff.k_staff

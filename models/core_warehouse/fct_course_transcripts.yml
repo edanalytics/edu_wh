@@ -93,3 +93,8 @@ models:
         description: The organization code or name assigning the course identification code.
       - name: course_catalog_url
         description: The URL for the course catalog that defines the course identification code.
+      - name: v_earned_additional_credits
+        description: >
+          This is an array of additional credits a student attempted and 
+          could earn for successfully completing a given course (e.g., dual credit, AP, IB).
+      

@@ -67,7 +67,7 @@ subset as (
     stacked.v_providers,
     stacked.service_begin_date,
     stacked.service_end_date
-
+    {# add any extension columns configured from all stage_program_relations #}
     {{ edu_edfi_source.extract_extension(model_name=relation_names, flatten=False) }}
 
   from stacked

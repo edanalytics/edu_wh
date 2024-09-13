@@ -43,9 +43,8 @@ formatted as (
             and cohort_begin_date <= current_date(),
             true, false
         ) as is_active_cohort_association
-
+        {# add any extension columns configured from stg_ef3__student_cohort_associations #}
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_cohort_associations', flatten=False) }}
-
     from stage
 
         inner join dim_student
