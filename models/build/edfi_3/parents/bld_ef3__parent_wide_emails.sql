@@ -1,12 +1,14 @@
 with stg_parent_emails as (
-    select * from {{ ref('stg_ef3__parents__emails') }}
+    -- parents were renamed to contacts in Data Standard v5.0
+    -- the contacts staging tables contain both parent and contact records
+    select * from {{ ref('stg_ef3__contacts__emails') }}
 ),
 parent_email_types as (
     select * from {{ ref('xwalk_parent_email_types') }}
 ),
 emails_wide as (
   select 
-    k_parent,
+    k_contact as k_parent,
     tenant_code
     {%- if not is_empty_model('xwalk_parent_email_types') -%},
     -- note: this is already deduped to be the most recent record for a parent
