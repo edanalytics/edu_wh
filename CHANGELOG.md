@@ -6,6 +6,8 @@
 - Add additional foreign key declarations to `fct_student_discipline_actions`, `fct_student_discipline_actions_summary`, `fct_student_discipline_incident_behaviors`
 ## Fixes
 - Fix model name in yaml documentation file for `dim_graduation_plan`
+- Fix unique key test for recently changed unique key fo `fct_student_school_attendance_event`
+
 
 # edu_wh v0.3.4
 ## Fixes
