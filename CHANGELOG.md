@@ -1,6 +1,6 @@
 # Unreleased
 ## New features
-
+- Add support for custom indicators on `dim_course_section`, and companion audit table for testing uniqueness of custom data sources
 ## Under the hood
 
 # edu_wh v0.3.3
