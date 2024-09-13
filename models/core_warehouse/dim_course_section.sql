@@ -55,6 +55,7 @@ joined as (
         section.instruction_language,
         section.medium_of_instruction,
         section.population_served,
+        section.section_type,
         section.available_credits,
         section.available_credit_type,
         section.available_credit_conversion
