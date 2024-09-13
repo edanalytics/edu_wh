@@ -1,6 +1,7 @@
 # Unreleased
 ## New features
-
+## Fixes
+- Fix model name in yaml documentation file for `dim_graduation_plan`
 ## Under the hood
 
 # edu_wh v0.3.3
