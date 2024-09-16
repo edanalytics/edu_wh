@@ -70,6 +70,8 @@ models:
         description: Denotes the most recent record of a student's demographic values by school year.
       - name: race_array
         description: A list of the student's races.
+      - name: cohort_year_array
+        description: An array of all cohort information associated with the student.
       - name: safe_display_name
         description: Display name with student ID, safe for use in grouping operations in a BI tool, to avoid combining students with the same name.
       - name: has_hispanic_latino_ethnicity

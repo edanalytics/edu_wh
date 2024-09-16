@@ -219,7 +219,6 @@ formatted as (
         and stg_student.api_year = stu_grade.school_year
     left join stu_cohort_year
         on  stu_demos.k_student = stu_cohort_year.k_student
-        and stg_student.api_year = stu_cohort_year.school_year
 
     -- student programs
     {% if var('src:program:special_ed:enabled', True) %}

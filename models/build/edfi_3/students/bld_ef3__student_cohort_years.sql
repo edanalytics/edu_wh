@@ -4,9 +4,11 @@ with student_cohort_years as (
 build_object as (
     select 
         tenant_code,
-        api_year as school_year,
+        api_year,
         k_student,
-        array_agg(cohort_year) as cohort_year_array
+        array_agg(object_construct('cohort_year', cohort_year, 
+                                    'school_year', school_year,
+                                    'term', term)) as cohort_year_array
     from student_cohort_years
     group by 1,2,3
 )
