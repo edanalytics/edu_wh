@@ -106,6 +106,9 @@ models:
           The type of students the Section is offered and tailored to; for example: Bilingual students,
           Remedial education students, Gifted and talented students, Career and Technical Education 
           students, Special education students
+      - name: section_type
+        description: >
+          Specifies whether the section is for attendance only, credit only, or both.
       - name: available_credits
         description: >
           The amount of credit available to a student who successfully meets the objectives of the course. 

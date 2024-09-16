@@ -1,7 +1,21 @@
 # Unreleased
 ## New features
 - Add array column `cohort_year_array` to `dim_student`, tracking student cohort designation, and add upstream `bld_ef3__student_cohort_years`
+- Add support for custom indicators on `dim_course_section`, and companion audit table for testing uniqueness of custom data sources
+- Add `section_type` descriptor column to `dim_section` (Ed-Fi Data Standard v5.0 addition)
+- Add `preferred_first_name`, `preferred_last_name`, and `gender_identity` columns to `dim_staff` (Ed-Fi Data Standard v5.0 additions)
+- Add `preferred_first_name`, `preferred_last_name`, and `gender_identity` columns to `dim_parent` (Ed-Fi Data Standard v5.0 additions)
 ## Under the hood
+- Change the source of `dim_parent` to `stg_ef3__contacts` and `fct_student_parent_association` to `stg_ef3__student_contact_associations` due to the rename from parent to contact in Ed-Fi data standard v5.0.
+- Add additional foreign key declarations to `fct_student_discipline_actions`, `fct_student_discipline_actions_summary`, `fct_student_discipline_incident_behaviors`
+## Fixes
+- Fix model name in yaml documentation file for `dim_graduation_plan`
+- Fix unique key test for recently changed unique key fo `fct_student_school_attendance_event`
+
+
+# edu_wh v0.3.4
+## Fixes
+- Fix `bld_ef3__wide_school_network_assoc` to group across years, to correctly remove duplicates on `k_school`. Previously, incorrect duplicate records were created in `dim_school` in cases where multiple network types are configured in `xwalk_network_association_types`.
 
 # edu_wh v0.3.3
 ## New features

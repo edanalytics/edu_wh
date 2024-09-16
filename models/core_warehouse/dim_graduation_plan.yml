@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: dim_graduation_plans
+  - name: dim_graduation_plan
     description: >
         ##### Overview:
           Defines graduation plans, which outline the required credits, credits by subject, credits by course, and other criteria required for graduation.
