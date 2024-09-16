@@ -1,6 +1,6 @@
 # Unreleased
 ## New features
-
+- Add array column `cohort_year_array` to `dim_student`, tracking student cohort designation, and add upstream `bld_ef3__student_cohort_years`
 ## Under the hood
 
 # edu_wh v0.3.3
