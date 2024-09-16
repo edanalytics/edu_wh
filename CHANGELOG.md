@@ -5,6 +5,7 @@
 
 # edu_wh v0.3.5
 ## New features
+- Add array column `cohort_year_array` to `dim_student`, tracking student cohort designation, and add upstream `bld_ef3__student_cohort_years`
 - Add support for custom indicators on `dim_course_section`, and companion audit table for testing uniqueness of custom data sources
 - Add `section_type` descriptor column to `dim_section` (Ed-Fi Data Standard v5.0 addition)
 - Add `preferred_first_name`, `preferred_last_name`, and `gender_identity` columns to `dim_staff` (Ed-Fi Data Standard v5.0 additions)
