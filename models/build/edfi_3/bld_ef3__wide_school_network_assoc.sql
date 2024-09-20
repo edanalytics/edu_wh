@@ -40,8 +40,7 @@ wide as (
 
   select
     deduped.k_school,
-    deduped.tenant_code,
-    deduped.api_year
+    deduped.tenant_code
     {% set network_types = dbt_utils.get_column_values(
                            table=ref('xwalk_network_association_types'),
                            column='network_type',
@@ -62,7 +61,7 @@ wide as (
   from deduped
   join xwalk_network_school_assoc_types xwalk
     on deduped.network_purpose = xwalk.network_purpose
-  group by 1,2,3
+  group by 1,2
 
 )
 

@@ -1,12 +1,14 @@
 with stg_parent_phones as (
-    select * from {{ ref('stg_ef3__parents__telephones') }}
+    -- parents were renamed to contacts in Data Standard v5.0
+    -- the contacts staging tables contain both parent and contact records
+    select * from {{ ref('stg_ef3__contacts__telephones') }}
 ),
 parent_phone_number_types as (
     select * from {{ ref('xwalk_parent_phone_number_types') }}
 ),
 phones_wide as (
   select 
-    k_parent,
+    k_contact as k_parent,
     tenant_code
     {%- if not is_empty_model('xwalk_parent_phone_number_types') -%},
     -- note: this is already deduped to be the most recent record for a parent
