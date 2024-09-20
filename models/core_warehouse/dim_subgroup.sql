@@ -79,7 +79,7 @@ joined_with_display_names as (
 
 keyed as (
   select
-    {{ dbt_utils.surrogate_key(['subgroup_category', 'subgroup_value'])}} as k_subgroup,
+    {{ dbt_utils.generate_surrogate_key(['subgroup_category', 'subgroup_value'])}} as k_subgroup,
     joined_with_display_names.subgroup_category,
     joined_with_display_names.subgroup_category_display_name,
     joined_with_display_names.subgroup_value,

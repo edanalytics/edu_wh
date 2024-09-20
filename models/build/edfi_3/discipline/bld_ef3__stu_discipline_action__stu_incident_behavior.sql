@@ -12,7 +12,7 @@ joined as (
         stu_discipline_incident_behaviors_actions.discipline_action_id,
         stu_discipline_incident_behaviors_actions.discipline_date,
         array_agg(
-            {{ dbt_utils.surrogate_key(
+            {{ dbt_utils.generate_surrogate_key(
                 ['stu_discipline_incident_behaviors_actions.k_student',
                 'stu_discipline_incident_behavior.k_discipline_incident',
                 'lower(stu_discipline_incident_behavior.behavior_type)']

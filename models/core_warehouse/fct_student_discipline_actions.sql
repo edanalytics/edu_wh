@@ -59,7 +59,7 @@ formatted as (
         dim_school__assignment.k_school as k_school__assignment,
         dim_school__responsibility.k_school as k_school__responsibility,
         stg_discipline_actions.school_year,
-        {{ dbt_utils.surrogate_key(
+        {{ dbt_utils.generate_surrogate_key(
             [
                 'stg_discipline_actions.tenant_code',
                 'stg_discipline_actions.api_year',
