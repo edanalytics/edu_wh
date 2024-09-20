@@ -1,5 +1,5 @@
 with stg_staff_races as (
-    select * from {{ ref('stg_ef3__staff__races') }}
+    select * from {{ ref('stg_ef3__staffs__races') }}
 ),
 stg_staffs as (
     select * from {{ ref('stg_ef3__staffs') }}
