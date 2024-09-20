@@ -1,5 +1,10 @@
 # Unreleased
 ## New features
+## Under the hood
+## Fixes
+
+# edu_wh v0.4.0
+## New features
 - Add array column `cohort_year_array` to `dim_student`, tracking student cohort designation, and add upstream `bld_ef3__student_cohort_years`
 - Add support for custom indicators on `dim_course_section`, and companion audit table for testing uniqueness of custom data sources
 - Add `section_type` descriptor column to `dim_section` (Ed-Fi Data Standard v5.0 addition)
@@ -12,7 +17,6 @@
 ## Fixes
 - Fix model name in yaml documentation file for `dim_graduation_plan`
 - Fix unique key test for recently changed unique key fo `fct_student_school_attendance_event`
-
 
 # edu_wh v0.3.4
 ## Fixes
