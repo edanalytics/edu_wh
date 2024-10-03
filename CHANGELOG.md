@@ -1,6 +1,7 @@
 # Unreleased
 ## New features
 ## Under the hood
+- Tweak tenant-lea attribution logic
 ## Fixes
 
 # edu_wh v0.4.0
