@@ -8,6 +8,8 @@
     ]
   )
 }}
+{# Load custom data sources from var #}
+{% set custom_data_sources = var("edu:calendar_date:custom_data_sources", []) %}
 
 with stg_calendar_date as (
     select * from {{ ref('stg_ef3__calendar_dates') }}
@@ -63,8 +65,9 @@ augmented as (
     select 
         formatted.*,
         -- incrementing count of school days within the year
-        row_number() over(partition by k_school_calendar, is_school_day
-                          order by calendar_date) as day_of_school_year,
+        row_number() over (
+            partition by formatted.k_school_calendar, is_school_day
+            order by calendar_date) as day_of_school_year,
         date_format(calendar_date, 'E') as week_day,
         weekofyear(calendar_date) as week_of_calendar_year
     from formatted
@@ -80,7 +83,7 @@ week_offset as (
 ),
 week_calculation as (
     select 
-        k_calendar_date,
+        augmented.k_calendar_date,
         augmented.k_school_calendar,
         k_school,
         tenant_code,
@@ -102,10 +105,25 @@ week_calculation as (
                 then week_of_calendar_year - start_week_offset
             else week_of_calendar_year + 52 - start_week_offset
         end as week_of_school_year
+
+        -- custom indicators
+        {% if custom_data_sources is not none and custom_data_sources | length -%}
+          {%- for source in custom_data_sources -%}
+            {%- for indicator in custom_data_sources[source] -%}
+              , {{ custom_data_sources[source][indicator]['where'] }} as {{ indicator }}
+            {%- endfor -%}
+          {%- endfor -%}
+        {%- endif %}
     from augmented
     join week_offset
         on augmented.k_school_calendar = week_offset.k_school_calendar
-
+    -- custom data sources
+    {% if custom_data_sources is not none and custom_data_sources | length -%}
+      {%- for source in custom_data_sources -%}
+        left join {{ ref(source) }}
+          on augmented.k_calendar_date = {{ source }}.k_calendar_date
+      {% endfor %}
+    {%- endif %}
 )
 select * from week_calculation
 order by tenant_code, k_school, calendar_date desc
