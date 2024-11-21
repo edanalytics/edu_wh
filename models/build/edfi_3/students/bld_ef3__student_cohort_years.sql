@@ -6,7 +6,7 @@ build_object as (
         tenant_code,
         api_year,
         k_student,
-        array_agg(object_construct('cohort_year_type', cohort_year_type, 
+        array_agg(map('cohort_year_type', cohort_year_type, 
                                     'school_year', school_year,
                                     'academic_term', academic_term)) as cohort_year_array
     from student_cohort_years
