@@ -45,7 +45,6 @@ fct_student_school_assoc as (
     the same calendar to be sure.
     */
     select * from {{ ref('fct_student_school_association') }}
-    where is_latest_annual_entry
 ),
 xwalk_att_events as (
     select * from {{ ref('xwalk_attendance_events') }}
@@ -79,8 +78,9 @@ formatted as (
         on stg_stu_sch_attend.k_student = fct_student_school_assoc.k_student
         and stg_stu_sch_attend.k_school = fct_student_school_assoc.k_school
     join dim_calendar_date
-        on fct_student_school_assoc.k_school_calendar = dim_calendar_date.k_school_calendar
-        and stg_stu_sch_attend.attendance_event_date = dim_calendar_date.calendar_date
+         on fct_student_school_assoc.k_school_calendar = dim_calendar_date.k_school_calendar
+         and stg_stu_sch_attend.attendance_event_date = dim_calendar_date.calendar_date
+         and dim_calendar_date.calendar_date between fct_student_school_assoc.entry_date and coalesce(fct_student_school_assoc.exit_withdraw_date,getdate())
     join xwalk_att_events
         on stg_stu_sch_attend.attendance_event_category = xwalk_att_events.attendance_event_descriptor
 )
