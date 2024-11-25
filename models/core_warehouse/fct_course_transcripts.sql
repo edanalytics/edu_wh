@@ -46,7 +46,8 @@ formatted as (
         course_transcripts.attempted_credit_conversion,
         course_transcripts.assigning_organization_identification_code,
         course_transcripts.course_catalog_url,
-        course_transcripts.v_earned_additional_credits
+        course_transcripts.v_earned_additional_credits,
+        course_transcripts.v_credit_categories,
         {# add any extension columns configured from stg_ef3__course_transcripts #}
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__course_transcripts', flatten=False) }}
     from course_transcripts
