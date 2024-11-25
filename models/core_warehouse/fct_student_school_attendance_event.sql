@@ -44,12 +44,15 @@ fct_student_school_assoc as (
     with multiple enrollments at the same school in the same year all also use
     the same calendar to be sure.
     */
-    select * from {{ ref('fct_student_school_association') }}
+    select 
+        *,
+        date(coalesce(exit_withdraw_date,getdate())) - entry_date as enrollment_length
+    from {{ ref('fct_student_school_association') }}
 ),
 xwalk_att_events as (
     select * from {{ ref('xwalk_attendance_events') }}
 ),
-formatted as (
+joined as (
     select 
         dim_student.k_student,
         dim_student.k_student_xyear,
@@ -64,9 +67,10 @@ formatted as (
         stg_stu_sch_attend.school_attendance_duration,
         stg_stu_sch_attend.arrival_time,
         stg_stu_sch_attend.departure_time,
-        stg_stu_sch_attend.educational_environment
-        {# add any extension columns configured from stg_ef3__student_school_attendance_events #}
-        {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_school_attendance_events', flatten=False) }}
+        stg_stu_sch_attend.educational_environment,
+        fct_student_school_assoc.enrollment_length,
+        fct_student_school_assoc.entry_date,
+        fct_student_school_assoc.exit_withdraw_date
     from stg_stu_sch_attend
     join dim_student
         on stg_stu_sch_attend.k_student = dim_student.k_student
@@ -83,5 +87,35 @@ formatted as (
          and dim_calendar_date.calendar_date between fct_student_school_assoc.entry_date and coalesce(fct_student_school_assoc.exit_withdraw_date,getdate())
     join xwalk_att_events
         on stg_stu_sch_attend.attendance_event_category = xwalk_att_events.attendance_event_descriptor
+),
+deduped as (
+    -- account for multiple overlapping enrollments
+    {{
+        dbt_utils.deduplicate(
+            relation='joined',
+            partition_by='k_student, k_school,k_calendar_date',
+            order_by='enrollment_length desc, entry_date desc, exit_withdraw_date desc'
+        )
+    }}
+),
+formatted as (
+    select
+        k_student,
+        k_student_xyear,
+        k_school,
+        k_calendar_date,
+        k_session,
+        tenant_code,
+        attendance_event_category,
+        attendance_event_reason,
+        is_absent,
+        event_duration,
+        school_attendance_duration,
+        arrival_time,
+        departure_time,
+        educational_environment,
+        {# add any extension columns configured from stg_ef3__student_school_attendance_events #}
+        {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_school_attendance_events', flatten=False) }}
+    from deduped
 )
 select * from formatted
