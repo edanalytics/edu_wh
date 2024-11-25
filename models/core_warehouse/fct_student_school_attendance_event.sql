@@ -26,23 +26,13 @@ dim_calendar_date as (
 fct_student_school_assoc as (
     /*
     We bring in this table to get the `k_school_calendar` we need to turn
-    `attendance_event_date` into `k_calendar_date`.
-    But these grains aren't guaranteed to align-- a student could have multiple
-    enrollments at the same school in the same year-- so we need to make sure
-    we don't multiply the attendance rows by the number of enrollments.
-    The most accurate way to do this would be to specify the join such that 
-    the attendance_event_date is within the range of the enrollment's entry_date
-    and exit_withdraw_date, because this would account for the case where a 
-    student's multiple enrollments each made use of different calendars.
-    (This would introduce a second problem though: it would not guarantee a
-    single row return if a student had overlapping enrollments at the same 
-    school, which the Ed-Fi model does not prevent.)
-    Different calendars per enrollment at the same school in the same year
-    seems like a sufficiently unlikely edge-case that we use the singular
-    calendar association from the latest enrollment instead, which allows
-    for a simpler join, but we could add a test asserting that a student
-    with multiple enrollments at the same school in the same year all also use
-    the same calendar to be sure.
+    `attendance_event_date` into `k_calendar_date`. Because a student could have
+    multiple enrollments at the same school in the same year, we specify the join
+    such that the attendance_event_date is within the range of the enrolmment's
+    entry_date and exit_withdraw_date. This accounts for the case where a student's
+    multiple enrollments each made use of different calendars. However, if a 
+    student has overlapping enrollments at the same school, multiple rows will
+    be returned for each date. Therefore we must introduce a deduplication step.
     */
     select 
         *,
