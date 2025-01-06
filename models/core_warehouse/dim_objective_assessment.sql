@@ -1,3 +1,4 @@
+  -- depends_on: {{ ref('stg_ef3__objective_assessments') }}
 {{
   config(
     post_hook=[
@@ -19,6 +20,8 @@ obj_assessment_pls as (
 formatted as (
     select
         stg_obj_assessments.k_objective_assessment,
+        stg_obj_assessments.k_parent_objective_assessment,
+        stg_obj_assessments.k_assessment,
         stg_obj_assessments.k_assessment,
         stg_obj_assessments.tenant_code,
         stg_obj_assessments.api_year as school_year,
