@@ -1,6 +1,6 @@
 version: 2
 
-models:
+tests:
   - name: cfg_attendance_codes_valid_range
     config:
       tags: ['core']
