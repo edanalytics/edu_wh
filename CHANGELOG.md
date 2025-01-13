@@ -2,6 +2,7 @@
 ## New features
 ## Under the hood
 ## Fixes
+- Fix configuration header in tests/_...yml files to remove warning introduced by dbt 1.9.0
 
 # edu_wh v0.4.0
 ## New features
