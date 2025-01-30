@@ -1,6 +1,6 @@
 version: 2
 
-models:
+tests:
   - name: attendance_freshness_test
     config:
       tags: ['core']

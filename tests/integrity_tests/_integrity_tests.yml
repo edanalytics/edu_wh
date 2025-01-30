@@ -1,6 +1,6 @@
 version: 2
 
-models:
+tests:
   - name: all_attendance_dates_have_calendar_dates
     config:
       tags: ['core']
