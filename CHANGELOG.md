@@ -3,6 +3,10 @@
 ## Under the hood
 ## Fixes
 
+# edu_wh 
+## Fixes
+- Fix model `fct_student_school_attendance_event` to account for the case where a student has multiple enrollments with different calendars at the same school
+
 # edu_wh v0.4.0
 ## New features
 - Add array column `cohort_year_array` to `dim_student`, tracking student cohort designation, and add upstream `bld_ef3__student_cohort_years`
