@@ -31,6 +31,9 @@ consecutive as (
       *,
       lag(calendar_date) over (
         partition by k_student, k_school, attendance_event_category order by calendar_date) as previous_date,
+      -- a column to indicate whether or not there has been a change in `attendance_event_category` for a student ordered by `calendar_date`.
+      -- if there is no school day on a weekend and no change of `attendance_event_category` from Friday to Monday,
+      -- it still counts as consecutive.
       case 
         when previous_date is null then 1
         when datediff(day, previous_date, calendar_date) = 1 
@@ -43,6 +46,7 @@ consecutive as (
 consecutive_grouping as (
     select 
       *,
+      -- all consecutive records of a student's `attendance_event_category` has the same `consecutive_group`.
       sum(consecutive) over (partition by k_student, k_school, attendance_event_category order by calendar_date) as consecutive_group
     from consecutive
 ),
@@ -73,6 +77,7 @@ consecutive_absences as (
       is_unexcused,
   {%- endif %}
       attendance_event_category,
+      -- the consecutive count of attendance per student per school 
       row_number() over ( partition by k_student, k_school, attendance_event_category, consecutive_group order by calendar_date) as consecutive_day_number,
       
     from consecutive_grouping
