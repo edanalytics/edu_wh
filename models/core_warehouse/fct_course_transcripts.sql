@@ -54,3 +54,4 @@ formatted as (
         on course_transcripts.k_student_academic_record = fct_student_academic_record.k_student_academic_record
 )
 select * from formatted
+
