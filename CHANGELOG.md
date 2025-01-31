@@ -1,5 +1,6 @@
 # Unreleased
 ## New features
+- Add `v_credit_categories` to `fct_course_transcripts` for use in credit calcuations
 ## Under the hood
 ## Fixes
 
