@@ -1,5 +1,6 @@
 # Unreleased
 ## New features
+- Add `v_credit_categories` to `fct_course_transcripts` for use in credit calcuations
 ## Under the hood
 ## Fixes
 - Fix configuration header in tests/_...yml files to remove warning introduced by dbt 1.9.0
