@@ -1,14 +1,18 @@
 # Unreleased
 ## New features
-- Add `v_credit_categories` to `fct_course_transcripts` for use in credit calcuations
 ## Under the hood
-- Tweak tenant-lea attribution logic
 ## Fixes
-- Fix configuration header in tests/_...yml files to remove warning introduced by dbt 1.9.0
 
-# edu_wh 
+# edu_wh v0.4.1
+## New features
+- Add `v_credit_categories` to `fct_course_transcripts` for use in credit calcuations
+- Add support for custom indicators on `dim_staff`
+- Add support for custom indicators on `dim_calendar_date`
+## Under the hood
+- Tweak tenant-lea attribution logic to use calendars instead of student-school-associations (preferred behavior for beginning of school year)
 ## Fixes
 - Fix model `fct_student_school_attendance_event` to account for the case where a student has multiple enrollments with different calendars at the same school
+- Fix configuration header in tests/_...yml files to remove warning introduced by dbt 1.9.0
 
 # edu_wh v0.4.0
 ## New features
