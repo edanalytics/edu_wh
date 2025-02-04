@@ -22,7 +22,6 @@ formatted as (
         stg_obj_assessments.k_objective_assessment,
         stg_obj_assessments.k_parent_objective_assessment,
         stg_obj_assessments.k_assessment,
-        stg_obj_assessments.k_assessment,
         stg_obj_assessments.tenant_code,
         stg_obj_assessments.api_year as school_year,
         stg_obj_assessments.assessment_identifier,
