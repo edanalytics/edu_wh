@@ -1,5 +1,6 @@
 # Unreleased
 ## New features
+- Add `fct_student_consecutive_attendance_count` model, tracking students' consecutive attendance.
 ## Under the hood
 ## Fixes
 
