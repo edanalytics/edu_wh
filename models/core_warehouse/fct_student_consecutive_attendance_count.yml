@@ -1,7 +1,7 @@
 version: 2
 
 models: 
-  - name: fct_student_daily_attendance
+  - name: fct_student_consecutive_attendance_count
     description: >
      ##### Overview:
        This fact table provides student daily attendance and their consecutive attendance count, computed using full-day attendance as reported in `studentSchoolAttendanceEvents`.
