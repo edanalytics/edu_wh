@@ -64,7 +64,13 @@ formatted as (
                 over(partition by stg_stu_school.tenant_code)
             -- not yet exited
             and (exit_withdraw_date is null
-                or exit_withdraw_date >= current_date())
+                or exit_withdraw_date
+                {% if var('edu:enroll:exit_withdraw_date_inclusive', True) -%} 
+                    >= 
+                {% else -%}
+                    >
+                {% endif -%}
+                    current_date())
             -- enrollment has begun
             and entry_date <= current_date(),
             true, false
@@ -106,15 +112,27 @@ formatted as (
     left join xwalk_grade_levels
         on stg_stu_school.entry_grade_level = xwalk_grade_levels.grade_level
     where true
-   {% if var('edu:enroll:exclude_exit_before_first_day', True) -%}
-      -- exclude students who exited before the first school day
-      and (exit_withdraw_date >= bld_school_calendar_windows.first_school_day
-          or exit_withdraw_date is null
-          or bld_school_calendar_windows.first_school_day is null
-          )
+    {% if var('edu:enroll:exclude_exit_before_first_day', True) -%}
+        -- exclude students who exited before the first school day
+        and (exit_withdraw_date 
+            {% if var('edu:enroll:exit_withdraw_date_inclusive', True) -%} 
+                >= 
+            {% else -%}
+                >
+            {% endif -%}
+                bld_school_calendar_windows.first_school_day
+        or exit_withdraw_date is null
+        or bld_school_calendar_windows.first_school_day is null
+        )
     {% endif %}
     -- exclude students whose exit day is before their entry day
-    and (exit_withdraw_date >= entry_date
+    and (exit_withdraw_date 
+        {% if var('edu:enroll:exit_withdraw_date_inclusive', True) -%} 
+            >= 
+        {% else -%}
+            >
+        {% endif -%}
+            entry_date
         or exit_withdraw_date is null)
     -- exclude students who never actually enrolled
     {% set excl_withdraw_codes =  var('edu:enroll:exclude_withdraw_codes')  %}
