@@ -22,6 +22,7 @@
             {%- endif %}
         from {{ ref(parent) }}
     )
+    
     select
         child.tenant_code,
         child.api_year,
@@ -105,7 +106,6 @@
     from {{ model }}
     where {{ column_name }} not in ( {%- for value in accepted_list %} {{value}} {%- if not loop.last %}, {%-else %} {%-endif%} {%-endfor%} )
     group by all
-    having count(*) > 1
 
 {% endtest%}
 
@@ -132,8 +132,16 @@
 {% test unique(model, column_name) %}
      {%- set all_columns = adapter.get_columns_in_relation(model) %}
 
+    with validation_errors as (
+        select 
+            column_name
+        from {{ model }}
+        where {{ column_name }} is not null
+        group by all
+        having count(*) > 1
+    )
+
     select 
-        column_name,
         {%-if 'TENANT_CODE' in all_columns %}
         tenant_code,
         {%- endif %}
@@ -142,10 +150,7 @@
         {%- endif %}
         count(*) as failed_row_count,
         object_construct('test_column', array_construct('{{ column_name }}') )  as test_params
-    from {{ model }}
-    where {{ column_name }} is not null
-    group by all
-    having count(*) > 1
+    from validation_errors
 
 {% endtest %}
 
