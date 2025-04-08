@@ -17,8 +17,8 @@ behaviors as (
     select
         k_discipline_incident,
         {{
-            json_array_agg(
-                json_object_construct(
+            edu_edfi_source.json_array_agg(
+                edu_edfi_source.json_object_construct(
                     [['behavior_type', 'behavior_type'],
                      ['behavior_detailed_description', 'behavior_detailed_description']]
                 ),
@@ -37,7 +37,7 @@ formatted as (
         stg_discipline_incidents.incident_time,
         -- adding an indicator for multiple behaviors for an incident
         case
-            when {{ json_array_size('stg_discipline_incidents.v_behaviors') }} > 1
+            when {{ edu_edfi_source.json_array_size('stg_discipline_incidents.v_behaviors') }} > 1
                 then true
             else false 
         end as has_multiple_behaviors,

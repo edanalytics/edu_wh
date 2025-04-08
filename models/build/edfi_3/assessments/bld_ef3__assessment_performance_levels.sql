@@ -7,8 +7,8 @@ build_object as (
         api_year,
         k_assessment,
         {{
-            json_array_agg(
-                json_object_construct(
+            edu_edfi_source.json_array_agg(
+                edu_edfi_source.json_object_construct(
                     [['performance_level_name', 'performance_level_name'],
                      ['performance_level_value', 'performance_level_value']]
                 ),

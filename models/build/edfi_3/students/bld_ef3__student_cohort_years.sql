@@ -7,8 +7,8 @@ build_object as (
         api_year,
         k_student,
         {{
-            json_array_agg(
-                json_object_construct(
+            edu_edfi_source.json_array_agg(
+                edu_edfi_source.json_object_construct(
                     [['cohort_year_type', 'cohort_year_type'],
                      ['school_year', 'school_year'],
                      ['academic_term', 'academic_term']]
