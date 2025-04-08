@@ -1,53 +1,70 @@
 -- this model unpacks the characteristics payload from each of the 3 levels at 
--- which it's defined, then combines the lists across the 3 levels before
--- unpacking it back to section by characteristic grain
-with section_chars as (
-    select  
-        k_course_offering,
-        k_course_section,
-        array_agg({{ edu_edfi_source.extract_descriptor('value:sectionCharacteristicDescriptor::string') }}) as section_characteristic
+-- which it's defined, then unions the lists at the section-characteristic grain
+with sections as (
+    select *
     from {{ ref('stg_ef3__sections') }}
-        {{ json_flatten('v_section_characteristics', outer=True) }}
-    group by 1,2
+),
+offerings as (
+    select *
+    from {{ ref('stg_ef3__course_offerings') }}
+),
+courses as (
+    select *
+    from {{ ref('stg_ef3__courses') }}
+),
+section_chars as (
+    select
+        sections.tenant_code, 
+        sections.api_year,
+        offerings.k_course,
+        sections.k_course_offering,
+        sections.k_course_section,
+        {{ edu_edfi_source.extract_descriptor('value:sectionCharacteristicDescriptor::string') }} as characteristic
+    from sections
+    join offerings
+        on sections.k_course_offering = offerings.k_course_offering
+        {{ edu_edfi_source.json_flatten('sections.v_section_characteristics', outer=True) }}
 ), 
 offering_chars as (
     select 
-        k_course,
-        k_course_offering,
-        array_agg({{ edu_edfi_source.extract_descriptor('value:courseLevelCharacteristicDescriptor::string') }}) as offering_characteristic
-    from {{ ref('stg_ef3__course_offerings') }}
-        {{ json_flatten('v_course_level_characteristics', outer=True) }}
-    group by 1,2
+        offerings.tenant_code, 
+        offerings.api_year,
+        offerings.k_course,
+        offerings.k_course_offering,
+        sections.k_course_section,
+        {{ edu_edfi_source.extract_descriptor('value:courseLevelCharacteristicDescriptor::string') }} as characteristic
+    from offerings
+    join sections
+        on sections.k_course_offering = offerings.k_course_offering
+        {{ edu_edfi_source.json_flatten('offerings.v_course_level_characteristics', outer=True) }}
 ),
 course_chars as (
     select 
-        tenant_code, 
-        api_year,
-        k_course,
-        array_agg({{ edu_edfi_source.extract_descriptor('value:courseLevelCharacteristicDescriptor::string') }}) as course_characteristic
-    from {{ ref('stg_ef3__courses') }}
-        {{ json_flatten('v_level_characteristics', outer=True) }}
-    group by 1,2,3
+        courses.tenant_code, 
+        courses.api_year,
+        courses.k_course,
+        offerings.k_course_offering,
+        sections.k_course_section,
+       {{ edu_edfi_source.extract_descriptor('value:courseLevelCharacteristicDescriptor::string') }} as characteristic
+    from courses
+    join offerings
+        on courses.k_course = offerings.k_course
+    join sections
+        on sections.k_course_offering = offerings.k_course_offering
+        {{ edu_edfi_source.json_flatten('courses.v_level_characteristics', outer=True) }}
 ),
-joined as (
-    select
-        course_chars.tenant_code,
-        course_chars.api_year,
-        course_chars.k_course,
-        offering_chars.k_course_offering,
-        section_chars.k_course_section,
-        -- combine and find distinct values across all levels
-        array_distinct(array_cat(course_characteristic, array_cat(offering_characteristic, section_characteristic))) as combined_chars
-    from course_chars 
-    join offering_chars 
-        on course_chars.k_course = offering_chars.k_course 
-    join section_chars 
-        on offering_chars.k_course_offering = section_chars.k_course_offering
+unioned as (
+    select * from section_chars
+    union all
+    select * from offering_chars
+    union all
+    select * from course_chars
 )
 select 
     tenant_code,
     api_year,
     k_course_section,
-    value::string as course_level_characteristic
-from joined 
- {{ json_flatten('combined_chars') }}
+    characteristic as course_level_characteristic
+from unioned
+where characteristic is not null
+group by all
