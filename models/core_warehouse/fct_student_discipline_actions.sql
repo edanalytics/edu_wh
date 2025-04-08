@@ -32,7 +32,7 @@ flatten_staff_keys as (
         index,
         {{ edu_edfi_source.gen_skey('k_staff', alt_ref='value:staffReference') }}
     from stg_discipline_actions
-        , lateral flatten(v_staffs)
+        {{ json_flatten('v_staffs') }}
 ),
 agg_staff_keys as (
     select 
@@ -98,7 +98,7 @@ formatted as (
         on stg_discipline_actions.k_student = agg_staff_keys.k_student
         and stg_discipline_actions.discipline_action_id = agg_staff_keys.discipline_action_id
         and stg_discipline_actions.discipline_date = agg_staff_keys.discipline_date
-    , lateral flatten(input=>v_disciplines)
+    {{ json_flatten('v_disciplines') }}
     -- brule: one or the other school must be populated
     where (assignment_school_id is not null or responsibility_school_id is not null)
 ),

@@ -7,7 +7,7 @@ with section_chars as (
         k_course_section,
         array_agg({{ edu_edfi_source.extract_descriptor('value:sectionCharacteristicDescriptor::string') }}) as section_characteristic
     from {{ ref('stg_ef3__sections') }}
-        , lateral flatten(v_section_characteristics, outer => true)
+        {{ json_flatten('v_section_characteristics', outer=True) }}
     group by 1,2
 ), 
 offering_chars as (
@@ -16,7 +16,7 @@ offering_chars as (
         k_course_offering,
         array_agg({{ edu_edfi_source.extract_descriptor('value:courseLevelCharacteristicDescriptor::string') }}) as offering_characteristic
     from {{ ref('stg_ef3__course_offerings') }}
-        , lateral flatten(v_course_level_characteristics, outer => true)
+        {{ json_flatten('v_course_level_characteristics', outer=True) }}
     group by 1,2
 ),
 course_chars as (
@@ -26,7 +26,7 @@ course_chars as (
         k_course,
         array_agg({{ edu_edfi_source.extract_descriptor('value:courseLevelCharacteristicDescriptor::string') }}) as course_characteristic
     from {{ ref('stg_ef3__courses') }}
-        , lateral flatten(v_level_characteristics, outer => true)
+        {{ json_flatten('v_level_characteristics', outer=True) }}
     group by 1,2,3
 ),
 joined as (
@@ -50,4 +50,4 @@ select
     k_course_section,
     value::string as course_level_characteristic
 from joined 
- , lateral flatten(combined_chars)
+ {{ json_flatten('combined_chars') }}
