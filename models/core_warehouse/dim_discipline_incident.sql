@@ -16,8 +16,14 @@ dim_school as (
 behaviors as (
     select
         k_discipline_incident,
-        array_agg(object_construct('behavior_type', behavior_type,
-                                   'behavior_detailed_description', behavior_detailed_description)) as behavior_array
+        {{
+            json_array_agg(
+                json_object_construct(
+                    [['behavior_type', 'behavior_type'],
+                     ['behavior_detailed_description', 'behavior_detailed_description']]
+                ),
+            is_terminal=True)
+        }} as behavior_array
     from {{ ref('stg_ef3__discipline_incidents__behaviors') }}
     group by k_discipline_incident
 ),
