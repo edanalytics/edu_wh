@@ -23,7 +23,7 @@ formatted as (
         class_periods.class_period_name,
         class_periods.is_official_attendance_period,
         -- if there is only one start time, extract it, else leave null
-        case when array_size(v_meeting_times) = 1
+        case when {{ json_array_size('v_meeting_times') }} = 1
         then
             -- convert to military time for time math, if it isn't
             -- (assume class periods will not be scheduled between 1 and 6 AM)
@@ -33,7 +33,7 @@ formatted as (
                 else v_meeting_times[0]['startTime']::time
             end
         end as start_time,
-        case when array_size(v_meeting_times) = 1
+        case when {{ json_array_size('v_meeting_times') }} = 1
         then 
             case 
                 when date_part(hour, v_meeting_times[0]['endTime']::time) between 1 and 6

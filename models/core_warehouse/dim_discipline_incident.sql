@@ -31,7 +31,7 @@ formatted as (
         stg_discipline_incidents.incident_time,
         -- adding an indicator for multiple behaviors for an incident
         case
-            when array_size(stg_discipline_incidents.v_behaviors) > 1
+            when {{ json_array_size('stg_discipline_incidents.v_behaviors') }} > 1
                 then true
             else false 
         end as has_multiple_behaviors,
