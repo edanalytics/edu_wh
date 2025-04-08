@@ -23,6 +23,7 @@ stacked as (
 )
 select id, 
     detected_at,
+    table_name,
     test_sub_type as test_type,
     test_short_name as test_category,
     v_result_row:test_params::varchar as test_params,
