@@ -9,6 +9,8 @@
   )
 }}
 
+{%- set xwalk_att_events_cols = dbt_utils.get_filtered_columns_in_relation(from = ref('xwalk_attendance_events')) -%}
+
 with fct_student_school_att as (
     select * from {{ ref(var("edu:attendance:daily_attendance_source", 'fct_student_school_attendance_event')) }}
 ),
@@ -26,6 +28,9 @@ metric_absentee_categories as (
 ),
 bld_attendance_sessions as (
     select * from {{ ref('bld_ef3__attendance_sessions') }}
+),
+xwalk_att_events as (
+    select * from {{ ref('xwalk_attendance_events') }}
 ),
 school_max_submitted as (
     -- find the most recently submitted attendance date by school
@@ -200,5 +205,56 @@ metric_labels as (
         on cumulative_attendance_rate > metric_absentee_categories.threshold_lower
         and cumulative_attendance_rate <= metric_absentee_categories.threshold_upper
 )
-select * from metric_labels
-order by tenant_code, k_school, k_student, cumulative_days_enrolled
+,
+joined_student_daily_att as (
+    select 
+      metric_labels.*
+    {%- if 'IS_UNEXCUSED' in xwalk_att_events_cols %}
+      , xwalk_att_events.is_unexcused
+    {%- endif %}
+    from metric_labels
+    left join xwalk_att_events -- left join because there is a 'Not Enrolled' value not present in xwalk
+    on metric_labels.attendance_event_category = xwalk_att_events.attendance_event_descriptor
+),
+prev_date as (
+    select 
+      *,
+      lag(calendar_date) over (partition by k_student, k_school, attendance_event_category order by calendar_date) as previous_date
+    from joined_student_daily_att 
+),
+consecutive as (
+    select 
+        *,
+        -- a column to indicate whether or not there has been a change in `attendance_event_category` for a student ordered by `calendar_date`.
+        -- if there is no school day on a weekend and no change of `attendance_event_category` from Friday to Monday,
+        -- it still counts as consecutive.
+        case 
+            when datediff(day, previous_date, calendar_date) = 1 
+            or dayofweek(previous_date) = 5 and dayofweek(calendar_date) = 1 and datediff(day, previous_date, calendar_date) = 3 then 0
+            else 1
+            end as consecutive
+    from prev_date
+),
+consecutive_grouping as (
+    select 
+      *,
+      -- all consecutive records of a student's `attendance_event_category` has the same `consecutive_group`.
+      sum(consecutive) over (partition by k_student, k_school, attendance_event_category order by calendar_date) as consecutive_group
+    from consecutive
+),
+consecutive_absences as (
+    select 
+        *,
+  {%- if 'IS_UNEXCUSED' in xwalk_att_events_cols %}
+      is_unexcused,
+  {%- endif %}
+      -- the consecutive count of attendance per student per school 
+      row_number() over (partition by k_student, k_school, attendance_event_category, consecutive_group order by calendar_date) as consecutive_day_number,
+    from consecutive_grouping
+)
+
+select * from consecutive_absences 
+order by tenant_code, k_school, k_student, calendar_date, consecutive_day_number
+
+
+
