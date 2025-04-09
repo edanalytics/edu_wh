@@ -1,17 +1,27 @@
+{{
+  config(
+      store_failures = true,
+      severity       = 'warn'
+    )
+}}
+
 with fct_student_assessment  as (
-    select * from analytics.prod_wh.fct_student_assessment
+    select * from {{ ref('fct_student_assessment') }}
 ),
+
 dim_assessment as (
-    select * from analytics.prod_wh.dim_assessment
+    select * from {{ ref('dim_assessment') }}
 ),
+
 xwalk_assessment_scores as (
-    select * from analytics.prod_seed.xwalk_assessment_scores
+    select * from {{ ref('xwalk_assessment_scores') }}
 ),
+
 joined as (
     select distinct
-        dim_assessment.assessment_identifier,
         fct_student_assessment.tenant_code, 
-        fct_student_assessment.school_year
+        fct_student_assessment.school_year,
+        dim_assessment.assessment_identifier
     from fct_student_assessment
     join dim_assessment 
         on fct_student_assessment.k_assessment = 
@@ -23,4 +33,5 @@ joined as (
     where xwalk_assessment_scores.assessment_identifier is null
     order by assessment_identifier
 )
+
 select * from joined
