@@ -1,8 +1,12 @@
 # Unreleased
-- Feature: add tests to check whether assessments and objective assessments have null scores
 ## New features
 ## Under the hood
 ## Fixes
+
+# edu_wh v0.4.2
+## New features
+- Add tests `cfg_assessment_scores` and `cfg_objective_assessment_scores` to find assess/obj assess with no scores configured
+- Add support for custom indicators on `dim_school`
 
 # edu_wh v0.4.1
 ## New features
