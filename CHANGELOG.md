@@ -1,4 +1,5 @@
 # Unreleased
+- Feature: add tests to check whether assessments and objective assessments have null scores
 ## New features
 ## Under the hood
 ## Fixes
