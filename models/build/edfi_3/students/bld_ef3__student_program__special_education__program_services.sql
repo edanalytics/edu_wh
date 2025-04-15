@@ -12,7 +12,7 @@ wide as (
         k_lea,
         k_school,
         program_enroll_begin_date,
-        array_agg(program_service) as program_services
+        {{ edu_edfi_source.json_array_agg('program_service', order_by='program_service', is_terminal=True) }} as program_services
 
     from stage_program_services
 
