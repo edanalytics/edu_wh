@@ -23,25 +23,25 @@ formatted as (
         class_periods.class_period_name,
         class_periods.is_official_attendance_period,
         -- if there is only one start time, extract it, else leave null
-        case when {{ json_array_size('v_meeting_times') }} = 1
+        case when {{ edu_edfi_source.json_array_size('v_meeting_times') }} = 1
         then
             -- convert to military time for time math, if it isn't
             -- (assume class periods will not be scheduled between 1 and 6 AM)
             case 
-                when date_part(hour, v_meeting_times[0]['startTime']::time) between 1 and 6
-                then timeadd(hours, 12, v_meeting_times[0]['startTime']::time)
-                else v_meeting_times[0]['startTime']::time
+                when date_part('HOUR', v_meeting_times[0].startTime::time) between 1 and 6
+                then dateadd(HOUR, 12, v_meeting_times[0].startTime::time)
+                else v_meeting_times[0].startTime::time
             end
         end as start_time,
-        case when {{ json_array_size('v_meeting_times') }} = 1
+        case when {{ edu_edfi_source.json_array_size('v_meeting_times') }} = 1
         then 
             case 
-                when date_part(hour, v_meeting_times[0]['endTime']::time) between 1 and 6
-                then timeadd(hours, 12, v_meeting_times[0]['endTime']::time)
-                else v_meeting_times[0]['endTime']::time
+                when date_part('HOUR', v_meeting_times[0].endTime::time) between 1 and 6
+                then dateadd(HOUR, 12, v_meeting_times[0].endTime::time)
+                else v_meeting_times[0].endTime::time
             end
         end as end_time,
-        timediff(minutes, start_time, end_time) as period_duration
+        timediff(MINUTE, start_time, end_time) as period_duration
 
         -- custom indicators
         {% if custom_data_sources is not none and custom_data_sources | length -%}
