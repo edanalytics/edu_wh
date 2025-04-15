@@ -29,7 +29,7 @@ participation_codes as (
         k_student,
         k_student_xyear,
         k_discipline_incident,
-        array_agg(distinct participation_code) within group (order by participation_code asc) as participation_codes_array
+        array_agg(distinct participation_code) as participation_codes_array
     from {{ ref('stg_ef3__student_discipline_incident_behavior_associations__participation_codes') }}
     group by k_student, k_student_xyear, k_discipline_incident
 ),

@@ -12,7 +12,7 @@ wide as (
         k_lea,
         k_school,
         program_enroll_begin_date,
-        array_agg(program_service) within group (order by program_service) as program_services
+        array_agg(program_service) as program_services
 
     from stage_program_services
 
