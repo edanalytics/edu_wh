@@ -29,7 +29,6 @@ flatten_staff_keys as (
         k_student_xyear,
         discipline_action_id,
         discipline_date,
-        index,
         {{ edu_edfi_source.gen_skey('k_staff', alt_ref='value:staffReference') }}
     from stg_discipline_actions
         {{ edu_edfi_source.json_flatten('v_staffs') }}
@@ -42,7 +41,7 @@ agg_staff_keys as (
         discipline_date,
         -- staff associations are most often singular.
         -- keep the first such association, but also produce an array in case of multiple
-        max(case when index = 0 then k_staff else null end) as k_staff_single,
+        max(k_staff) as k_staff_single,
         array_agg(k_staff) as k_staff_array
     from flatten_staff_keys
     group by 1,2,3,4
