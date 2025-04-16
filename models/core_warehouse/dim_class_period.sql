@@ -22,26 +22,26 @@ formatted as (
         class_periods.school_year,
         class_periods.class_period_name,
         class_periods.is_official_attendance_period,
-        -- if there is only one start time, extract it, else leave null
+        -- if there is only one meeting time, extract it, else leave null
         case when {{ edu_edfi_source.json_array_size('v_meeting_times') }} = 1
         then
             -- convert to military time for time math, if it isn't
             -- (assume class periods will not be scheduled between 1 and 6 AM)
             case 
-                when date_part('HOUR', v_meeting_times[0].startTime::time) between 1 and 6
-                then dateadd(HOUR, 12, v_meeting_times[0].startTime::time)
-                else v_meeting_times[0].startTime::time
+                when left(v_meeting_times[0].startTime::string, 2)::int between 1 and 6
+                then concat(left(v_meeting_times[0].startTime::string, 2)::int + 12, right(v_meeting_times[0].startTime::string, 6))
+                else v_meeting_times[0].startTime::string
             end
         end as start_time,
         case when {{ edu_edfi_source.json_array_size('v_meeting_times') }} = 1
         then 
             case 
-                when date_part('HOUR', v_meeting_times[0].endTime::time) between 1 and 6
-                then dateadd(HOUR, 12, v_meeting_times[0].endTime::time)
-                else v_meeting_times[0].endTime::time
+                when left(v_meeting_times[0].endTime::string, 2)::int between 1 and 6
+                then concat(left(v_meeting_times[0].endTime::string, 2)::int + 12, right(v_meeting_times[0].startTime::string, 6))
+                else v_meeting_times[0].endTime::string
             end
         end as end_time,
-        timediff(MINUTE, start_time, end_time) as period_duration
+        timediff(MINUTE, concat('2020-01-01 ', start_time)::timestamp, concat('2020-01-01 ', end_time)::timestamp) as period_duration
 
         -- custom indicators
         {% if custom_data_sources is not none and custom_data_sources | length -%}
