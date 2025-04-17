@@ -37,7 +37,7 @@ formatted as (
         then 
             case 
                 when left(v_meeting_times[0].endTime::string, 2)::int between 1 and 6
-                then concat(left(v_meeting_times[0].endTime::string, 2)::int + 12, right(v_meeting_times[0].startTime::string, 6))
+                then concat(left(v_meeting_times[0].endTime::string, 2)::int + 12, right(v_meeting_times[0].endTime::string, 6))
                 else v_meeting_times[0].endTime::string
             end
         end as end_time,
