@@ -25,19 +25,19 @@ models:
       - name: k_student
         description: Defining key for the student in this school year.
         tests: 
-          - unique
-          - not_null
+          - edu_edfi_source.unique
+          - edu_edfi_source.not_null
       - name: k_student_xyear
         description: Defining key for the student, which is consistent across years.
         tests: 
-          - not_null
+          - edu_edfi_source.not_null
       - name: tenant_code
       - name: school_year
         description: > 
           School year specified by Spring year.
           e.g. the 2021-2022 year would be 2022.
         tests: 
-          - not_null
+          - edu_edfi_source.not_null
       - name: student_unique_id
         description: The student's unique id number in the education organization.
       - name: first_name

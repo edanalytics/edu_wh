@@ -18,7 +18,7 @@ models:
           Generated primary key for an individual day in a single calendar
           at a single school.
         tests:
-          - unique
+          - edu_edfi_source.unique
       - name: k_school_calendar
         description: Association to a single named calendar at a school.
       - name: k_school

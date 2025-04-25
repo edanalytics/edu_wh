@@ -14,7 +14,7 @@ models:
       - name: k_graduation_plan
         description: Generated primary key composed of 'graduation_plan_type', 'ed_org_id', and 'graduation_school_year' (generated in [stg_ef3__graduation_plans](#!/model/model.edu_edfi_source.stg_ef3__graduation_plans))
         tests: 
-          - unique
+          - edu_edfi_source.unique
       - name: tenant_code
         description: Code defining the Tenant (may be an LEA, SEA, etc.) of the Ed-Fi ODS from which this record was pulled
       - name: school_year
