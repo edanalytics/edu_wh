@@ -28,22 +28,49 @@ models:
 
     config:
       tags: ['core']
+      contract: {enforced: true}
+    constraints:
+      - type: primary_key
+        columns: [k_student_academic_record, gpa_type, is_cumulative]
+        warn_unenforced: false
+      - type: not_null
+        columns: [k_student_academic_record, gpa_type, is_cumulative]
+      - type: foreign_key
+        columns: [k_student_academic_record]
+        expression: "{{ target.schema }}_wh.fct_student_academic_record (k_student_academic_record)"
+        warn_unenforced: false
+      - type: foreign_key
+        columns: [k_student]
+        expression: "{{ target.schema }}_wh.dim_student (k_student)"
+        warn_unenforced: false
     columns:
       - name: k_student_academic_record
+        data_type: string
       - name: k_student_xyear
+        data_type: string
         description: Defining key for the student, which is consistent across years.
       - name: k_student
+        data_type: string
         description: Defining key for the student in this school year.
       - name: k_lea
+        data_type: string
       - name: k_school
+        data_type: string
       - name: tenant_code
+        data_type: string
       - name: school_year
+        data_type: int
       - name: academic_term
+        data_type: string
       - name: gpa_type
+        data_type: string
         description: The system used for calculating the grade point average for an individual.
       - name: gpa_value
+        data_type: float
         description: The value of the grade points earned divided by the number of credits attempted.
       - name: is_cumulative
+        data_type: boolean
         description: Indicator of whether or not the Grade Point Average value is cumulative.
       - name: max_gpa_value
+        data_type: float
         description: The maximum value for the grade point average.
