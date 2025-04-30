@@ -13,8 +13,8 @@ models:
       - name: k_parent
         description: Defining key for the parent, which is consistent across years.
         tests: 
-          - unique
-          - not_null
+          - edu_edfi_source.unique
+          - edu_edfi_source.not_null
       - name: tenant_code
       - name: school_year
       - name: parent_unique_id
