@@ -1,3 +1,14 @@
+{{
+  config(
+    post_hook=[
+        "alter table {{ this }} alter column k_student set not null",
+        "alter table {{ this }} alter column k_subgroup set not null",
+        "alter table {{ this }} add primary key (k_student, k_subgroup)",
+        "alter table {{ this }} add constraint fk_{{ this.name }}_student foreign key (k_student) references {{ ref('dim_student') }}",
+    ]
+    )
+}}
+
 with dim_student as (
     select * from {{ ref('dim_student') }}
 ),

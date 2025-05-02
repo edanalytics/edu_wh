@@ -1,8 +1,13 @@
 {{
   config(
+    post_hook=[
+        "alter table {{ this }} alter column k_subgroup set not null",
+        "alter table {{ this }} add primary key (k_subgroup)",
+    ],
     tags=['bypass_rls']
     )
 }}
+
 with dim_student as (
     select * from {{ ref('dim_student') }}
 ),
