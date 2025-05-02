@@ -1,6 +1,7 @@
 {{
   config(
     post_hook=[
+        "alter table {{ this }} alter column k_calendar_date set not null",
         "alter table {{ this }} add primary key (k_calendar_date)",
         "alter table {{ this }} add constraint fk_{{ this.name }}_school_calendar foreign key (k_school_calendar) references {{ ref('dim_school_calendar') }}",
         "alter table {{ this }} add constraint fk_{{ this.name }}_school foreign key (k_school) references {{ ref('dim_school') }}",
@@ -43,9 +44,9 @@ formatted as (
         stg_calendar_date.school_year,
         stg_calendar_date.calendar_date,
         case 
-            when array_size(summarize_calendar_events.calendar_events_array) = 1
+            when {{ edu_edfi_source.json_array_size('summarize_calendar_events.calendar_events_array') }} = 1
                 then summarize_calendar_events.calendar_events_array[0]
-            when array_size(summarize_calendar_events.calendar_events_array) > 1
+            when {{ edu_edfi_source.json_array_size('summarize_calendar_events.calendar_events_array') }} > 1
                 then 'Multiple'
             else null
         end as calendar_event,

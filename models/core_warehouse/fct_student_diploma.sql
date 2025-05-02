@@ -68,5 +68,5 @@ dedupe_diplomas as (
             )
         }}
 )
-select dedupe_diplomas.* exclude (academic_term) from dedupe_diplomas
+{{ edu_edfi_source.star('dedupe_diplomas', except=['academic_term'])}}
 order by tenant_code, k_student

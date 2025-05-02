@@ -7,8 +7,11 @@ models:
         Represents a historical record of student grade point averages, including cumulative and non-cumulative measures.
 
       ##### Primary Key:
-        `k_student_academic_record, gpa_type, is_cumulative` -- There is one record per student, education organization (usually school 
-        or LEA), academic term, GPA type (such as weighted or unweighted), and cumulative/non-cumulative indicator.
+        `k_student_academic_record, gpa_type` -- There is one record per student, education organization (usually school 
+        or LEA), academic term, and GPA type (such as weighted or unweighted). 
+        
+        Prior to Data Standard 5, session and cumulative GPAs were optionally included in fields on the student academic record. In these cases,
+        the `gpa_type` field will be set to 'Cumulative, unknown weighting' or 'Non-cumulative, unknown weighting'.
 
       ##### Important Business Rules:
         `k_student` is an annualized student identifier, so it will be null unless there is a student record for the relevant school year.
