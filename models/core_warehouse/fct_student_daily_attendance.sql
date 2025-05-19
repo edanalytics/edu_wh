@@ -36,7 +36,7 @@ school_max_submitted as (
     from fct_student_school_att 
     join dim_calendar_date 
         on fct_student_school_att.k_calendar_date = dim_calendar_date.k_calendar_date
-    group by 1
+    group by 1,2
 ),
 attendance_calendar as (
     -- a dataset of all possible days on which school attendance could be recorded
