@@ -7,7 +7,7 @@ models:
        This fact table provides information on the associations between Staff and Course Sections. It includes both active and historic associations.
 
      ##### Primary Key:
-       `k_staff, k_course_section` -- There is one record per staff and course section.
+       `k_staff, k_course_section, begin_date` -- There is one record per staff, course section, and begin_date
     
      ##### Important Business Rules:
        `is_active_assignment` is TRUE if:  

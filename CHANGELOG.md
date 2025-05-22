@@ -1,6 +1,7 @@
 # Unreleased
 ## New features
 ## Under the hood
+- Add `begin_date` to primary key of `fct_staff_section_associations` to align with DS 5.0 and later
 ## Fixes
 
 # edu_wh v0.4.2
