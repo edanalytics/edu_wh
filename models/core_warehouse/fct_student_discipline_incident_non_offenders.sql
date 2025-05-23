@@ -43,7 +43,7 @@ formatted as (
         stg_stu_discipline_incident_non_offenders.incident_id,
         false as is_offender,
         -- there is typically only a single value here, choosing the first option for analytical use cases
-        participation_codes.participation_codes_array[0]::string as participation_code,
+        {{ edu_edfi_source.json_get_first('participation_codes.participation_codes_array', 'string') }} as participation_code,
         participation_codes.participation_codes_array
         {# add any extension columns configured from stg_ef3__student_discipline_incident_non_offender_associations #}
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_discipline_incident_non_offender_associations', flatten=False) }}

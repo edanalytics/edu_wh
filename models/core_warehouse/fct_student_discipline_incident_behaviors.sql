@@ -71,7 +71,7 @@ formatted as (
         -- bring in any additional custom columns from xwalk, does nothing if there are no extra columns
         {{ accordion_columns('xwalk_discipline_behaviors', exclude_columns=['behavior_type', 'severity_order']) }}
         -- there is typically only a single value here, choosing the first option for analytical use cases
-        participation_codes.participation_codes_array[0]::string as participation_code,
+        {{ edu_edfi_source.json_get_first('participation_codes.participation_codes_array', 'string') }} as participation_code,
         participation_codes.participation_codes_array
         {# add any extension columns configured from stg_ef3__student_discipline_incident_behavior_associations #}
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_discipline_incident_behavior_associations', flatten=False) }}
