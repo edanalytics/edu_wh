@@ -1,5 +1,12 @@
+{{config(
+    materialized='incremental',
+    unique_key=['k_student_assessment', 'original_score_name']
+)}}
 with score_results as (
     select * from {{ ref('stg_ef3__student_assessments__score_results') }}
+    {% if is_incremental() %}
+    where last_modified_timestamp > (select max(last_modified_timestamp) from {{ this }})
+    {% endif %}
 ),
 xwalk_scores as (
     select * from {{ ref('xwalk_assessment_scores') }}
@@ -8,6 +15,8 @@ performance_levels as (
     select
         tenant_code,
         api_year,
+        pull_timestamp,
+        last_modified_timestamp,
         k_student_assessment,
         assessment_identifier,
         namespace,
@@ -15,6 +24,9 @@ performance_levels as (
         performance_level_name as score_name,
         performance_level_result as score_result
     from {{ ref('stg_ef3__student_assessments__performance_levels') }}
+    {% if is_incremental() %}
+    where last_modified_timestamp > (select max(last_modified_timestamp) from {{ this }})
+    {% endif %}
 ),
 stack_results as (
     select * from score_results
@@ -36,6 +48,8 @@ merged_xwalk as (
     select
         tenant_code,
         api_year,
+        pull_timestamp,
+        last_modified_timestamp,
         k_student_assessment,
         score_name as original_score_name,
         coalesce(normalized_score_name, 'other') as normalized_score_name,

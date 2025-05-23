@@ -1,21 +1,33 @@
 {{
   config(
+    materialized='incremental',
+    unique_key=['k_student_assessment'],
     post_hook=[
-        "alter table {{ this }} add primary key (k_student_assessment)",
-        "alter table {{ this }} add constraint fk_{{ this.name }}_assessment foreign key (k_assessment) references {{ ref('dim_assessment') }}",
-        "alter table {{ this }} add constraint fk_{{ this.name }}_student foreign key (k_student) references {{ ref('dim_student') }}"
+        "{% if not is_incremental() %} alter table {{ this }} add primary key (k_student_assessment) {% endif %}",
+        "{% if not is_incremental() %} alter table {{ this }} add constraint fk_{{ this.name }}_assessment foreign key (k_assessment) references {{ ref('dim_assessment') }} {% endif %}",
+        "{% if not is_incremental() %} alter table {{ this }} add constraint fk_{{ this.name }}_student foreign key (k_student) references {{ ref('dim_student') }} {% endif %}",
+        "{{ incremental_post_hook_student_cleanup() }}",
+        "{% if is_incremental() and var('enable_assessment_delete_cleanup', false) %} delete from {{ this }} where k_student_assessment not in (select k_student_assessment from {{ ref('stg_ef3__student_assessments') }}) {% endif %}"
     ]
   )
 }}
 
 with student_assessments_long_results as (
     select * from {{ ref('bld_ef3__student_assessments_long_results') }}
+    {% if is_incremental() %}
+    where last_modified_timestamp > (select max(last_modified_timestamp) from {{ this }})
+    {% endif %}
 ),
 student_assessments as (
     select * from {{ ref('stg_ef3__student_assessments') }}
+    {% if is_incremental() %}
+    where last_modified_timestamp > (select max(last_modified_timestamp) from {{ this }})
+    {% endif %}
 ),
 dim_student as (
     select * from {{ ref('dim_student') }}
+    {# NOTE: dim_student has no change tracking, so can't do incremantal here. #}
+    {# BUT we have a post-hook defined above that cleans up removed students after the run completes. #}
 ),
 object_agg_other_results as (
     select
@@ -33,6 +45,8 @@ student_assessments_wide as (
         dim_student.k_student,
         student_assessments.k_student_xyear,
         student_assessments.tenant_code,
+        student_assessments.pull_timestamp,
+        student_assessments.last_modified_timestamp,
         student_assessments.student_assessment_identifier,
         student_assessments.serial_number,
         {% if var('edu:school_year:assessment_dates_xwalk_enabled', False) %}
@@ -89,7 +103,7 @@ student_assessments_wide as (
         select distinct k_student_xyear
         from dim_student
     )
-    {{ dbt_utils.group_by(n=19) }}
+    {{ dbt_utils.group_by(n=21) }}
 )
 select *
 from student_assessments_wide

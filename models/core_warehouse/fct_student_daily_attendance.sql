@@ -1,31 +1,51 @@
+    {# pre_hook=["{{edu_wh.incremental_pre_hook_by_year()}}"], #}
 {{
   config(
+    materialized='incremental',
+    unique_key=['k_student', 'k_school', 'calendar_date'],
     post_hook=[
-        "alter table {{ this }} add primary key (k_student, k_school, calendar_date)",
-        "alter table {{ this }} add constraint fk_{{ this.name }}_student foreign key (k_student) references {{ ref('dim_student') }}",
-        "alter table {{ this }} add constraint fk_{{ this.name }}_school foreign key (k_school) references {{ ref('dim_school') }}",
-        "alter table {{ this }} add constraint fk_{{ this.name }}_calendar_date foreign key (k_calendar_date) references {{ ref('dim_calendar_date') }}",
+        "{% if not is_incremental() %} alter table {{ this }} add primary key (k_student, k_school, calendar_date) {% endif %}",
+        "{% if not is_incremental() %} alter table {{ this }} add constraint fk_{{ this.name }}_student foreign key (k_student) references {{ ref('dim_student') }} {% endif %}",
+        "{% if not is_incremental() %} alter table {{ this }} add constraint fk_{{ this.name }}_school foreign key (k_school) references {{ ref('dim_school') }} {% endif %}",
+        "{% if not is_incremental() %} alter table {{ this }} add constraint fk_{{ this.name }}_calendar_date foreign key (k_calendar_date) references {{ ref('dim_calendar_date') }} {% endif %}",
     ]
   )
 }}
 
 with fct_student_school_att as (
     select * from {{ ref(var("edu:attendance:daily_attendance_source", 'fct_student_school_attendance_event')) }}
+    {% if is_incremental() %}
+    -- Only get from latest year (school_year + 1) to avoid reprocessing all data. +1 because in pre-hook we delete latest year
+    where last_modified_timestamp > (select max(att_last_modified_timestamp) from {{ this }})
+    {% endif %}
 ),
 dim_calendar_date as (
     select * from {{ ref('dim_calendar_date') }}
+    {% if is_incremental() %}
+    where k_calendar_date in (select distinct k_calendar_date from fct_student_school_att)
+    {% endif %}
 ),
 dim_session as (
     select * from {{ ref('dim_session') }}
+    {# {% if is_incremental() %}
+    where school_year = (select max(school_year) + 1 from {{ this }})
+    {% endif %} #}
 ),
 fct_student_school_assoc as (
     select * from {{ ref('fct_student_school_association') }}
+    {# {% if is_incremental() %}
+    where school_year = (select max(school_year) + 1 from {{ this }})
+    {% endif %} #}
 ),
 metric_absentee_categories as (
     select * from {{ ref('absentee_categories') }}
 ),
 bld_attendance_sessions as (
     select * from {{ ref('bld_ef3__attendance_sessions') }}
+    {# add this if you can add school year upstream and think that will help with performance #}
+    {# {% if is_incremental() %}
+    where school_year = (select max(school_year) + 1 from {{ this }})
+    {% endif %} #}
 ),
 school_max_submitted as (
     -- find the most recently submitted attendance date by school
@@ -62,6 +82,7 @@ stu_enr_att_cal as (
         enr.k_student_xyear,
         enr.k_school,
         enr.tenant_code,
+        enr.school_year,
         enr.entry_date,
         attendance_calendar.k_calendar_date,
         attendance_calendar.calendar_date,
@@ -92,6 +113,7 @@ fill_positive_attendance as (
             bld_attendance_sessions.total_instructional_days
         ) as total_instructional_days,
         stu_enr_att_cal.tenant_code,
+        stu_enr_att_cal.school_year,
         stu_enr_att_cal.calendar_date,
         fct_student_school_att.attendance_event_reason,
         -- set enrollment flag: 1 during enrollment, 0 after, no row prior
@@ -119,7 +141,8 @@ fill_positive_attendance as (
                 else 1.0
             end, 0.0) as is_present,
         fct_student_school_att.event_duration,
-        fct_student_school_att.school_attendance_duration
+        fct_student_school_att.school_attendance_duration,
+        fct_student_school_att.last_modified_timestamp as att_last_modified_timestamp
     from stu_enr_att_cal
     left join fct_student_school_att
         on stu_enr_att_cal.k_student = fct_student_school_att.k_student
@@ -161,6 +184,7 @@ cumulatives as (
         positive_attendance_deduped.calendar_date,
         positive_attendance_deduped.k_session,
         positive_attendance_deduped.tenant_code,
+        positive_attendance_deduped.school_year,
         positive_attendance_deduped.attendance_event_category,
         positive_attendance_deduped.attendance_event_reason,
         positive_attendance_deduped.is_absent,
@@ -181,7 +205,8 @@ cumulatives as (
         cumulative_days_enrolled >= {{ var('edu:attendance:chronic_absence_min_days') }} as meets_enrollment_threshold,
         {{ msr_chronic_absentee('cumulative_attendance_rate', 'cumulative_days_enrolled') }} as is_chronic_absentee,
         positive_attendance_deduped.event_duration,
-        positive_attendance_deduped.school_attendance_duration
+        positive_attendance_deduped.school_attendance_duration,
+        positive_attendance_deduped.att_last_modified_timestamp
     from positive_attendance_deduped
 ),
 metric_labels as (
