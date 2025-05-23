@@ -108,7 +108,7 @@ formatted as (
         school_attendance_duration,
         arrival_time,
         departure_time,
-        educational_environment,
+        educational_environment
         {# add any extension columns configured from stg_ef3__student_school_attendance_events #}
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_school_attendance_events', flatten=False) }}
     from deduped
