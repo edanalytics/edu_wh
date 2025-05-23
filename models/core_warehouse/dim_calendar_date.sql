@@ -68,7 +68,7 @@ augmented as (
         row_number() over(partition by k_school_calendar, is_school_day
                           order by calendar_date) as day_of_school_year,
         dayname(calendar_date) as week_day,
-        week(calendar_date) as week_of_calendar_year
+        weekofyear(calendar_date) as week_of_calendar_year
     from formatted
 ),
 -- find the week of the first day of school, for calculating week of school year
