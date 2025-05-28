@@ -1,5 +1,7 @@
 # Unreleased
 ## New features
+- Add support for Databricks
+
 ## Under the hood
 ## Fixes
 
