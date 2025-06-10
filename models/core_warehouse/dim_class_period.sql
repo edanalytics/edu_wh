@@ -30,17 +30,17 @@ formatted as (
             -- convert to military time for time math, if it isn't
             -- (assume class periods will not be scheduled between 1 and 6 AM)
             case 
-                when left({{ edu_edfi_source.json_ci_get('meeting_time', 'startTime') }}::string, 2)::int between 1 and 6
-                then concat(left({{ edu_edfi_source.json_ci_get('meeting_time', 'startTime') }}, 2)::int + 12, right({{ edu_edfi_source.json_ci_get('meeting_time', 'startTime') }}::string, 6))
-                else {{ edu_edfi_source.json_ci_get('meeting_time', 'startTime') }}::string
+                when left(meeting_time:startTime::string, 2)::int between 1 and 6
+                then concat(left(meeting_time:startTime, 2)::int + 12, right(meeting_time:startTime::string, 6))
+                else meeting_time:startTime::string
             end
         end as start_time,
         case when {{ edu_edfi_source.json_array_size('v_meeting_times') }} = 1
         then 
             case 
-                when left({{ edu_edfi_source.json_ci_get('meeting_time', 'endTime') }}::string, 2)::int between 1 and 6
-                then concat(left({{ edu_edfi_source.json_ci_get('meeting_time', 'endTime') }}::string, 2)::int + 12, right({{ edu_edfi_source.json_ci_get('meeting_time', 'endTime') }}::string, 6))
-                else {{ edu_edfi_source.json_ci_get('meeting_time', 'endTime') }}::string
+                when left(meeting_time:endTime::string, 2)::int between 1 and 6
+                then concat(left(meeting_time:endTime::string, 2)::int + 12, right(meeting_time:endTime::string, 6))
+                else meeting_time:endTime::string
             end
         end as end_time,
         timediff(MINUTE, concat('2020-01-01 ', start_time)::timestamp, concat('2020-01-01 ', end_time)::timestamp) as period_duration
