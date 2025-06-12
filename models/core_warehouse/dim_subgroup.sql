@@ -1,8 +1,13 @@
 {{
   config(
+    post_hook=[
+        "alter table {{ this }} alter column k_subgroup set not null",
+        "alter table {{ this }} add primary key (k_subgroup)",
+    ],
     tags=['bypass_rls']
     )
 }}
+
 with dim_student as (
     select * from {{ ref('dim_student') }}
 ),
@@ -20,6 +25,7 @@ xwalk_subgroup_category_display_names as (
 stu_long_subgroup as (
     {{ dbt_utils.unpivot(
        relation=ref('dim_student'),
+       cast_to='string',
        exclude=[
           'k_student',
           'k_student_xyear',

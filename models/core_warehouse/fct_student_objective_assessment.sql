@@ -1,6 +1,7 @@
 {{
   config(
     post_hook=[
+        "alter table {{ this }} alter column k_student_objective_assessment set not null",
         "alter table {{ this }} add primary key (k_student_objective_assessment)",
         "alter table {{ this }} add constraint fk_{{ this.name }}_objective_assessment foreign key (k_objective_assessment) references {{ ref('dim_objective_assessment') }}",
         "alter table {{ this }} add constraint fk_{{ this.name }}_assessment foreign key (k_assessment) references {{ ref('dim_assessment') }}",
@@ -21,7 +22,7 @@ dim_student as (
 object_agg_other_results as (
     select
         k_student_objective_assessment,
-        object_agg(original_score_name, score_result::variant) as v_other_results
+        {{ edu_edfi_source.json_object_agg('original_score_name', 'score_result') }} as v_other_results
     from student_obj_assessments_long_results
     where normalized_score_name = 'other'
     group by 1
@@ -52,8 +53,7 @@ student_obj_assessments_wide as (
         platform_type,
         reason_not_tested,
         retest_indicator,
-        when_assessed_grade_level,
-        v_other_results
+        when_assessed_grade_level
         {%- if not is_empty_model('xwalk_objective_assessment_scores') -%},
         {{ dbt_utils.pivot(
             'normalized_score_name',
@@ -70,8 +70,6 @@ student_obj_assessments_wide as (
     left join student_obj_assessments_long_results
         on student_obj_assessments.k_student_objective_assessment = student_obj_assessments_long_results.k_student_objective_assessment
         and student_obj_assessments_long_results.normalized_score_name != 'other'
-    left join object_agg_other_results
-        on student_obj_assessments.k_student_objective_assessment = object_agg_other_results.k_student_objective_assessment
     -- left join to allow 'historic' records (assess records with no corresponding stu demographics)
     left join dim_student
         on student_obj_assessments.k_student = dim_student.k_student
@@ -89,7 +87,12 @@ student_obj_assessments_wide as (
         select distinct k_student_xyear
         from dim_student
     )
-    {{ dbt_utils.group_by(n=19) }}
+    {{ dbt_utils.group_by(n=18) }}
 )
-select *
+-- add v_other_results to the end because variant columns cannot be included in a group by in Databricks
+select 
+    student_obj_assessments_wide.*,
+    v_other_results
 from student_obj_assessments_wide
+left join object_agg_other_results
+    on student_obj_assessments_wide.k_student_objective_assessment = object_agg_other_results.k_student_objective_assessment

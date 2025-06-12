@@ -1,7 +1,9 @@
 {{
   config(
     post_hook=[
-        "alter table {{ this }} add primary key (k_student_academic_record, gpa_type, is_cumulative)",
+        "alter table {{ this }} alter column k_student_academic_record set not null",
+        "alter table {{ this }} alter column gpa_type set not null",
+        "alter table {{ this }} add primary key (k_student_academic_record, gpa_type)",
         "alter table {{ this }} add constraint fk_{{ this.name }}_academic_record foreign key (k_student_academic_record) references {{ ref('fct_student_academic_record') }}",
         "alter table {{ this }} add constraint fk_{{ this.name }}_student foreign key (k_student) references {{ ref('dim_student') }}",
     ]

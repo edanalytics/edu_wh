@@ -2,6 +2,7 @@
 {{
   config(
     post_hook=[
+        "alter table {{ this }} alter column k_school set not null",
         "alter table {{ this }} add primary key (k_school)",
 
         "{% set network_types = dbt_utils.get_column_values(
