@@ -3,6 +3,14 @@
 ## Under the hood
 ## Fixes
 
+
+# edu_wh v0.4.3
+## Fixes
+- Fix model `dim_course` to handle multiple academic subjects per course (Ed-Fi Data Standard v5.0 breaking change)
+  - Add array column `subject_array` to `dim_course`, containing array of academic subjects if these exist
+  - Add logic to populate `academic_subject` column with single-valued subjects in both cases where data source is <5.0 or >5.0
+  - Add upstream `bld_ef3__course_subject` 
+
 # edu_wh v0.4.2
 ## New features
 - Add tests `cfg_assessment_scores` and `cfg_objective_assessment_scores` to find assess/obj assess with no scores configured
