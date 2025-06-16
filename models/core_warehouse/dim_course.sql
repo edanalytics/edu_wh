@@ -58,7 +58,7 @@ formatted as (
           {%- endfor -%}
         {%- endif %}
 
-        bld_ef3__course_subject.subject_array,
+        bld_ef3__course_subject.subject_array
 
 
     from stg_course
