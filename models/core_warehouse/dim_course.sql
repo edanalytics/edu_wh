@@ -53,7 +53,7 @@ formatted as (
         {% if custom_data_sources is not none and custom_data_sources | length -%}
           {%- for source in custom_data_sources -%}
             {%- for indicator in custom_data_sources[source] -%}
-              , {{ custom_data_sources[source][indicator]['where'] }} as {{ indicator }}
+              {{ custom_data_sources[source][indicator]['where'] }} as {{ indicator }},
             {%- endfor -%}
           {%- endfor -%}
         {%- endif %}
