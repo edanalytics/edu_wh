@@ -19,13 +19,12 @@ select
     stg_courses.api_year,
     stg_courses.k_course,
     build_array.subject_array,
-    -- Coalesce or base logic on stg_courses.data_model_version compared to 5.0?
     coalesce(
         case
             when array_size(build_array.subject_array) = 1
                 then subject_array[0]
             when array_size(build_array.subject_array) > 1
-                then 'Multiple' -- Make configurable, like edu:stu_demos_multiple_races_code?
+                then 'Multiple'
         end,
         stg_courses.academic_subject
     ) as academic_subject
