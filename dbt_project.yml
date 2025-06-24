@@ -29,6 +29,9 @@ models:
       +schema: wh
     qc:
       +schema: qc
+    observability:
+      +schema: observability
+      +materialized: view
 
 vars:
   # labels for generated race/ethnicity groups

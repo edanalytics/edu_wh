@@ -14,7 +14,7 @@ models:
       - name: k_grading_period
         description: Generated primary key composed of 'grading_period', 'period_sequence', 'school_id', and 'school_year' (generated in [stg_ef3__grading_periods](#!/model/model.edu_edfi_source.stg_ef3__grading_periods))
         tests: 
-          - unique
+          - edu_edfi_source.unique
       - name: k_school
         description: Unique identifier for the school. Foreign key reference to [dim_school](#!/model/model.edu_wh.dim_school).
       - name: tenant_code
