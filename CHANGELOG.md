@@ -1,6 +1,7 @@
 # Unreleased
 ## New features
 ## Under the hood
+- Add `incident_id_array` to fct_student_discipline_actions_summary
 ## Fixes
 
 # edu_wh v0.4.2
