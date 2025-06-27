@@ -2,7 +2,13 @@
 ## New features
 ## Under the hood
 - Add `incident_id_array` to fct_student_discipline_actions_summary
+- Add `begin_date` to primary key of `fct_staff_section_associations` to align with DS 5.0 and later
 ## Fixes
+- Fix model `dim_course` to handle multiple academic subjects per course (Ed-Fi Data Standard v5.0 breaking change)
+  - Add array column `subject_array` to `dim_course`, containing array of academic subjects if these exist
+  - Add logic to populate `academic_subject` column with single-valued subjects in both cases where data source is <5.0 or >5.0
+  - Add upstream `bld_ef3__course_subject` 
+
 
 # edu_wh v0.4.2
 ## New features
