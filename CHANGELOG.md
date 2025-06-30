@@ -2,6 +2,7 @@
 ## New features
 ## Under the hood
 - Add `begin_date` to primary key of `fct_staff_section_associations` to align with DS 5.0 and later
+- Add `school_year` to `dim_discipline_incident`
 ## Fixes
 
 # edu_wh v0.4.2
