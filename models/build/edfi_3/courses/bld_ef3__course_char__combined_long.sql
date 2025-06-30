@@ -35,7 +35,7 @@ offering_chars as (
         {{ edu_edfi_source.extract_descriptor('value:courseLevelCharacteristicDescriptor::string') }} as characteristic
     from offerings
     join sections
-        on sections.k_course_offering = offerings.k_course_offering
+        on offerings.k_course_offering = sections.k_course_offering
         {{ edu_edfi_source.json_flatten('offerings.v_course_level_characteristics', outer=True) }}
 ),
 course_chars as (
@@ -50,7 +50,7 @@ course_chars as (
     join offerings
         on courses.k_course = offerings.k_course
     join sections
-        on sections.k_course_offering = offerings.k_course_offering
+        on offerings.k_course_offering = sections.k_course_offering
         {{ edu_edfi_source.json_flatten('courses.v_level_characteristics', outer=True) }}
 ),
 unioned as (
