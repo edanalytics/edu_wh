@@ -7,6 +7,7 @@
 ## Under the hood
 - Add `incident_id_array` to fct_student_discipline_actions_summary
 - Add `begin_date` to primary key of `fct_staff_section_associations` to align with DS 5.0 and later
+- Add `school_year` to `dim_discipline_incident`
 ## Fixes
 - Fix model `dim_course` to handle multiple academic subjects per course (Ed-Fi Data Standard v5.0 breaking change)
   - Add array column `subject_array` to `dim_course`, containing array of academic subjects if these exist

@@ -19,6 +19,8 @@ models:
           - not_null
       - name: tenant_code
         description: "Code defining the Tenant (may be an LEA, SEA, etc.) of the Ed-Fi ODS from which this record was pulled"
+      - name: school_year
+        description: "Sourced from the year of the ODS, since Ed-Fi does not include school year in the model for discipline incidents"
       - name: incident_id
         description: >
           A locally assigned unique identifier (within the school or school district) to identify each specific DisciplineIncident 
