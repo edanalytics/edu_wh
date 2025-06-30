@@ -13,7 +13,7 @@ jobs:
         with:
           payload: |
             {
-              "text": "🚀 New release published: *${{ github.event.release.name }}* \n${{ github.event.release.html_url }}",
+              "text": "New release published: *${{ github.event.release.name }}* \n${{ github.event.release.html_url }}",
               "blocks": [
                 {
                   "type": "section",
