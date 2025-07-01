@@ -39,7 +39,7 @@ formatted as (
 
         stage.direct_certification,
         stage.served_outside_of_regular_session,
-        stu_program_services.program_service as school_food_service_program_service,
+        stu_program_services.program_service as school_food_service_program_service
         {# add any extension columns configured from stg_ef3__student_school_food_service_program_association #}
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_school_food_service_program_association', flatten=False) }}
     from stage
