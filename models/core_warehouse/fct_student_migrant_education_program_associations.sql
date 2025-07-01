@@ -54,3 +54,5 @@ formatted as (
     inner join dim_program
         on stage.k_program = dim_program.k_program
 )
+
+select * from formatted

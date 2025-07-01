@@ -51,9 +51,9 @@ formatted as (
         on stage.k_program = dim_program.k_program
     
     inner join stu_program_services
-        on stage.k_student = stu_program_service.k_student
-        and stage.k_program = stu_program_service.k_program
-        and stage.program_enroll_begin_date = stu_program_service.program_enroll_begin_date
+        on stage.k_student = stu_program_services.k_student
+        and stage.k_program = stu_program_services.k_program
+        and stage.program_enroll_begin_date = stu_program_services.program_enroll_begin_date
 )
 
 select * from formatted
