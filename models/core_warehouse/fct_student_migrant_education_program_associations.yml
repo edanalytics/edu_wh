@@ -1,0 +1,41 @@
+version: 2
+
+models:
+  - name: fct_student_migrant_education_program_associations
+    description: >
+      ##### Overview:
+        This fact table contains student migrant education program enrollment information.
+
+      ##### Primary Key:
+        `k_student, k_program` -- There is one record per student, year, and migrant education program.
+
+    config:
+      tags: ['migrant_education']
+      enabled: "{{ var('src:program:migrant_education:enabled', True) }}"
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - k_student
+            - k_program
+
+    columns:
+      - name: k_student
+      - name: k_student_xyear
+      - name: k_program
+      - name: k_lea
+      - name: k_school
+      - name: tenant_code
+      - name: school_year
+      - name: program_enroll_begin_date
+      - name: program_enroll_end_date
+      - name: priority_for_service 
+      - name: last_qualifying_move 
+      - name: us_initial_entry
+      - name: us_most_recent_entry
+      - name: us_initial_school_entry
+      - name: qualifying_arrival_date
+      - name: state_residency_date
+      - name: eligibility_expiration_date
+      - name: continuation_services_reason
+      - name: continuation_of_services_reason
