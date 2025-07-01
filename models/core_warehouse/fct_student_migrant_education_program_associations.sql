@@ -42,7 +42,7 @@ formatted as (
         stage.state_residency_date,
         stage.eligibility_expiration_date,
         stage.continuation_services_reason,
-        stage.continuation_of_services_reason
+        stage.continuation_of_services_reason,
         {# add any extension columns configured from stg_ef3__student_migrant_education_program_associations #}
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_migrant_education_program_associations', flatten=False) }}
 

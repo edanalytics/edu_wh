@@ -10,7 +10,7 @@
 
 
 with stage as (
-    select * from {{ ref('stg_ef3__student_special_education_program_associations') }}
+    select * from {{ ref('stg_ef3__student_cte_program_associations') }}
 ),
 
 dim_student as (
@@ -42,7 +42,7 @@ formatted as (
         stage.served_outside_of_regular_session,
         stage.technical_skills_assessment,
         stage.reason_exited,
-        stu_program_service.program_service as stu_cte_program_service
+        stu_program_service.program_service as stu_cte_program_service,
         {# add any extension columns configured from stg_ef3__student_special_education_program_associations #}
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_special_education_program_associations', flatten=False) }}
     from stage
