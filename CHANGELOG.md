@@ -1,5 +1,6 @@
 # Unreleased
 ## New features
+- Add fct models `fct_student_cte_program_associations`, `fct_student_migrant_education_program_associations`, and `fct_student_school_food_service_program_associations`
 ## Under the hood
 - Add `begin_date` to primary key of `fct_staff_section_associations` to align with DS 5.0 and later
 ## Fixes
