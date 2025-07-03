@@ -10,33 +10,33 @@ models:
         `k_student` -- There is one record per student and year (note that `k_student` is an annualized identifier)
 
       ##### Important Business Rules:
-        `k_student` is annualized, meaning it is a surrogate key for [`student_unique_id` + `school_year`]. This reflects the 
+        `k_student` is annualized, meaning it is a surrogate key for [`student_unique_id` + `school_year`]. This reflects the
         analytical reality of K-12 accountability measures (most measures are annualized), and the common
-        demand to define student characteristics on a yearly basis (e.g. how many students were part of a Special Education Program *this year*).  
+        demand to define student characteristics on a yearly basis (e.g. how many students were part of a Special Education Program *this year*).
 
         At times it will be useful to run longitudinal analysis linking a student to events across years. For that, use `k_student_xyear`,
         a surrogate key for [`student_unique_id`].
 
-      {{ doc(var('edu:custom_docs:dim_student')) if var('edu:custom_docs:dim_student', '') }}  
+      {{ doc(var('edu:custom_docs:dim_student')) if var('edu:custom_docs:dim_student', '') }}
 
     config:
       tags: ['core', 'special_ed', 'homeless', 'language_instruction', 'title_i']
     columns:
       - name: k_student
         description: Defining key for the student in this school year.
-        tests: 
+        tests:
           - unique
           - not_null
       - name: k_student_xyear
         description: Defining key for the student, which is consistent across years.
-        tests: 
+        tests:
           - not_null
       - name: tenant_code
       - name: school_year
-        description: > 
+        description: >
           School year specified by Spring year.
           e.g. the 2021-2022 year would be 2022.
-        tests: 
+        tests:
           - not_null
       - name: student_unique_id
         description: The student's unique id number in the education organization.
@@ -50,8 +50,10 @@ models:
         description: The student's last name, first name, and middle initial.
       - name: birth_date
         description: The student's birthday formatted as YYYY-MM-DD.
+      - name: birth_country
+        description: The student's birth country.
       - name: lep_code
-        description: The student's Limited English Profiency code.
+        description: The student's Limited English Proficiency code.
       - name: gender
         description: The student's gender.
       - name: grade_level
