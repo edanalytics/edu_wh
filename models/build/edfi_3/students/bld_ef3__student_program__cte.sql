@@ -49,7 +49,7 @@ maxed as (
 xyear_agged as (
     select
         k_student_xyear,
-        max(is_cte_annual) as is_cte_annual
+        max(is_cte_annual) as is_cte_ever
 
     from maxed
     group by 1
@@ -58,7 +58,7 @@ xyear_agged as (
 joined as (
     select
         maxed.*,
-        xyear_agged.is_homeless_ever
+        xyear_agged.is_cte_ever
 
     from maxed
         left join xyear_agged
