@@ -22,7 +22,16 @@ staff_edorg_email as (
     join {{ ref('stg_ef3__staffs') }} as staffs
         on seoca.k_staff = staffs.k_staff
         and seoca.api_year = staffs.api_year
+),
+stacked as (
+    select * from staff_email
+    union all
+    select * from staff_edorg_email
 )
-select * from staff_email
-union all
-select * from staff_edorg_email
+select
+    *,
+    -- allow dots, hyphens, and underscores in email (and optionally plus-addressing)
+    -- but don't allow apostrophes, spaces, other characters
+    -- allow final URL component to be between 2 and 9 characters
+    email_address rlike '[a-zA-Z0-9.-_]+[+]?[a-zA-Z0-9.-]*@[a-zA-Z0-9.-]+[.][a-zA-Z0-9]{2,9}' as is_valid_email
+from stacked
