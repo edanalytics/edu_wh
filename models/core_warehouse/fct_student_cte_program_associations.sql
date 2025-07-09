@@ -41,8 +41,7 @@ formatted as (
         stage.private_cte_program,
         stage.served_outside_of_regular_session,
         stage.technical_skills_assessment,
-        stage.reason_exited,
-        stu_program_service.program_service as stu_cte_program_service
+        stage.reason_exited
         {# add any extension columns configured from stg_ef3__student_cte_program_associations #}
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_cte_program_associations', flatten=False) }}
     from stage
@@ -52,11 +51,6 @@ formatted as (
             
         inner join dim_program
             on stage.k_program = dim_program.k_program
-            
-        left join stu_program_service 
-            on stage.k_student = stu_program_service.k_student
-            and stage.k_program = stu_program_service.k_program
-            and stage.program_enroll_begin_date = stu_program_service.program_enroll_begin_date
 )
 
 select * from formatted

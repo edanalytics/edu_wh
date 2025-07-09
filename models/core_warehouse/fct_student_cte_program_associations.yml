@@ -34,4 +34,3 @@ models:
       - name: served_outside_of_regular_session
       - name: technical_skills_assessment
       - name: reason_exited
-      - name: stu_cte_program_service

@@ -31,4 +31,3 @@ models:
       - name: program_enroll_end_date
       - name: direct_certification
       - name: served_outside_of_regular_session
-      - name: school_food_service_program_service
