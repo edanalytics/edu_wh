@@ -1,6 +1,7 @@
 # Unreleased
 ## New features
 ## Under the hood
+- Update dim_student.yaml (dbt documentation) to be more precise on surrogate key defs for commonly referenced k_student and k_student_xyear
 ## Fixes
 
 # edu_wh v0.4.3
