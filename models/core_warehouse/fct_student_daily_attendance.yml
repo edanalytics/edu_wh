@@ -71,3 +71,8 @@ models:
         description: >
           A text label categorizing levels of attendance. Defined in the 
           seed table `absentee_categories`.
+      - name: consecutive_day_number
+        description: >
+          The rolling number of days for each student at a school on a school day per 
+          'attendance_event_category'. This number resets if there is a change in 'attendance_event_category' 
+          for a student record.

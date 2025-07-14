@@ -244,12 +244,32 @@ consecutive_grouping as (
 ),
 consecutive_absences as (
     select 
-        *,
+        k_student,
+        k_student_xyear,
+        k_school,
+        k_calendar_date,
+        calendar_date,
+        k_session,
+        tenant_code,
+        is_absent,
+        is_present,
+        is_enrolled,
+        total_days_enrolled,
+        cumulative_days_absent,
+        cumulative_days_attended,
+        cumulative_days_enrolled,
+        cumulative_attendance_rate,
+        meets_enrollment_threshold,
+        is_chronic_absentee,
+        event_duration,
+        school_attendance_duration,
+        absentee_category_rank,
+        absentee_category_label,
   {%- if 'IS_UNEXCUSED' in xwalk_att_events_cols %}
-      is_unexcused,
+        is_unexcused,
   {%- endif %}
       -- the consecutive count of attendance per student per school 
-      row_number() over (partition by k_student, k_school, attendance_event_category, consecutive_group order by calendar_date) as consecutive_day_number,
+    row_number() over (partition by k_student, k_school, attendance_event_category, consecutive_group order by calendar_date) as consecutive_day_number,
     from consecutive_grouping
 )
 
