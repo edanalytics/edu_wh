@@ -202,16 +202,14 @@ metric_labels as (
     left join metric_absentee_categories
         on cumulative_attendance_rate > metric_absentee_categories.threshold_lower
         and cumulative_attendance_rate <= metric_absentee_categories.threshold_upper
-)
-,
+),
 consecutive as (
     select 
-      metric_labels.*,
+        metric_labels.*,
+        -- logic that assign a constant value for all records of the same `attendance_event_category` ordered by date per student
         dense_rank() over ( partition by k_student, k_school order by calendar_date ) 
-         - dense_rank() over ( partition by k_student, k_school, attendance_event_category order by calendar_date) as grouping
+            - dense_rank() over ( partition by k_student, k_school, attendance_event_category order by calendar_date) as grouping
     from metric_labels
-    left join xwalk_att_events -- left join because there is a 'Not Enrolled' value not present in xwalk
-    on metric_labels.attendance_event_category = xwalk_att_events.attendance_event_descriptor
 ),
 final as (
     select 
