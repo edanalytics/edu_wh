@@ -21,10 +21,6 @@ dim_program as (
     select * from {{ ref('dim_program') }}
 ),
 
-stu_program_service as (
-    select * from {{ ref('stg_ef3__stu_cte__program_services') }}
-),
-
 formatted as (
     select
         dim_student.k_student,

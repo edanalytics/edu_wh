@@ -19,6 +19,12 @@ models:
   - name: bld_ef3__student_indicators
     config:
       tags: ['core']
+  - name: bld_ef3__student_program__cte
+    config:
+      tags: ['cte']
+  - name: bld_ef3__student_program__cte__program_services
+    config:
+      tags: ['cte']
   - name: bld_ef3__student_program__homeless
     config:
       tags: ['homeless']
@@ -61,12 +67,6 @@ models:
   - name: bld_ef3__wide_ids_student
     config:
       tags: ['core']
-  - name: bld_ef3__student_program__cte
-    config:
-      tags: ['cte']
-  - name: bld_ef3__student_program__cte__program_services
-    config:
-      tags: ['cte']
   - name: bld_ef3__student_program__food_services__program_services
     config:
       tags: [food_service'']
