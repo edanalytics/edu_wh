@@ -197,7 +197,12 @@ metric_labels as (
         case 
             when meets_enrollment_threshold then metric_absentee_categories.level_label 
             else null
-        end as absentee_category_label
+        end as absentee_category_label,
+        -- column to indicate whether or not a student has an unexcused absence
+        case
+            when attendance_event_category ilike '%unexcused%' and is_absent = 1 then true
+            else false
+        end as is_unexcused_absence,
     from cumulatives
     left join metric_absentee_categories
         on cumulative_attendance_rate > metric_absentee_categories.threshold_lower
@@ -206,9 +211,12 @@ metric_labels as (
 consecutive as (
     select 
         metric_labels.*,
-        -- logic that assign a constant value for all records of the same `attendance_event_category` ordered by date per student
+        -- logic that assigns a constant value for all consecutive records of the same `is_unexcused_absence` ordered by date per student
+            -- the first dense_rank() computes the ranking for records for each student
+            -- the second dense_rank() computes the ranking for records for each unique (student + `is_unexcused_absence`)
+            -- the difference between these two `dense_rank()`'s is constant for all consecutive records of the same `is_unexcused_absence` per student.
         dense_rank() over ( partition by k_student, k_school order by calendar_date ) 
-            - dense_rank() over ( partition by k_student, k_school, attendance_event_category order by calendar_date) as grouping
+        - dense_rank() over ( partition by k_student, k_school, is_unexcused_absence order by calendar_date) as grouping,
     from metric_labels
 ),
 final as (
@@ -236,8 +244,11 @@ final as (
         absentee_category_rank,
         absentee_category_label,
         attendance_event_category,
-      -- the consecutive count of attendance per student per school 
-        row_number() over (partition by k_student, k_school, grouping order by calendar_date) as consecutive_day_number,
+      -- the consecutive count of unexcused absence per student per school 
+        case 
+            when not is_unexcused_absence then null
+            else row_number() over (partition by k_student, k_school, grouping order by calendar_date)
+        end as nth_consec_unexcused_absence
     from consecutive
 )
 
