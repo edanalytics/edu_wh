@@ -27,15 +27,24 @@ metric_absentee_categories as (
 bld_attendance_sessions as (
     select * from {{ ref('bld_ef3__attendance_sessions') }}
 ),
-school_max_submitted as (
-    -- find the most recently submitted attendance date by school
+fct_student_school_att_calendar_date as (
+    -- associate attendance events with calendar dates
     select 
-        fct_student_school_att.k_school,
-        dim_calendar_date.school_year,
-        max(dim_calendar_date.calendar_date) as max_date_by_school_and_year
-    from fct_student_school_att 
+        fct_student_school_att.*,
+        dim_calendar_date.calendar_date 
+    from fct_student_school_att
     join dim_calendar_date 
         on fct_student_school_att.k_calendar_date = dim_calendar_date.k_calendar_date
+),
+school_max_submitted as (
+    -- find the most recently submitted attendance date by school or last date in calendar
+    select 
+        dim_calendar_date.k_school,
+        dim_calendar_date.school_year,
+        greatest(coalesce(max(fct_student_school_att_calendar_date.calendar_date), max(dim_calendar_date.calendar_date)),max(dim_calendar_date.calendar_date)) as max_date_by_school_and_year
+    from dim_calendar_date
+    left join fct_student_school_att_calendar_date
+        on dim_calendar_date.k_calendar_date = fct_stcd ../udent_school_att_calendar_date.k_calendar_date
     group by 1,2
 ),
 attendance_calendar as (
