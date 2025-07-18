@@ -1,6 +1,9 @@
 # Unreleased
 ## New features
+- Add a build model that combines staff emails from multiple sources
+- Add a built model that filters staff emails to official/work emails
 ## Under the hood
+- Change dim_staff email sourcing to this new combined build model
 ## Fixes
 
 # edu_wh v0.4.2
