@@ -33,5 +33,5 @@ select
     -- allow dots, hyphens, and underscores in email (and optionally plus-addressing)
     -- but don't allow apostrophes, spaces, other characters
     -- allow final URL component to be between 2 and 9 characters
-    email_address rlike '[a-zA-Z0-9.-_]+[+]?[a-zA-Z0-9.-]*@[a-zA-Z0-9.-]+[.][a-zA-Z0-9]{2,9}' as is_valid_email
+    email_address rlike '^[a-zA-Z0-9_.-]+[+]?[a-zA-Z0-9.-]*@[a-zA-Z0-9.-]+[.][a-zA-Z0-9]{2,9}$' as is_valid_email
 from stacked
