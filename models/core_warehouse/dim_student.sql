@@ -96,6 +96,7 @@ formatted as (
         stu_immutable_demos.last_name,
         stu_immutable_demos.display_name,
         stu_immutable_demos.birth_date,
+        stu_immutable_demos.birth_country,
         stu_demos.lep_code,
         stu_immutable_demos.gender,
         stu_grade.entry_grade_level as grade_level,
@@ -190,7 +191,7 @@ formatted as (
 
         -- add indicator of most recent demographic entry
         stg_student.api_year = max(stg_student.api_year) over(partition by stg_student.k_student_xyear) as is_latest_record,
-       
+
         stu_immutable_demos.race_array,
         stu_cohort_year.cohort_year_array,
         stu_immutable_demos.safe_display_name
