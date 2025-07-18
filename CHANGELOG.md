@@ -1,7 +1,10 @@
 # Unreleased
 ## New features
 - Add `birth_country` to `bld_ef3__immutable_stu_demos` and upstream in `dim_student`
+- Add a build model that combines staff emails from multiple sources
+- Add a built model that filters staff emails to official/work emails
 ## Under the hood
+- Change dim_staff email sourcing to this new combined build model
 - Update dim_student.yaml (dbt documentation) to be more precise on surrogate key defs for commonly referenced k_student and k_student_xyear
 ## Fixes
 
