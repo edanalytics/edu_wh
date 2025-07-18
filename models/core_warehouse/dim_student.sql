@@ -23,6 +23,10 @@
 {% set custom_homeless_program_agg_indicators = var('edu:homeless:custom_program_agg_indicators', None) %}
 {% set custom_language_instruction_program_agg_indicators = var('edu:language_instruction:custom_program_agg_indicators', None) %}
 {% set custom_title_i_program_agg_indicators = var('edu:title_i:custom_program_agg_indicators', None) %}
+{% set custom_cte_program_agg_indicators = var('edu:cte:custom_program_agg_indicators', None) %}
+{% set custom_food_service_program_agg_indicators = var('edu:food_service:custom_program_agg_indicators', None) %}
+{% set custom_migrant_education_program_agg_indicators = var('edu:migrant_education:custom_program_agg_indicators', None) %}
+
 
 
 with stg_student as (
@@ -75,6 +79,24 @@ stu_cohort_year as (
 {% if var('src:program:title_i:enabled', True) %}
     stu_title_i_part_a as (
         select * from {{ ref('bld_ef3__student_program__title_i_part_a') }}
+    ),
+{% endif %}
+
+{% if var('src:program:cte:enabled', True) %}
+    stu_cte as (
+        select * from {{ ref('bld_ef3__student_program__cte') }}
+    ),
+{% endif %}
+
+{% if var('src:program:food_service:enabled', True) %}
+    stu_food_service as (
+        select * from {{ ref('bld_ef3__student_program__food_services') }}
+    ),
+{% endif %}
+
+{% if var('src:program:migrant_education:enabled', True) %}
+    stu_migrant_education as (
+        select * from {{ ref('bld_ef3__student_program__migrant_education') }}
     ),
 {% endif %}
 
@@ -144,6 +166,39 @@ formatted as (
             {% if custom_title_i_program_agg_indicators -%}
                 {% for custom_indicator in custom_title_i_program_agg_indicators %}
                 coalesce(stu_title_i_part_a.{{custom_indicator}}, false) as {{custom_indicator}},
+                {% endfor %}
+            {% endif %}
+        {% endif %}
+
+        {% if var('src:program:cte:enabled', True) %}
+            {% for agg_type in var('edu:cte:agg_types') %}
+                coalesce(stu_cte.is_cte_{{agg_type}}, false) as is_cte_{{agg_type}},
+            {% endfor %}
+            {% if custom_cte_program_agg_indicators -%}
+                {% for custom_indicator in custom_cte_program_agg_indicators %}
+                coalesce(stu_cte.{{custom_indicator}}, false) as {{custom_indicator}},
+                {% endfor %}
+            {% endif %}
+        {% endif %}
+
+        {% if var('src:program:food_service:enabled', True) %}
+            {% for agg_type in var('edu:food_service:agg_types') %}
+                coalesce(stu_food_service.is_food_service_{{agg_type}}, false) as is_food_service_{{agg_type}},
+            {% endfor %}
+            {% if custom_food_service_program_agg_indicators -%}
+                {% for custom_indicator in custom_food_service_program_agg_indicators %}
+                coalesce(stu_food_service.{{custom_indicator}}, false) as {{custom_indicator}},
+                {% endfor %}
+            {% endif %}
+        {% endif %}
+
+        {% if var('src:program:migrant_education:enabled', True) %}
+            {% for agg_type in var('edu:migrant_education:agg_types') %}
+                coalesce(stu_migrant_education.is_migrant_education_{{agg_type}}, false) as is_migrant_education_{{agg_type}},
+            {% endfor %}
+            {% if custom_migrant_education_program_agg_indicators -%}
+                {% for custom_indicator in custom_migrant_education_program_agg_indicators %}
+                coalesce(stu_migrant_education.{{custom_indicator}}, false) as {{custom_indicator}},
                 {% endfor %}
             {% endif %}
         {% endif %}
@@ -239,6 +294,21 @@ formatted as (
     {% if var('src:program:title_i:enabled', True) %}
         left join stu_title_i_part_a
             on stu_demos.k_student = stu_title_i_part_a.k_student
+    {% endif %}
+
+    {% if var('src:program:cte:enabled', True) %}
+        left join stu_cte
+            on stu_demos.k_student = stu_cte.k_student
+    {% endif %}
+
+    {% if var('src:program:food_service:enabled', True) %}
+        left join stu_food_service
+            on stu_demos.k_student = stu_food_service.k_student
+    {% endif %}
+
+    {% if var('src:program:migrant_education:enabled', True) %}
+        left join stu_migrant_education
+            on stu_demos.k_student = stu_migrant_education.k_student
     {% endif %}
 
     -- custom data sources
