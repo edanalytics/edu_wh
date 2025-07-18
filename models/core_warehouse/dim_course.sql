@@ -15,6 +15,9 @@ with stg_course as (
 bld_ef3__wide_ids_course as (
     select * from {{ ref('bld_ef3__wide_ids_course') }}
 ),
+bld_ef3__course_subject as (
+    select * from {{ ref('bld_ef3__course_subject') }}
+),
 formatted as (
     select 
         stg_course.k_course,
@@ -30,7 +33,7 @@ formatted as (
         stg_course.k_school,
         stg_course.ed_org_id,
         stg_course.ed_org_type,
-        stg_course.academic_subject,
+        bld_ef3__course_subject.academic_subject,
         stg_course.career_pathway,
         stg_course.course_defined_by,
         stg_course.gpa_applicability,
@@ -44,19 +47,25 @@ formatted as (
         stg_course.minimum_available_credit_type,
         stg_course.minimum_available_credit_conversion,
         stg_course.number_of_parts,
-        stg_course.time_required_for_completion
+        stg_course.time_required_for_completion,
 
         -- custom indicators
         {% if custom_data_sources is not none and custom_data_sources | length -%}
           {%- for source in custom_data_sources -%}
             {%- for indicator in custom_data_sources[source] -%}
-              , {{ custom_data_sources[source][indicator]['where'] }} as {{ indicator }}
+              {{ custom_data_sources[source][indicator]['where'] }} as {{ indicator }},
             {%- endfor -%}
           {%- endfor -%}
         {%- endif %}
+
+        bld_ef3__course_subject.subject_array
+
+
     from stg_course
     left join bld_ef3__wide_ids_course 
         on stg_course.k_course = bld_ef3__wide_ids_course.k_course
+    left join bld_ef3__course_subject
+        on stg_course.k_course = bld_ef3__course_subject.k_course
     
     -- custom data sources
     {% if custom_data_sources is not none and custom_data_sources | length -%}
