@@ -1,12 +1,16 @@
 # Unreleased
 ## New features
-- Add `birth_country` to `bld_ef3__immutable_stu_demos` and upstream in `dim_student`
-- Add a build model that combines staff emails from multiple sources
-- Add a built model that filters staff emails to official/work emails
 ## Under the hood
-- Change dim_staff email sourcing to this new combined build model
-- Update dim_student.yaml (dbt documentation) to be more precise on surrogate key defs for commonly referenced k_student and k_student_xyear
 ## Fixes
+
+# edu_wh v0.4.4
+## New features
+- Add `birth_country` to `bld_ef3__immutable_stu_demos` and upstream in `dim_student`
+- Add `bld_ef3__staff_emails`, a build model that combines staff emails from `stg_ef3__staffs__emails` and `stg_ef3__staff_education_organization_contact_associations`
+- Add `bld_ef3__staff_official_emails`, a build model that filters staff emails to official/work emails (can be used for RLS)
+## Under the hood
+- Change dim_staff email sourcing to this new combined model ^ `bld_ef3__staff_emails`
+- Update dim_student.yaml (dbt documentation) to be more precise on surrogate key defs for commonly referenced k_student and k_student_xyear
 
 # edu_wh v0.4.3
 ## Under the hood
@@ -15,9 +19,9 @@
 - Add `school_year` to `dim_discipline_incident`
 ## Fixes
 - Fix model `dim_course` to handle multiple academic subjects per course (Ed-Fi Data Standard v5.0 breaking change)
-  - Add array column `subject_array` to `dim_course`, containing array of academic subjects if these exist
-  - Add logic to populate `academic_subject` column with single-valued subjects in both cases where data source is <5.0 or >5.0
-  - Add upstream `bld_ef3__course_subject`
+- Add array column `subject_array` to `dim_course`, containing array of academic subjects if these exist
+- Add logic to populate `academic_subject` column with single-valued subjects in both cases where data source is <5.0 or >5.0
+- Add upstream `bld_ef3__course_subject`
 
 # edu_wh v0.4.2
 ## New features
