@@ -2,6 +2,7 @@
 ## New features
 - Add `birth_country` to `bld_ef3__immutable_stu_demos` and upstream in `dim_student`
 ## Under the hood
+- Update dim_student.yaml (dbt documentation) to be more precise on surrogate key defs for commonly referenced k_student and k_student_xyear
 ## Fixes
 
 # edu_wh v0.4.3
