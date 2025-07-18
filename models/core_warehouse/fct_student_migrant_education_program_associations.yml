@@ -8,7 +8,7 @@ models:
 
       ##### Primary Key:
         `k_student, k_student_xyear, k_program, program_enroll_begin_date` -- There is one 
-        record per student, year, program enrol begin date,  and migrant education program.
+        record per student, year, program enrol begin date, and migrant education program.
 
     config:
       tags: ['migrant_education']
