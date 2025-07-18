@@ -10,7 +10,7 @@
 {% set banned_personal_domains = var('edu:staff:banned_personal_domains', 
     ['aim.com', 'aol.com', 'att.net', 'gmail.com', 'yahoo.com', 
     'hotmail.com', 'msn.com', 'live.com', 'charter.net', 
-    'earthlink.net', 'verizon.net', 'comcast.net']) %}
+    'earthlink.net', 'verizon.net', 'comcast.net', 'outlook.com']) %}
 {% if banned_personal_domains is string %} {% set banned_personal_domains = [banned_personal_domains] %}{% endif %}
 
 -- keep only emails that are valid, coded as a 'work'-type email, and don't appear to be personal domains
