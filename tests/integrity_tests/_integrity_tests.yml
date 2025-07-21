@@ -36,3 +36,13 @@ tests:
   - name: one_school_year_per_student_parent_association
     config:
       tags: ['core']
+
+  - name: sections_without_staff
+    config:
+      tags: ['core', 'rostering']
+  - name: sections_without_students
+    config:
+      tags: ['core', 'rostering']
+  - name: enrollments_without_overlapping_sections
+    config:
+      tags: ['core', 'rostering']

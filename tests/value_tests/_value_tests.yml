@@ -13,12 +13,3 @@ tests:
   - name: student_attendance_total_days
     config:
       tags: ['core']
-  - name: sections_without_staff
-    config:
-      tags: ['rostering']
-  - name: sections_without_students
-    config:
-      tags: ['rostering']
-  - name: enrollments_without_overlapping_sections
-    config:
-      tags: ['rostering']
