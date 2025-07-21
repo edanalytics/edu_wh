@@ -3,42 +3,29 @@
 This test finds student enrollments without any overlapping course sections.
 
 ## When is this important to resolve?
-TODO
+This test flags that course enrollment data may be incomplete, which may be
+important if you want to know which students were enrolled in which courses. 
 
 ## How to resolve?
 TODO
 */
+
 {{ 
   config(
     store_failures = true,
     severity = 'warn'
   )
 }}
-with dim_student as (
-    select * from {{ ref("dim_student") }}
-), fct_student_school_association as (
-    select * from {{ ref("fct_student_school_association") }}
-), fct_student_section_association as (
-    select * from {{ ref("fct_student_section_association") }}
+
+with sections_per_enrollment as (
+    select *
+    from {{ ref('sections_per_enrollment') }}
 )
 
-
-select fct_student_school_association.*
-from dev_ac_wh.dim_student
-inner join dev_ac_wh.fct_student_school_association
-    on fct_student_school_association.k_student = dim_student.k_student
-left join dev_ac_wh.fct_student_section_association
-    on fct_student_section_association.k_student = dim_student.k_student
-    and fct_student_section_association.k_school = fct_student_school_association.k_school
-    -- add school year to join to be explicit?
-    and (
-        (
-            fct_student_section_association.begin_date >= fct_student_school_association.entry_date
-            and fct_student_section_association.begin_date <= coalesce(fct_student_school_association.exit_withdraw_date, current_date())
-        )
-        or (
-            fct_student_section_association.end_date >= fct_student_school_association.entry_date
-            and fct_student_section_association.end_date <= coalesce(fct_student_school_association.exit_withdraw_date, current_date())
-        )
-    )
-where fct_student_section_association.k_student is null
+select k_school,
+    k_student,
+    school_year,
+    entry_date,
+    n_sections
+from sections_per_enrollment
+where n_sections = 0
