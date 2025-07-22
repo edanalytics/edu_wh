@@ -29,7 +29,8 @@ behaviors_array as (
         stu_discipline_incident_behaviors_actions.k_student_xyear,
         stu_discipline_incident_behaviors_actions.discipline_action_id,
         stu_discipline_incident_behaviors_actions.discipline_date,
-        array_agg(fct_student_discipline_incident_behaviors.behavior_type) as behavior_types_array
+        array_agg(fct_student_discipline_incident_behaviors.behavior_type) as behavior_types_array,
+        array_agg(distinct fct_student_discipline_incident_behaviors.incident_id) as incident_id_array
     from stu_discipline_incident_behaviors_actions
     join fct_student_discipline_incident_behaviors
         on stu_discipline_incident_behaviors_actions.k_student = fct_student_discipline_incident_behaviors.k_student
@@ -57,6 +58,7 @@ formatted as (
         fct_student_discipline_actions.k_discipline_actions_event,
         fct_student_discipline_actions.tenant_code,
         behaviors_array.behavior_types_array,
+        behaviors_array.incident_id_array,
         actions_array.discipline_actions_array,
         -- we want to include the most severe behavior type and discipline action
         -- only if both severity orders are defined
