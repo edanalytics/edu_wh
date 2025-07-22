@@ -1,6 +1,9 @@
 {{
   config(
     post_hook=[
+        "alter table {{ this }} alter column k_course set not null",
+        "alter table {{ this }} alter column k_student_academic_record set not null",
+        "alter table {{ this }} alter column course_attempt_result set not null",
         "alter table {{ this }} add primary key (k_course, k_student_academic_record, course_attempt_result)",
         "alter table {{ this }} add constraint fk_{{ this.name }}_course foreign key (k_course) references {{ ref('dim_course') }}",
         "alter table {{ this }} add constraint fk_{{ this.name }}_academic_record foreign key (k_student_academic_record) references {{ ref('fct_student_academic_record') }}",

@@ -1,6 +1,10 @@
 {{
   config(
     post_hook=[
+        "alter table {{ this }} alter column k_student set not null",
+        "alter table {{ this }} alter column k_student_xyear set not null",
+        "alter table {{ this }} alter column k_discipline_incident set not null",
+        "alter table {{ this }} alter column behavior_type set not null",
         "alter table {{ this }} add primary key (k_student, k_student_xyear, k_discipline_incident, behavior_type)",
         "alter table {{ this }} add constraint fk_{{ this.name }}_student foreign key (k_student) references {{ ref('dim_student') }}",
         "alter table {{ this }} add constraint fk_{{ this.name }}_school foreign key (k_school) references {{ ref('dim_school') }}",
@@ -29,7 +33,7 @@ participation_codes as (
         k_student,
         k_student_xyear,
         k_discipline_incident,
-        array_agg(distinct participation_code) within group (order by participation_code asc) as participation_codes_array
+        {{ edu_edfi_source.json_array_agg('distinct participation_code', order_by='participation_code', is_terminal=True) }} as participation_codes_array
     from {{ ref('stg_ef3__student_discipline_incident_behavior_associations__participation_codes') }}
     group by k_student, k_student_xyear, k_discipline_incident
 ),
@@ -67,7 +71,7 @@ formatted as (
         -- bring in any additional custom columns from xwalk, does nothing if there are no extra columns
         {{ accordion_columns('xwalk_discipline_behaviors', exclude_columns=['behavior_type', 'severity_order']) }}
         -- there is typically only a single value here, choosing the first option for analytical use cases
-        participation_codes.participation_codes_array[0]::string as participation_code,
+        {{ edu_edfi_source.json_get_first('participation_codes.participation_codes_array', 'string') }} as participation_code,
         participation_codes.participation_codes_array
         {# add any extension columns configured from stg_ef3__student_discipline_incident_behavior_associations #}
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_discipline_incident_behavior_associations', flatten=False) }}

@@ -1,6 +1,8 @@
 {{
   config(
     post_hook=[
+        "alter table {{ this }} alter column k_student set not null",
+        "alter table {{ this }} alter column k_parent set not null",
         "alter table {{ this }} add primary key (k_student, k_parent)",
         "alter table {{ this }} add constraint fk_{{ this.name }}_student foreign key (k_student) references {{ ref('dim_student') }}",
         "alter table {{ this }} add constraint fk_{{ this.name }}_parent foreign key (k_parent) references {{ ref('dim_parent') }}",

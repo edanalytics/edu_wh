@@ -44,10 +44,11 @@ Update the model used as a custom data source to ensure it is unique on k_course
 
 {%- else %}
   -- if no custom data sources configured, force test to return a zero row table
-  select top 0 *
+  select *
   from (select
           null as data_source,
           null as k_course_section,
           null as n_records
        ) blank_subquery
+  limit 0
 {%- endif %}

@@ -1,6 +1,9 @@
 {{
   config(
     post_hook=[
+        "alter table {{ this }} alter column k_staff set not null",
+        "alter table {{ this }} alter column k_course_section set not null",
+        "alter table {{ this }} alter column begin_date set not null",
         "alter table {{ this }} add primary key (k_staff, k_course_section, begin_date)",
         "alter table {{ this }} add constraint fk_{{ this.name }}_staff foreign key (k_staff) references {{ ref('dim_staff') }}",
         "alter table {{ this }} add constraint fk_{{ this.name }}_section foreign key (k_course_section) references {{ ref('dim_course_section') }}",
