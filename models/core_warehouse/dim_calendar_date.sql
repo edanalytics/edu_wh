@@ -44,9 +44,9 @@ formatted as (
         stg_calendar_date.school_year,
         stg_calendar_date.calendar_date,
         case 
-            when {{ edu_edfi_source.json_array_size('summarize_calendar_events.calendar_events_array') }} = 1
+            when array_size(summarize_calendar_events.calendar_events_array) = 1
                 then summarize_calendar_events.calendar_events_array[0]
-            when {{ edu_edfi_source.json_array_size('summarize_calendar_events.calendar_events_array') }} > 1
+            when array_size(summarize_calendar_events.calendar_events_array) > 1
                 then 'Multiple'
             else null
         end as calendar_event,

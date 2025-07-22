@@ -21,10 +21,10 @@ select
         when stg_staffs.has_hispanic_latino_ethnicity
             {# default to stu var if staff var not defined #}
             then '{{ var("edu:staff_demos:hispanic_latino_code", var("edu:stu_demos:hispanic_latino_code")) }}'
-        when {{ edu_edfi_source.json_array_size('race_array') }} > 1
+        when array_size(race_array) > 1
             {# default to stu var if staff var not defined #}
             then '{{ var("edu:staff_demos:multiple_races_code", var("edu:stu_demos:multiple_races_code")) }}'
-        when {{ edu_edfi_source.json_array_size('race_array') }} = 1
+        when array_size(race_array) = 1
             then race_array[0]
             {# default to stu var if staff var not defined #}
         else '{{ var("edu:staff_demos:race_unknown_code", var("edu:stu_demos:race_unknown_code")) }}'
