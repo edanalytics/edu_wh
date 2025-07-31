@@ -1,3 +1,11 @@
+{{
+  config(
+    post_hook=[
+        "alter table {{ this }} add primary key (k_performance_evaluation)"
+    ]
+  )
+}}
+
 with stg_performance_evaluations as (
     select * from {{ ref('stg_tpdm__performance_evaluations') }}
 ),

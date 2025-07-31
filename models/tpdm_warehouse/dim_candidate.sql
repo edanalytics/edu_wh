@@ -1,3 +1,11 @@
+{{
+  config(
+    post_hook=[
+        "alter table {{ this }} add primary key (k_candidate)"
+    ]
+  )
+}}
+
 with stg_candidates as (
     select * from {{ ref('stg_tpdm__candidates') }}
 ),
