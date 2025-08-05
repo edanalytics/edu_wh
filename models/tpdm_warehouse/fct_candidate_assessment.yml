@@ -1,0 +1,43 @@
+version: 2
+
+models:
+  - name: fct_candidate assessment
+    description: >
+        ##### Overview:
+          Defines a performance-based assessment of an educator candidate
+
+        ##### Primary Key:
+          `k_candidate_assessment` - There is one record per performance evaluation for a given candidate. This is a generated surrogate key
+          from [k_candidate, k_performance_evaluation, k_person]
+    config:
+      tags: ['tpdm']
+    columns:
+      - name: k_candidate_assessment
+        description: Generated surrogate key from `k_candidate`, `k_performance_evaluation`, and `k_person`
+        tests: 
+          - unique
+      - name: k_candidate
+        description: Foreign key to dim_candidate, generated from `tenant_code`, `api_year`, and `candidate_id`
+      - name: k_person
+        description: "Generated surrogate key from `tenant_code`, `api_year`, `person_id`, and `source_system`"
+      - name: k_performance_evaluation
+        description: Foreign key to dim_performance_evaluation, generated from [tenant_code, api_year, ed_org_id, evaluation_period, performance_evaluation_title, performance_evaluation_type, school_year, academic_term]
+      - name: rating_results
+        description: The numerical summary rating or score for the performance evaluation.
+      - name: rating_level
+        description: The rating level achieved based upon the rating or score.
+      - name: reviewers
+        description: The person(s) that conducted the performance evaluation.
+      - name: coteaching_style_observed
+        description: A type of co-teaching observed as part of the performance evaluation.
+      - name: comments
+        description: Any comments about the performance evaluation to be captured.
+      - name: is_announced
+        description: An indicator of whether the performance evaluation was announced or not.
+      - name: schedule_date
+        description: The month, day, and year on which the performance evaluation was to be conducted.
+      - name: actual_date
+        description: The month, day, and year on which the performance evaluation was conducted.
+      - name: actual_duration
+        description: The actual or estimated number of clock minutes during which the performance evaluation was conducted.
+      
