@@ -3,6 +3,12 @@
 - Add support for Databricks
 
 ## Under the hood
+- The following 'breaking' under the hood changes were introduced for databricks compatibility:
+  - All columns which are part of the primary key of a table are set explicitly as not null
+  - The primary key of `fct_student_gpa` has been changed to remove is_cumulative, but the logic was adjusted so that the effective grain is the same
+  - Added `fct_staff_school_association.k_staff_school_association` and updated the primary key
+  - Changed column order in `fct_student_assessment` and `fct_student_objective_assessment`
+  - Changed `dim_class_period.start_time` and `end_time` from time data types to strings
 ## Fixes
 
 # edu_wh v0.4.4
