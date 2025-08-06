@@ -57,6 +57,9 @@ formatted as (
         stg_stu_school.is_primary_school,
         stg_stu_school.is_repeat_grade,
         stg_stu_school.is_school_choice_transfer,
+        stg_stu_school.is_school_choice,
+        stg_stu_school.school_choice_basis,
+        stg_stu_school.enrollment_type,
         -- create indicator for active enrollment
         iff(
             -- is highest school year observed by tenant
@@ -75,6 +78,8 @@ formatted as (
         stg_stu_school.entry_type,
         stg_stu_school.exit_withdraw_type,
         stg_stu_school.class_of_school_year,
+        stg_stu_school.next_year_school_id,
+        stg_stu_school.next_year_grade_level,
         stg_stu_school.k_graduation_plan,
         stg_stu_school.graduation_plan_type,
         stg_stu_school.v_alternative_graduation_plans,

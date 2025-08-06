@@ -1,6 +1,13 @@
 # Unreleased
 ## New features
+## Under the hood
+## Fixes
+
+# edu_wh v0.5.0
+## New features
 - Add Databricks platform compatibility
+- Add optional `gender_identity` to `dim_student` as an immutable demographic. This field was introduced to Ed-Fi in Data Standard v5
+- Add optional DS5 fields to `fct_student_school_association`: `is_school_choice`, `school_choice_basis`, `enrollment_type`, `next_year_school_id`, `next_year_grade_level`
 ## Under the hood
 - The following 'breaking' under the hood changes were introduced for databricks compatibility:
   - All columns which are part of the primary key of a table are set explicitly as not null
