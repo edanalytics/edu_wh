@@ -59,6 +59,8 @@ Describe any process that confirms that the files do what is expected, include s
 ## edu_wh PR Review Checklist:
 Make sure the following have been completed before approving this PR:
 - [ ] Description of changes has been added to Unreleased section of [CHANGELOG.md](/CHANGELOG.md). Add under `## New Features` for features, etc.
+- [ ] Code has been tested/checked for Databricks and Snowflake compatibility - EA engineers see Databricks checklist [here](https://edanalytics.slite.com/app/docs/LRjXFxVRAWA5ST) 
+- [ ] Reviewer confirms the grain of all tables are unchanged, OR any changes are expected, communicated, and this PR is flagged as a breaking change (not for patch release)
 - [ ] If a new configuration xwalk was added:
   - [ ] The code is written such that the xwalk is optional (preferred), and this behavior was tested, OR
   - [ ] The code is written such that the xwalk is required, and the required xwalk is added to edu_project_template, and this PR is flagged as breaking change (not for patch release)
@@ -67,7 +69,6 @@ Make sure the following have been completed before approving this PR:
   - [ ] The code is written such that the variable is optional (preferred), and this behavior was tested, OR
   - [ ] The code is written such that the variable is required, and a default value was added to edu_project_template, and this PR is flagged as breaking change (not for patch release)
   - [ ] A description for the new variable has been added to EDU documentation site [here](https://github.com/edanalytics/edu_docs/blob/main/docs/docs/manage_extend/reference/configure_dbt_vars.md) 
-- [ ] Reviewer confirms the grain of all tables are unchanged, OR any changes are expected, communicated, and this PR is flagged as a breaking change (not for patch release)
 
 <!---## Future ToDos & Questions:-->
 <!---
