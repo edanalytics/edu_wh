@@ -1,7 +1,9 @@
 {{
   config(
     post_hook=[
-        "alter table {{ this }} add primary key (k_staff, k_school, school_year, program_assignment, staff_classification, begin_date)",
+        "alter table {{ this }} alter column k_staff_school_association set not null",
+        "alter table {{ this }} add primary key (k_staff_school_association)",
+        "alter table {{ this }} add constraint fk_{{ this.name }}_staff foreign key (k_staff) references {{ ref('dim_staff') }}",
         "alter table {{ this }} add constraint fk_{{ this.name }}_school foreign key (k_school) references {{ ref('dim_school') }}",
     ]
   )
@@ -76,7 +78,19 @@ formatted as (
         on stg_staff_school.k_school_calendar = dim_school_calendar.k_school_calendar
 ),
 check_active as (
-    select *,
+    select 
+        {{ dbt_utils.generate_surrogate_key(
+            [
+                'tenant_code',
+                'school_year', 
+                'begin_date',
+                'k_staff', 
+                'k_school', 
+                'program_assignment', 
+                'staff_classification'
+            ]
+        )}} as k_staff_school_association,
+        *,
         -- create indicator for active position
         iff(
             -- is highest school year observed by tenant
