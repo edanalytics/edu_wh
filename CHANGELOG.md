@@ -1,5 +1,7 @@
 # Unreleased
 ## New features
+ - Add `gender_identity` to `dim_student` as an immutable demographic. This field was introduced to Ed-Fi in Data Standard v5
+ - Add DS5 fields to `fct_student_school_association`: `is_school_choice`, `school_choice_basis`, `enrollment_type`, `next_year_school_id`, `next_year_grade_level`
 ## Under the hood
 ## Fixes
 
