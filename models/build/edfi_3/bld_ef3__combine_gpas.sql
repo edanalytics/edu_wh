@@ -20,7 +20,7 @@ format_deprecated_gpas as (
         tenant_code,
         api_year,
         k_student_academic_record,
-        'Unknown'      as gpa_type,
+        'Cumulative, unknown weighting' as gpa_type,
         cumulative_gpa as gpa_value,
         true           as is_cumulative,
         null           as max_gpa_value
@@ -30,10 +30,10 @@ format_deprecated_gpas as (
         tenant_code,
         api_year,
         k_student_academic_record,
-        'Unknown'      as gpa_type,
-        session_gpa    as gpa_value,
-        false          as is_cumulative,
-        null           as max_gpa_value
+        'Non-cumulative, unknown weighting' as gpa_type,
+        session_gpa as gpa_value,
+        false       as is_cumulative,
+        null        as max_gpa_value
     from deprecated_gpas
 )
 select * from format_current_gpas
