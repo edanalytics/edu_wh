@@ -1,7 +1,6 @@
 # Unreleased
 ## New features
-- Add support for Databricks
-
+- Add Databricks platform compatibility
 ## Under the hood
 - The following 'breaking' under the hood changes were introduced for databricks compatibility:
   - All columns which are part of the primary key of a table are set explicitly as not null
@@ -10,6 +9,7 @@
   - Changed column order in `fct_student_assessment` and `fct_student_objective_assessment`
   - Changed `dim_class_period.start_time` and `end_time` from time data types to strings
 ## Fixes
+- Potentially breaking for queryers: `bld_ef3__combine_gpas` (and downstream `fct_student_gpa`) `gpa_type` `'Unknown'` values have been made more specific: `'Cumulative, unknown weighting'` and `'Non-cumulative, unknown weighting'` to respect the grain of the table.
 
 # edu_wh v0.4.4
 ## New features
