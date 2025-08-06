@@ -99,6 +99,7 @@ formatted as (
         stu_immutable_demos.birth_country,
         stu_demos.lep_code,
         stu_immutable_demos.gender,
+        stu_immutable_demos.gender_identity,
         stu_grade.entry_grade_level as grade_level,
         stu_grade.grade_level_integer,
         stu_immutable_demos.race_ethnicity,
