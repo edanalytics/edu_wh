@@ -23,11 +23,6 @@ dim_performance_evaluation as (
 
 formatted as (
     select
-        {{ dbt_utils.generate_surrogate_key(
-            ['dim_candidate.k_candidate',
-             'dim_performance_evaluation.k_performance_evaluation',
-             'dim_candidate.k_person']
-        ) }} as k_candidate_assessment,
         dim_candidate.k_candidate,
         dim_candidate.k_person,
         dim_performance_evaluation.k_performance_evaluation,
@@ -40,9 +35,9 @@ formatted as (
         stg_performance_evaluation_ratings.schedule_date,
         stg_performance_evaluation_ratings.actual_date,
         stg_performance_evaluation_ratings.actual_duration,
-    from dim_candidate
-    join stg_performance_evaluation_ratings
-        on dim_candidate.k_person = stg_performance_evaluation_ratings.k_person
+    from stg_performance_evaluation_ratings
+    join dim_candidate
+        on stg_performance_evaluation_ratings.k_person = dim_candidate.k_person
     join dim_performance_evaluation
         on stg_performance_evaluation_ratings.k_performance_evaluation = dim_performance_evaluation.k_performance_evaluation
 )

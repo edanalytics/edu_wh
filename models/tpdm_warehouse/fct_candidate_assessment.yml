@@ -7,15 +7,10 @@ models:
           Defines a performance-based assessment of an educator candidate
 
         ##### Primary Key:
-          `k_candidate_assessment` - There is one record per performance evaluation for a given candidate. This is a generated surrogate key
-          from [k_candidate, k_performance_evaluation, k_person]
+          `k_candidate`, `k_performance_evaluation`, and `k_person` - There is one record per performance evaluation for a given candidate, who is a type of person
     config:
       tags: ['tpdm']
     columns:
-      - name: k_candidate_assessment
-        description: Generated surrogate key from `k_candidate`, `k_performance_evaluation`, and `k_person`
-        tests: 
-          - unique
       - name: k_candidate
         description: Foreign key to dim_candidate, generated from `tenant_code`, `api_year`, and `candidate_id`
       - name: k_person
