@@ -31,11 +31,12 @@ school_max_submitted as (
     -- find the most recently submitted attendance date by school
     select 
         fct_student_school_att.k_school,
+        fct_student_school_att.school_year,
         max(dim_calendar_date.calendar_date) as max_date_by_school
     from fct_student_school_att 
     join dim_calendar_date 
         on fct_student_school_att.k_calendar_date = dim_calendar_date.k_calendar_date
-    group by 1
+    group by 1, 2
 ),
 attendance_calendar as (
     -- a dataset of all possible days on which school attendance could be recorded
