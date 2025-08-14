@@ -22,7 +22,10 @@ dim_student as (
 object_agg_other_results as (
     select
         k_student_objective_assessment,
-        object_agg(original_score_name, score_result::variant) as v_other_results
+        ARRAY_AGG(NAMED_STRUCT(
+            'score_name', original_score_name,
+            'score_result', score_result
+            )) AS v_other_results
     from student_obj_assessments_long_results
     where normalized_score_name = 'other'
     group by 1
