@@ -10,6 +10,8 @@
     ]
   )
 }}
+{# Load custom data sources from var #}
+{% set custom_data_sources = var("edu:discipline_actions:custom_data_sources", []) %}
 
 with stg_discipline_actions as (
     select * from {{ ref('stg_ef3__discipline_actions') }}
@@ -32,7 +34,7 @@ flatten_staff_keys as (
         k_student_xyear,
         discipline_action_id,
         discipline_date,
-        {{ edu_edfi_source.gen_skey('k_staff', alt_ref='value:staffReference') }}
+		{{ edu_edfi_source.gen_skey('k_staff', alt_ref='value:staffReference') }}
     from stg_discipline_actions
         {{ edu_edfi_source.json_flatten('v_staffs') }}
 ),
@@ -83,6 +85,15 @@ formatted as (
         bld_discipline_incident_associations.k_student_discipline_incident_behavior_array
         {# add any extension columns configured from stg_ef3__discipline_actions #}
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__discipline_actions', flatten=False) }}
+
+        -- custom data sources
+        {% if custom_data_sources is not none and custom_data_sources | length -%}
+          {%- for source in custom_data_sources -%}
+            {%- for indicator in custom_data_sources[source] -%}
+              , {{ custom_data_sources[source][indicator]['where'] }} as {{ indicator }}
+            {%- endfor -%}
+          {%- endfor -%}
+        {%- endif %}
     from stg_discipline_actions
     join dim_student 
         on stg_discipline_actions.k_student = dim_student.k_student
@@ -100,6 +111,15 @@ formatted as (
         on stg_discipline_actions.k_student = agg_staff_keys.k_student
         and stg_discipline_actions.discipline_action_id = agg_staff_keys.discipline_action_id
         and stg_discipline_actions.discipline_date = agg_staff_keys.discipline_date
+    -- custom data sources
+    {% if custom_data_sources is not none and custom_data_sources | length -%}
+      {%- for source in custom_data_sources -%}
+        left join {{ ref(source) }}
+          on stg_discipline_actions.k_student = {{ source }}.k_student
+          and stg_discipline_actions.discipline_date = {{ source }}.discipline_date
+          and stg_discipline_actions.discipline_action_id = {{ source }}.discipline_action_id
+      {% endfor %}
+    {%- endif %}
     {{ edu_edfi_source.json_flatten('v_disciplines') }}
     -- brule: one or the other school must be populated
     where (assignment_school_id is not null or responsibility_school_id is not null)
@@ -132,3 +152,4 @@ join_descriptor_interpretation as (
         on formatted.discipline_action = xwalk_discipline_actions.discipline_action
 )
 select * from join_descriptor_interpretation
+
