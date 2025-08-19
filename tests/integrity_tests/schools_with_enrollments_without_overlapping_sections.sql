@@ -1,14 +1,15 @@
 /*
 ## What is this test?
-This test finds schools with over 50% of student enrollments in any given
-school year that don't have any overlapping course sections.
+This test finds schools with any student enrollments in any given school year
+that don't have any overlapping course sections.
 
 ## When is this important to resolve?
 This test flags that course enrollment data may be incomplete, which may be
 important if you want to know which students were enrolled in which courses. 
 
 ## How to resolve?
-TODO
+Check if student section enrollments (StudentSectionAssociations) are being
+populated properly.
 */
 
 {{ 
@@ -30,4 +31,4 @@ select k_school,
     n_enrollments_without_sections / n_enrollments as p_enrollments_without_sections
 from sections_per_enrollment
 group by 1, 2
-having p_enrollments_without_sections > 0.5
+having p_enrollments_without_sections > 0
