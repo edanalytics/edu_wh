@@ -7,7 +7,8 @@ This test flags that course enrollment data may be incomplete, which may be
 important if you want to know which students were enrolled in which courses. 
 
 ## How to resolve?
-TODO
+Check if student section enrollments (StudentSectionAssociations) are being
+populated properly.
 */
 
 {{ 

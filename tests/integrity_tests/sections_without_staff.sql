@@ -3,10 +3,13 @@
 This test finds course section records with no staff associated with them.
 
 ## When is this important to resolve?
-TODO
+Missing staff-section associations may affect your ability to analyze 
+the effects of different staff on course-level metrics.
+
 
 ## How to resolve?
-TODO
+Check if staff-section associations (StaffSectionAssociations) are being
+populated properly.
 */
 {{ 
   config(

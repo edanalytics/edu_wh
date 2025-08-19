@@ -3,10 +3,11 @@
 This test finds course section records with no students associated with them.
 
 ## When is this important to resolve?
-TODO
+Rostering data may be important for analyzing section-level metrics.
 
 ## How to resolve?
-TODO
+Check if section enrollments (StudentSectionAssociations) are being populated
+properly.
 */
 {{ 
   config(
