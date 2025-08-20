@@ -1,5 +1,7 @@
 # Unreleased
 ## New features
+- Add tests `sections_without_staff`, `sections_without_students`, `enrollments_without_overlapping_sections`, and `schools_with_enrollments_without_overlapping_sections` to test for rostering data issues.
+- Add QC model `sections_per_enrollment` to assist with identifying school enrollments potentially missing corresponding section enrollment data.
 ## Under the hood
 ## Fixes
 
