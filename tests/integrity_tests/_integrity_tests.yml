@@ -46,6 +46,6 @@ tests:
   - name: enrollments_without_overlapping_sections
     config:
       tags: ['core', 'rostering']
-  - name: schools_with_majority_enrollments_without_overlapping_sections
+  - name: schools_with_enrollments_without_overlapping_sections
     config:
       tags: ['core', 'rostering']
