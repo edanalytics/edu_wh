@@ -33,17 +33,17 @@
 {% endif %}
 
 -- CTE
-{% if var('src:program:cte:enabled'), True %}
+{% if var('src:program:cte:enabled', True) %}
     {% do stage_program_relations.append(ref('stg_ef3__stu_cte__program_services')) %}
 {% endif %}
 
 -- Migrant Education
-{% if var('src:program:migrant_education:enabled'), True %}
+{% if var('src:program:migrant_education:enabled', True) %}
     {% do stage_program_relations.append(ref('stg_ef3__stu_migrant_edu__program_services')) %}
 {% endif %}
 
 -- Food Service
-{% if var('src:program:food_service:enabled'), True %}
+{% if var('src:program:food_service:enabled', True) %}
     {% do stage_program_relations.append(ref('stg_ef3__stu_school_food_service__program_services')) %}
 {% endif %}
 
