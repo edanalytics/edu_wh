@@ -69,7 +69,7 @@ models:
       tags: ['core']
   - name: bld_ef3__student_program__food_services__program_services
     config:
-      tags: [food_service'']
+      tags: ['food_service']
   - name: bld_ef3__student_program__food_service
     config:
       tags: ['food_service']
