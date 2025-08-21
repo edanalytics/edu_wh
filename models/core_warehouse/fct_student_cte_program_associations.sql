@@ -1,13 +1,17 @@
-{{
+
+{{ 
   config(
     post_hook=[
+        "alter table {{ this }} alter column k_student set not null",
+        "alter table {{ this }} alter column k_student_xyear set not null",
+        "alter table {{ this }} alter column k_program set not null",
+        "alter table {{ this }} alter column program_enroll_begin_date set not null",
         "alter table {{ this }} add primary key (k_student, k_student_xyear, k_program, program_enroll_begin_date)",
         "alter table {{ this }} add constraint fk_{{ this.name }}_student foreign key (k_student) references {{ ref('dim_student') }}",
-        "alter table {{ this }} add constraint fk_{{ this.name }}_program foreign key (k_program) references {{ ref('dim_program') }}",
+        "alter table {{ this }} add constraint fk_{{ this.name }}_program foreign key (k_program) references {{ ref('dim_program') }}"
     ]
-  )
+  ) 
 }}
-
 
 with stage as (
     select * from {{ ref('stg_ef3__student_cte_program_associations') }}
