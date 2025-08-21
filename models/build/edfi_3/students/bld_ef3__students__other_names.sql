@@ -1,5 +1,5 @@
--- otherName properties pulled from Ed-Fi Data Handbook (v5.0.0)
--- https://edfidocs.blob.core.windows.net/$web/handbook/v5.0/index.html#/OtherName82adcecf-8e39-4f24-a5a6-3c32964693c3 
+{# otherName properties pulled from Ed-Fi Data Handbook (v5.0.0)
+https://edfidocs.blob.core.windows.net/$web/handbook/v5.0/index.html#/OtherName82adcecf-8e39-4f24-a5a6-3c32964693c3 #}
 {%- set name_type_list = ['personal_title_prefix', 'first_name', 'middle_name', 'last_surname', 'generation_code_suffix']-%}
 
 with stg_other_names as (
@@ -17,8 +17,8 @@ widened as (
         {%- if not is_empty_model('xwalk_student_other_names') -%},
             {%- for name_type in name_type_list -%}
                 {{ ea_pivot(
-                        column='dim_other_name',
-                        values=dbt_utils.get_column_values(ref('xwalk_student_other_names'),'dim_other_name'),
+                        column='dim_stu_name',
+                        values=dbt_utils.get_column_values(ref('xwalk_student_other_names'),'dim_stu_name'),
                         agg='min',
                         suffix='_' ~ name_type,
                         then_value=name_type,
@@ -29,7 +29,7 @@ widened as (
         {%- endif-%}   
     from stg_other_names
     left join xwalk_other_names
-        on stg_other_names.other_name_type = xwalk_other_names.original_otherNameType
+        on stg_other_names.other_name_type = xwalk_other_names.original_other_name_type
     group by all
 
 )
