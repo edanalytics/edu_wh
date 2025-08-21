@@ -1,3 +1,6 @@
+{# List all xwalk column names #}
+{%- set xwalk_column_names = adapter.get_columns_in_relation(ref('xwalk_assessment_scores')) | map(attribute='column') | map('lower') | list-%}
+
 with assessment_family_lookup as (
         select distinct
             assessment_identifier,
@@ -40,6 +43,7 @@ dedupe_results as (
         )
     }}
 ),
+
 merged_xwalk as (
     select
         tenant_code,
@@ -55,8 +59,12 @@ merged_xwalk as (
     left join xwalk_scores
         on dedupe_results.namespace = xwalk_scores.namespace
         and dedupe_results.score_name = xwalk_scores.original_score_name
-        -- join on assessment_family and/or assessment_identifier if the fields have been entered in the xwalk.
-        and ifnull(xwalk_scores.assessment_family, '1') = iff(xwalk_scores.assessment_family is null, '1', assessment_family_lookup.assessment_family)
+        {# Join on assessment_identifier and/or assessment_family if assessment_family exists. Otherwise, fallback to using just assessment_identifier #}
+        {% if 'assessment_family' in xwalk_column_names %}
         and ifnull(xwalk_scores.assessment_identifier, '1') = iff(xwalk_scores.assessment_identifier is null, '1', dedupe_results.assessment_identifier)
+        and ifnull(xwalk_scores.assessment_family, '1') = iff(xwalk_scores.assessment_family is null, '1', assessment_family_lookup.assessment_family)
+        {% else %}
+        and dedupe_results.assessment_identifier = xwalk_scores.assessment_identifier
+        {% endif %}
 ) 
 select * from merged_xwalk
