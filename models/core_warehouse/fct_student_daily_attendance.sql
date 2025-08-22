@@ -31,7 +31,7 @@ school_max_submitted as (
     -- find the most recently submitted attendance date by school
     select 
         fct_student_school_att.k_school,
-        fct_student_school_att.school_year,
+        dim_calendar_date.school_year,
         max(dim_calendar_date.calendar_date) as max_date_by_school
     from fct_student_school_att 
     join dim_calendar_date 
@@ -49,6 +49,7 @@ attendance_calendar as (
     from dim_calendar_date
     join school_max_submitted
         on dim_calendar_date.k_school = school_max_submitted.k_school
+        and dim_calendar_date.school_year = school_max_submitted.school_year
     -- only include instructional days in the attendance calendar
     where dim_calendar_date.is_school_day
     -- don't include dates in the future, as of run-time
