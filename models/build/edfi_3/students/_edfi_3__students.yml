@@ -22,9 +22,11 @@ models:
   - name: bld_ef3__student_program__cte
     config:
       tags: ['cte']
+      enabled: "{{ var('src:program:cte:enabled', True) }}"
   - name: bld_ef3__student_program__cte__program_services
     config:
       tags: ['cte']
+      enabled: "{{ var('src:program:cte:enabled', True) }}"
   - name: bld_ef3__student_program__homeless
     config:
       tags: ['homeless']
@@ -70,12 +72,16 @@ models:
   - name: bld_ef3__student_program__food_services__program_services
     config:
       tags: ['food_service']
+      enabled: "{{ var('src:program:food_service:enabled', True) }}"
   - name: bld_ef3__student_program__food_service
     config:
       tags: ['food_service']
+      enabled: "{{ var('src:program:food_service:enabled', True) }}"
   - name: bld_ef3__student_program__migrant_education__program_services
     config:
       tags: ['migrant_education']
+      enabled: "{{ var('src:program:migrant_education:enabled', True) }}"
   - name: bld_ef3__student_program__migrant_education
     config:
       tags: ['migrant_education']
+      enabled: "{{ var('src:program:migrant_education:enabled', True) }}"
