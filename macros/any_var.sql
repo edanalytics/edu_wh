@@ -10,7 +10,10 @@
               'src:program:special_ed:enabled',
               'src:program:homeless:enabled',
               'src:program:language_instruction:enabled',
-              'src:program:title_i:enabled'
+              'src:program:title_i:enabled',
+              'src:program:cte:enabled',
+              'src:program:migrant_education:enabled',
+              'src:program:food_service:enabled'
             ], default=True
         ) }}
     ```
