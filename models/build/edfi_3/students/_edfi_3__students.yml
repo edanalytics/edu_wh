@@ -73,7 +73,7 @@ models:
     config:
       tags: ['food_service']
       enabled: "{{ var('src:program:food_service:enabled', True) }}"
-  - name: bld_ef3__student_program__food_service
+  - name: bld_ef3__student_program__food_services
     config:
       tags: ['food_service']
       enabled: "{{ var('src:program:food_service:enabled', True) }}"
