@@ -5,20 +5,17 @@ https://edfidocs.blob.core.windows.net/$web/handbook/v5.0/index.html#/OtherName8
 with stg_other_names as (
     select * from {{ ref('stg_ef3__students__other_names') }}
 ),
-xwalk_other_names as (
-    select * from {{ ref('xwalk_student_other_names')}}
-),
 widened as (
     select  
         tenant_code,
         api_year,
         k_student,
         k_student_xyear
-        {%- if not is_empty_model('xwalk_student_other_names') -%},
+        {%- if not is_empty_model('stg_ef3__students__other_names') -%},
             {%- for name_type in name_type_list -%}
                 {{ ea_pivot(
-                        column='dim_stu_name',
-                        values=dbt_utils.get_column_values(ref('xwalk_student_other_names'),'dim_stu_name'),
+                        column='other_name_type',
+                        values=dbt_utils.get_column_values(ref('stg_ef3__students__other_names'),'other_name_type'),
                         agg='min',
                         suffix='_' ~ name_type,
                         then_value=name_type,
@@ -28,8 +25,6 @@ widened as (
             {%- endfor-%}
         {%- endif-%}   
     from stg_other_names
-    left join xwalk_other_names
-        on stg_other_names.other_name_type = xwalk_other_names.original_other_name_type
     group by all
 
 )
