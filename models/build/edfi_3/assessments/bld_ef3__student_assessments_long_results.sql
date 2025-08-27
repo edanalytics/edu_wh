@@ -1,13 +1,14 @@
 {# List all xwalk column names #}
-{%- set xwalk_column_names = adapter.get_columns_in_relation(ref('xwalk_assessment_scores')) | map(attribute='column') | map('lower') | list-%}
+{%- set xwalk_column_names = adapter.get_columns_in_relation(ref('xwalk_assessment_scores')) | map(attribute='column') | map('lower') | list -%}
 
 with assessment_family_lookup as (
         select distinct
+            tenant_code,
+            school_year,
             assessment_identifier,
             namespace,
             assessment_family
         from {{ ref('dim_assessment') }}
-        where assessment_family is not null
 ),
 score_results as (
     select * from {{ ref('stg_ef3__student_assessments__score_results') }}
@@ -46,7 +47,7 @@ dedupe_results as (
 
 merged_xwalk as (
     select
-        tenant_code,
+        dedupe_results.tenant_code,
         api_year,
         k_student_assessment,
         score_name as original_score_name,
@@ -54,7 +55,9 @@ merged_xwalk as (
         score_result
     from dedupe_results
     left join assessment_family_lookup
-        on dedupe_results.assessment_identifier = assessment_family_lookup.assessment_identifier
+        on dedupe_results.tenant_code = assessment_family_lookup.tenant_code
+        and dedupe_results.api_year = assessment_family_lookup.school_year
+        and dedupe_results.assessment_identifier = assessment_family_lookup.assessment_identifier
         and dedupe_results.namespace = assessment_family_lookup.namespace
     left join xwalk_scores
         on dedupe_results.namespace = xwalk_scores.namespace
