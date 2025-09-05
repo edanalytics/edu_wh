@@ -9,6 +9,8 @@
 {# Load custom data sources from var #}
 {% set custom_data_sources = var("edu:class_period:custom_data_sources", []) %}
 
+{% set attempt_military_whatever = var("edu:class_period:attempt_military_whatever", true) %}
+
 with class_periods as (
     select * from {{ ref('stg_ef3__class_periods') }}
 ),
@@ -26,21 +28,29 @@ formatted as (
         -- if there is only one start time, extract it, else leave null
         case when size(try_cast(v_meeting_times as array<string>)) = 1
         then
+        {% if attempt_military_whatever == true -%}
             -- convert to military time for time math, if it isn't
             -- (assume class periods will not be scheduled between 1 and 6 AM)
             case 
                 when date_part('HOUR', v_meeting_times:[0].startTime::timestamp) between 1 and 6
-                then dateadd(HOUR, 12, v_meeting_times:[0].startTime::timestamp)
+                    then dateadd(HOUR, 12, v_meeting_times:[0].startTime::timestamp)
                 else v_meeting_times:[0].startTime::timestamp
             end
+        {% else %}
+            v_meeting_times:[0].startTime::timestamp
+        {%- endif %}
         end as start_time,
         case when size(try_cast(v_meeting_times as array<string>)) = 1
         then 
+        {% if attempt_military_whatever == true -%}
             case 
                 when date_part('HOUR', v_meeting_times:[0].endTime::timestamp) between 1 and 6
-                then dateadd(HOUR, 12, v_meeting_times:[0].endTime::timestamp)
+                    then dateadd(HOUR, 12, v_meeting_times:[0].endTime::timestamp)
                 else v_meeting_times:[0].endTime::timestamp
             end
+        {% else %}
+            v_meeting_times:[0].endTime::timestamp
+        {%- endif %}
         end as end_time,
         timediff(MINUTE, start_time, end_time) as period_duration
 
