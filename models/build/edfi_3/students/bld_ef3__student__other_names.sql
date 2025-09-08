@@ -23,7 +23,7 @@ widened as (
                 )}}
                 {%- if not loop.last -%},{%- endif-%}   
             {%- endfor-%}
-        {%- endif-%}   
+        {%- endif %}   
     from stg_other_names
     group by all
 
