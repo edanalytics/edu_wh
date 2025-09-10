@@ -71,6 +71,8 @@ models:
       - name: time_required_for_completion
         description: "The actual or estimated number of clock minutes required for class completion. This number is especially important for career 
                       and technical education classes and may represent (in minutes) the clock hour requirement of the class."
+      - name: subject_array
+        description: A list of all the academic subjects associated with the course.
 
 
 

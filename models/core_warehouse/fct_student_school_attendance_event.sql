@@ -1,6 +1,11 @@
 {{
   config(
     post_hook=[
+        "alter table {{ this }} alter column k_student set not null",
+        "alter table {{ this }} alter column k_school set not null",
+        "alter table {{ this }} alter column k_session set not null",
+        "alter table {{ this }} alter column attendance_event_category set not null",
+        "alter table {{ this }} alter column k_calendar_date set not null",
         "alter table {{ this }} add primary key (k_student, k_school, k_session, attendance_event_category, k_calendar_date)",
         "alter table {{ this }} add constraint fk_{{ this.name }}_student foreign key (k_student) references {{ ref('dim_student') }}",
         "alter table {{ this }} add constraint fk_{{ this.name }}_school foreign key (k_school) references {{ ref('dim_school') }}",
@@ -103,7 +108,7 @@ formatted as (
         school_attendance_duration,
         arrival_time,
         departure_time,
-        educational_environment,
+        educational_environment
         {# add any extension columns configured from stg_ef3__student_school_attendance_events #}
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_school_attendance_events', flatten=False) }}
     from deduped
