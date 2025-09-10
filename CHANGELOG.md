@@ -1,11 +1,15 @@
 # Unreleased
 ## New features
+## Under the hood
+## Fixes
+
+# edu_wh v0.5.1
+## New features
 - Add fct models `fct_student_cte_program_associations`, `fct_student_migrant_education_program_associations`, and `fct_student_school_food_service_program_associations`
 - Add `bld_ef3__student__other_names` and conditional code in `dim_student` to pull into columns, if configured in dbt var `'edu:stu_demos:other_names'`.
 - Add tests `sections_without_staff`, `sections_without_students`, `enrollments_without_overlapping_sections`, and `schools_with_enrollments_without_overlapping_sections` to test for rostering data issues.
 - Add QC model `sections_per_enrollment` to assist with identifying school enrollments potentially missing corresponding section enrollment data.
 
-## Under the hood
 ## Fixes
 - Fix model `fct_student_daily_attendance` to prevent incorrect 100% attendance rates in prior years. Includes `school_year` in `school_max_submitted.max_date_by_school`.
 
