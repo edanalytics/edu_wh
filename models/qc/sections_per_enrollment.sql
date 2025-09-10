@@ -7,6 +7,7 @@ with
     )
 
 select
+    fct_student_school_association.tenant_code,
     fct_student_school_association.k_school,
     fct_student_school_association.k_student,
     fct_student_school_association.school_year,
