@@ -3,6 +3,26 @@
 ## Under the hood
 ## Fixes
 
+# edu_wh v0.4.4
+## New features
+- Add `birth_country` to `bld_ef3__immutable_stu_demos` and upstream in `dim_student`
+- Add `bld_ef3__staff_emails`, a build model that combines staff emails from `stg_ef3__staffs__emails` and `stg_ef3__staff_education_organization_contact_associations`
+- Add `bld_ef3__staff_official_emails`, a build model that filters staff emails to official/work emails (can be used for RLS)
+## Under the hood
+- Change dim_staff email sourcing to this new combined model ^ `bld_ef3__staff_emails`
+- Update dim_student.yaml (dbt documentation) to be more precise on surrogate key defs for commonly referenced k_student and k_student_xyear
+
+# edu_wh v0.4.3
+## Under the hood
+- Add `incident_id_array` to fct_student_discipline_actions_summary
+- Add `begin_date` to primary key of `fct_staff_section_associations` to align with DS 5.0 and later
+- Add `school_year` to `dim_discipline_incident`
+## Fixes
+- Fix model `dim_course` to handle multiple academic subjects per course (Ed-Fi Data Standard v5.0 breaking change)
+- Add array column `subject_array` to `dim_course`, containing array of academic subjects if these exist
+- Add logic to populate `academic_subject` column with single-valued subjects in both cases where data source is <5.0 or >5.0
+- Add upstream `bld_ef3__course_subject`
+
 # edu_wh v0.4.2
 ## New features
 - Add tests `cfg_assessment_scores` and `cfg_objective_assessment_scores` to find assess/obj assess with no scores configured
@@ -49,7 +69,7 @@
 ## Under the hood
 - Rework and rename pivot macro to `ea_pivot()` to simplify usage
 - Add `k_lea` and `k_school` to `dim_course`. Note - downstream queries that reference `k_lea` or `k_school` without an explicit qualified column reference may break due to this change.
-- Add macro call that brings through extensions to all fct tables that directly reference a stg table. See [here](https://github.com/edanalytics/edu_wh/blob/124636845754dbcde89ebcfea2c39dfa8b1679b0/models/core_warehouse/fct_course_transcripts.sql#L50) for example. 
+- Add macro call that brings through extensions to all fct tables that directly reference a stg table. See [here](https://github.com/edanalytics/edu_wh/blob/124636845754dbcde89ebcfea2c39dfa8b1679b0/models/core_warehouse/fct_course_transcripts.sql#L50) for example.
     - Note: this may break in certain edge cases, if your implementation has existing configured extensions whose names collide with column names that already exist in the related fct table. This should be rare.
 - Add extension columns (optional, if configured) to all fct tables. If no extensions configured, this code compiles to nothing.
 
@@ -86,7 +106,7 @@
 - Add feature to conditionally remove xyear enrollments in `fct_student_school_association`
 ## Under the hood
 - Make `k_student` null where not joinable to `dim_student`, for  `fct_student_assessment`, `fct_course_transcripts`, `fct_student_academic_record`, and `fct_student_gpa`.
-## Fixes 
+## Fixes
 - Fix unique key of `fct_student_school_attendance_event` and `fct_student_section_attendance_event` to reflect unique key in Ed-Fi.
    - Note: The unique key of `fct_student_daily_attendance` remains the same `(k_student, k_school, calendar_date)`. But the way we deduplicate to this point has changed to be more consistent
    - The scale of impact of this fix depends on how often duplicates are found on `(k_student, k_school, calendar_date)` in the underlying data. See new test `analytics.prod_dbt_test__audit.attendance_event_duplicates` for more information.
@@ -100,10 +120,10 @@
    - `analytics.prod_wh.dim_education_service_center`
    - `analytics.prod_wh.dim_discipline_incidents`
    - `analytics.prod_wh.fct_student_discipline_incident_behaviors_actions`
-  
-  
+
+
 # edu_wh v0.2.10
-## Fixes 
+## Fixes
 - Bugfix release
 
 # edu_wh v0.2.9
@@ -160,9 +180,9 @@
 - Fill False instead of NULL in some student demographics
 ## Migration
 - Configure non-offender codes. This allows for navigating the Ed-Fi deprecation
-    of the old student discipline model. The new model separates offenders from 
-    non-offendors, and this config allows us to apply the same logic to the 
-    now-deprecated model. Any `DisciplineIncidentParticipationCodeDescriptors` 
+    of the old student discipline model. The new model separates offenders from
+    non-offendors, and this config allows us to apply the same logic to the
+    now-deprecated model. Any `DisciplineIncidentParticipationCodeDescriptors`
     in use in `studentDisciplineIncidentAssociations` that refer to non-offenders
     should be included in this list. See [here](https://github.com/edanalytics/edu_project_template/blob/d58d7ffd95cfe113852a15e5f724f9641363a593/dbt/dbt_project.yml#L58)
 - New crosswalk for ranking the severity of Behaviors (template [here](https://github.com/edanalytics/edu_project_template/blob/main/dbt/seeds/xwalk_discipline_behaviors.csv)). This
@@ -177,7 +197,7 @@
 ## Under the hood
 - More robust creation of first/last day of school table for calendaring/enrollment logic
 - Generate foreign keys on optional school-network associations for BI tools
-## Fixes 
+## Fixes
 - Implement "first day school" rule for single-calendar schools in fct_student_school_association
 - Allow extension columns to correctly be pulled into the stacked fct_program_service table
 - Fix join between staff assignments and staff-school associations
@@ -205,7 +225,7 @@
 - Rework daily attendance model
     - Allow for fractional attendance by changing indicators from bools to floats
     - Roll attendance rates for exited students forward to the end of the year
-        so that chronic absenteeism metrics can include exited students in 
+        so that chronic absenteeism metrics can include exited students in
         daily calculations
     - **Required Migration:** Convert T/F values in `xwalk_attendance_events` to 1.0/0.0
 

@@ -30,21 +30,20 @@ bld_attendance_sessions as (
 fct_student_school_att_calendar_date as (
     -- associate attendance events with calendar dates
     select 
-        fct_student_school_att.*,
-        dim_calendar_date.calendar_date 
-    from fct_student_school_att
+        fct_student_school_att.k_school,
+        dim_calendar_date.school_year,
+        max(dim_calendar_date.calendar_date) as max_date_by_school
+    from fct_student_school_att 
     join dim_calendar_date 
         on fct_student_school_att.k_calendar_date = dim_calendar_date.k_calendar_date
+    group by 1, 2
 ),
-school_max_submitted as (
-    -- find the most recently submitted attendance date by school or last date in calendar
+max_calendar as (
     select 
         dim_calendar_date.k_school,
         dim_calendar_date.school_year,
-        greatest(coalesce(max(fct_student_school_att_calendar_date.calendar_date), max(dim_calendar_date.calendar_date)),max(dim_calendar_date.calendar_date)) as max_date_by_school_and_year
+        max(dim_calendar_date.calendar_date) as max_calendar_date
     from dim_calendar_date
-    left join fct_student_school_att_calendar_date
-        on dim_calendar_date.k_calendar_date = fct_stcd ../udent_school_att_calendar_date.k_calendar_date
     group by 1,2
 ),
 attendance_calendar as (
@@ -54,17 +53,25 @@ attendance_calendar as (
         dim_calendar_date.k_school_calendar,
         dim_calendar_date.k_calendar_date,
         dim_calendar_date.school_year,
-        dim_calendar_date.calendar_date
+        dim_calendar_date.calendar_date,
+        school_max_submitted.max_date_by_school,
+        max_calendar.max_calendar_date
     from dim_calendar_date
     join school_max_submitted
         on dim_calendar_date.k_school = school_max_submitted.k_school
         and dim_calendar_date.school_year = school_max_submitted.school_year
+    join max_calendar
+        on dim_calendar_date.k_school = max_calendar.k_school
+        and dim_calendar_date.school_year = max_calendar.school_year
     -- only include instructional days in the attendance calendar
     where dim_calendar_date.is_school_day
     -- don't include dates in the future, as of run-time
-    and dim_calendar_date.calendar_date <= current_date()
+    and 
+    ((dim_calendar_date.calendar_date <= current_date()
     -- don't include dates beyond the max submitted attendance event by school
-    and dim_calendar_date.calendar_date <= school_max_submitted.max_date_by_school_and_year
+    and dim_calendar_date.calendar_date <= school_max_submitted.max_date_by_school)
+    or max_calendar_date < current_date()
+    )
 ),
 stu_enr_att_cal as (
     -- create an attendance calendar by student, conditional on enrollment

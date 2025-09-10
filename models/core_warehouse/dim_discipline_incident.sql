@@ -26,6 +26,7 @@ formatted as (
         stg_discipline_incidents.k_discipline_incident,
         dim_school.k_school,
         stg_discipline_incidents.tenant_code,
+        stg_discipline_incidents.school_year,
         stg_discipline_incidents.incident_id,
         stg_discipline_incidents.incident_date,
         stg_discipline_incidents.incident_time,
