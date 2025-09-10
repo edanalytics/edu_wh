@@ -39,6 +39,7 @@ school_max_submitted as (
     group by 1, 2
 ),
 max_calendar as (
+    -- find the last day of the school calendar
     select 
         dim_calendar_date.k_school,
         dim_calendar_date.school_year,
@@ -65,12 +66,19 @@ attendance_calendar as (
         and dim_calendar_date.school_year = max_calendar.school_year
     -- only include instructional days in the attendance calendar
     where dim_calendar_date.is_school_day
-    -- don't include dates in the future, as of run-time
     and 
-    ((dim_calendar_date.calendar_date <= current_date()
-    -- don't include dates beyond the max submitted attendance event by school
-    and dim_calendar_date.calendar_date <= school_max_submitted.max_date_by_school)
-    or max_calendar_date < current_date()
+    (
+        -- The first part of this OR statement handles dates in the current school year.
+        -- The second part handles dates in past school years.
+        (   
+            -- don't include dates in the future, as of run-time
+            dim_calendar_date.calendar_date <= current_date()
+            -- don't include dates beyond the max submitted attendance event by school
+            and dim_calendar_date.calendar_date <= school_max_submitted.max_date_by_school
+        )
+        -- or the max_calendar_date is before the current date
+        -- ensures days from the last attendance event until the end of the school calendar are counted
+        or max_calendar_date <= current_date()
     )
 ),
 stu_enr_att_cal as (
