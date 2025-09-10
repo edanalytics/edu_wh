@@ -31,4 +31,4 @@ left join fct_student_section_association
             )
         )
     )
-group by 1, 2, 3, 4
+group by 1, 2, 3, 4, 5
