@@ -1,0 +1,37 @@
+version: 2
+
+models:
+  - name: fct_student_cte_program_associations
+    description: >
+      ##### Overview:
+        This fact table contains student cte program enrollment information.
+
+      ##### Primary Key:
+        `k_student, k_student_xyear, k_program, program_enroll_begin_date` -- There 
+        is one record per student, year, program enrol begin date, and cte program.
+
+    config:
+      tags: ['cte']
+      enabled: "{{ var('src:program:cte:enabled', True) }}"
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - k_student
+            - k_program
+
+    columns:
+      - name: k_student
+      - name: k_student_xyear
+      - name: k_program
+      - name: k_lea
+      - name: k_school
+      - name: tenant_code
+      - name: school_year
+      - name: program_enroll_begin_date
+      - name: program_enroll_end_date
+      - name: non_traditional_gender_status
+      - name: private_cte_program
+      - name: served_outside_of_regular_session
+      - name: technical_skills_assessment
+      - name: reason_exited

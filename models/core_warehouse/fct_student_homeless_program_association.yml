@@ -7,7 +7,8 @@ models:
         This fact table contains student homeless program enrollment information.
 
       ##### Primary Key:
-        `k_student, k_program` -- There is one record per student, year, and homeless program.
+        `k_student, k_student_xyear, k_program, program_enroll_begin_date` -- There is one 
+        record per student, year, program enrol begin date, and homeless program.
 
     config:
       tags: ['homeless']
