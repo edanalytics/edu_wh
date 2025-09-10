@@ -24,7 +24,8 @@
 {% set custom_homeless_program_agg_indicators = var('edu:homeless:custom_program_agg_indicators', None) %}
 {% set custom_language_instruction_program_agg_indicators = var('edu:language_instruction:custom_program_agg_indicators', None) %}
 {% set custom_title_i_program_agg_indicators = var('edu:title_i:custom_program_agg_indicators', None) %}
-
+{% set other_name_types = var('edu:stu_demos:other_names', None) %}
+{%- set name_type_list = ['personal_title_prefix', 'first_name', 'middle_name', 'last_surname', 'generation_code_suffix']-%}
 
 with stg_student as (
     select * from {{ ref('stg_ef3__students') }}
@@ -52,6 +53,9 @@ stu_grade as (
 ),
 stu_cohort_year as (
     select * from {{ ref('bld_ef3__student_cohort_years')}}
+),
+stu_other_names as (
+    select * from {{ ref('bld_ef3__student__other_names') }}
 ),
 
 -- student programs
@@ -191,6 +195,14 @@ formatted as (
           {%- endfor -%}
         {%- endif %}
 
+        -- other name types
+        {% if other_name_types is not none and other_name_types | length -%}    
+            {%- for type in other_name_types -%}
+                {%- for name_type in name_type_list -%}
+                        stu_other_names.{{dbt_utils.slugify(type)}}_{{name_type}},
+                {%- endfor -%}
+            {%- endfor -%}
+        {%- endif -%}
         -- add indicator of most recent demographic entry
         stg_student.api_year = max(stg_student.api_year) over(partition by stg_student.k_student_xyear) as is_latest_record,
 
@@ -222,6 +234,8 @@ formatted as (
         and stg_student.api_year = stu_grade.school_year
     left join stu_cohort_year
         on  stu_demos.k_student = stu_cohort_year.k_student
+    left join stu_other_names
+        on stu_demos.k_student = stu_other_names.k_student
 
     -- student programs
     {% if var('src:program:special_ed:enabled', True) %}

@@ -1,5 +1,6 @@
 # Unreleased
 ## New features
+- Add `bld_ef3__student__other_names` and conditional code in `dim_student` to pull into columns, if configured in dbt var `'edu:stu_demos:other_names'`.
 ## Under the hood
 ## Fixes
 
