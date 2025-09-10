@@ -7,6 +7,7 @@ with
     )
 
 select
+    fct_student_school_association.tenant_code,
     fct_student_school_association.k_school,
     fct_student_school_association.k_student,
     fct_student_school_association.school_year,
@@ -30,4 +31,4 @@ left join fct_student_section_association
             )
         )
     )
-group by 1, 2, 3, 4
+group by 1, 2, 3, 4, 5
