@@ -28,10 +28,11 @@ Update the model used as a grade_level_override source to ensure it is unique on
   having count(*) > 1
 {%- else %}
   -- if no custom grade_level_override configured, force test to return a zero row table
-  select top 0 *
+  select *
   from (select
           null as data_source,
           null as k_student,
           null as n_records
        ) blank_subquery
+  limit 0
 {%- endif %}

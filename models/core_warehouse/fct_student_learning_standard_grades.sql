@@ -1,6 +1,12 @@
 {{
   config(
     post_hook=[
+        "alter table {{ this }} alter column k_grading_period set not null",
+        "alter table {{ this }} alter column k_student set not null",
+        "alter table {{ this }} alter column k_school set not null",
+        "alter table {{ this }} alter column k_course_section set not null",
+        "alter table {{ this }} alter column grade_type set not null",
+        "alter table {{ this }} alter column k_learning_standard set not null",
         "alter table {{ this }} add primary key (k_grading_period, k_student, k_school, k_course_section, grade_type, k_learning_standard)",
         "alter table {{ this }} add constraint fk_{{ this.name }}_grading_period foreign key (k_grading_period) references {{ ref('dim_grading_period') }}",
         "alter table {{ this }} add constraint fk_{{ this.name }}_student foreign key (k_student) references {{ ref('dim_student') }}",

@@ -1,6 +1,9 @@
 {{
   config(
     post_hook=[
+        "alter table {{ this }} alter column k_student set not null",
+        "alter table {{ this }} alter column k_discipline_actions_event set not null",
+        "alter table {{ this }} alter column discipline_action set not null",
         "alter table {{ this }} add primary key (k_student, k_discipline_actions_event, discipline_action)",
         "alter table {{ this }} add constraint fk_{{ this.name }}_student foreign key (k_student) references {{ ref('dim_student') }}",
         "alter table {{ this }} add constraint fk_{{ this.name }}_school foreign key (k_school) references {{ ref('dim_school') }}",
@@ -29,10 +32,9 @@ flatten_staff_keys as (
         k_student_xyear,
         discipline_action_id,
         discipline_date,
-        index,
         {{ edu_edfi_source.gen_skey('k_staff', alt_ref='value:staffReference') }}
     from stg_discipline_actions
-        , lateral flatten(v_staffs)
+        {{ edu_edfi_source.json_flatten('v_staffs') }}
 ),
 agg_staff_keys as (
     select 
@@ -42,7 +44,7 @@ agg_staff_keys as (
         discipline_date,
         -- staff associations are most often singular.
         -- keep the first such association, but also produce an array in case of multiple
-        max(case when index = 0 then k_staff else null end) as k_staff_single,
+        max(k_staff) as k_staff_single,
         array_agg(k_staff) as k_staff_array
     from flatten_staff_keys
     group by 1,2,3,4
@@ -98,7 +100,7 @@ formatted as (
         on stg_discipline_actions.k_student = agg_staff_keys.k_student
         and stg_discipline_actions.discipline_action_id = agg_staff_keys.discipline_action_id
         and stg_discipline_actions.discipline_date = agg_staff_keys.discipline_date
-    , lateral flatten(input=>v_disciplines)
+    {{ edu_edfi_source.json_flatten('v_disciplines') }}
     -- brule: one or the other school must be populated
     where (assignment_school_id is not null or responsibility_school_id is not null)
 ),

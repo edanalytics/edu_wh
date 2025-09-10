@@ -1,6 +1,7 @@
 {{
   config(
     post_hook=[
+        "alter table {{ this }} alter column k_staff set not null",
         "alter table {{ this }} add primary key (k_staff)",
     ]
   )
@@ -15,14 +16,14 @@ bld_ef3__wide_ids_staff as (
     select * from {{ ref('bld_ef3__wide_ids_staff') }}
 ),
 staff_race_ethnicity as (
-    select * from {{ ref('bld_ef3__staff_race_ethnicity')}}
+    select * from {{ ref('bld_ef3__staff_race_ethnicity') }}
 ),
 choose_email as (
-    {{ row_pluck(ref('stg_ef3__staffs__emails'),
+    {{ row_pluck(ref('bld_ef3__staff_emails'),
                 key='k_staff',
                 column='email_type',
-                preferred=var('edu:staff:preferred_email', 'Work'),
-                where='(do_not_publish is null or not do_not_publish)') }}
+                preferred=var('edu:staff:preferred_email', 'Work')
+                ) }}
 ),
 -- emails
 formatted as (
