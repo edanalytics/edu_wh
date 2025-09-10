@@ -7,6 +7,22 @@
 
 ## Under the hood
 ## Fixes
+- Fix model `fct_student_daily_attendance` to prevent incorrect 100% attendance rates in prior years. Includes `school_year` in `school_max_submitted.max_date_by_school`.
+
+# edu_wh v0.5.0
+## New features
+- Add Databricks platform compatibility
+- Add optional `gender_identity` to `dim_student` as an immutable demographic. This field was introduced to Ed-Fi in Data Standard v5
+- Add optional DS5 fields to `fct_student_school_association`: `is_school_choice`, `school_choice_basis`, `enrollment_type`, `next_year_school_id`, `next_year_grade_level`
+## Under the hood
+- The following 'breaking' under the hood changes were introduced for databricks compatibility:
+  - All columns which are part of the primary key of a table are set explicitly as not null
+  - The primary key of `fct_student_gpa` has been changed to remove is_cumulative, but the logic was adjusted so that the effective grain is the same
+  - Added `fct_staff_school_association.k_staff_school_association` and updated the primary key
+  - Changed column order in `fct_student_assessment` and `fct_student_objective_assessment`
+  - Changed `dim_class_period.start_time` and `end_time` from time data types to strings
+## Fixes
+- Potentially breaking for queryers: `bld_ef3__combine_gpas` (and downstream `fct_student_gpa`) `gpa_type` `'Unknown'` values have been made more specific: `'Cumulative, unknown weighting'` and `'Non-cumulative, unknown weighting'` to respect the grain of the table.
 
 # edu_wh v0.5.0
 ## New features
