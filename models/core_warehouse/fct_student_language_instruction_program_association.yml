@@ -7,7 +7,8 @@ models:
         This fact table contains student language instruction program enrollment information.
 
       ##### Primary Key:
-        `k_student, k_program` -- There is one record per student, year, and language instruction program.
+        `k_student, k_student_xyear, k_program, program_enroll_begin_date` -- There is one 
+        record per student, year, program enrol begin date, and language instruction program.
 
     config:
       tags: ['language_instruction']

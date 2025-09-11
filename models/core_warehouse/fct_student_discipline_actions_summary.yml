@@ -34,6 +34,9 @@ models:
         description: >
           An array of behavior types, which are defined as a category of behavior describing the 
           discipline incident. Examples include: 'Disorderly Conduct', 'Vandalism'.
+      - name: incident_id_array
+        description: >
+          An array of the incident_ids associated with the discipline action.
       - name: discipline_action_array
         description: >
           An array of discipline actions, which are the type of action taken used to discipline 
