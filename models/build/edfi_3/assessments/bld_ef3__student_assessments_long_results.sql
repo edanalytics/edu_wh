@@ -2,13 +2,11 @@
 {%- set xwalk_column_names = adapter.get_columns_in_relation(ref('xwalk_assessment_scores')) | map(attribute='column') | map('lower') | list -%}
 
 with assessment_family_lookup as (
-        select distinct
-            tenant_code,
-            school_year,
-            assessment_identifier,
-            namespace,
-            assessment_family
-        from {{ ref('dim_assessment') }}
+    -- get the assessment_family associated with each k_assessment, to join in later
+    select  
+        k_assessment,
+        assessment_family
+    from {{ ref('dim_assessment') }}
 ),
 score_results as (
     select * from {{ ref('stg_ef3__student_assessments__score_results') }}
@@ -21,6 +19,7 @@ performance_levels as (
         tenant_code,
         api_year,
         k_student_assessment,
+        k_assessment,
         assessment_identifier,
         namespace,
         -- normalize column names to stack with scores
@@ -55,14 +54,11 @@ merged_xwalk as (
         score_result
     from dedupe_results
     left join assessment_family_lookup
-        on dedupe_results.tenant_code = assessment_family_lookup.tenant_code
-        and dedupe_results.api_year = assessment_family_lookup.school_year
-        and dedupe_results.assessment_identifier = assessment_family_lookup.assessment_identifier
-        and dedupe_results.namespace = assessment_family_lookup.namespace
+        on dedupe_results.k_assessment = assessment_family_lookup.k_assessment
     left join xwalk_scores
         on dedupe_results.namespace = xwalk_scores.namespace
         and dedupe_results.score_name = xwalk_scores.original_score_name
-        {# Join on assessment_identifier and/or assessment_family if assessment_family exists. Otherwise, fallback to using just assessment_identifier #}
+        {# Join on assessment_identifier and/or assessment_family if assessment_family exists. Otherwise, fallback to only use assessment_identifier #}
         {% if 'assessment_family' in xwalk_column_names %}
         and ifnull(xwalk_scores.assessment_identifier, '1') = iff(xwalk_scores.assessment_identifier is null, '1', dedupe_results.assessment_identifier)
         and ifnull(xwalk_scores.assessment_family, '1') = iff(xwalk_scores.assessment_family is null, '1', assessment_family_lookup.assessment_family)
