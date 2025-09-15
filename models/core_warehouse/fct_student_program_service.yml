@@ -10,6 +10,9 @@ models:
       - [stg_ef3__stu_lang_instr__program_services](#!/model/model.edu_edfi_source.stg_ef3__stu_lang_instr__program_services)
       - [stg_ef3__stu_homeless__program_services](#!/model/model.edu_edfi_source.stg_ef3__stu_homeless__program_services)
       - [stg_ef3__stu_title_i__program_services](#!/model/model.edu_edfi_source.stg_ef3__stu_title_i__program_services)
+      - [stg_ef3__stu_cte__program_services](#!/model/model.edu_edfi_source.stg_ef3__stu_cte__program_services)
+      - [stg_ef3__stu_migrant_edu__program_services](#!/model/model.edu_edfi_source.stg_ef3__stu_migrant_edu__program_services)
+      - [stg_ef3__stu_school_food_service__program_services](#!/model/model.edu_edfi_source.stg_ef3__stu_school_food_service__program_services)
 
      ##### Primary Key:
        `k_student, k_program, program_enroll_begin_date, program_service` --
@@ -51,7 +54,7 @@ models:
        to see e.g. services associated with student homeless program enrollments instead)
 
     config:
-      tags: ['special_ed', 'homeless', 'language_instruction', 'title_i']
+      tags: ['special_ed', 'homeless', 'language_instruction', 'title_i', 'cte', 'migrant_education', 'food_service']
       enabled: >
         {%- set var_values = [] -%}
         {%- for variable in [
@@ -59,6 +62,9 @@ models:
              'src:program:homeless:enabled',
              'src:program:language_instruction:enabled',
              'src:program:title_i:enabled',
+             'src:program:cte:enabled',
+             'src:program:migrant_education:enabled',
+             'src:program:food_service:enabled'
         ] -%}
            {%- do var_values.append(var(variable, none)) -%}
         {%- endfor -%}
