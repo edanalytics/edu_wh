@@ -9,7 +9,16 @@ with assessment_family_lookup as (
     from {{ ref('dim_assessment') }}
 ),
 score_results as (
-    select * from {{ ref('stg_ef3__student_assessments__score_results') }}
+    select
+        tenant_code,
+        api_year,
+        k_student_assessment,
+        k_assessment,
+        assessment_identifier,
+        namespace,
+        score_name,
+        score_result 
+    from {{ ref('stg_ef3__student_assessments__score_results') }}
 ),
 xwalk_scores as (
     select * from {{ ref('xwalk_assessment_scores') }}
