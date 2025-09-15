@@ -9,9 +9,12 @@
 - Add `bld_ef3__student__other_names` and conditional code in `dim_student` to pull into columns, if configured in dbt var `'edu:stu_demos:other_names'`.
 - Add tests `sections_without_staff`, `sections_without_students`, `enrollments_without_overlapping_sections`, and `schools_with_enrollments_without_overlapping_sections` to test for rostering data issues.
 - Add QC model `sections_per_enrollment` to assist with identifying school enrollments potentially missing corresponding section enrollment data.
-
+## Under the hood
+- Update join logic in `bld_ef3__student_assessments_long_results` and `cfg_assessment_scores` to  join on the `assessment_family` and/or `assessment_identifier` fields in `xwalk_assessment_scores`, if they have been provided. This allows for score configuration by either assess ID or family
 ## Fixes
 - Fix model `fct_student_daily_attendance` to prevent incorrect 100% attendance rates in prior years. Includes `school_year` in `school_max_submitted.max_date_by_school`.
+## Migration
+- (Optional) Configure `xwalk_assessment_scores`. Add in `assessment_family` field and remove redundant records.
 
 # edu_wh v0.5.0
 ## New features
