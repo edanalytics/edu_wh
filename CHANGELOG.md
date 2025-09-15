@@ -1,8 +1,11 @@
 # Unreleased
 ## New features
 ## Under the hood
-- Update join logic in `bld_ef3__student_assessments_long_results` and `cfg_assessment_scores` to  join on the `assessment_family` and/or `assessment_identifier` fields in `xwalk_assessment_scores`, if they have been provided. This allows for score configuration by either assess ID or family
 ## Fixes
+
+# edu_wh v0.5.1
+## Under the hood
+- Update join logic in `bld_ef3__student_assessments_long_results` and `cfg_assessment_scores` to  join on the `assessment_family` and/or `assessment_identifier` fields in `xwalk_assessment_scores`, if they have been provided. This allows for score configuration by either assess ID or family
 ## Migration
 - (Optional) Configure `xwalk_assessment_scores`. Add in `assessment_family` field and remove redundant records.
 
