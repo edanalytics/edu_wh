@@ -9,7 +9,7 @@
   )
 }}
 
-{% set custom_data_sources_name = "edu:student_dicipline_actions_summary:custom_data_sources" %}
+{% set custom_data_sources_name = "edu:student_discipline_actions_summary:custom_data_sources" %}
 
 with stu_discipline_incident_behaviors_actions as (
     select * from {{ ref('stg_ef3__discipline_actions__student_discipline_incident_behaviors') }}
