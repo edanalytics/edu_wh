@@ -10,6 +10,8 @@
   )
 }}
 
+{% set custom_data_sources_name = "edu:student_objective_assessment:custom_data_sources" %}
+
 with student_obj_assessments_long_results as (
     select * from {{ ref('bld_ef3__student_objective_assessments_long_results') }}
 ),
@@ -88,6 +90,7 @@ student_obj_assessments_wide as (
         and ifnull(dates_xwalk.assessment_identifier, '1') = iff(dates_xwalk.assessment_identifier is null, '1', student_obj_assessments.assessment_identifier)
         and ifnull(dates_xwalk.namespace, '1') = iff(dates_xwalk.namespace is null, '1', student_obj_assessments.namespace)
     {% endif %}
+    
     -- FILTER to students who EVER have a record in dim_student
     where student_obj_assessments.k_student_xyear in (
         select distinct k_student_xyear
@@ -95,5 +98,10 @@ student_obj_assessments_wide as (
     )
     {{ dbt_utils.group_by(n=19) }}
 )
-select *
+select student_obj_assessments_wide.*
+    -- custom data sources columns
+    {{ add_cds_columns(cds_model_config=custom_data_sources_name) }}
 from student_obj_assessments_wide
+        
+-- custom data sources
+{{ add_cds_joins_v2(cds_model_config=custom_data_sources_name) }}

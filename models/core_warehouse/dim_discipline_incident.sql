@@ -8,6 +8,8 @@
   )
 }}
 
+{% set custom_data_sources_name = "edu:discipline_incident:custom_data_sources" %}
+
 with stg_discipline_incidents as (
     select * from {{ ref('stg_ef3__discipline_incidents') }}
 ),
@@ -49,11 +51,18 @@ formatted as (
         stg_discipline_incidents.reporter_description,
         stg_discipline_incidents.incident_location,
         behaviors.behavior_array
+        
+        -- custom data sources columns
+        {{ add_cds_columns(cds_model_config=custom_data_sources_name) }}
     from stg_discipline_incidents
     -- behaviors are not required
     left join behaviors
         on stg_discipline_incidents.k_discipline_incident = behaviors.k_discipline_incident
     join dim_school
         on stg_discipline_incidents.k_school = dim_school.k_school
+
+    -- custom data sources
+    {{ add_cds_joins_v1(cds_model_config=custom_data_sources_name, driving_alias='stg_discipline_incidents', join_cols=['k_discipline_incident']) }}
+    {{ add_cds_joins_v2(cds_model_config=custom_data_sources_name) }}
 )
 select * from formatted

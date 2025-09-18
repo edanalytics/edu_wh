@@ -9,6 +9,8 @@
   )
 }}
 
+{% set custom_data_sources_name = "edu:student_dicipline_actions_summary:custom_data_sources" %}
+
 with stu_discipline_incident_behaviors_actions as (
     select * from {{ ref('stg_ef3__discipline_actions__student_discipline_incident_behaviors') }}
 ),
@@ -70,6 +72,9 @@ formatted as (
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__discipline_actions__student_discipline_incident_behaviors', flatten=False) }}
         {# add any extension columns configured from stg_ef3__discipline_actions__disciplines #}
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__discipline_actions__disciplines', flatten=False) }}
+
+        -- custom data sources columns
+        {{ add_cds_columns(cds_model_config=custom_data_sources_name) }}
     from fct_student_discipline_actions
     left join stu_discipline_incident_behaviors_actions
         on fct_student_discipline_actions.k_student = stu_discipline_incident_behaviors_actions.k_student
@@ -93,6 +98,10 @@ formatted as (
         and fct_student_discipline_actions.k_student_xyear = behaviors_array.k_student_xyear
         and fct_student_discipline_actions.discipline_action_id = behaviors_array.discipline_action_id
         and fct_student_discipline_actions.discipline_date = behaviors_array.discipline_date
+        
+    -- custom data sources
+    {{ add_cds_joins_v2(cds_model_config=custom_data_sources_name) }}
+    
     -- in order to keep the grain of k_student and k_discipline_actions_event, we want to keep this subset 
     -- even if we do not have the severity orders defined
     qualify 1 = row_number() over (partition by fct_student_discipline_actions.k_student, fct_student_discipline_actions.k_discipline_actions_event order by fct_student_discipline_actions.severity_order desc nulls last, fct_student_discipline_incident_behaviors.severity_order desc nulls last)

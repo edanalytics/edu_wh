@@ -12,6 +12,8 @@
   )
 }}
 
+{% set custom_data_sources_name = "edu:student_section_attendance_event:custom_data_sources" %}
+
 with stg_stu_section_attendance as (
     select * from {{ ref('stg_ef3__student_section_attendance_events') }}
 ),
@@ -42,6 +44,9 @@ formatted as (
         stg_stu_section_attendance.educational_environment
         {# add any extension columns configured from stg_ef3__student_section_attendance_events #}
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_section_attendance_events', flatten=False) }}
+
+        -- custom data sources columns
+        {{ add_cds_columns(cds_model_config=custom_data_sources_name) }}
     from stg_stu_section_attendance
     join dim_student
         on stg_stu_section_attendance.k_student = dim_student.k_student
@@ -49,5 +54,8 @@ formatted as (
         on stg_stu_section_attendance.k_course_section = dim_course_section.k_course_section
     join xwalk_att_events
         on stg_stu_section_attendance.attendance_event_category = xwalk_att_events.attendance_event_descriptor
+        
+    -- custom data sources
+    {{ add_cds_joins_v2(cds_model_config=custom_data_sources_name) }}
 )
 select * from formatted

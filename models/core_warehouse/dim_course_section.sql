@@ -10,8 +10,7 @@
   )
 }}
 
-{# Load custom data sources from var #}
-{% set custom_data_sources = var("edu:course_section:custom_data_sources", []) %}
+{% set custom_data_sources_name = "edu:course_section:custom_data_sources" %}
   
 with offering as (
     select * from {{ ref('stg_ef3__course_offerings') }}
@@ -63,16 +62,10 @@ joined as (
         stg_ef3__sections.available_credits,
         stg_ef3__sections.available_credit_type,
         stg_ef3__sections.available_credit_conversion
-
+        
         -- todo: add characteristic indicators
-        -- custom indicators
-        {% if custom_data_sources is not none and custom_data_sources | length -%}
-          {%- for source in custom_data_sources -%}
-            {%- for indicator in custom_data_sources[source] -%}
-              , {{ custom_data_sources[source][indicator]['where'] }} as {{ indicator }}
-            {%- endfor -%}
-          {%- endfor -%}
-        {%- endif %}
+        -- custom data sources_columns
+        {{ add_cds_columns(cds_model_config=custom_data_sources_name) }}
     from stg_ef3__sections
     join offering
         on stg_ef3__sections.k_course_offering = offering.k_course_offering
@@ -80,15 +73,10 @@ joined as (
         on offering.k_course = dim_course.k_course
     left join section_chars 
         on stg_ef3__sections.k_course_section = section_chars.k_course_section
+
     -- custom data sources
-    {% if custom_data_sources is not none and custom_data_sources | length -%}
-      {%- for source in custom_data_sources -%}
-      {%- if source != 'stg_ef3__sections' -%}
-        left join {{ ref(source) }}
-          on stg_ef3__sections.k_course_section = {{ source }}.k_course_section
-      {%- endif -%}
-      {% endfor %}
-    {%- endif %}
+    {{ add_cds_joins_v1(cds_model_config=custom_data_sources_name, driving_alias='stg_ef3__sections', join_cols=['k_course_section']) }}
+    {{ add_cds_joins_v2(cds_model_config=custom_data_sources_name) }}
 )
 select * from joined
 order by tenant_code, k_school, k_course_section

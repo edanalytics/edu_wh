@@ -7,6 +7,7 @@
   )
 }}
 
+{% set custom_data_sources_name = "edu:graduation_plan:custom_data_sources" %}
 
 with stg_graduation_plans as (
     select * from {{ ref('stg_ef3__graduation_plans') }}
@@ -33,8 +34,13 @@ formatted as (
 
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__graduation_plans', flatten=False) }}
 
-
+        -- custom data sources columns
+        {{ add_cds_columns(cds_model_config=custom_data_sources_name) }}
     from stg_graduation_plans
+
+    -- custom data sources
+    {{ add_cds_joins_v1(cds_model_config=custom_data_sources_name, driving_alias='stg_graduation_plans', join_cols=['k_graduation_plan']) }}
+    {{ add_cds_joins_v2(cds_model_config=custom_data_sources_name) }}
 )
 select * from formatted
 order by tenant_code, k_graduation_plan

@@ -7,6 +7,7 @@
   )
 }}
 
+{% set custom_data_sources_name = "edu:learning_standard:custom_data_sources" %}
 
 with stg_learning_standards as (
     select * from {{ ref('stg_ef3__learning_standards') }}
@@ -30,7 +31,14 @@ formatted as (
         stg_learning_standards.v_grade_levels,
         stg_learning_standards.v_learning_standard_identification_codes,
         stg_learning_standards.v_content_standard
+
+        -- custom data sources columns
+        {{ add_cds_columns(cds_model_config=custom_data_sources_name) }}
     from stg_learning_standards
+
+    -- custom data sources
+    {{ add_cds_joins_v1(cds_model_config=custom_data_sources_name, driving_alias='stg_learning_standards', join_cols=['k_learning_standard']) }}
+    {{ add_cds_joins_v2(cds_model_config=custom_data_sources_name) }}
 )
 select * from formatted
 order by tenant_code, k_learning_standard

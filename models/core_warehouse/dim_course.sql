@@ -7,8 +7,7 @@
   )
 }}
 
-{# Load custom data sources from var #}
-{% set custom_data_sources = var("edu:course:custom_data_sources", []) %}
+{% set custom_data_sources_name = "edu:course:custom_data_sources" %}
 
 with stg_course as (
     select * from {{ ref('stg_ef3__courses') }}
@@ -46,26 +45,16 @@ formatted as (
         stg_course.minimum_available_credit_conversion,
         stg_course.number_of_parts,
         stg_course.time_required_for_completion
-
-        -- custom indicators
-        {% if custom_data_sources is not none and custom_data_sources | length -%}
-          {%- for source in custom_data_sources -%}
-            {%- for indicator in custom_data_sources[source] -%}
-              , {{ custom_data_sources[source][indicator]['where'] }} as {{ indicator }}
-            {%- endfor -%}
-          {%- endfor -%}
-        {%- endif %}
+        
+        -- custom data sources columns
+        {{ add_cds_columns(cds_model_config=custom_data_sources_name) }}
     from stg_course
     left join bld_ef3__wide_ids_course 
         on stg_course.k_course = bld_ef3__wide_ids_course.k_course
-    
+
     -- custom data sources
-    {% if custom_data_sources is not none and custom_data_sources | length -%}
-      {%- for source in custom_data_sources -%}
-        left join {{ ref(source) }}
-          on stg_course.k_course = {{ source }}.k_course
-      {% endfor %}
-    {%- endif %}
+    {{ add_cds_joins_v1(cds_model_config=custom_data_sources_name, driving_alias='stg_course', join_cols=['k_course']) }}
+    {{ add_cds_joins_v2(cds_model_config=custom_data_sources_name) }}
 )
 select * from formatted
 order by tenant_code, school_year desc, k_course

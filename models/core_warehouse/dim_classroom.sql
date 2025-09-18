@@ -8,6 +8,8 @@
   )
 }}
 
+{% set custom_data_sources_name = "edu:classroom:custom_data_sources" %}
+
 with locations as (
     select * from {{ ref('stg_ef3__locations') }}
 ),
@@ -22,9 +24,16 @@ formatted as (
         locations.classroom_id_code,
         locations.maximum_seating,
         locations.optimum_seating
+        
+        -- custom data sources columns
+        {{ add_cds_columns(cds_model_config=custom_data_sources_name) }}
     from locations
     join dim_school
         on locations.k_school = dim_school.k_school
+
+    -- custom data sources
+    {{ add_cds_joins_v1(cds_model_config=custom_data_sources_name, driving_alias='locations', join_cols=['k_location']) }}
+    {{ add_cds_joins_v2(cds_model_config=custom_data_sources_name) }}
 )
 select * from formatted
 order by tenant_code, k_school, k_classroom

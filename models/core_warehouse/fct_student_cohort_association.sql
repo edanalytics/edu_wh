@@ -11,6 +11,8 @@
   )
 }}
 
+{% set custom_data_sources_name = "edu:student_cohort_association:custom_data_sources" %}
+
 with stage as (
     select * from {{ ref('stg_ef3__student_cohort_associations') }}
 ),
@@ -48,13 +50,17 @@ formatted as (
         ) as is_active_cohort_association
         {# add any extension columns configured from stg_ef3__student_cohort_associations #}
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_cohort_associations', flatten=False) }}
+        
+        -- custom data sources columns
+        {{ add_cds_columns(cds_model_config=custom_data_sources_name) }}
     from stage
-
         inner join dim_student
             on stage.k_student = dim_student.k_student
-
         inner join dim_cohort
             on stage.k_cohort = dim_cohort.k_cohort
+        
+        -- custom data sources
+        {{ add_cds_joins_v2(cds_model_config=custom_data_sources_name) }}
 )
 
 select * from formatted

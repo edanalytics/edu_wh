@@ -12,6 +12,8 @@
   )
 }}
 
+{% set custom_data_sources_name = "edu:student_daily_attendance:custom_data_sources" %}
+
 with fct_student_school_att as (
     select * from {{ ref(var("edu:attendance:daily_attendance_source", 'fct_student_school_attendance_event')) }}
 ),
@@ -198,10 +200,16 @@ metric_labels as (
             when meets_enrollment_threshold then metric_absentee_categories.level_label 
             else null
         end as absentee_category_label
+        
+        -- custom data sources columns
+        {{ add_cds_columns(cds_model_config=custom_data_sources_name) }}
     from cumulatives
     left join metric_absentee_categories
         on cumulative_attendance_rate > metric_absentee_categories.threshold_lower
         and cumulative_attendance_rate <= metric_absentee_categories.threshold_upper
+        
+    -- custom data sources
+    {{ add_cds_joins_v2(cds_model_config=custom_data_sources_name) }}
 )
 select * from metric_labels
 order by tenant_code, k_school, k_student, cumulative_days_enrolled

@@ -1,5 +1,7 @@
 {% set xwalk_academic_term_enabled = var('edu:xwalk_academic_terms:enabled', False) %}
 
+{% set custom_data_sources_name = "edu:student_diploma:custom_data_sources" %}
+
 with stg_diplomas as (
     select * from {{ ref('stg_ef3__student_academic_records__diplomas') }}
 ),
@@ -36,9 +38,15 @@ joined_diploma as (
         issuer_origin_url
         {# add any extension columns configured from stg_ef3__student_academic_records__diplomas #}
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_academic_records__diplomas', flatten=False) }}
+
+        -- custom data sources columns
+        {{ add_cds_columns(cds_model_config=custom_data_sources_name) }}
     from stg_diplomas 
     join stu_academic_records 
         on stg_diplomas.k_student_academic_record = stu_academic_records.k_student_academic_record
+        
+    -- custom data sources
+    {{ add_cds_joins_v2(cds_model_config=custom_data_sources_name) }}
 ),
 {% if xwalk_academic_term_enabled %}
 xwalk_academic_terms as (

@@ -7,6 +7,7 @@
   )
 }}
 
+{% set custom_data_sources_name = "edu:network:custom_data_sources" %}
 
 with stg_networks as (
     select * from {{ ref('stg_ef3__education_organization_networks') }}
@@ -21,7 +22,14 @@ formatted as (
         stg_networks.operational_status,
         stg_networks.network_short_name,
         stg_networks.website
+
+        -- custom data sources columns
+        {{ add_cds_columns(cds_model_config=custom_data_sources_name) }}
     from stg_networks
+
+    -- custom data sources
+    {{ add_cds_joins_v1(cds_model_config=custom_data_sources_name, driving_alias='stg_networks', join_cols=['k_network']) }}
+    {{ add_cds_joins_v2(cds_model_config=custom_data_sources_name) }}
 )
 select * from formatted
 order by tenant_code, k_network

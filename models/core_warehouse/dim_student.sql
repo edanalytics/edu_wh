@@ -7,9 +7,7 @@
   )
 }}
 
-{# Load custom data sources from var #}
-{% set custom_data_sources = var("edu:stu_demos:custom_data_sources") %}
-
+{% set custom_data_sources_name = "edu:stu_demos:custom_data_sources" %}
 
 {# If edu var has been configured to make demos immutable, set join var to `k_student_xyear` bc demos are unique by xyear #}
 {# otherwise, use k_student bc demos are unique by student+year #}
@@ -180,21 +178,15 @@ formatted as (
           {%- endfor -%}
         {%- endif %}
 
-        -- custom indicators
-        {% if custom_data_sources is not none and custom_data_sources | length -%}
-          {%- for source in custom_data_sources -%}
-            {%- for indicator in custom_data_sources[source] -%}
-              {{ custom_data_sources[source][indicator]['where'] }} as {{ indicator }},
-            {%- endfor -%}
-          {%- endfor -%}
-        {%- endif %}
-
         -- add indicator of most recent demographic entry
         stg_student.api_year = max(stg_student.api_year) over(partition by stg_student.k_student_xyear) as is_latest_record,
        
         stu_immutable_demos.race_array,
         stu_cohort_year.cohort_year_array,
         stu_immutable_demos.safe_display_name
+
+        -- custom data sources columns
+        {{ add_cds_columns(cds_model_config=custom_data_sources_name) }}
 
     from stg_student
 
@@ -244,13 +236,8 @@ formatted as (
 
     -- custom data sources
     -- Note, dbt test "custom_demo_sources_are_unique_on_k_student" is configured to fail if any not unique by k_student
-    {% if custom_data_sources is not none and custom_data_sources | length -%}
-      {%- for source in custom_data_sources -%}
-        left join {{ ref(source) }}
-          on stu_demos.k_student = {{ source }}.k_student
-      {% endfor %}
-    {%- endif %}
-
+    {{ add_cds_joins_v1(cds_model_config=custom_data_sources_name, driving_alias='stu_demos', join_cols=['k_student']) }}
+    {{ add_cds_joins_v2(cds_model_config=custom_data_sources_name) }}
 )
 
 select * from formatted

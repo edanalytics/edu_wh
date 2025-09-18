@@ -17,6 +17,8 @@
   )
 }}
 
+{% set custom_data_sources_name = "edu:student_learning_standard_grades:custom_data_sources" %}
+
 with stg_grades_learning_standards as (
     select * from {{ ref('stg_ef3__grades__learning_standards') }}
 ),
@@ -50,6 +52,9 @@ formatted as (
         stg_grades_learning_standards.learning_standard_numeric_grade_earned
         {# add any extension columns configured from stg_ef3__grades__learning_standards #}
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__grades__learning_standards', flatten=False) }}
+
+        -- custom data sources columns
+        {{ add_cds_columns(cds_model_config=custom_data_sources_name) }}
     from stg_grades_learning_standards
     join dim_learning_standard
         on stg_grades_learning_standards.k_learning_standard = dim_learning_standard.k_learning_standard
@@ -61,5 +66,8 @@ formatted as (
         on stg_grades_learning_standards.k_grading_period = dim_grading_period.k_grading_period
     join dim_course_section
         on stg_grades_learning_standards.k_course_section = dim_course_section.k_course_section
+        
+    -- custom data sources
+    {{ add_cds_joins_v2(cds_model_config=custom_data_sources_name) }}
 )
 select * from formatted

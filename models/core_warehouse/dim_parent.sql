@@ -7,6 +7,8 @@
   )
 }}
 
+{% set custom_data_sources_name = "edu:parent:custom_data_sources" %}
+
 with stg_parent as (
     -- parents were renamed to contacts in Data Standard v5.0
     -- the contacts staging tables contain both parent and contact records
@@ -57,6 +59,9 @@ formatted as (
             source_alias='parent_emails_wide'
         ) }}
         choose_address.full_address
+
+        -- custom data sources columns
+        {{ add_cds_columns(cds_model_config=custom_data_sources_name) }}
     from stg_parent
     left join parent_phones_wide
       on stg_parent.k_contact = parent_phones_wide.k_parent --k_contact has been renamed back to k_parent in the build models
@@ -64,6 +69,10 @@ formatted as (
       on stg_parent.k_contact = parent_emails_wide.k_parent
     left join choose_address
         on stg_parent.k_contact = choose_address.k_contact
+
+    -- custom data sources
+    {{ add_cds_joins_v1(cds_model_config=custom_data_sources_name, driving_alias='stg_parent', join_cols=['k_contact']) }}
+    {{ add_cds_joins_v2(cds_model_config=custom_data_sources_name) }}
 )
 select * from formatted
 order by tenant_code, k_parent
