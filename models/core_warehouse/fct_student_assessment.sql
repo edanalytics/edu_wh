@@ -9,7 +9,8 @@
   )
 }}
 
-{% set custom_data_sources_name = "edu:student_assessment:custom_data_sources" %}
+{{ cds_depends_on('edu:student_assessment:custom_data_sources') }}
+{% set custom_data_sources = var('edu:student_assessment:custom_data_sources', []) %}
 
 with student_assessments_long_results as (
     select * from {{ ref('bld_ef3__student_assessments_long_results') }}
@@ -100,9 +101,9 @@ student_assessments_wide as (
 select student_assessments_wide.*
         
     -- custom data sources columns
-    {{ add_cds_columns(cds_model_config=custom_data_sources_name) }}
+    {{ add_cds_columns(custom_data_sources=custom_data_sources) }}
 
 from student_assessments_wide
         
 -- custom data sources
-{{ add_cds_joins_v2(cds_model_config=custom_data_sources_name) }}
+{{ add_cds_joins_v2(custom_data_sources=custom_data_sources) }}

@@ -4,7 +4,8 @@
     )
 }}
 
-{% set custom_data_sources_name = "edu:subgroup:custom_data_sources" %}
+{{ cds_depends_on('edu:subgroup:custom_data_sources') }}
+{% set custom_data_sources = var('edu:subgroup:custom_data_sources', []) %}
 
 with dim_student as (
     select * from {{ ref('dim_student') }}

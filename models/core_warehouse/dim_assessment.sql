@@ -7,7 +7,8 @@
   )
 }}
 
-{% set custom_data_sources_name = "edu:assessment:custom_data_sources" %}
+{{ cds_depends_on('edu:assessment:custom_data_sources') }}
+{% set custom_data_sources = var('edu:assessment:custom_data_sources', []) %}
 
 with stg_assessments as (
     select * from {{ ref('stg_ef3__assessments') }}
@@ -46,7 +47,7 @@ formatted as (
         assessment_grades.grades_array
 
         -- custom data sources columns
-        {{ add_cds_columns(cds_model_config=custom_data_sources_name) }}
+        {{ add_cds_columns(custom_data_sources=custom_data_sources) }}
     from stg_assessments
     -- making all of these left joins because none of these are actually required
     left join assessment_scores 
@@ -57,8 +58,8 @@ formatted as (
         on stg_assessments.k_assessment = assessment_grades.k_assessment
 
     -- custom data sources
-    {{ add_cds_joins_v1(cds_model_config=custom_data_sources_name, driving_alias='stg_assessments', join_cols=['k_assessment']) }}
-    {{ add_cds_joins_v2(cds_model_config=custom_data_sources_name) }}
+    {{ add_cds_joins_v1(custom_data_sources=custom_data_sources, driving_alias='stg_assessments', join_cols=['k_assessment']) }}
+    {{ add_cds_joins_v2(custom_data_sources=custom_data_sources) }}
 )
 select * from formatted
 order by tenant_code, k_assessment

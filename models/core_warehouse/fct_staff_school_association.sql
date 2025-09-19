@@ -13,7 +13,8 @@
   )
 }}
 
-{% set custom_data_sources_name = "edu:staff_school_association:custom_data_sources" %}
+{{ cds_depends_on('edu:staff_school_association:custom_data_sources') }}
+{% set custom_data_sources = var('edu:staff_school_association:custom_data_sources', []) %}
 
 with stg_staff_school as (
     select * from {{ ref('stg_ef3__staff_school_associations') }}
@@ -68,7 +69,7 @@ formatted as (
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__staff_education_organization_assignment_associations', flatten=False) }}
 
         -- custom data sources columns
-        {{ add_cds_columns(cds_model_config=custom_data_sources_name) }}
+        {{ add_cds_columns(custom_data_sources=custom_data_sources) }}
     from stg_staff_school
     join dim_school 
         on stg_staff_school.k_school = dim_school.k_school
@@ -89,7 +90,7 @@ formatted as (
         on stg_staff_school.k_school_calendar = dim_school_calendar.k_school_calendar
 
     -- custom data sources
-    {{ add_cds_joins_v2(cds_model_config=custom_data_sources_name) }}
+    {{ add_cds_joins_v2(custom_data_sources=custom_data_sources) }}
 ),
 check_active as (
     select *,

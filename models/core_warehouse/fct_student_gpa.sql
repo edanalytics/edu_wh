@@ -11,7 +11,8 @@
   )
 }}
 
-{% set custom_data_sources_name = "edu:student_gpa:custom_data_sources" %}
+{{ cds_depends_on('edu:student_gpa:custom_data_sources') }}
+{% set custom_data_sources = var('edu:student_gpa:custom_data_sources', []) %}
 
 with combined_gpas as (
     select * from {{ ref('bld_ef3__combine_gpas') }}
@@ -35,13 +36,13 @@ formatted as (
         combined_gpas.max_gpa_value
 
         -- custom data sources columns
-        {{ add_cds_columns(cds_model_config=custom_data_sources_name) }}
+        {{ add_cds_columns(custom_data_sources=custom_data_sources) }}
     from combined_gpas 
     join academic_record
         on combined_gpas.k_student_academic_record = academic_record.k_student_academic_record
         
     -- custom data sources
-    {{ add_cds_joins_v2(cds_model_config=custom_data_sources_name) }}
+    {{ add_cds_joins_v2(custom_data_sources=custom_data_sources) }}
 )
 select * from formatted
 order by tenant_code, k_student

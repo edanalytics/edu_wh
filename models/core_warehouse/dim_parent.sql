@@ -7,7 +7,8 @@
   )
 }}
 
-{% set custom_data_sources_name = "edu:parent:custom_data_sources" %}
+{{ cds_depends_on('edu:parent:custom_data_sources') }}
+{% set custom_data_sources = var('edu:parent:custom_data_sources', []) %}
 
 with stg_parent as (
     -- parents were renamed to contacts in Data Standard v5.0
@@ -61,7 +62,7 @@ formatted as (
         choose_address.full_address
 
         -- custom data sources columns
-        {{ add_cds_columns(cds_model_config=custom_data_sources_name) }}
+        {{ add_cds_columns(custom_data_sources=custom_data_sources) }}
     from stg_parent
     left join parent_phones_wide
       on stg_parent.k_contact = parent_phones_wide.k_parent --k_contact has been renamed back to k_parent in the build models
@@ -71,8 +72,8 @@ formatted as (
         on stg_parent.k_contact = choose_address.k_contact
 
     -- custom data sources
-    {{ add_cds_joins_v1(cds_model_config=custom_data_sources_name, driving_alias='stg_parent', join_cols=['k_contact']) }}
-    {{ add_cds_joins_v2(cds_model_config=custom_data_sources_name) }}
+    {{ add_cds_joins_v1(custom_data_sources=custom_data_sources, driving_alias='stg_parent', join_cols=['k_contact']) }}
+    {{ add_cds_joins_v2(custom_data_sources=custom_data_sources) }}
 )
 select * from formatted
 order by tenant_code, k_parent

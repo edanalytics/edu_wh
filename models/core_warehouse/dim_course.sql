@@ -7,7 +7,8 @@
   )
 }}
 
-{% set custom_data_sources_name = "edu:course:custom_data_sources" %}
+{{ cds_depends_on('edu:course:custom_data_sources') }}
+{% set custom_data_sources = var('edu:course:custom_data_sources', []) %}
 
 with stg_course as (
     select * from {{ ref('stg_ef3__courses') }}
@@ -47,14 +48,14 @@ formatted as (
         stg_course.time_required_for_completion
         
         -- custom data sources columns
-        {{ add_cds_columns(cds_model_config=custom_data_sources_name) }}
+        {{ add_cds_columns(custom_data_sources=custom_data_sources) }}
     from stg_course
     left join bld_ef3__wide_ids_course 
         on stg_course.k_course = bld_ef3__wide_ids_course.k_course
 
     -- custom data sources
-    {{ add_cds_joins_v1(cds_model_config=custom_data_sources_name, driving_alias='stg_course', join_cols=['k_course']) }}
-    {{ add_cds_joins_v2(cds_model_config=custom_data_sources_name) }}
+    {{ add_cds_joins_v1(custom_data_sources=custom_data_sources, driving_alias='stg_course', join_cols=['k_course']) }}
+    {{ add_cds_joins_v2(custom_data_sources=custom_data_sources) }}
 )
 select * from formatted
 order by tenant_code, school_year desc, k_course

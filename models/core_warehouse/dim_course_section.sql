@@ -10,7 +10,8 @@
   )
 }}
 
-{% set custom_data_sources_name = "edu:course_section:custom_data_sources" %}
+{{ cds_depends_on('edu:course_section:custom_data_sources') }}
+{% set custom_data_sources = var('edu:course_section:custom_data_sources', []) %}
   
 with offering as (
     select * from {{ ref('stg_ef3__course_offerings') }}
@@ -65,7 +66,7 @@ joined as (
         
         -- todo: add characteristic indicators
         -- custom data sources_columns
-        {{ add_cds_columns(cds_model_config=custom_data_sources_name) }}
+        {{ add_cds_columns(custom_data_sources=custom_data_sources) }}
     from stg_ef3__sections
     join offering
         on stg_ef3__sections.k_course_offering = offering.k_course_offering
@@ -75,8 +76,8 @@ joined as (
         on stg_ef3__sections.k_course_section = section_chars.k_course_section
 
     -- custom data sources
-    {{ add_cds_joins_v1(cds_model_config=custom_data_sources_name, driving_alias='stg_ef3__sections', join_cols=['k_course_section']) }}
-    {{ add_cds_joins_v2(cds_model_config=custom_data_sources_name) }}
+    {{ add_cds_joins_v1(custom_data_sources=custom_data_sources, driving_alias='stg_ef3__sections', join_cols=['k_course_section']) }}
+    {{ add_cds_joins_v2(custom_data_sources=custom_data_sources) }}
 )
 select * from joined
 order by tenant_code, k_school, k_course_section

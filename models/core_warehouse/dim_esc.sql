@@ -7,7 +7,8 @@
   )
 }}
 
-{% set custom_data_sources_name = "edu:esc:custom_data_sources" %}
+{{ cds_depends_on('edu:esc:custom_data_sources') }}
+{% set custom_data_sources = var('edu:esc:custom_data_sources', []) %}
 
 with stg_esc as (
     select * from {{ ref('stg_ef3__education_service_centers') }}
@@ -44,14 +45,14 @@ formatted as (
         choose_address.longitude
         
         -- custom data sources columns
-        {{ add_cds_columns(cds_model_config=custom_data_sources_name) }}
+        {{ add_cds_columns(custom_data_sources=custom_data_sources) }}
     from stg_esc
     left join choose_address 
         on stg_esc.k_esc = choose_address.k_esc
 
     -- custom data sources
-    {{ add_cds_joins_v1(cds_model_config=custom_data_sources_name, driving_alias='stg_esc', join_cols=['k_esc']) }}
-    {{ add_cds_joins_v2(cds_model_config=custom_data_sources_name) }}
+    {{ add_cds_joins_v1(custom_data_sources=custom_data_sources, driving_alias='stg_esc', join_cols=['k_esc']) }}
+    {{ add_cds_joins_v2(custom_data_sources=custom_data_sources) }}
 )
 select * from formatted
 order by tenant_code, k_esc

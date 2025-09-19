@@ -7,7 +7,8 @@
   )
 }}
 
-{% set custom_data_sources_name = "edu:class_period:custom_data_sources" %}
+{{ cds_depends_on('edu:class_period:custom_data_sources') }}
+{% set custom_data_sources = var('edu:class_period:custom_data_sources', []) %}
 {% set attempt_military_whatever = var("edu:class_period:attempt_military_whatever", true) %}
 
 with class_periods as (
@@ -54,14 +55,14 @@ formatted as (
         timediff(MINUTE, start_time, end_time) as period_duration
 
         -- custom data sources columns
-        {{ add_cds_columns(cds_model_config=custom_data_sources_name) }}
+        {{ add_cds_columns(custom_data_sources=custom_data_sources) }}
     from class_periods
     join dim_school
         on class_periods.k_school = dim_school.k_school
 
     -- custom data sources
-    {{ add_cds_joins_v1(cds_model_config=custom_data_sources_name, driving_alias='class_periods', join_cols=['k_class_period']) }}
-    {{ add_cds_joins_v2(cds_model_config=custom_data_sources_name) }}
+    {{ add_cds_joins_v1(custom_data_sources=custom_data_sources, driving_alias='class_periods', join_cols=['k_class_period']) }}
+    {{ add_cds_joins_v2(custom_data_sources=custom_data_sources) }}
 )
 select * from formatted
 order by tenant_code, k_school, k_class_period
