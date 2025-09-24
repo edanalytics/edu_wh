@@ -15,6 +15,9 @@ with student_assessments_long_results as (
 student_assessments as (
     select * from {{ ref('stg_ef3__student_assessments') }}
 ),
+student_assessment_access as (
+    select * from {{ ref('bld_ef3__student_assessment_access') }}
+),
 dim_student as (
     select * from {{ ref('dim_student') }}
 ),
@@ -26,23 +29,43 @@ object_agg_other_results as (
     where normalized_score_name = 'other'
     group by 1
 ),
+access as (
+    select
+        coalesce(student_assessment_access.k_student_assessment, student_assessments.k_student_assessment) as k_student_assessment,
+        coalesce(student_assessment_access.k_assessment, student_assessments.k_assessment) as k_assessment,
+        coalesce(student_assessment_access.k_student, student_assessments.k_student) as k_student,
+        coalesce(student_assessment_access.k_student_xyear, student_assessments.k_student_xyear) as k_student_xyear,
+        coalesce(student_assessment_access.tenant_code, student_assessments.tenant_code) as tenant_code,
+        coalesce(student_assessment_access.school_year, student_assessments.school_year) as school_year,
+        coalesce(student_assessment_access.k_student_assessment__original, student_assessments.k_student_assessment) as k_student_assessment__original,
+        {{ accordion_columns(
+            source_table='stg_ef3__student_assessments', 
+            source_alias='student_assessments',
+            exclude_columns=['k_student_assessment', 'k_assessment', 'k_student', 'k_student_xyear', 'tenant_code', 'school_year']) }}
+    from student_assessments
+    -- left join because this model can return empty
+        -- and to avoid enforcing a current school association
+    left join student_assessment_access
+        on student_assessments.k_student_assessment = student_assessment_access.k_student_assessment__original
+),
 student_assessments_wide as (
     select
-        student_assessments.k_student_assessment,
-        student_assessments.k_assessment,
+        access.k_student_assessment,
+        access.k_student_assessment__original,
+        access.k_assessment,
         -- use dim_student.k_student. NOTE, will be null when no corresponding demographics found (e.g. historic year of assessment data)
         dim_student.k_student,
-        student_assessments.k_student_xyear,
-        student_assessments.tenant_code,
-        student_assessments.student_assessment_identifier,
-        student_assessments.serial_number,
+        access.k_student_xyear,
+        access.tenant_code,
+        access.student_assessment_identifier,
+        access.serial_number,
         {% if var('edu:school_year:assessment_dates_xwalk_enabled', False) %}
         iff(dates_xwalk.override_existing,
-            coalesce(dates_xwalk.school_year, student_assessments.school_year, {{derive_school_year('student_assessments.administration_date')}}),
-            coalesce(student_assessments.school_year, dates_xwalk.school_year, {{derive_school_year('student_assessments.administration_date')}}))
+            coalesce(dates_xwalk.school_year, access.school_year, {{derive_school_year('access.administration_date')}}),
+            coalesce(access.school_year, dates_xwalk.school_year, {{derive_school_year('access.administration_date')}}))
         as school_year,
         {% else %}
-        coalesce(student_assessments.school_year, {{derive_school_year('student_assessments.administration_date')}}) as school_year,
+        coalesce(access.school_year, {{derive_school_year('access.administration_date')}}) as school_year,
         {% endif %}
         administration_date,
         administration_end_date,
@@ -66,28 +89,28 @@ student_assessments_wide as (
         {%- endif %}
         {# add any extension columns configured from stg_ef3__student_assessments #}
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_assessments', flatten=False) }}
-    from student_assessments
+    from access
     left join student_assessments_long_results
-        on student_assessments.k_student_assessment = student_assessments_long_results.k_student_assessment
+        on access.k_student_assessment__original = student_assessments_long_results.k_student_assessment
         and student_assessments_long_results.normalized_score_name != 'other'
     -- left join to allow 'historic' records (assess records with no corresponding stu demographics)
     left join dim_student
-        on student_assessments.k_student = dim_student.k_student
+        on access.k_student = dim_student.k_student
     {% if var('edu:school_year:assessment_dates_xwalk_enabled', False) %}
     left join {{ ref('xwalk_assessment_school_year_dates') }} dates_xwalk
         -- note: between means A >= X AND A <= Y, so date upper/lower bounds should not overlap across years
-        on student_assessments.administration_date between dates_xwalk.start_date::date and dates_xwalk.end_date::date 
+        on access.administration_date between dates_xwalk.start_date::date and dates_xwalk.end_date::date 
         -- we want to allow for the school year cutoffs to differ by assessment 
         -- but also allow those fields to remain null if xwalk is desired but not to differ across assessments
-        and ifnull(dates_xwalk.assessment_identifier, '1') = iff(dates_xwalk.assessment_identifier is null, '1', student_assessments.assessment_identifier)
-        and ifnull(dates_xwalk.namespace, '1') = iff(dates_xwalk.namespace is null, '1', student_assessments.namespace)
+        and ifnull(dates_xwalk.assessment_identifier, '1') = iff(dates_xwalk.assessment_identifier is null, '1', access.assessment_identifier)
+        and ifnull(dates_xwalk.namespace, '1') = iff(dates_xwalk.namespace is null, '1', access.namespace)
     {% endif %}
     -- FILTER to students who EVER have a record in dim_student
-    where student_assessments.k_student_xyear in (
+    where access.k_student_xyear in (
         select distinct k_student_xyear
         from dim_student
     )
-    {{ dbt_utils.group_by(n=18) }}
+    {{ dbt_utils.group_by(n=19) }}
 )
 -- add v_other_results to the end because variant columns cannot be included in a group by in Databricks
 select 
@@ -95,4 +118,5 @@ select
     v_other_results
 from student_assessments_wide
 left join object_agg_other_results
-    on student_assessments_wide.k_student_assessment = object_agg_other_results.k_student_assessment
+    -- TODO: I don't want this column to be part of the output
+    on student_assessments_wide.k_student_assessment__original = object_agg_other_results.k_student_assessment
