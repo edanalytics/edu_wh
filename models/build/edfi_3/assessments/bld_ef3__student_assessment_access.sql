@@ -87,7 +87,7 @@ subset_assessments as (
 select *
 from subset_assessments
 {% else %}
-  -- if no custom data sources configured, force test to return a zero row table
+  -- if this feature is not turned on, force return a zero row table
   select *
   from (select
           null as tenant_code,
