@@ -38,6 +38,7 @@ formatted as (
         choose_email.email_address,
         choose_email.email_type,
         stg_staff.last_name || ', ' || stg_staff.first_name as display_name,
+        concat(display_name, ' (', stg_staff.staff_unique_id, ')') as safe_display_name,
         stg_staff.first_name,
         stg_staff.last_name,
         stg_staff.middle_name,
