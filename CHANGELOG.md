@@ -1,5 +1,6 @@
 # Unreleased
 - Updated tests `dbt_utils_unique_combination_of_columns_fct_student_language_instruction_program_association_k_student__k_program`, `dbt_utils_unique_combination_of_columns_fct_student_program_association_k_student__k_program`, and `dbt_utils_unique_combination_of_columns_fct_student_title_i_part_a_program_association_k_student__k_program` to include two additional columns. Previous test only listed partial primary key. 
+- Add `safe_display_name` to `dim_staff`, the logic for this column replicates that of `bld_ef3__immutable_stu_demos`.
 
 ## New features
 ## Under the hood
