@@ -1,0 +1,35 @@
+version: 2
+
+models:
+  - name: dim_performance_evaluation
+    description: >
+        ##### Overview:
+          Defines a performance evaluation of an educator.
+
+        ##### Primary Key:
+          `k_performance_evaluation` - There is one record per performance evaluation
+    config:
+      tags: ['tpdm']
+    columns:
+      - name: k_performance_evaluation
+        description: Generated surrogate key from [tenant_code, api_year, ed_org_id, evaluation_period, performance_evaluation_title, performance_evaluation_type, school_year, academic_term]
+        tests: 
+          - unique
+      - name: ed_org_id
+        description: The identifier assigned to an education organization.
+      - name: performance_evaluation_title
+        description: An assigned unique identifier for the performance evaluation.
+      - name: performance_evaluation_type
+        description: "The type (e.g., walkthrough, summative) of performance evaluation conducted."
+      - name: school_year
+        description: The identifier for the school year.
+      - name: academic_term
+        description: The term for the session during the school year.
+      - name: performance_evaluation_description
+        description: The long description of the Performance Evaluation.
+      - name: academic_subject
+        description: The description of the content or subject area of a performance evaluation.
+      - name: v_grade_levels
+        description: The grade levels involved with the performance evaluation.
+      - name: v_rating_levels
+        description: "The descriptive level(s) of ratings (cut scores) for the evaluation."
