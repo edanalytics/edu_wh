@@ -1,14 +1,18 @@
 name: Notify Slack on Latest Release
-
 on:
   release:
     types: [published]
   workflow_dispatch:
+    inputs:
+      workspace:
+        description: 'Workspace to notify (leave empty for all, or specify: ea, edu)'
+        required: false
+        type: string
+        default: ''
 
 jobs:
   notify-slack:
     runs-on: ubuntu-latest
-
     steps:
       - name: Fetch latest published release
         id: get_release
@@ -18,15 +22,12 @@ jobs:
                -H "Accept: application/vnd.github+json" \
                https://api.github.com/repos/${{ github.repository }}/releases \
             | jq '[.[] | select(.draft == false and .prerelease == false)][0]' > release.json
-
           echo "RELEASE_NAME<<EOF" >> $GITHUB_ENV
           jq -r .name release.json >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
-
           echo "RELEASE_URL<<EOF" >> $GITHUB_ENV
           jq -r .html_url release.json >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
-
           echo "RELEASE_BODY<<EOF" >> $GITHUB_ENV
           jq -r .body release.json >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
@@ -37,49 +38,95 @@ jobs:
           echo "RELEASE_URL: $RELEASE_URL"
           echo "RELEASE_BODY:"
           echo "$RELEASE_BODY"
+          echo "Workspace filter: ${{ inputs.workspace }}"
 
       - name: Send release info to Slack
         run: |
           pip install slack-sdk markdown2slack
           python3 << 'EOF'
           import os
+          import json
           from slack_sdk.webhook import WebhookClient
           from markdown2slack.app import Convert
+          
+          # Define all webhook URLs
+          webhooks = {
+              'ea': os.environ.get('SLACK_WEBHOOK_URL_EA'),
+              'edu': os.environ.get('SLACK_WEBHOOK_URL_EDU'),
+          }
+          
+          # Filter webhooks based on input
+          workspace_filter = os.environ.get('WORKSPACE_FILTER', '').strip().lower()
+          
+          if workspace_filter:
+              # Manual run with specific workspace
+              if workspace_filter in webhooks:
+                  webhooks_to_use = {workspace_filter: webhooks[workspace_filter]}
+                  print(f"📍 Posting to specific workspace: {workspace_filter.upper()}")
+              else:
+                  print(f"⚠️ Unknown workspace: {workspace_filter}")
+                  print(f"Available workspaces: {', '.join(webhooks.keys())}")
+                  exit(1)
+          else:
+              # Automatic run or manual with no filter - post to all
+              webhooks_to_use = webhooks
+              print(f"📢 Posting to all workspaces")
+          
+          # Remove None values (missing secrets)
+          webhooks_to_use = {k: v for k, v in webhooks_to_use.items() if v}
+          
+          if not webhooks_to_use:
+              print("❌ No valid webhook URLs found")
+              exit(1)
           
           # Create converter instance
           converter = Convert()
           
-          webhook = WebhookClient(os.environ['SLACK_WEBHOOK_URL'])
-          
           # Convert markdown to Slack format
           slack_formatted = converter.markdown_to_slack_format(os.environ['RELEASE_BODY'])
           
-          response = webhook.send(
-              text=f"New release published: {os.environ['RELEASE_NAME']}",
-              blocks=[
-                  {
-                      "type": "section",
-                      "text": {
-                          "type": "mrkdwn",
-                          "text": f"*New EDU Release:* <{os.environ['RELEASE_URL']}|{os.environ['RELEASE_NAME']}>"
-                      }
-                  },
-                  {
-                      "type": "divider"
-                  },
-                  {
-                      "type": "section",
-                      "text": {
-                          "type": "mrkdwn",
-                          "text": slack_formatted
-                      }
+          # Prepare message blocks
+          blocks = [
+              {
+                  "type": "section",
+                  "text": {
+                      "type": "mrkdwn",
+                      "text": f"*New EDU Release:* <{os.environ['RELEASE_URL']}|{os.environ['RELEASE_NAME']}>"
                   }
-              ]
-          )
-          print(f"Response: {response.status_code}")
+              },
+              {
+                  "type": "divider"
+              },
+              {
+                  "type": "section",
+                  "text": {
+                      "type": "mrkdwn",
+                      "text": slack_formatted
+                  }
+              }
+          ]
+          
+          # Send to each webhook
+          for workspace_name, webhook_url in webhooks_to_use.items():
+              print(f"\n📤 Sending to {workspace_name.upper()}...")
+              webhook = WebhookClient(webhook_url)
+              
+              response = webhook.send(
+                  text=f"New release published: {os.environ['RELEASE_NAME']}",
+                  blocks=blocks
+              )
+              
+              if response.status_code == 200:
+                  print(f"✅ {workspace_name.upper()}: Success")
+              else:
+                  print(f"❌ {workspace_name.upper()}: Failed (status {response.status_code})")
+          
+          print("\n✨ Done!")
           EOF
         env:
           RELEASE_NAME: ${{ env.RELEASE_NAME }}
           RELEASE_URL: ${{ env.RELEASE_URL }}
           RELEASE_BODY: ${{ env.RELEASE_BODY }}
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          WORKSPACE_FILTER: ${{ inputs.workspace }}
+          SLACK_WEBHOOK_URL_EA: ${{ secrets.SLACK_WEBHOOK_URL_EA }}
+          SLACK_WEBHOOK_URL_EDU: ${{ secrets.SLACK_WEBHOOK_URL_EDU }}
