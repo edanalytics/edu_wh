@@ -22,13 +22,19 @@ populated properly.
 with sections_per_enrollment as (
     select *
     from {{ ref('sections_per_enrollment') }}
-)
-
-select k_school,
+),
+final as (
+select 
+    tenant_code,
+    k_school,
     school_year,
     count(1) as n_enrollments,
     sum(case when n_sections = 0 then 1 else 0 end) as n_enrollments_without_sections,
     n_enrollments_without_sections / n_enrollments as p_enrollments_without_sections
 from sections_per_enrollment
-group by 1, 2
+group by 1,2,3
 having p_enrollments_without_sections > 0
+)
+select count(*) as failed_row_count, tenant_code, school_year from final
+group by all
+having count(*) > 1

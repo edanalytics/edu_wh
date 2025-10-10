@@ -31,6 +31,8 @@ fct_student_school_assoc as (
 ),
 counted as (
     select 
+        fct_student_school_assoc.tenant_code,
+        fct_student_school_assoc.school_year,
         fct_student_school_assoc.k_school, 
         fct_student_school_assoc.k_student,
         dim_calendar_date.calendar_date,
@@ -41,14 +43,14 @@ counted as (
         and dim_calendar_date.calendar_date between 
             fct_student_school_assoc.entry_date and
             coalesce(fct_student_school_assoc.exit_withdraw_date, current_date())
-    group by 1,2,3
+    group by 1,2,3,4,5
     having duplicate_days > 1
 ),
 summarized as (
     select 
-        k_school,
-        k_student,
-        count(distinct calendar_date)
+        tenant_code,
+        school_year,
+        count(*) as failed_row_count
     from counted
     group by 1,2
 )

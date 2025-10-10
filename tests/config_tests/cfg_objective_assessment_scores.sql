@@ -36,4 +36,6 @@ joined as (
     where xwalk_objective_assessment_scores.objective_assessment_identification_code is null
 )
 
-select * from joined
+select count(*) as failed_row_count, tenant_code, school_year from joined
+group by all
+having count(*) > 1

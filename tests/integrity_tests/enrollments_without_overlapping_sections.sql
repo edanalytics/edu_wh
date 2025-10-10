@@ -22,11 +22,7 @@ with sections_per_enrollment as (
     select *
     from {{ ref('sections_per_enrollment') }}
 )
-
-select k_school,
-    k_student,
-    school_year,
-    entry_date,
-    n_sections
-from sections_per_enrollment
+select count(*) as failed_row_count, tenant_code, school_year from sections_per_enrollment
 where n_sections = 0
+group by all
+having count(*) > 1

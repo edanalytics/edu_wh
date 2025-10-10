@@ -18,9 +18,14 @@ or if there are errors pushing data from source system to ODS.
       severity       = 'warn'
     )
 }}
-select *,
-  datediff(DAY, max_date, current_date()) as days_since_last_attendance_event
-from {{ ref('attendance_freshness') }}
-where datediff(DAY, max_date, current_date()) > 7
--- try to avoid warnings when school is out
-  and month(current_date()) not in (7, 8)
+with filtered as (
+  select *,
+    datediff(DAY, max_date, current_date()) as days_since_last_attendance_event
+  from {{ ref('attendance_freshness') }}
+  where datediff(DAY, max_date, current_date()) > 7
+  -- try to avoid warnings when school is out
+    and month(current_date()) not in (7, 8)
+)
+select count(*) as failed_row_count, tenant_code, school_year from filtered
+group by all
+having count(*) > 1

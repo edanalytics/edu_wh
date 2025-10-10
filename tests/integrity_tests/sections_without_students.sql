@@ -20,10 +20,14 @@ with dim_course_section as (
 ),
 fct_student_section_association as (
     select * from {{ ref("fct_student_section_association") }}
+), 
+joined as (
+  select dim_course_section.*
+  from dim_course_section
+  left join fct_student_section_association 
+      on fct_student_section_association.k_course_section = dim_course_section.k_course_section
+  where fct_student_section_association.k_course_section is null
 )
-
-select dim_course_section.*
-from dim_course_section
-left join fct_student_section_association 
-    on fct_student_section_association.k_course_section = dim_course_section.k_course_section
-where fct_student_section_association.k_course_section is null
+select count(*) as failed_row_count, tenant_code, school_year from joined
+group by all
+having count(*) > 1

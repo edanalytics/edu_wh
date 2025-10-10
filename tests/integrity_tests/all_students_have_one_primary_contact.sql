@@ -14,4 +14,6 @@ with stu_with_multiple_primary_contacts as (
   group by tenant_code, school_year, k_student
   having n_primary_contacts > 1
 )
-select * from stu_with_multiple_primary_contacts
+select count(*) as failed_row_count, tenant_code, school_year from stu_with_multiple_primary_contacts
+group by all
+having count(*) > 1
