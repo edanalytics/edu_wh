@@ -33,10 +33,10 @@ dim_session as (
 joined as (
   select 
     fct.tenant_code,
-    fct.school_year,
     fct.k_student, 
     fct.k_school, 
     dim_calendar_date.calendar_date, 
+    dim_calendar_date.school_year,
     dim_school_calendar.calendar_code,
     fct.attendance_event_category, 
     fct.is_absent,

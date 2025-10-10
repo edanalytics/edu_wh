@@ -39,7 +39,6 @@ xwalk_academic_terms as (
 {% endif %}
 count_duplicates as (
     select
-        stu_academic_records.tenant_code,
         stu_academic_records.k_student,
         stu_academic_records.k_student_xyear,
         stu_academic_records.k_lea, 
@@ -58,7 +57,7 @@ count_duplicates as (
         on stu_academic_records.academic_term = xwalk_academic_terms.academic_term
     {% endif %}
 )
-select count(*) as failed_row_count, tenant_code, school_year from count_duplicates
+select count(*) as failed_row_count, tenant_code, api_year from count_duplicates
 where n_duplicates > 1
 group by all
 having count(*) > 1

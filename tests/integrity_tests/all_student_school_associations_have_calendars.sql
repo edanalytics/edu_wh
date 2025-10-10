@@ -34,7 +34,6 @@ school_calendar_counts as (
 joined as (
   select 
       fct_stu_school_assoc.tenant_code,
-      fct_stu_school_assoc.school_year,
       fct_stu_school_assoc.k_school,
       dim_school.school_id,
       fct_stu_school_assoc.school_year,
@@ -61,7 +60,7 @@ joined as (
   and (fct_stu_school_assoc.exit_withdraw_date > first_school_day.first_school_day
   or fct_stu_school_assoc.exit_withdraw_date is null)
 
-  group by 1,2,3,4,5
+  group by 1,2,3,4
   having n_students_missing_calendar != 0
 )
 select count(*) as failed_row_count, tenant_code, school_year from joined

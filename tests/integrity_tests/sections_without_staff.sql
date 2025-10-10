@@ -22,7 +22,7 @@ with dim_course_section as (
 ),
 fct_staff_section_association as (
     select * from {{ ref("fct_staff_section_association") }}
-)
+),
 joined as (
   select dim_course_section.*
   from dim_course_section
