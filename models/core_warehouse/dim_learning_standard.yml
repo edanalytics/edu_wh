@@ -16,7 +16,7 @@ models:
       - name: k_learning_standard
         description: Unique identifier for a learning standard.
         tests: 
-          - unique
+          - edu_edfi_source.edu_unique
       - name: k_learning_standard__parent
         description: A reference linking to a hierarchical parent learning standard id.
       - name: tenant_code  

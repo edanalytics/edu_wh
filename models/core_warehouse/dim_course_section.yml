@@ -24,7 +24,7 @@ models:
       - name: k_course_section
         description: Defining key for course sections
         tests: 
-          - unique
+          - edu_edfi_source.edu_unique
       - name: k_course
         description: >
           Unique identifier for the course. Foreign key reference to 

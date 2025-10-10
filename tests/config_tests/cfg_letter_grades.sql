@@ -20,4 +20,6 @@ joined as (
         on lower(stg_grades.letter_grade_earned) = xwalk_letter_grades.letter_grade
     where xwalk_letter_grades.letter_grade is null
 )
-select * from joined
+select count(*) as failed_row_count, tenant_code, api_year from joined
+group by all
+having count(*) > 1

@@ -26,4 +26,6 @@ joined as (
         on stg_calendar_events.calendar_event = xwalk_calendar_events.calendar_event_descriptor
     where xwalk_calendar_events.is_school_day is null
 )
-select * from joined
+select count(*) as failed_row_count, tenant_code, api_year from joined
+group by all
+having count(*) > 1

@@ -47,4 +47,6 @@ joined as (
     order by assessment_identifier
 )
 
-select * from joined
+select count(*) as failed_row_count, tenant_code, school_year from joined
+group by all
+having count(*) > 1

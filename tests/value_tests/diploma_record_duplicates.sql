@@ -57,7 +57,7 @@ count_duplicates as (
         on stu_academic_records.academic_term = xwalk_academic_terms.academic_term
     {% endif %}
 )
-select * 
-from count_duplicates
+select count(*) as failed_row_count, tenant_code, api_year from count_duplicates
 where n_duplicates > 1
-order by tenant_code, k_student
+group by all
+having count(*) > 1

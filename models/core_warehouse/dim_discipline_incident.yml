@@ -12,11 +12,11 @@ models:
       - name: k_discipline_incident
         description: Generated primary key composed of `tenant_code`, `api_year`, `incident_id`, and `school_id`.
         tests: 
-          - unique
+          - edu_edfi_source.edu_unique
       - name: k_school
         description: The school where the incident occurred. References dim_school
         tests:
-          - not_null
+          - edu_edfi_source.edu_not_null
       - name: tenant_code
         description: "Code defining the Tenant (may be an LEA, SEA, etc.) of the Ed-Fi ODS from which this record was pulled"
       - name: school_year

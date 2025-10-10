@@ -30,33 +30,39 @@ school_calendar_counts as (
     count(*) as n_calendars_at_school
   from dim_calendar
   group by 1,2
-)
-select 
-    fct_stu_school_assoc.k_school,
-    dim_school.school_id,
-    fct_stu_school_assoc.school_year,
-    count_if(dim_calendar.k_school_calendar is null) as n_students_missing_calendar,
-    count(*) as n_total,
-    round(100*n_students_missing_calendar/n_total, 2) as pct_missing,
-    any_value(school_calendar_counts.n_calendars_at_school) as n_calendars_at_school,
-    n_students_missing_calendar || ' records (' || pct_missing || ' %) of student enrollments have ambiguous calendars: the enrollment has no calendar association, and the school has multiple calendars. Calendars are necessary to calculate attendance.' as audit_message
-from fct_stu_school_assoc
-join dim_school
-  on fct_stu_school_assoc.k_school = dim_school.k_school
-join school_calendar_counts
-  on dim_school.k_school = school_calendar_counts.k_school
-  and fct_stu_school_assoc.school_year = school_calendar_counts.school_year
-left join dim_calendar
-    on fct_stu_school_assoc.k_school_calendar = dim_calendar.k_school_calendar
-join first_school_day
-  on dim_school.k_school = first_school_day.k_school
-  and fct_stu_school_assoc.school_year = first_school_day.school_year
-  -- subset to school overall first date
-  and first_school_day.k_school_calendar is null
-where true 
--- exclude students who exited before first day of school
-and (fct_stu_school_assoc.exit_withdraw_date > first_school_day.first_school_day
-or fct_stu_school_assoc.exit_withdraw_date is null)
+), 
+joined as (
+  select 
+      fct_stu_school_assoc.tenant_code,
+      fct_stu_school_assoc.k_school,
+      dim_school.school_id,
+      fct_stu_school_assoc.school_year,
+      count_if(dim_calendar.k_school_calendar is null) as n_students_missing_calendar,
+      count(*) as n_total,
+      round(100*n_students_missing_calendar/n_total, 2) as pct_missing,
+      any_value(school_calendar_counts.n_calendars_at_school) as n_calendars_at_school,
+      n_students_missing_calendar || ' records (' || pct_missing || ' %) of student enrollments have ambiguous calendars: the enrollment has no calendar association, and the school has multiple calendars. Calendars are necessary to calculate attendance.' as audit_message
+  from fct_stu_school_assoc
+  join dim_school
+    on fct_stu_school_assoc.k_school = dim_school.k_school
+  join school_calendar_counts
+    on dim_school.k_school = school_calendar_counts.k_school
+    and fct_stu_school_assoc.school_year = school_calendar_counts.school_year
+  left join dim_calendar
+      on fct_stu_school_assoc.k_school_calendar = dim_calendar.k_school_calendar
+  join first_school_day
+    on dim_school.k_school = first_school_day.k_school
+    and fct_stu_school_assoc.school_year = first_school_day.school_year
+    -- subset to school overall first date
+    and first_school_day.k_school_calendar is null
+  where true 
+  -- exclude students who exited before first day of school
+  and (fct_stu_school_assoc.exit_withdraw_date > first_school_day.first_school_day
+  or fct_stu_school_assoc.exit_withdraw_date is null)
 
-group by 1,2,3
-having n_students_missing_calendar != 0
+  group by 1,2,3,4
+  having n_students_missing_calendar != 0
+)
+select count(*) as failed_row_count, tenant_code, school_year from joined
+group by all
+having count(*) > 1

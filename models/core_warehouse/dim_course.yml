@@ -15,7 +15,7 @@ models:
       - name: k_course
         description: Defining key for courses. Generated primary key composed of `tenant_code`, `api_year`, `course_code`, and `ed_org_id`.
         tests: 
-          - unique
+          - edu_edfi_source.edu_unique
       - name: tenant_code
         description: "Code defining the Tenant (may be an LEA, SEA, etc.) of the Ed-Fi ODS from which this record was pulled"
       - name: school_year

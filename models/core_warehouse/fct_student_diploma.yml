@@ -13,7 +13,7 @@ models:
       {{ doc(var('edu:custom_docs:fct_student_diploma')) if var('edu:custom_docs:fct_student_diploma', '') }}
 
     tests:
-      - dbt_utils.unique_combination_of_columns:
+      - edu_edfi_source.edu_unique_combination_of_columns:
           combination_of_columns:
             - k_student
             - k_student_xyear

@@ -13,10 +13,15 @@ with stu_with_enroll as (
   from {{ ref('stg_ef3__students') }} stu
   join {{ ref('stg_ef3__student_school_associations') }} ssa
       on stu.k_student = ssa.k_student
+),
+joined as (
+  -- of these: which students are not in the dimension
+  select stu_with_enroll.*
+  from stu_with_enroll
+  left join {{ ref('dim_student') }}
+      on stu_with_enroll.k_student = dim_student.k_student
+  where dim_student.k_student is null
 )
--- of these: which students are not in the dimension
-select stu_with_enroll.*
-from stu_with_enroll
-left join {{ ref('dim_student') }}
-    on stu_with_enroll.k_student = dim_student.k_student
-where dim_student.k_student is null
+select count(*) as failed_row_count, tenant_code, api_year from joined
+group by all
+having count(*) > 1

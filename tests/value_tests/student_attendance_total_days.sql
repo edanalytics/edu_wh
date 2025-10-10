@@ -29,6 +29,8 @@ in the source system or ODS.
 with cumulative_attendance as (
     select * from {{ ref('msr_student_cumulative_attendance') }}
 )
-select *
+select count(*) as failed_row_count, tenant_code, school_year
 from cumulative_attendance
 where days_enrolled > 185
+group by tenant_code, school_year
+having count(*) > 1

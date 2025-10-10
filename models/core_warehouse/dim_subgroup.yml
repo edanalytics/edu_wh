@@ -21,7 +21,7 @@ models:
       - name: k_subgroup
         description: Defining key for subgroups. A surrogate key for [`subgroup_category` + `subgroup_value`]
         tests:
-          - unique
+          - edu_edfi_source.edu_unique
       - name: subgroup_category
         description: Category of subgroup. e.g. "grade_level"
       - name: subgroup_category_display_name

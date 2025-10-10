@@ -29,24 +29,31 @@ dim_school_calendar as (
 ),
 dim_session as (
     select * from {{ ref('dim_session') }}
+),
+joined as (
+  select 
+    fct.tenant_code,
+    fct.k_student, 
+    fct.k_school, 
+    dim_calendar_date.calendar_date, 
+    dim_calendar_date.school_year,
+    dim_school_calendar.calendar_code,
+    fct.attendance_event_category, 
+    fct.is_absent,
+    fct.attendance_event_category = min(fct.attendance_event_category) over(partition by fct.k_student, fct.k_school, dim_calendar_date.calendar_date) as is_preferred_category_by_dedupe,
+    fct.k_session,
+    count(*) over(partition by fct.k_student, fct.k_school, dim_calendar_date.calendar_date) as n_duplicates,
+    count(distinct fct.attendance_event_category) over(partition by fct.k_student, fct.k_school, dim_calendar_date.calendar_date) as n_unique_attendance_event_categories,
+    count(distinct fct.is_absent) over(partition by fct.k_student, fct.k_school, dim_calendar_date.calendar_date) as n_unique_is_absent_values,
+    count(distinct fct.k_session) over(partition by fct.k_student, fct.k_school, dim_calendar_date.calendar_date) as n_unique_sessions
+  from fct_student_school_attendance_event fct
+  join dim_calendar_date
+    on fct.k_calendar_date = dim_calendar_date.k_calendar_date
+  join dim_school_calendar
+    on dim_calendar_date.k_school_calendar = dim_school_calendar.k_school_calendar
+  qualify 1 < count(*) over(partition by fct.k_student, fct.k_school, dim_calendar_date.calendar_date)
+  order by fct.k_student, fct.k_school, calendar_date, attendance_event_category
 )
-select 
-  fct.k_student, 
-  fct.k_school, 
-  dim_calendar_date.calendar_date, 
-  dim_school_calendar.calendar_code,
-  fct.attendance_event_category, 
-  fct.is_absent,
-  fct.attendance_event_category = min(fct.attendance_event_category) over(partition by fct.k_student, fct.k_school, dim_calendar_date.calendar_date) as is_preferred_category_by_dedupe,
-  fct.k_session,
-  count(*) over(partition by fct.k_student, fct.k_school, dim_calendar_date.calendar_date) as n_duplicates,
-  count(distinct fct.attendance_event_category) over(partition by fct.k_student, fct.k_school, dim_calendar_date.calendar_date) as n_unique_attendance_event_categories,
-  count(distinct fct.is_absent) over(partition by fct.k_student, fct.k_school, dim_calendar_date.calendar_date) as n_unique_is_absent_values,
-  count(distinct fct.k_session) over(partition by fct.k_student, fct.k_school, dim_calendar_date.calendar_date) as n_unique_sessions
-from fct_student_school_attendance_event fct
-join dim_calendar_date
-  on fct.k_calendar_date = dim_calendar_date.k_calendar_date
-join dim_school_calendar
-  on dim_calendar_date.k_school_calendar = dim_school_calendar.k_school_calendar
-qualify 1 < count(*) over(partition by fct.k_student, fct.k_school, dim_calendar_date.calendar_date)
-order by fct.k_student, fct.k_school, calendar_date, attendance_event_category
+select count(*) as failed_row_count, tenant_code, school_year from joined
+group by all
+having count(*) > 1

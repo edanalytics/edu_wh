@@ -1,3 +1,4 @@
 packages:
-  - package: edanalytics/edu_edfi_source
-    version: [">=0.5.1", "<0.6.0"]
+  # - package: edanalytics/edu_edfi_source
+  #   version: [">=0.4.0", "<0.5.0"]
+  - local: ~/code/edu_edfi_source

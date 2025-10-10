@@ -32,7 +32,7 @@ models:
         description: >
           Generated primary key composed of `tenant_code`, `api_year`, `studentAssessmentIdentifier`, and `objectiveAssessmentIdentificationCode`.
         tests: 
-          - unique
+          - edu_edfi_source.edu_unique
       - name: k_objective_assessment
       - name: k_student_assessment
       - name: k_assessment

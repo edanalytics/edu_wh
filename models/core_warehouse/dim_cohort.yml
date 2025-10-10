@@ -21,7 +21,7 @@ models:
       - name: k_cohort
         description: Defining key for cohorts. Surrogate key for [`api_year` + `ed_org_id` + `cohort_id`]
         tests: 
-          - unique
+          - edu_edfi_source.edu_unique
       - name: k_lea
         description: Association to the LEA with the cohort.
       - name: k_school

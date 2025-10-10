@@ -15,7 +15,7 @@ models:
       enabled: "{{ var('src:program:title_i:enabled', True) }}"
 
     tests:
-      - dbt_utils.unique_combination_of_columns:
+      - edu_edfi_source.edu_unique_combination_of_columns:
           combination_of_columns:
             - k_student
             - k_program

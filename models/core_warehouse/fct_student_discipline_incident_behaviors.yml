@@ -12,7 +12,7 @@ models:
         `k_student, k_discipline_incident, behavior_type` -- There is one record per student, year, incident ID, school, and behavior.
 
     tests:
-      - dbt_utils.unique_combination_of_columns:
+      - edu_edfi_source.edu_unique_combination_of_columns:
           combination_of_columns:
             - k_student
             - k_student_xyear
