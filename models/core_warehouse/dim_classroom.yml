@@ -15,7 +15,7 @@ models:
       - name: k_classroom
         description: Defining key for school locations
         tests: 
-          - edu_edfi_source.unique
+          - edu_edfi_source.edu_unique
       - name: k_school
         description: Association to the school containing the location
       - name: tenant_code

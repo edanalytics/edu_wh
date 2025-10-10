@@ -13,7 +13,7 @@ models:
             Generated primary key composed of `tenant_code`, `api_year`, `academicSubjectDescriptor`,
             `assessmentIdentifier`, `namespace`, and `objectiveAssessmentIdentificationCode`.
         tests: 
-          - edu_edfi_source.unique
+          - edu_edfi_source.edu_unique
       - name: k_assessment
       - name: tenant_code
       - name: school_year

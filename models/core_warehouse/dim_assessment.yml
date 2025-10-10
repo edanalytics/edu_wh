@@ -16,7 +16,7 @@ models:
       - name: k_assessment
         description: Generated primary key composed of `tenant_code`, `api_year`, `academicSubjectDescriptor`, `assessmentIdentifier`, and `namespace`.
         tests: 
-          - edu_edfi_source.unique
+          - edu_edfi_source.edu_unique
       - name: tenant_code
       - name: school_year
       - name: assessment_identifier

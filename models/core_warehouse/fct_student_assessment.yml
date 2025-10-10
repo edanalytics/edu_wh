@@ -48,7 +48,7 @@ models:
         description: >
           Generated primary key composed of `tenant_code`, `api_year`, and `studentAssessmentIdentifier`.
         tests: 
-          - edu_edfi_source.unique
+          - edu_edfi_source.edu_unique
       - name: k_assessment
         description: Unique identifier of the assessment. Foreign key reference to `dim_assessment`.
       - name: k_student

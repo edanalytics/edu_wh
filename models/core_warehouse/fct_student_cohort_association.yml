@@ -13,7 +13,7 @@ models:
       tags: ['cohort']
       enabled: "{{ var('src:domain:cohort:enabled', True) }}"
     tests:
-      - edu_edfi_source.unique_combination_of_columns:
+      - edu_edfi_source.edu_unique_combination_of_columns:
           combination_of_columns:
             - k_student
             - k_cohort
