@@ -1,6 +1,7 @@
 {{
   config(
     post_hook=[
+        "alter table {{ this }} alter column k_enrollment set not null",
         "alter table {{ this }} alter column k_student set not null",
         "alter table {{ this }} alter column k_school set not null",
         "alter table {{ this }} alter column entry_date set not null",
@@ -42,6 +43,7 @@ single_calendar_schools as (
 ),
 formatted as (
     select 
+        stg_stu_school.k_enrollment,
         dim_student.k_student,
         dim_student.k_student_xyear,
         dim_school.k_lea,
