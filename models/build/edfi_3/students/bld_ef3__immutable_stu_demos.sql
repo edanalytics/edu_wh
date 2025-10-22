@@ -39,7 +39,9 @@ joined as (
         }} as display_name,
         concat(display_name, ' (', stg_student.student_unique_id, ')') as safe_display_name,
         stg_student.birth_date,
+        stg_student.birth_country,
         stu_demos.gender,
+        stu_demos.gender_identity,
         stu_races.race_ethnicity,
         stu_races.race_array,
         stu_races.has_hispanic_latino_ethnicity

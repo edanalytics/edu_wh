@@ -1,6 +1,9 @@
 {{
   config(
     post_hook=[
+        "alter table {{ this }} alter column k_course set not null",
+        "alter table {{ this }} alter column k_student_academic_record set not null",
+        "alter table {{ this }} alter column course_attempt_result set not null",
         "alter table {{ this }} add primary key (k_course, k_student_academic_record, course_attempt_result)",
         "alter table {{ this }} add constraint fk_{{ this.name }}_course foreign key (k_course) references {{ ref('dim_course') }}",
         "alter table {{ this }} add constraint fk_{{ this.name }}_academic_record foreign key (k_student_academic_record) references {{ ref('fct_student_academic_record') }}",
@@ -46,7 +49,8 @@ formatted as (
         course_transcripts.attempted_credit_conversion,
         course_transcripts.assigning_organization_identification_code,
         course_transcripts.course_catalog_url,
-        course_transcripts.v_earned_additional_credits
+        course_transcripts.v_earned_additional_credits,
+        course_transcripts.v_credit_categories
         {# add any extension columns configured from stg_ef3__course_transcripts #}
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__course_transcripts', flatten=False) }}
     from course_transcripts

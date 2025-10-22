@@ -1,7 +1,7 @@
 config-version: 2
 
 name: 'edu_wh'
-version: '0.4.0'
+version: '0.5.2'
 require-dbt-version: [">=1.0.0", "<2.0.0"]
 
 # This setting configures which "profile" dbt uses for this project.
@@ -65,6 +65,21 @@ vars:
   'edu:title_i:exit_date_column': program_enroll_end_date
   'edu:title_i:exclude_programs': Null
   'edu:title_i:agg_types': ['annual', 'active']
+
+  'edu:cte:start_date_column': program_enroll_begin_date
+  'edu:cte:exit_date_column': program_enroll_end_date
+  'edu:cte:exclude_programs': Null
+  'edu:cte:agg_types': ['annual', 'active']
+
+  'edu:food_service:start_date_column': program_enroll_begin_date
+  'edu:food_service:exit_date_column': program_enroll_end_date
+  'edu:food_service:exclude_programs': Null
+  'edu:food_service:agg_types': ['annual', 'active']
+
+  'edu:migrant_education:start_date_column': program_enroll_begin_date
+  'edu:migrant_education:exit_date_column': program_enroll_end_date
+  'edu:migrant_education:exclude_programs': Null
+  'edu:migrant_education:agg_types': ['annual', 'active']
 
   # label for 'Present' days generated from negative attendance
   'edu:attendance:in_attendance_code': In Attendance

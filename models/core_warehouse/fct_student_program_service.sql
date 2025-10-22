@@ -1,6 +1,10 @@
 {{
   config(
     post_hook=[
+        "alter table {{ this }} alter column k_student set not null",
+        "alter table {{ this }} alter column k_program set not null",
+        "alter table {{ this }} alter column program_enroll_begin_date set not null",
+        "alter table {{ this }} alter column program_service set not null",
         "alter table {{ this }} add primary key (k_student, k_program, program_enroll_begin_date, program_service)",
         "alter table {{ this }} add constraint fk_{{ this.name }}_student foreign key (k_student) references {{ ref('dim_student') }}",
         "alter table {{ this }} add constraint fk_{{ this.name }}_program foreign key (k_program) references {{ ref('dim_program') }}",
@@ -32,6 +36,20 @@
     {% do stage_program_relations.append(ref('stg_ef3__stu_title_i_part_a__program_services')) %}
 {% endif %}
 
+-- CTE
+{% if var('src:program:cte:enabled', True) %}
+    {% do stage_program_relations.append(ref('stg_ef3__stu_cte__program_services')) %}
+{% endif %}
+
+-- Migrant Education
+{% if var('src:program:migrant_education:enabled', True) %}
+    {% do stage_program_relations.append(ref('stg_ef3__stu_migrant_edu__program_services')) %}
+{% endif %}
+
+-- Food Service
+{% if var('src:program:food_service:enabled', True) %}
+    {% do stage_program_relations.append(ref('stg_ef3__stu_school_food_service__program_services')) %}
+{% endif %}
 
 with dim_student as (
     select * from {{ ref('dim_student') }}
