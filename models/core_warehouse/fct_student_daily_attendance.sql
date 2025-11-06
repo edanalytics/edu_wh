@@ -226,39 +226,29 @@ metric_labels as (
         case 
             when meets_enrollment_threshold then metric_absentee_categories.level_label 
             else null
-        end as absentee_category_label,
+        end as absentee_category_label
     from cumulatives
     left join metric_absentee_categories
         on cumulative_attendance_rate > metric_absentee_categories.threshold_lower
         and cumulative_attendance_rate <= metric_absentee_categories.threshold_upper
 ),
 consecutive as (
-    select *,
-          -- the consecutive count of unexcused absence per student per school 
-        row_number() over (partition by k_student, k_school, grouping order by calendar_date) as nth_consec_unexcused_absence
-    from (
-        select 
-            metric_labels.*,
-            -- logic that assigns a constant value for all consecutive records of the same `is_unexcused_absence` ordered by date per student
-                -- the first dense_rank() computes the ranking for records for each student
-                -- the second dense_rank() computes the ranking for records for each unique (student + `is_unexcused_absence`)
-                -- the difference between these two `dense_rank()`'s is constant for all consecutive records of the same `is_unexcused_absence` per student.
-            dense_rank() over ( partition by k_student, k_school order by calendar_date ) 
-            - dense_rank() over ( partition by k_student, k_school, attendance_event_category order by calendar_date) as grouping,
-        from metric_labels
-        where attendance_event_category ilike '%unexcused%'
-    )
-
+    select 
+        metric_labels.*,
+        -- logic that assigns a constant value for all consecutive records of the same `is_unexcused_absence` ordered by date per student
+            -- the first dense_rank() computes the ranking for records for each student
+            -- the second dense_rank() computes the ranking for records for each unique (student + `is_unexcused_absence`)
+            -- the difference between these two `dense_rank()`'s is constant for all consecutive records of the same `is_unexcused_absence` per student.
+        dense_rank() over ( partition by k_student, k_school order by calendar_date ) 
+        - dense_rank() over ( partition by k_student, k_school, attendance_event_category order by calendar_date) as grouping
+    from metric_labels
 ),
 final as (
-    select  metric_labels.*,
-            nth_consec_unexcused_absence
-    from metric_labels
-
-    left join consecutive
-    on metric_labels.k_student = consecutive.k_student
-    and metric_labels.k_school = consecutive.k_school
-    and metric_labels.calendar_date = consecutive.calendar_date
+    select 
+        *,
+      -- the consecutive count of unexcused absence per student per school 
+         row_number() over (partition by k_student, k_school, grouping order by calendar_date) as nth_consec_attendance_event
+    from consecutive
 )
 
 select * from final 
