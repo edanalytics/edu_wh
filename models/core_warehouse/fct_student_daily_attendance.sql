@@ -105,6 +105,28 @@ stu_enr_att_cal as (
     -- absenteeism metrics forward post-enrollment
     where attendance_calendar.calendar_date >= enr.entry_date
 ),
+consecutive_unexcused_absence as (
+    select 
+        *,
+        row_number() over (partition by k_student, k_school, grouping order by calendar_date) as nth_consec_unexcused_absence
+    from 
+        (select 
+            stu_enr_att_cal.k_student,
+            stu_enr_att_cal.k_school,
+            stu_enr_att_cal.k_calendar_date,
+            stu_enr_att_cal.calendar_date,
+            attendance_event_category,
+            dense_rank() over ( partition by stu_enr_att_cal.k_student, stu_enr_att_cal.k_school order by calendar_date ) 
+            - dense_rank() over ( partition by stu_enr_att_cal.k_student,stu_enr_att_cal.k_school, fct_student_school_att.attendance_event_category order by calendar_date) 
+        as grouping 
+        from stu_enr_att_cal
+        left join fct_student_school_att
+            on stu_enr_att_cal.k_student = fct_student_school_att.k_student
+            and stu_enr_att_cal.k_school = fct_student_school_att.k_school
+            and stu_enr_att_cal.k_calendar_date = fct_student_school_att.k_calendar_date    
+        )
+    where attendance_event_category ilike '%unexcused%'
+),
 fill_positive_attendance as (
     select 
         stu_enr_att_cal.k_student,
@@ -152,7 +174,8 @@ fill_positive_attendance as (
                 else 1.0
             end, 0.0) as is_present,
         fct_student_school_att.event_duration,
-        fct_student_school_att.school_attendance_duration
+        fct_student_school_att.school_attendance_duration,
+        nth_consec_unexcused_absence
     from stu_enr_att_cal
     left join fct_student_school_att
         on stu_enr_att_cal.k_student = fct_student_school_att.k_student
@@ -166,6 +189,10 @@ fill_positive_attendance as (
         and stu_enr_att_cal.calendar_date between 
             bld_attendance_sessions.session_begin_date and 
             bld_attendance_sessions.session_end_date
+    left join consecutive_unexcused_absence
+        on stu_enr_att_cal.k_student = consecutive_unexcused_absence.k_student
+        and stu_enr_att_cal.k_student = consecutive_unexcused_absence.k_student
+        and stu_enr_att_cal.k_calendar_date = consecutive_unexcused_absence.k_calendar_date
 ),
 positive_attendance_deduped as (
     -- account for multiple overlapping enrollments at the same school by ensuring
@@ -184,18 +211,6 @@ positive_attendance_deduped as (
             order_by='is_enrolled desc, total_instructional_days, attendance_event_category, k_session'
         )
     }}
-),
-consecutive_unexcused_absence as (
-    select 
-        *,
-        row_number() over (partition by k_student, k_school, grouping order by calendar_date) as nth_consec_unexcused_absence
-    from 
-        (select *,
-            dense_rank() over ( partition by k_student, k_school order by calendar_date ) 
-            - dense_rank() over ( partition by k_student,k_school, attendance_event_category order by calendar_date) 
-        as grouping 
-        from positive_attendance_deduped    
-        )
 ),
 cumulatives as (
     select 
@@ -229,10 +244,6 @@ cumulatives as (
         positive_attendance_deduped.school_attendance_duration,
         nth_consec_unexcused_absence
     from positive_attendance_deduped
-    left join consecutive_unexcused_absence
-        on positive_attendance_deduped.k_student = consecutive_unexcused_absence.k_student
-        and positive_attendance_deduped.k_student = consecutive_unexcused_absence.k_student
-        and positive_attendance_deduped.calendar_date = consecutive_unexcused_absence.calendar_date
 ),
 metric_labels as (
     select 
