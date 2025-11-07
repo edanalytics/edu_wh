@@ -139,6 +139,7 @@ fill_positive_attendance as (
                     fct_student_school_att.attendance_event_category,
                     '{{ var("edu:attendance:in_attendance_code") }}') 
         end as attendance_event_category,
+        
         coalesce(
             case 
                 when is_enrolled = 1 then fct_student_school_att.is_absent
@@ -184,6 +185,20 @@ positive_attendance_deduped as (
         )
     }}
 ),
+consecutive_unexcused_absence as (
+    select 
+        *,
+        row_number() over (partition by k_student, k_school, grouping order by calendar_date) as nth_consec_unexcused_absence
+    from 
+        (select *,
+            dense_rank() over ( partition by k_student, k_school order by calendar_date ) 
+            - dense_rank() over ( partition by k_student,k_school, attendance_event_category order by calendar_date) 
+        as grouping 
+        from positive_attendance_deduped    
+        )
+    where attendance_event_category ilike '%unexcused absence%' 
+
+),
 cumulatives as (
     select 
         positive_attendance_deduped.k_student,
@@ -198,23 +213,28 @@ cumulatives as (
         positive_attendance_deduped.is_absent,
         positive_attendance_deduped.is_present,
         positive_attendance_deduped.is_enrolled,
-        sum(is_enrolled) over(
-            partition by k_student, k_school) as total_days_enrolled,
-        sum(is_absent) over(
-            partition by k_student, k_school 
-            order by calendar_date) as cumulative_days_absent,
-        sum(is_present) over(
-            partition by k_student, k_school 
-            order by calendar_date) as cumulative_days_attended,
-        sum(is_enrolled) over(
-            partition by k_student, k_school
-            order by calendar_date) as cumulative_days_enrolled,
+        sum(positive_attendance_deduped.is_enrolled) over(
+            partition by positive_attendance_deduped.k_student, positive_attendance_deduped.k_school) as total_days_enrolled,
+        sum(positive_attendance_deduped.is_absent) over(
+            partition by positive_attendance_deduped.k_student, positive_attendance_deduped.k_school 
+            order by positive_attendance_deduped.calendar_date) as cumulative_days_absent,
+        sum(positive_attendance_deduped.is_present) over(
+            partition by positive_attendance_deduped.k_student, positive_attendance_deduped.k_school 
+            order by positive_attendance_deduped.calendar_date) as cumulative_days_attended,
+        sum(positive_attendance_deduped.is_enrolled) over(
+            partition by positive_attendance_deduped.k_student, positive_attendance_deduped.k_school
+            order by positive_attendance_deduped.calendar_date) as cumulative_days_enrolled,
         round(100 * cumulative_days_attended / nullif(cumulative_days_enrolled, 0), 2) as cumulative_attendance_rate,
         cumulative_days_enrolled >= {{ var('edu:attendance:chronic_absence_min_days') }} as meets_enrollment_threshold,
         {{ msr_chronic_absentee('cumulative_attendance_rate', 'cumulative_days_enrolled') }} as is_chronic_absentee,
         positive_attendance_deduped.event_duration,
-        positive_attendance_deduped.school_attendance_duration
+        positive_attendance_deduped.school_attendance_duration,
+        nth_consec_unexcused_absence
     from positive_attendance_deduped
+    left join consecutive_unexcused_absence
+        on positive_attendance_deduped.k_student = consecutive_unexcused_absence.k_student
+        and positive_attendance_deduped.k_student = consecutive_unexcused_absence.k_student
+        and positive_attendance_deduped.calendar_date = consecutive_unexcused_absence.calendar_date
 ),
 metric_labels as (
     select 
@@ -231,27 +251,9 @@ metric_labels as (
     left join metric_absentee_categories
         on cumulative_attendance_rate > metric_absentee_categories.threshold_lower
         and cumulative_attendance_rate <= metric_absentee_categories.threshold_upper
-),
-consecutive as (
-    select 
-        metric_labels.*,
-        -- logic that assigns a constant value for all consecutive records of the same `is_unexcused_absence` ordered by date per student
-            -- the first dense_rank() computes the ranking for records for each student
-            -- the second dense_rank() computes the ranking for records for each unique (student + `is_unexcused_absence`)
-            -- the difference between these two `dense_rank()`'s is constant for all consecutive records of the same `is_unexcused_absence` per student.
-        dense_rank() over ( partition by k_student, k_school order by calendar_date ) 
-        - dense_rank() over ( partition by k_student, k_school, attendance_event_category order by calendar_date) as grouping
-    from metric_labels
-),
-final as (
-    select 
-        *,
-      -- the consecutive count of unexcused absence per student per school 
-         row_number() over (partition by k_student, k_school, grouping order by calendar_date) as nth_consec_attendance_event
-    from consecutive
 )
 
-select * from final 
+select * from metric_labels 
 
 
 
