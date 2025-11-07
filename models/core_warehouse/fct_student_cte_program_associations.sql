@@ -1,5 +1,4 @@
-
-{{ 
+{{
   config(
     post_hook=[
         "alter table {{ this }} alter column k_student set not null",
@@ -10,7 +9,7 @@
         "alter table {{ this }} add constraint fk_{{ this.name }}_student foreign key (k_student) references {{ ref('dim_student') }}",
         "alter table {{ this }} add constraint fk_{{ this.name }}_program foreign key (k_program) references {{ ref('dim_program') }}"
     ]
-  ) 
+  )
 }}
 
 with stage as (
@@ -45,12 +44,10 @@ formatted as (
         {# add any extension columns configured from stg_ef3__student_cte_program_associations #}
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_cte_program_associations', flatten=False) }}
     from stage
-    
-        inner join dim_student
-            on stage.k_student = dim_student.k_student
-            
-        inner join dim_program
-            on stage.k_program = dim_program.k_program
+    join dim_student
+        on stage.k_student = dim_student.k_student
+    join dim_program
+        on stage.k_program = dim_program.k_program
 )
 
 select * from formatted
