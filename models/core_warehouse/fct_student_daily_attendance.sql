@@ -125,7 +125,6 @@ consecutive_unexcused_absence as (
             and stu_enr_att_cal.k_school = fct_student_school_att.k_school
             and stu_enr_att_cal.k_calendar_date = fct_student_school_att.k_calendar_date    
         )
-    where attendance_event_category ilike '%unexcused%'
 ),
 fill_positive_attendance as (
     select 
