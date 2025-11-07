@@ -196,8 +196,6 @@ consecutive_unexcused_absence as (
         as grouping 
         from positive_attendance_deduped    
         )
-    where attendance_event_category ilike '%unexcused absence%' 
-
 ),
 cumulatives as (
     select 
