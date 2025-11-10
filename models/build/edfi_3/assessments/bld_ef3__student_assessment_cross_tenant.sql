@@ -1,7 +1,7 @@
 {% if var("edu:assessments:assessment_cross_tenant", False) -%}
 
 {# Load students to remove source from var #}
-{% set removed_students_source = var("edu:assessments:removed_students_source") %}
+{% set removed_students_source = var("edu:assessments:removed_students_source", none) %}
 
 with dim_student as (
     select * from {{ ref('dim_student') }}
@@ -28,6 +28,7 @@ active_enrollments as (
     join dim_student
         on fct_student_school.k_student = dim_student.k_student
     -- if this source is configured, remove these students instead of using default logic below
+    -- TODO: should this join on student unique id instead?
     {% if removed_students_source is not none and removed_students_source | length -%}
     left join {{ ref(removed_students_source) }}
         on dim_student.k_student = {{ removed_students_source }}.k_student
@@ -129,8 +130,10 @@ from subset_assessments
           null as k_assessment,
           null as k_student_assessment,
           null as k_student_assessment__original,
+          null as k_assessment__original,
           null as student_unique_id,
-          null as is_original_record
+          null as is_original_record,
+          null as original_tenant_code
        ) blank_subquery
   limit 0
 {% endif %}
