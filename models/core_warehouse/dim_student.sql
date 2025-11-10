@@ -267,7 +267,7 @@ formatted as (
 
     from stg_student
 
-    join stu_demos
+    {% if not var('edu:stu_demos:require_strict', True) %}left {% endif %}join stu_demos
         on stg_student.k_student = stu_demos.k_student
     join stu_immutable_demos
         on stu_demos.{{demos_join_var}} = stu_immutable_demos.{{demos_join_var}}
