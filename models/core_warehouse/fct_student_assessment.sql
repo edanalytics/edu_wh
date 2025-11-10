@@ -15,8 +15,8 @@ with student_assessments_long_results as (
 student_assessments as (
     select * from {{ ref('stg_ef3__student_assessments') }}
 ),
-student_assessment_access as (
-    select * from {{ ref('bld_ef3__student_assessment_access') }}
+student_assessment_cross_tenant as (
+    select * from {{ ref('bld_ef3__student_assessment_cross_tenant') }}
 ),
 dim_student as (
     select * from {{ ref('dim_student') }}
@@ -31,13 +31,13 @@ object_agg_other_results as (
 ),
 access as (
     select
-        coalesce(student_assessment_access.k_student_assessment, student_assessments.k_student_assessment) as k_student_assessment,
-        coalesce(student_assessment_access.k_assessment, student_assessments.k_assessment) as k_assessment,
-        coalesce(student_assessment_access.k_student, student_assessments.k_student) as k_student,
-        coalesce(student_assessment_access.k_student_xyear, student_assessments.k_student_xyear) as k_student_xyear,
-        coalesce(student_assessment_access.tenant_code, student_assessments.tenant_code) as tenant_code,
-        coalesce(student_assessment_access.school_year, student_assessments.school_year) as school_year,
-        coalesce(student_assessment_access.k_student_assessment__original, student_assessments.k_student_assessment) as k_student_assessment__original,
+        coalesce(student_assessment_cross_tenant.k_student_assessment, student_assessments.k_student_assessment) as k_student_assessment,
+        coalesce(student_assessment_cross_tenant.k_assessment, student_assessments.k_assessment) as k_assessment,
+        coalesce(student_assessment_cross_tenant.k_student, student_assessments.k_student) as k_student,
+        coalesce(student_assessment_cross_tenant.k_student_xyear, student_assessments.k_student_xyear) as k_student_xyear,
+        coalesce(student_assessment_cross_tenant.tenant_code, student_assessments.tenant_code) as tenant_code,
+        coalesce(student_assessment_cross_tenant.school_year, student_assessments.school_year) as school_year,
+        coalesce(student_assessment_cross_tenant.k_student_assessment__original, student_assessments.k_student_assessment) as k_student_assessment__original,
         {{ accordion_columns(
             source_table='stg_ef3__student_assessments', 
             source_alias='student_assessments',
@@ -45,8 +45,8 @@ access as (
     from student_assessments
     -- left join because this model can return empty
         -- and to avoid enforcing a current school association
-    left join student_assessment_access
-        on student_assessments.k_student_assessment = student_assessment_access.k_student_assessment__original
+    left join student_assessment_cross_tenant
+        on student_assessments.k_student_assessment = student_assessment_cross_tenant.k_student_assessment__original
 ),
 student_assessments_wide as (
     select
@@ -86,7 +86,9 @@ student_assessments_wide as (
             agg='max',
             quote_identifiers=False
         ) }}
-        {%- endif %}
+        {%- endif %},
+        is_original_record,
+        original_tenant_code,
         {# add any extension columns configured from stg_ef3__student_assessments #}
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_assessments', flatten=False) }}
     from access
@@ -114,7 +116,7 @@ student_assessments_wide as (
 )
 -- add v_other_results to the end because variant columns cannot be included in a group by in Databricks
 select 
-    student_assessments_wide.*, 
+    {{ star('student_assessments_wide', except=['k_student_assessment__original']) }},, 
     v_other_results
 from student_assessments_wide
 left join object_agg_other_results
