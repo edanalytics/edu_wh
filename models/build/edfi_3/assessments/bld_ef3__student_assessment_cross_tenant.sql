@@ -1,9 +1,7 @@
 {% if var("edu:assessments:assessment_cross_tenant", False) -%}
+
 {# Load students to remove source from var #}
 {% set removed_students_source = var("edu:assessments:removed_students_source") %}
-
--- if the student_unique_id is not global for a partner, then we need to use the other ID type for 
-{% set globally_unique_id = var("edu:assessments:unique_id") %}
 
 with dim_student as (
     select * from {{ ref('dim_student') }}
@@ -23,9 +21,6 @@ active_enrollments as (
         fct_student_school.k_student,
         fct_student_school.k_student_xyear,
         dim_student.student_unique_id,
-        {% if unique_id != 'student_unique_id' -%}
-        dim_student.{{unique_id}},
-        {% endif %}
         dim_student.birth_date,
         dim_student.first_name,
         dim_student.last_name
@@ -75,7 +70,7 @@ subset_assessments as (
         -- TODO: this key may not join to anything
             -- but, can't leave original because of RLS
             -- create new records? complicated logic
-        {{dbt_utils.generate_surrogate_k ey(
+        {{dbt_utils.generate_surrogate_key(
             ['deduped_enrollments.tenant_code',
             'deduped_enrollments.school_year',
             'lower(stg_student_assessment.academic_subject)',
@@ -93,12 +88,18 @@ subset_assessments as (
         ) }} as k_student_assessment,
         -- keep the original k_student_assessment for merging downstream
         stg_student_assessment.k_student_assessment as k_student_assessment__original,
+        stg_student_assessment.k_assessment as k_assessment__original,
         stg_student_assessment.student_unique_id,
         case
             when stg_student_assessment.tenant_code = deduped_enrollments.tenant_code
                 then 1
             else 0
-        end as is_original_record
+        end as is_original_record,
+        case
+            when stg_student_assessment.tenant_code = deduped_enrollments.tenant_code
+                then null
+            else stg_student_assessment.tenant_code
+        end as original_tenant_code
     from stg_student_assessment
     -- this code will intentionally create dupes to associate a student assessment record
     -- to every tenant where a current enrollment exists for that student_unique_id
@@ -112,7 +113,7 @@ subset_assessments as (
             -- test or bake into code somehow?
                 -- qualify 1 = count(distinct bday) by student_unique_id
 
-        -- TODO: configurable ID type
+        -- NOTE: in the future, this could be configurable
         on stg_student_assessment.student_unique_id = deduped_enrollments.student_unique_id
 )
 select *
