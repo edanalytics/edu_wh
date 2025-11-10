@@ -38,6 +38,8 @@ access as (
         coalesce(student_assessment_cross_tenant.tenant_code, student_assessments.tenant_code) as tenant_code,
         coalesce(student_assessment_cross_tenant.school_year, student_assessments.school_year) as school_year,
         coalesce(student_assessment_cross_tenant.k_student_assessment__original, student_assessments.k_student_assessment) as k_student_assessment__original,
+        is_original_record,
+        original_tenant_code,
         {{ accordion_columns(
             source_table='stg_ef3__student_assessments', 
             source_alias='student_assessments',
@@ -76,7 +78,9 @@ student_assessments_wide as (
         platform_type,
         reason_not_tested,
         retest_indicator,
-        when_assessed_grade_level
+        when_assessed_grade_level,
+        is_original_record,
+        original_tenant_code
         {%- if not is_empty_model('xwalk_assessment_scores') -%},
         {{ dbt_utils.pivot(
             'normalized_score_name',
@@ -86,9 +90,7 @@ student_assessments_wide as (
             agg='max',
             quote_identifiers=False
         ) }}
-        {%- endif %},
-        is_original_record,
-        original_tenant_code,
+        {%- endif %}
         {# add any extension columns configured from stg_ef3__student_assessments #}
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_assessments', flatten=False) }}
     from access
@@ -112,11 +114,11 @@ student_assessments_wide as (
         select distinct k_student_xyear
         from dim_student
     )
-    {{ dbt_utils.group_by(n=19) }}
+    {{ dbt_utils.group_by(n=21) }}
 )
 -- add v_other_results to the end because variant columns cannot be included in a group by in Databricks
 select 
-    {{ star('student_assessments_wide', except=['k_student_assessment__original']) }},, 
+    {{ edu_edfi_source.star('student_assessments_wide', except=['k_student_assessment__original']) }}, 
     v_other_results
 from student_assessments_wide
 left join object_agg_other_results
