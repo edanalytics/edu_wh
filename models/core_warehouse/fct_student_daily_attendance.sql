@@ -125,8 +125,7 @@ fill_positive_attendance as (
         fct_student_school_att.attendance_event_reason,
         -- set enrollment flag: 1 during enrollment, 0 after, no row prior
         case 
-            when stu_enr_att_cal.calendar_date <= stu_enr_att_cal.exit_withdraw_date
-                or stu_enr_att_cal.exit_withdraw_date is null
+            when {{ date_within_end_date('stu_enr_att_cal.calendar_date', 'stu_enr_att_cal.exit_withdraw_date', var('edu:enroll:exit_withdraw_date_inclusive', True)) }}
             then 1.0
             else 0.0
         end is_enrolled,
