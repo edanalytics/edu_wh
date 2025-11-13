@@ -66,7 +66,7 @@ formatted as (
             stg_stu_school.school_year = max(stg_stu_school.school_year) 
                 over(partition by stg_stu_school.tenant_code)
             -- not yet exited
-            and not( {{ date_within_end_date('current_date()', 'exit_withdraw_date', var('edu:enroll:exit_withdraw_date_inclusive', True)) }} )
+            and {{ date_within_end_date('current_date()', 'exit_withdraw_date', var('edu:enroll:exit_withdraw_date_inclusive', True)) }}
             -- enrollment has begun
             and entry_date <= current_date(),
             true, false
