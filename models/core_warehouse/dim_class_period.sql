@@ -9,6 +9,8 @@
 {# Load custom data sources from var #}
 {% set custom_data_sources = var("edu:class_period:custom_data_sources", []) %}
 
+{% set attempt_military_whatever = var("edu:class_period:attempt_military_whatever", true) %}
+
 with class_periods as (
     select * from {{ ref('stg_ef3__class_periods') }}
 ),
@@ -27,6 +29,7 @@ formatted as (
         -- if there is only one meeting time, extract it, else leave null
         case when {{ edu_edfi_source.json_array_size('v_meeting_times') }} = 1
         then
+        {% if attempt_military_whatever == true -%}
             -- convert to military time for time math, if it isn't
             -- (assume class periods will not be scheduled between 1 and 6 AM)
             case 
@@ -34,14 +37,21 @@ formatted as (
                 then concat(left(meeting_time:startTime, 2)::int + 12, right(meeting_time:startTime::string, 6))
                 else meeting_time:startTime::string
             end
+        {% else %}
+            meeting_time:startTime::string
+        {%- endif %}
         end as start_time,
         case when {{ edu_edfi_source.json_array_size('v_meeting_times') }} = 1
         then 
+        {% if attempt_military_whatever == true -%}
             case 
                 when left(meeting_time:endTime::string, 2)::int between 1 and 6
                 then concat(left(meeting_time:endTime::string, 2)::int + 12, right(meeting_time:endTime::string, 6))
                 else meeting_time:endTime::string
             end
+        {% else %}
+            meeting_time:endTime::string
+        {%- endif %}
         end as end_time,
         timediff(MINUTE, concat('2020-01-01 ', start_time)::timestamp, concat('2020-01-01 ', end_time)::timestamp) as period_duration
 
