@@ -66,8 +66,7 @@ formatted as (
             stg_stu_school.school_year = max(stg_stu_school.school_year) 
                 over(partition by stg_stu_school.tenant_code)
             -- not yet exited
-            and (exit_withdraw_date is null
-                or exit_withdraw_date >= current_date())
+            and not( {{ date_within_end_date('current_date()', 'exit_withdraw_date', var('edu:enroll:exit_withdraw_date_inclusive', True)) }} )
             -- enrollment has begun
             and entry_date <= current_date(),
             true, false
@@ -113,14 +112,12 @@ formatted as (
     where true
    {% if var('edu:enroll:exclude_exit_before_first_day', True) -%}
       -- exclude students who exited before the first school day
-      and (exit_withdraw_date >= bld_school_calendar_windows.first_school_day
-          or exit_withdraw_date is null
+      and ({{ date_within_end_date('bld_school_calendar_windows.first_school_day', 'exit_withdraw_date', var('edu:enroll:exit_withdraw_date_inclusive', True)) }}
           or bld_school_calendar_windows.first_school_day is null
           )
     {% endif %}
     -- exclude students whose exit day is before their entry day
-    and (exit_withdraw_date >= entry_date
-        or exit_withdraw_date is null)
+    and ( {{ date_within_end_date('entry_date', 'exit_withdraw_date', var('edu:enroll:exit_withdraw_date_inclusive', True)) }} )
     -- exclude students who never actually enrolled
     {% set excl_withdraw_codes =  var('edu:enroll:exclude_withdraw_codes')  %}
     {% if excl_withdraw_codes | length -%}
