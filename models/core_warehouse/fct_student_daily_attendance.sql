@@ -105,7 +105,7 @@ stu_enr_att_cal as (
 consecutive_unexcused_absence as (
     select 
         *,
-        row_number() over (partition by k_student, k_school, hash(grouping,is_absent, is_unexcused_absence) order by calendar_date) as nth_consec_attendance_event
+        row_number() over (partition by k_student, k_school, grouping, is_absent, is_unexcused_absence order by calendar_date) as nth_consec_attendance_event
     from 
         (select 
             stu_enr_att_cal.k_student,
