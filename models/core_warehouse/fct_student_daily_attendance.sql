@@ -102,6 +102,28 @@ stu_enr_att_cal as (
     -- absenteeism metrics forward post-enrollment
     where attendance_calendar.calendar_date >= enr.entry_date
 ),
+consecutive_unexcused_absence as (
+    select 
+        *,
+        row_number() over (partition by k_student, k_school, grouping, attendance_excusal_status order by calendar_date) as consecutive_days_by_excusal_status
+    from 
+        (select 
+            stu_enr_att_cal.k_student,
+            stu_enr_att_cal.k_school,
+            stu_enr_att_cal.k_calendar_date,
+            stu_enr_att_cal.calendar_date,
+            is_absent,
+            attendance_excusal_status,
+            dense_rank() over ( partition by stu_enr_att_cal.k_student, stu_enr_att_cal.k_school order by calendar_date ) 
+            - dense_rank() over ( partition by stu_enr_att_cal.k_student,stu_enr_att_cal.k_school, fct_student_school_att.attendance_excusal_status order by calendar_date) 
+        as grouping 
+        from stu_enr_att_cal
+        left join fct_student_school_att
+            on stu_enr_att_cal.k_student = fct_student_school_att.k_student
+            and stu_enr_att_cal.k_school = fct_student_school_att.k_school
+            and stu_enr_att_cal.k_calendar_date = fct_student_school_att.k_calendar_date    
+        )
+),
 fill_positive_attendance as (
     select 
         stu_enr_att_cal.k_student,
@@ -136,6 +158,7 @@ fill_positive_attendance as (
                     fct_student_school_att.attendance_event_category,
                     '{{ var("edu:attendance:in_attendance_code") }}') 
         end as attendance_event_category,
+        
         coalesce(
             case 
                 when is_enrolled = 1 then fct_student_school_att.is_absent
@@ -147,8 +170,10 @@ fill_positive_attendance as (
                 when is_enrolled = 1 then fct_student_school_att.is_absent
                 else 1.0
             end, 0.0) as is_present,
+        coalesce(fct_student_school_att.attendance_excusal_status, 'In Attendance') as attendance_excusal_status,
         fct_student_school_att.event_duration,
-        fct_student_school_att.school_attendance_duration
+        fct_student_school_att.school_attendance_duration,
+        consecutive_days_by_excusal_status
     from stu_enr_att_cal
     left join fct_student_school_att
         on stu_enr_att_cal.k_student = fct_student_school_att.k_student
@@ -162,6 +187,9 @@ fill_positive_attendance as (
         and stu_enr_att_cal.calendar_date between 
             bld_attendance_sessions.session_begin_date and 
             bld_attendance_sessions.session_end_date
+    left join consecutive_unexcused_absence
+        on stu_enr_att_cal.k_student = consecutive_unexcused_absence.k_student
+        and stu_enr_att_cal.k_calendar_date = consecutive_unexcused_absence.k_calendar_date
 ),
 positive_attendance_deduped as (
     -- account for multiple overlapping enrollments at the same school by ensuring
@@ -195,22 +223,24 @@ cumulatives as (
         positive_attendance_deduped.is_absent,
         positive_attendance_deduped.is_present,
         positive_attendance_deduped.is_enrolled,
-        sum(is_enrolled) over(
-            partition by k_student, k_school) as total_days_enrolled,
-        sum(is_absent) over(
-            partition by k_student, k_school 
-            order by calendar_date) as cumulative_days_absent,
-        sum(is_present) over(
-            partition by k_student, k_school 
-            order by calendar_date) as cumulative_days_attended,
-        sum(is_enrolled) over(
-            partition by k_student, k_school
-            order by calendar_date) as cumulative_days_enrolled,
+        positive_attendance_deduped.attendance_excusal_status,
+        consecutive_days_by_excusal_status,
+        sum(positive_attendance_deduped.is_enrolled) over(
+            partition by positive_attendance_deduped.k_student, positive_attendance_deduped.k_school) as total_days_enrolled,
+        sum(positive_attendance_deduped.is_absent) over(
+            partition by positive_attendance_deduped.k_student, positive_attendance_deduped.k_school 
+            order by positive_attendance_deduped.calendar_date) as cumulative_days_absent,
+        sum(positive_attendance_deduped.is_present) over(
+            partition by positive_attendance_deduped.k_student, positive_attendance_deduped.k_school 
+            order by positive_attendance_deduped.calendar_date) as cumulative_days_attended,
+        sum(positive_attendance_deduped.is_enrolled) over(
+            partition by positive_attendance_deduped.k_student, positive_attendance_deduped.k_school
+            order by positive_attendance_deduped.calendar_date) as cumulative_days_enrolled,
         round(100 * cumulative_days_attended / nullif(cumulative_days_enrolled, 0), 2) as cumulative_attendance_rate,
         cumulative_days_enrolled >= {{ var('edu:attendance:chronic_absence_min_days') }} as meets_enrollment_threshold,
         {{ msr_chronic_absentee('cumulative_attendance_rate', 'cumulative_days_enrolled') }} as is_chronic_absentee,
         positive_attendance_deduped.event_duration,
-        positive_attendance_deduped.school_attendance_duration
+        positive_attendance_deduped.school_attendance_duration,
     from positive_attendance_deduped
 ),
 metric_labels as (
@@ -229,5 +259,8 @@ metric_labels as (
         on cumulative_attendance_rate > metric_absentee_categories.threshold_lower
         and cumulative_attendance_rate <= metric_absentee_categories.threshold_upper
 )
-select * from metric_labels
-order by tenant_code, k_school, k_student, cumulative_days_enrolled
+
+select * from metric_labels 
+
+
+
