@@ -29,7 +29,7 @@ object_agg_other_results as (
     where normalized_score_name = 'other'
     group by 1
 ),
-access as (
+combined_with_cross_tenant as (
     select
         coalesce(student_assessment_cross_tenant.k_student_assessment, student_assessments.k_student_assessment) as k_student_assessment,
         coalesce(student_assessment_cross_tenant.k_assessment, student_assessments.k_assessment) as k_assessment,
@@ -38,8 +38,8 @@ access as (
         coalesce(student_assessment_cross_tenant.tenant_code, student_assessments.tenant_code) as tenant_code,
         coalesce(student_assessment_cross_tenant.school_year, student_assessments.school_year) as school_year,
         coalesce(student_assessment_cross_tenant.k_student_assessment__original, student_assessments.k_student_assessment) as k_student_assessment__original,
-        is_original_record,
-        original_tenant_code,
+        coalesce(student_assessment_cross_tenant.is_original_record, True) as is_original_record,
+        coalesce(student_assessment_cross_tenant.original_tenant_code, student_assessments.tenant_code) as original_tenant_code,
         {{ accordion_columns(
             source_table='stg_ef3__student_assessments', 
             source_alias='student_assessments',
@@ -52,22 +52,24 @@ access as (
 ),
 student_assessments_wide as (
     select
-        access.k_student_assessment,
-        access.k_student_assessment__original,
-        access.k_assessment,
+        stu_xtenant.k_student_assessment,
+        stu_xtenant.k_student_assessment__original,
+        stu_xtenant.k_assessment,
         -- use dim_student.k_student. NOTE, will be null when no corresponding demographics found (e.g. historic year of assessment data)
         dim_student.k_student,
-        access.k_student_xyear,
-        access.tenant_code,
-        access.student_assessment_identifier,
-        access.serial_number,
+        stu_xtenant.k_student_xyear,
+        stu_xtenant.tenant_code,
+        stu_xtenant.is_original_record,
+        stu_xtenant.original_tenant_code,
+        stu_xtenant.student_assessment_identifier,
+        stu_xtenant.serial_number,
         {% if var('edu:school_year:assessment_dates_xwalk_enabled', False) %}
         iff(dates_xwalk.override_existing,
-            coalesce(dates_xwalk.school_year, access.school_year, {{derive_school_year('access.administration_date')}}),
-            coalesce(access.school_year, dates_xwalk.school_year, {{derive_school_year('access.administration_date')}}))
+            coalesce(dates_xwalk.school_year, stu_xtenant.school_year, {{derive_school_year('stu_xtenant.administration_date')}}),
+            coalesce(stu_xtenant.school_year, dates_xwalk.school_year, {{derive_school_year('stu_xtenant.administration_date')}}))
         as school_year,
         {% else %}
-        coalesce(access.school_year, {{derive_school_year('access.administration_date')}}) as school_year,
+        coalesce(stu_xtenant.school_year, {{derive_school_year('stu_xtenant.administration_date')}}) as school_year,
         {% endif %}
         administration_date,
         administration_end_date,
@@ -78,9 +80,7 @@ student_assessments_wide as (
         platform_type,
         reason_not_tested,
         retest_indicator,
-        when_assessed_grade_level,
-        is_original_record,
-        original_tenant_code
+        when_assessed_grade_level
         {%- if not is_empty_model('xwalk_assessment_scores') -%},
         {{ dbt_utils.pivot(
             'normalized_score_name',
@@ -93,24 +93,24 @@ student_assessments_wide as (
         {%- endif %}
         {# add any extension columns configured from stg_ef3__student_assessments #}
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_assessments', flatten=False) }}
-    from access
+    from combined_with_cross_tenant as stu_xtenant
     left join student_assessments_long_results
-        on access.k_student_assessment__original = student_assessments_long_results.k_student_assessment
+        on stu_xtenant.k_student_assessment__original = student_assessments_long_results.k_student_assessment
         and student_assessments_long_results.normalized_score_name != 'other'
     -- left join to allow 'historic' records (assess records with no corresponding stu demographics)
     left join dim_student
-        on access.k_student = dim_student.k_student
+        on stu_xtenant.k_student = dim_student.k_student
     {% if var('edu:school_year:assessment_dates_xwalk_enabled', False) %}
     left join {{ ref('xwalk_assessment_school_year_dates') }} dates_xwalk
         -- note: between means A >= X AND A <= Y, so date upper/lower bounds should not overlap across years
-        on access.administration_date between dates_xwalk.start_date::date and dates_xwalk.end_date::date 
+        on stu_xtenant.administration_date between dates_xwalk.start_date::date and dates_xwalk.end_date::date 
         -- we want to allow for the school year cutoffs to differ by assessment 
         -- but also allow those fields to remain null if xwalk is desired but not to differ across assessments
-        and ifnull(dates_xwalk.assessment_identifier, '1') = iff(dates_xwalk.assessment_identifier is null, '1', access.assessment_identifier)
-        and ifnull(dates_xwalk.namespace, '1') = iff(dates_xwalk.namespace is null, '1', access.namespace)
+        and ifnull(dates_xwalk.assessment_identifier, '1') = iff(dates_xwalk.assessment_identifier is null, '1', stu_xtenant.assessment_identifier)
+        and ifnull(dates_xwalk.namespace, '1') = iff(dates_xwalk.namespace is null, '1', stu_xtenant.namespace)
     {% endif %}
     -- FILTER to students who EVER have a record in dim_student
-    where access.k_student_xyear in (
+    where stu_xtenant.k_student_xyear in (
         select distinct k_student_xyear
         from dim_student
     )
@@ -122,5 +122,4 @@ select
     v_other_results
 from student_assessments_wide
 left join object_agg_other_results
-    -- TODO: I don't want this column to be part of the output
     on student_assessments_wide.k_student_assessment__original = object_agg_other_results.k_student_assessment
