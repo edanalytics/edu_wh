@@ -28,7 +28,6 @@ active_enrollments as (
     join dim_student
         on fct_student_school.k_student = dim_student.k_student
     -- if this source is configured, remove these students instead of using default logic below
-    -- TODO: should this join on student unique id instead?
     {% if removed_students_source is not none and removed_students_source | length -%}
     left join {{ ref(removed_students_source) }}
         on dim_student.k_student = {{ removed_students_source }}.k_student
@@ -95,9 +94,8 @@ subset_assessments as (
     -- this code will intentionally create dupes to associate a student assessment record
     -- to every tenant where a current enrollment exists for that student_unique_id
 
-    -- TODO: inner join or left join here?
-    -- inner join would enforce at least 1 current SCHOOL enrollment within a tenant
-    -- which we don't currently enforce
+    -- inner join is enforcing at least 1 current SCHOOL enrollment within a tenant
+    -- which we don't otherwise enforce, but we are left joining downstream to avoid this issue broadly
     join deduped_enrollments
         -- TODO: how to ensure this to be globally unique?
             -- only enforced uniqueness is by partner/yr
