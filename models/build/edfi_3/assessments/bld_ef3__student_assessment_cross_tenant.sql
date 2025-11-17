@@ -64,13 +64,11 @@ subset_assessments as (
     select
         -- bring in the tenant code and student surrogate keys from enrollments
         deduped_enrollments.tenant_code,
-        deduped_enrollments.school_year,
+        -- we want to keep the school year from the assessment record and not enrollment
+        stg_student_assessment.school_year,
         deduped_enrollments.k_student,
         deduped_enrollments.k_student_xyear,
         -- recreate the surrogate keys with new tenant code
-        -- TODO: this key may not join to anything
-            -- but, can't leave original because of RLS
-            -- create new records? complicated logic
         {{dbt_utils.generate_surrogate_key(
             ['deduped_enrollments.tenant_code',
             'deduped_enrollments.school_year',
@@ -91,16 +89,8 @@ subset_assessments as (
         stg_student_assessment.k_student_assessment as k_student_assessment__original,
         stg_student_assessment.k_assessment as k_assessment__original,
         stg_student_assessment.student_unique_id,
-        case
-            when stg_student_assessment.tenant_code = deduped_enrollments.tenant_code
-                then 1
-            else 0
-        end as is_original_record,
-        case
-            when stg_student_assessment.tenant_code = deduped_enrollments.tenant_code
-                then null
-            else stg_student_assessment.tenant_code
-        end as original_tenant_code
+        stg_student_assessment.tenant_code = deduped_enrollments.tenant_code as is_original_record,
+        stg_student_assessment.tenant_code as original_tenant_code
     from stg_student_assessment
     -- this code will intentionally create dupes to associate a student assessment record
     -- to every tenant where a current enrollment exists for that student_unique_id
