@@ -1,6 +1,7 @@
 {{
   config(
     post_hook=[
+        "alter table {{ this }} alter column k_stu_sped_program_assoc set not null",
         "alter table {{ this }} alter column k_student set not null",
         "alter table {{ this }} alter column k_student_xyear set not null",
         "alter table {{ this }} alter column k_program set not null",
@@ -35,6 +36,17 @@ bld_primary_disability as (
 
 formatted as (
     select
+        {{ dbt_utils.generate_surrogate_key(
+            [
+                'stage.tenant_code',
+                'dim_program.school_year', 
+                'dim_student.k_student',
+                'dim_program.k_program', 
+                'dim_program.k_lea',
+                'dim_program.k_school',
+                'stage.program_enroll_begin_date'
+            ]
+        )}} as k_stu_sped_program_assoc,
         dim_student.k_student,
         dim_student.k_student_xyear,
         dim_program.k_program,
@@ -76,11 +88,15 @@ formatted as (
         left join bld_program_services 
             on stage.k_student = bld_program_services.k_student
             and stage.k_program = bld_program_services.k_program
+            and coalesce(stage.k_lea, 'this_is_null') = coalesce(bld_program_services.k_lea, 'this_is_null')
+            and coalesce(stage.k_school, 'this_is_null') = coalesce(bld_program_services.k_school, 'this_is_null')
             and stage.program_enroll_begin_date = bld_program_services.program_enroll_begin_date
 
         left join bld_primary_disability
             on stage.k_student = bld_primary_disability.k_student
             and stage.k_program = bld_primary_disability.k_program
+            and coalesce(stage.k_lea, 'this_is_null') = coalesce(bld_primary_disability.k_lea, 'this_is_null')
+            and coalesce(stage.k_school, 'this_is_null') = coalesce(bld_primary_disability.k_school, 'this_is_null')
             and stage.program_enroll_begin_date = bld_primary_disability.program_enroll_begin_date
 )
 
