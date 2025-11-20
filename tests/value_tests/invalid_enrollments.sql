@@ -49,5 +49,5 @@ from stg_stu_school
 left join first_school_day 
     on stg_stu_school.k_school_calendar = first_school_day.k_school_calendar
 where exit_before_first_day
-or exit_before_entry
-or excluded_withdraw_code
+    or exit_before_entry
+    or excluded_withdraw_code

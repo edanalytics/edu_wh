@@ -11,6 +11,9 @@
   )
 }}
 
+{{ cds_depends_on('edu:student_discipline_incident_non_offenders:custom_data_sources') }}
+{% set custom_data_sources = var('edu:student_discipline_incident_non_offenders:custom_data_sources', []) %}
+
 with stg_stu_discipline_incident_non_offenders as (
     select * from {{ ref('stg_ef3__student_discipline_incident_non_offender_associations') }}
 ),
@@ -47,6 +50,9 @@ formatted as (
         participation_codes.participation_codes_array
         {# add any extension columns configured from stg_ef3__student_discipline_incident_non_offender_associations #}
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_discipline_incident_non_offender_associations', flatten=False) }}
+
+        -- custom data sources columns
+        {{ add_cds_columns(custom_data_sources=custom_data_sources) }}
     from stg_stu_discipline_incident_non_offenders
     join participation_codes 
         on stg_stu_discipline_incident_non_offenders.k_student = participation_codes.k_student
@@ -55,6 +61,9 @@ formatted as (
     join dim_student on stg_stu_discipline_incident_non_offenders.k_student = dim_student.k_student
     join dim_school on stg_stu_discipline_incident_non_offenders.k_school = dim_school.k_school
     join dim_discipline_incident on stg_stu_discipline_incident_non_offenders.k_discipline_incident = dim_discipline_incident.k_discipline_incident
+        
+    -- custom data sources
+    {{ add_cds_joins_v2(custom_data_sources=custom_data_sources) }}
 )
 select *
 from formatted

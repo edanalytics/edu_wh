@@ -1,7 +1,6 @@
 with stage_program_services as (
     select * from {{ ref('stg_ef3__stu_lang_instr__program_services') }}
 ),
-
 wide as (
     select 
         tenant_code,

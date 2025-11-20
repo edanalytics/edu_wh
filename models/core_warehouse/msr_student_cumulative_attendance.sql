@@ -11,6 +11,9 @@
   )
 }}
 
+{{ cds_depends_on('edu:msr_student_cumulative_attendance:custom_data_sources') }}
+{% set custom_data_sources = var('edu:msr_student_cumulative_attendance:custom_data_sources', []) %}
+
 with stu_daily_attendance as (
     select * from {{ ref('fct_student_daily_attendance') }}
 ),
@@ -49,9 +52,15 @@ metric_labels as (
             when meets_enrollment_threshold then metric_absentee_categories.level_label
             else null
         end as absentee_category_label
+
+        -- custom data sources columns
+        {{ add_cds_columns(custom_data_sources=custom_data_sources) }}
     from aggregated
     left join metric_absentee_categories
         on attendance_rate > metric_absentee_categories.threshold_lower
         and attendance_rate <= metric_absentee_categories.threshold_upper
+        
+    -- custom data sources
+    {{ add_cds_joins_v2(custom_data_sources=custom_data_sources) }}
 )
 select * from metric_labels

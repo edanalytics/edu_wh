@@ -6,9 +6,9 @@
     ]
   )
 }}
-{# Load custom data sources from var #}
-{% set custom_data_sources = var("edu:class_period:custom_data_sources", []) %}
 
+{{ cds_depends_on('edu:class_period:custom_data_sources') }}
+{% set custom_data_sources = var('edu:class_period:custom_data_sources', []) %}
 {% set attempt_military_whatever = var("edu:class_period:attempt_military_whatever", true) %}
 
 with class_periods as (
@@ -55,24 +55,16 @@ formatted as (
         end as end_time,
         timediff(MINUTE, concat('2020-01-01 ', start_time)::timestamp, concat('2020-01-01 ', end_time)::timestamp) as period_duration
 
-        -- custom indicators
-        {% if custom_data_sources is not none and custom_data_sources | length -%}
-          {%- for source in custom_data_sources -%}
-            {%- for indicator in custom_data_sources[source] -%}
-              , {{ custom_data_sources[source][indicator]['where'] }} as {{ indicator }}
-            {%- endfor -%}
-          {%- endfor -%}
-        {%- endif %}
+        -- custom data sources columns
+        {{ add_cds_columns(custom_data_sources=custom_data_sources) }}
     from class_periods
     join dim_school
         on class_periods.k_school = dim_school.k_school
+
     -- custom data sources
-    {% if custom_data_sources is not none and custom_data_sources | length -%}
-      {%- for source in custom_data_sources -%}
-        left join {{ ref(source) }}
-          on class_periods.k_class_period = {{ source }}.k_class_period
-      {% endfor %}
-    {%- endif %}
+    {{ add_cds_joins_v1(custom_data_sources=custom_data_sources, driving_alias='class_periods', join_cols=['k_class_period']) }}
+    {{ add_cds_joins_v2(custom_data_sources=custom_data_sources) }}
+
 )
 select {{ edu_edfi_source.star('formatted', except=['meeting_time']) }}
 from formatted
