@@ -99,11 +99,11 @@ deduped as (
 ),
 formatted as (
     select
-        k_student,
+        deduped.k_student,
         k_student_xyear,
-        k_school,
-        k_calendar_date,
-        k_session,
+        deduped.k_school,
+        deduped.k_calendar_date,
+        deduped.k_session,
         tenant_code,
         attendance_event_category,
         attendance_event_reason,
