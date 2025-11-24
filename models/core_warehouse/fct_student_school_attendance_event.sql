@@ -13,6 +13,9 @@
   )
 }}
 
+{{ cds_depends_on('edu:student_school_attendance_event:custom_data_sources') }}
+{% set custom_data_sources = var('edu:student_school_attendance_event:custom_data_sources', []) %}
+
 with stg_stu_sch_attend as (
     select * from {{ ref('stg_ef3__student_school_attendance_events') }}
 ),
@@ -41,7 +44,7 @@ fct_student_school_assoc as (
     */
     select 
         *,
-        date(coalesce(exit_withdraw_date,getdate())) - entry_date as enrollment_length
+        {{ day_count_in_range('entry_date', 'exit_withdraw_date', var('edu:enroll:exit_withdraw_date_inclusive', True)) }} as enrollment_length
     from {{ ref('fct_student_school_association') }}
 ),
 xwalk_att_events as (
@@ -79,7 +82,8 @@ joined as (
     join dim_calendar_date
          on fct_student_school_assoc.k_school_calendar = dim_calendar_date.k_school_calendar
          and stg_stu_sch_attend.attendance_event_date = dim_calendar_date.calendar_date
-         and dim_calendar_date.calendar_date between fct_student_school_assoc.entry_date and coalesce(fct_student_school_assoc.exit_withdraw_date,current_date())
+         and dim_calendar_date.calendar_date >= fct_student_school_assoc.entry_date 
+         and {{ date_within_end_date('dim_calendar_date.calendar_date', 'fct_student_school_assoc.exit_withdraw_date', var('edu:enroll:exit_withdraw_date_inclusive', True)) }}
     join xwalk_att_events
         on stg_stu_sch_attend.attendance_event_category = xwalk_att_events.attendance_event_descriptor
 ),
@@ -95,11 +99,11 @@ deduped as (
 ),
 formatted as (
     select
-        k_student,
+        deduped.k_student,
         k_student_xyear,
-        k_school,
-        k_calendar_date,
-        k_session,
+        deduped.k_school,
+        deduped.k_calendar_date,
+        deduped.k_session,
         tenant_code,
         attendance_event_category,
         attendance_event_reason,
@@ -111,6 +115,12 @@ formatted as (
         educational_environment
         {# add any extension columns configured from stg_ef3__student_school_attendance_events #}
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_school_attendance_events', flatten=False) }}
+
+        -- custom data sources columns
+        {{ add_cds_columns(custom_data_sources=custom_data_sources) }}
     from deduped
+        
+    -- custom data sources
+    {{ add_cds_joins_v2(custom_data_sources=custom_data_sources) }}
 )
 select * from formatted

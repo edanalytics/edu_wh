@@ -11,6 +11,9 @@
   )
 }}
 
+{{ cds_depends_on('edu:student_school_association:custom_data_sources') }}
+{% set custom_data_sources = var('edu:student_school_association:custom_data_sources', []) %}
+
 with stg_stu_school as (
     select * from {{ ref('stg_ef3__student_school_associations') }}
 ),
@@ -66,8 +69,7 @@ formatted as (
             stg_stu_school.school_year = max(stg_stu_school.school_year) 
                 over(partition by stg_stu_school.tenant_code)
             -- not yet exited
-            and (exit_withdraw_date is null
-                or exit_withdraw_date >= current_date())
+            and {{ date_within_end_date('current_date()', 'exit_withdraw_date', var('edu:enroll:exit_withdraw_date_inclusive', True)) }}
             -- enrollment has begun
             and entry_date <= current_date(),
             true, false
@@ -94,6 +96,9 @@ formatted as (
         ) as is_latest_annual_entry
         {# add any extension columns configured from stg_ef3__student_school_associations #}
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_school_associations', flatten=False) }}
+
+        -- custom data sources columns
+        {{ add_cds_columns(custom_data_sources=custom_data_sources) }}
     from stg_stu_school
     join dim_student
         on stg_stu_school.k_student = dim_student.k_student
@@ -110,17 +115,19 @@ formatted as (
         and equal_null(dim_school_calendar.k_school_calendar, bld_school_calendar_windows.k_school_calendar)
     left join xwalk_grade_levels
         on stg_stu_school.entry_grade_level = xwalk_grade_levels.grade_level
+        
+    -- custom data sources
+    {{ add_cds_joins_v2(custom_data_sources=custom_data_sources) }}
+
     where true
    {% if var('edu:enroll:exclude_exit_before_first_day', True) -%}
       -- exclude students who exited before the first school day
-      and (exit_withdraw_date >= bld_school_calendar_windows.first_school_day
-          or exit_withdraw_date is null
+      and ({{ date_within_end_date('bld_school_calendar_windows.first_school_day', 'exit_withdraw_date', var('edu:enroll:exit_withdraw_date_inclusive', True)) }}
           or bld_school_calendar_windows.first_school_day is null
           )
     {% endif %}
     -- exclude students whose exit day is before their entry day
-    and (exit_withdraw_date >= entry_date
-        or exit_withdraw_date is null)
+    and ( {{ date_within_end_date('entry_date', 'exit_withdraw_date', var('edu:enroll:exit_withdraw_date_inclusive', True)) }} )
     -- exclude students who never actually enrolled
     {% set excl_withdraw_codes =  var('edu:enroll:exclude_withdraw_codes')  %}
     {% if excl_withdraw_codes | length -%}

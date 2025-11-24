@@ -31,8 +31,8 @@ first_school_day as (
     group by 1
 )
 select 
-    exit_withdraw_date < first_school_day.calendar_date as exit_before_first_day,
-    exit_withdraw_date < entry_date as exit_before_entry,
+    not ( {{ date_within_end_date('first_school_day.calendar_date', 'exit_withdraw_date', var('edu:enroll:exit_withdraw_date_inclusive', True)) }} ) as exit_before_first_day,
+    not ( {{ date_within_end_date('entry_date', 'exit_withdraw_date', var('edu:enroll:exit_withdraw_date_inclusive', True)) }} ) as exit_before_entry,
     {% set excl_withdraw_codes =  var('edu:enroll:exclude_withdraw_codes')  %}
     {% if excl_withdraw_codes | length -%}
       {% if excl_withdraw_codes is string -%}
@@ -49,5 +49,5 @@ from stg_stu_school
 left join first_school_day 
     on stg_stu_school.k_school_calendar = first_school_day.k_school_calendar
 where exit_before_first_day
-or exit_before_entry
-or excluded_withdraw_code
+    or exit_before_entry
+    or excluded_withdraw_code
