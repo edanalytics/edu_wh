@@ -7,7 +7,7 @@ models:
           Defines an educator candidate.
 
         ##### Primary Key:
-          `k_candidate` - There is one record per candidate
+          `k_candidate` - There is one record per candidate, tenant, and year.
     config:
       tags: ['tpdm']
     columns:
