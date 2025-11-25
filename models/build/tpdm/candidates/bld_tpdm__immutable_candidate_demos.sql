@@ -34,8 +34,10 @@ joined as (
           )
         }} as display_name,
         concat(display_name, ' (', stg_candidate.candidate_id, ')') as safe_display_name,
-        stg_candidate.birth_date,
-        stg_candidate.birth_country,
+        stg_candidate.maiden_name,
+        stg_candidate.personal_title_prefix,
+        stg_candidate.preferred_first_name,
+        stg_candidate.preferred_last_name,
         stg_candidate.gender,
         candidate_races.race_ethnicity,
         candidate_races.race_array,
