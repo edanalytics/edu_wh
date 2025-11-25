@@ -15,7 +15,7 @@ formatted as (
         k_candidate,
         k_person, 
         tenant_code,
-        api_year,
+        school_year,
         candidate_id,
         person_id, 
         first_name, 
