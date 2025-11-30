@@ -14,7 +14,7 @@ build_array as (
 select 
     stg_candidates.k_candidate,
     stg_candidates.tenant_code,
-    stg_candidates.school_year,
+    stg_candidates.api_year,
     stg_candidates.k_candidate_xyear,
     build_array.race_array,
     -- build single value race_ethnicity

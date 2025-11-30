@@ -8,7 +8,7 @@ with stg_other_names as (
 widened as (
     select  
         tenant_code,
-        school_year,
+        api_year,
         k_candidate,
         k_candidate_xyear
         {%- if not is_empty_model('stg_tpdm__candidates__other_names') -%},
