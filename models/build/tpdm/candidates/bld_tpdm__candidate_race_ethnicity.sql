@@ -1,5 +1,5 @@
 with stg_candidate_races as (
-    select * from {{ ref('stg_tpdm__candidate_races') }}
+    select * from {{ ref('stg_tpdm__candidate__races') }}
 ),
 stg_candidates as (
     select * from {{ ref('stg_tpdm__candidates') }}
