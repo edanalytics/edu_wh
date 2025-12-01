@@ -4,7 +4,7 @@ models:
   - name: dim_candidate
     description: >
         ##### Overview:
-          Defines an educator candidate.
+          Defines an educator candidate. As defined in the Ed-Fi TPDM (EPDM), a candidate is both a person enrolled in a educator preparation program and a candidate to become an educator.
 
         ##### Primary Key:
           `k_candidate` - There is one record per candidate, tenant, and year.
