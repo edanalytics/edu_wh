@@ -1,5 +1,6 @@
 # Unreleased
 ## New features
+- Add `dim_candidate` model. The `race_ethnicity` column of this model requires 3 new variables to be defined, which is a breaking change.
 ## Under the hood
 ## Fixes
 
