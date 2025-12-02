@@ -10,6 +10,7 @@ models:
           `k_candidate` - There is one record per candidate, tenant, and year.
     config:
       tags: ['tpdm']
+      enabled: "{{ var('edu:tpdm:enabled', False) }}"
     columns:
       - name: k_candidate
         description: generated primary key from `tenant_code`, `api_year`, and `candidate_id`
