@@ -27,6 +27,8 @@ models:
       +schema: build
     core_warehouse:
       +schema: wh
+    tpdm_warehouse:
+      +schema: wh
     qc:
       +schema: qc
 
