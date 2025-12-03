@@ -47,7 +47,6 @@ models:
       - name: birth_sex
       - name: birth_state
       - name: birth_country
-        description: xxxx
       - name: english_language_exam
         description: "Indicates that a person passed, failed, or did not take an English Language assessment (e.g., TOEFFL)."
       - name: lep_code
