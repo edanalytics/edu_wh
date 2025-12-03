@@ -1,4 +1,4 @@
-version: 2
+version: 3
 
 models: 
   - name: fct_student_program_service
@@ -13,6 +13,7 @@ models:
       - [stg_ef3__stu_cte__program_services](#!/model/model.edu_edfi_source.stg_ef3__stu_cte__program_services)
       - [stg_ef3__stu_migrant_edu__program_services](#!/model/model.edu_edfi_source.stg_ef3__stu_migrant_edu__program_services)
       - [stg_ef3__stu_school_food_service__program_services](#!/model/model.edu_edfi_source.stg_ef3__stu_school_food_service__program_services)
+      - [stg_ef3__stu_program__program_services](#!/model/model.edu_edfi_source.stg_ef3__stu_program__program_services)
 
      ##### Primary Key:
        `k_student, k_program, program_enroll_begin_date, program_service` --
