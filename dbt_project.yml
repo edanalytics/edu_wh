@@ -29,6 +29,7 @@ models:
       +schema: wh
     tpdm_warehouse:
       +schema: wh
+      +enabled: "{{ var('edu:tpdm:enabled', False) }}"
     qc:
       +schema: qc
 
