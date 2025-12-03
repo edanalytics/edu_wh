@@ -25,6 +25,8 @@ models:
     +materialized: table
     build:
       +schema: build
+      tpdm:
+        +enabled: "{{ var('edu:tpdm:enabled', False) }}"
     core_warehouse:
       +schema: wh
     tpdm_warehouse:
