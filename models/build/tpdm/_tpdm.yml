@@ -1,0 +1,15 @@
+version: 2
+
+models:
+  - name: bld_tpdm__candidate_other_names
+    config:
+      tags: ['tpdm']
+      enabled: "{{ var('edu:tpdm:enabled', False) }}"
+  - name: bld_tpdm__candidate_race_ethnicity
+    config:
+      tags: ['tpdm']
+      enabled: "{{ var('edu:tpdm:enabled', False) }}"
+  - name: bld_tpdm__immutable_candidate_demos
+    config:
+      tags: ['tpdm']
+      enabled: "{{ var('edu:tpdm:enabled', False) }}"
