@@ -18,12 +18,13 @@ models:
       tags: ['core']
     tests:
       - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - k_student
-            - k_school
-            - k_calendar_date
-            - k_session
-            - attendance_event_category
+          arguments:
+            combination_of_columns:
+              - k_student
+              - k_school
+              - k_calendar_date
+              - k_session
+              - attendance_event_category
     columns:
       - name: k_student
       - name: k_student_xyear
