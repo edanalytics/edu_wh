@@ -16,9 +16,10 @@ models:
 
     tests:
       - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - k_student
-            - k_program
+          arguments:
+            combination_of_columns:
+              - k_student
+              - k_program
 
     columns:
       - name: k_student
