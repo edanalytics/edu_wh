@@ -1,5 +1,6 @@
 # Unreleased
 ## New features
+- Add `dim_candidate` model
 ## Under the hood
 ## Fixes
 
