@@ -1,8 +1,13 @@
 # Unreleased
 ## New features
-- Add `dim_candidate` model
 ## Under the hood
 ## Fixes
+
+# edu_wh v0.5.3
+## New features
+- Add `dim_candidate` model
+## Fixes
+- Minor fixes for Databricks compatibility
 
 # edu_wh v0.5.2
 ## New features
