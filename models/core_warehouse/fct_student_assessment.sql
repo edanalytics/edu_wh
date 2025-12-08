@@ -12,16 +12,23 @@
   )
 }}
 
-with student_assessments_long_results as (
+with
+{% if is_incremental() %}
+_incr_max_timestamp as (
+    select max(last_modified_timestamp) as max_ts from {{ this }}
+),
+{% endif %}
+
+student_assessments_long_results as (
     select * from {{ ref('bld_ef3__student_assessments_long_results') }}
     {% if is_incremental() %}
-    where last_modified_timestamp > (select max(last_modified_timestamp) from {{ this }})
+    where last_modified_timestamp > (select max_ts from _incr_max_timestamp)
     {% endif %}
 ),
 student_assessments as (
     select * from {{ ref('stg_ef3__student_assessments') }}
     {% if is_incremental() %}
-    where last_modified_timestamp > (select max(last_modified_timestamp) from {{ this }})
+    where last_modified_timestamp > (select max_ts from _incr_max_timestamp)
     {% endif %}
 ),
 dim_student as (

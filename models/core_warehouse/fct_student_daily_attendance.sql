@@ -1,4 +1,3 @@
-    {# pre_hook=["{{edu_wh.incremental_pre_hook_by_year()}}"], #}
 {{
   config(
     materialized='incremental',
@@ -11,7 +10,6 @@
     ]
   )
 }}
-
 with fct_student_school_att as (
     select * from {{ ref(var("edu:attendance:daily_attendance_source", 'fct_student_school_attendance_event')) }}
     {% if is_incremental() %}

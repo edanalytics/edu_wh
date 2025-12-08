@@ -3,7 +3,17 @@
     unique_key=['k_student_assessment', 'original_score_name']
 )}}
 with score_results as (
-    select * from {{ ref('stg_ef3__student_assessments__score_results') }}
+    select
+        tenant_code,
+        api_year,
+        pull_timestamp,
+        last_modified_timestamp,
+        k_student_assessment,
+        assessment_identifier,
+        namespace,
+        score_name,
+        score_result
+    from {{ ref('stg_ef3__student_assessments__score_results') }}
     {% if is_incremental() %}
     where last_modified_timestamp > (select max(last_modified_timestamp) from {{ this }})
     {% endif %}
