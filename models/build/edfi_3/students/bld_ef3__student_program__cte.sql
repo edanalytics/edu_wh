@@ -40,7 +40,7 @@ maxed as (
         {%- endif %}
 
         max(non_traditional_gender_status) as non_traditional_gender_status,
-        max(private_cte_program) as private_cte_program,
+        max(private_cte_program) as private_cte_program
 
     from stage
     group by 1, 2

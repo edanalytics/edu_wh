@@ -1,0 +1,69 @@
+version: 2
+
+models:
+  - name: dim_candidate
+    description: >
+        ##### Overview:
+          Defines an educator candidate. As defined in the Ed-Fi TPDM (EPDM), a candidate is both a person enrolled in a educator preparation program and a candidate to become an educator.
+
+        ##### Primary Key:
+          `k_candidate` - There is one record per candidate, tenant, and year.
+    config:
+      tags: ['tpdm']
+      enabled: "{{ var('edu:tpdm:enabled', False) }}"
+    columns:
+      - name: k_candidate
+        description: generated primary key from `tenant_code`, `api_year`, and `candidate_id`
+        tests: 
+          - unique
+      - name: k_person
+        description: "Generated surrogate key from `tenant_code`, `api_year`, `person_id`, and `source_system`"
+      - name: tenant_code
+        description: "Code defining the Tenant (may be an LEA, SEA, etc.) of the Ed-Fi ODS from which this record was pulled"
+      - name: api_year
+      - name: candidate_id
+        description: A unique alphanumeric code assigned to a candidate
+      - name: person_id
+        description: A unique alphanumeric code assigned to a person
+      - name: first_name
+      - name: last_name
+      - name: middle_name
+      - name: maiden_name
+      - name: generation_code_suffix
+      - name: personal_title_prefix
+      - name: preferred_first_name
+      - name: preferred_last_name
+      - name: birth_city
+      - name: birth_date
+      - name: birth_international_province
+      - name: date_entered_us
+      - name: displacement_status
+      - name: is_economic_disadvantaged
+      - name: is_first_generation_student
+      - name: has_hispanic_latino_ethnicity
+      - name: is_multiple_birth
+      - name: gender
+      - name: sex
+      - name: birth_sex
+      - name: birth_state
+      - name: birth_country
+      - name: english_language_exam
+        description: "Indicates that a person passed, failed, or did not take an English Language assessment (e.g., TOEFFL)."
+      - name: lep_code
+        description: "An indication that the student has been identified as limited English proficient by the Language Proficiency Assessment Committee (LPAC), or English proficient."
+      - name: v_addresses
+        description: The set of elements that describes an address, including the street address, city, state, and ZIP code.
+      - name: v_disabilities
+        description: "The disability condition(s) that best describes an individual's impairment."
+      - name: v_emails
+        description: The numbers, letters, and symbols used to identify an electronic mail (e-mail) user within the network to which the individual or organization belongs.
+      - name: v_languages
+        description: "The language(s) the individual uses to communicate"
+      - name: v_other_names
+        description: "Other names (e.g., alias, nickname, previous legal name) associated with a person."
+      - name: v_personal_identification_documents
+        description: Describes the documentation of citizenship.
+      - name: v_races
+        description: "The general racial category which most clearly reflects the individual's recognition of his or her community or with which the individual most identifies. The data model allows for multiple entries so that each individual can specify all appropriate races."
+      - name: v_telephones
+        description: "The 10-digit telephone number, including the area code, for the person."        

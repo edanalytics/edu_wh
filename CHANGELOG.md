@@ -7,6 +7,12 @@
 ## Under the hood
 ## Fixes
 
+# edu_wh v0.5.3
+## New features
+- Add `dim_candidate` model
+## Fixes
+- Minor fixes for Databricks compatibility
+
 # edu_wh v0.5.2
 ## New features
 - Add `safe_display_name` to `dim_staff`, the logic for this column replicates that of `bld_ef3__immutable_stu_demos`.
