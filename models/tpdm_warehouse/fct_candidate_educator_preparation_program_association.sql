@@ -30,6 +30,7 @@ formatted as (
         stage.tenant_code,
         stage.school_year,
         stage.begin_date,
+        stage.end_date,
         stage.program_type,
         stage.reason_exited,
         stage.epp_program_pathway,
