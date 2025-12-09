@@ -38,3 +38,5 @@ models:
       - name: arrival_time
       - name: departure_time
       - name: educational_environment
+      - name: attendance_excusal_status
+  

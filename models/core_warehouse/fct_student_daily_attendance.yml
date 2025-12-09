@@ -71,6 +71,9 @@ models:
         description: >
           A text label categorizing levels of attendance. Defined in the 
           seed table `absentee_categories`.
-      - name: nth_consec_unexcused_absence
+      - name: attendance_excusal_status
+        description: >
+          A text label categorizing whether a student's absence is unexcused or not. 
+      - name: consecutive_days_by_excusal_status
         description: >
           A rolling number of a student's consecutive unexcused absences on school days. 
