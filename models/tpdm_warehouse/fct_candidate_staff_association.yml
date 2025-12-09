@@ -1,0 +1,21 @@
+version: 2
+
+models:
+  - name: fct_candidate_staff_association
+    description: >
+      ##### Overview:
+      This fact table provides information on the associations between candidates and staff.
+    config:
+      tags: ['tpdm']
+      enabled: "{{ var('edu:tpdm:enabled', False) }}"
+    columns:
+      - name: k_candidate
+        description: "Unique key for candidate, foreign key reference to `dim_candidate`"
+      - name: k_staff
+        description: "Unique key for staff, foreign key reference to `dim_staff`"
+      - name: tenant_code
+      - name: api_year
+      - name: begin_date
+        description: "The date the association began"
+      - name: staff_to_candidate_relationship
+        description: "The type of relationship between the staff and the candidate"
