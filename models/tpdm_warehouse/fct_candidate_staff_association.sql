@@ -1,6 +1,5 @@
 with stg_candidate_staff_association as (
-    select * 
-    from {{ ref('stg_tpdm__candidate_relationship_to_staff_associations') }}
+    select * from {{ ref('stg_tpdm__candidate_relationship_to_staff_associations') }}
 ),
 dim_candidate as (
     select * from {{ ref('dim_candidate') }}
