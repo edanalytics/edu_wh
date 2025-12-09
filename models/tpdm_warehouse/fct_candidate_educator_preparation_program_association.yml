@@ -1,0 +1,50 @@
+version: 2
+
+models:
+  - name: fct_candidate_educator_preparation_program_association
+    description: >
+        ##### Overview:
+          Defines the association between a candidate and an educator preparation program. As defined in the Ed-Fi TPDM (EPDM), this association represents a candidate's enrollment in an educator preparation program, including enrollment dates, program pathway, and completion information.
+
+        ##### Primary Key:
+          `k_candidate_educator_preparation_program_association` - There is one record per candidate per educator preparation program.
+    config:
+      tags: ['tpdm']
+      enabled: "{{ var('edu:tpdm:enabled', False) }}"
+    columns:
+      - name: k_candidate
+        description: Unique key for candidate, foreign key reference to `dim_candidate`
+      - name: k_candidate_xyear
+        description: Cross-year key for candidate, used for tracking candidates across multiple years
+      - name: k_candidate_educator_preparation_program_association
+        description: Generated primary key for the candidate educator preparation program association
+        tests:
+          - unique
+      - name: k_educator_preparation_program
+        description: Unique key for educator preparation program, foreign key reference to `dim_educator_preparation_program`
+      - name: tenant_code
+        description: Code defining the Tenant (may be an LEA, SEA, etc.) of the Ed-Fi ODS from which this record was pulled
+      - name: school_year
+        description: >
+          School year specified by Spring year.
+          e.g., the 2021-2022 year would be 2022.
+      - name: begin_date
+        description: The month, day, and year on which the candidate first begins the educator preparation program
+      - name: end_date
+        description: The month, day, and year on which the candidate leaves the educator preparation program
+      - name: program_type
+        description: The type or category of the educator preparation program pathway (e.g., Traditional, Alternative, Residency)
+      - name: reason_exited
+        description: The reason the candidate exited or completed the educator preparation program
+      - name: epp_program_pathway
+        description: >
+          The pathway or track within the educator preparation program that the candidate is following;
+          e.g., Residency, Internship, Traditional
+      - name: v_degree_specializations
+        description: >
+          This list defines the degree specializations or focus areas associated with the candidate's enrollment in the educator preparation program.
+          The map to known Ed-Fi enumeration values is required.
+      - name: v_cohort_years
+        description: >
+          This list defines the cohort years associated with the candidate's enrollment in the educator preparation program.
+          Cohort years represent the expected graduation or completion years for the candidate.
