@@ -7,6 +7,8 @@ dim_candidate as (
 dim_staff as (
     select * from {{ ref('dim_staff') }}
 ),
+{# TODO: should we combine this with implicit associations via staff & candidate personReferences? 
+Bc of the way Ed-Fi defines people, this requires that the staff & candidate use the same person Identifier and Source System, else are treated as different people. #}
 {# inner joins to enforce referential integrity, candidates and staff must exist #}
 joined as (
     select
