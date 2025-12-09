@@ -1,5 +1,6 @@
 # Unreleased
 ## New features
+- Add `fct_candidate_staff_association` model (TPDM)
 ## Under the hood
 ## Fixes
 

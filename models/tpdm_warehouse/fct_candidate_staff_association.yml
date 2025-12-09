@@ -1,0 +1,39 @@
+version: 2
+
+models:
+  - name: fct_candidate_staff_association
+    description: >
+      ##### Overview:
+      This fact table provides information on the associations between candidates and staff.
+
+      ##### Primary Key:
+      `k_candidate, k_staff` -- There is one record per candidate and staff
+
+      ##### Important Business Rules:
+      Note that unlike other associations, begin_date is not included in the primary key. There will only be one record per candidate and staff, with a global begin_date.
+      However, begin_date is a required field by Ed-Fi, so guaranteed to be present.
+      
+    config:
+      tags: ['tpdm']
+      enabled: "{{ var('edu:tpdm:enabled', False) }}"
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - k_candidate
+            - k_staff
+    columns:
+      - name: k_candidate
+        description: "Unique key for candidate, foreign key reference to `dim_candidate`"
+      - name: k_staff
+        description: "Unique key for staff, foreign key reference to `dim_staff`"
+      - name: tenant_code
+      - name: api_year
+      - name: begin_date
+        description: "The date the association began"
+        tests:
+          - not_null
+      - name: end_date
+        description: "The date the association ended"
+      - name: staff_to_candidate_relationship
+        description: "The type of relationship between the staff and the candidate"

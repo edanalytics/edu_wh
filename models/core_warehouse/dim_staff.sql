@@ -29,6 +29,7 @@ choose_email as (
 formatted as (
     select 
         stg_staff.k_staff,
+        stg_staff.k_person,
         stg_staff.tenant_code,
         stg_staff.staff_unique_id,
         {{ accordion_columns(
