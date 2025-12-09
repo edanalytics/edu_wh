@@ -16,6 +16,10 @@ models:
         description: generated primary key from `tenant_code`, `api_year`, and `candidate_id`
         tests: 
           - unique
+      - name: k_candidate_xyear
+        description: generated primary key from `tenant_code`, and `candidate_id`
+        tests: 
+          - unique
       - name: k_person
         description: "Generated surrogate key from `tenant_code`, `api_year`, `person_id`, and `source_system`"
       - name: tenant_code
