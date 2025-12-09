@@ -102,26 +102,32 @@ stu_enr_att_cal as (
     -- absenteeism metrics forward post-enrollment
     where attendance_calendar.calendar_date >= enr.entry_date
 ),
+stu_enr_att_cal_deduped as (
+    select stu_enr_att_cal.k_student,
+            stu_enr_att_cal.k_school,
+            stu_enr_att_cal.k_calendar_date,
+            stu_enr_att_cal.calendar_date, fct_student_school_att.attendance_excusal_status from stu_enr_att_cal
+    left join fct_student_school_att
+            on stu_enr_att_cal.k_student = fct_student_school_att.k_student
+            and stu_enr_att_cal.k_school = fct_student_school_att.k_school
+            and stu_enr_att_cal.k_calendar_date = fct_student_school_att.k_calendar_date  
+    qualify row_number() over (partition by stu_enr_att_cal.k_student, stu_enr_att_cal.k_school, stu_enr_att_cal.calendar_date order by stu_enr_att_cal.calendar_date, fct_student_school_att.attendance_excusal_status) =1
+),
 excusal_status_streaks  as (
     select 
         *,
         row_number() over (partition by k_student, k_school, excusal_status_streak_id, attendance_excusal_status order by calendar_date) as consecutive_days_by_excusal_status
     from 
         (select 
-            stu_enr_att_cal.k_student,
-            stu_enr_att_cal.k_school,
-            stu_enr_att_cal.k_calendar_date,
-            stu_enr_att_cal.calendar_date,
-            is_absent,
+            k_student,
+            k_school,
+            k_calendar_date,
+            calendar_date,
             attendance_excusal_status,
-            dense_rank() over ( partition by stu_enr_att_cal.k_student, stu_enr_att_cal.k_school order by calendar_date ) 
-            - dense_rank() over ( partition by stu_enr_att_cal.k_student,stu_enr_att_cal.k_school, fct_student_school_att.attendance_excusal_status order by calendar_date) 
+            dense_rank() over ( partition by k_student,  k_school order by calendar_date ) 
+            - dense_rank() over ( partition by k_student,k_school, attendance_excusal_status order by calendar_date) 
         as excusal_status_streak_id 
-        from stu_enr_att_cal
-        left join fct_student_school_att
-            on stu_enr_att_cal.k_student = fct_student_school_att.k_student
-            and stu_enr_att_cal.k_school = fct_student_school_att.k_school
-            and stu_enr_att_cal.k_calendar_date = fct_student_school_att.k_calendar_date    
+        from stu_enr_att_cal_deduped
         )
 ),
 fill_positive_attendance as (
@@ -189,8 +195,8 @@ fill_positive_attendance as (
             bld_attendance_sessions.session_end_date
     left join excusal_status_streaks 
         on stu_enr_att_cal.k_student = excusal_status_streaks.k_student
-        and stu_enr_att_cal.k_calendar_date = excusal_status_streaks.k_calendar_date
-        and stu_enr_att_cal.k_chool = excusal_status_streaks.k_school
+        and stu_enr_att_cal.calendar_date = excusal_status_streaks.calendar_date
+        and stu_enr_att_cal.k_school = excusal_status_streaks.k_school
 ),
 positive_attendance_deduped as (
     -- account for multiple overlapping enrollments at the same school by ensuring
