@@ -225,7 +225,7 @@ cumulatives as (
         positive_attendance_deduped.is_present,
         positive_attendance_deduped.is_enrolled,
         positive_attendance_deduped.attendance_excusal_status,
-        consecutive_days_by_excusal_status,
+        positive_attendance_deduped.consecutive_days_by_excusal_status,
         sum(positive_attendance_deduped.is_enrolled) over(
             partition by positive_attendance_deduped.k_student, positive_attendance_deduped.k_school) as total_days_enrolled,
         sum(positive_attendance_deduped.is_absent) over(
