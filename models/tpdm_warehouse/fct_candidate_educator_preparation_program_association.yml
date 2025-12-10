@@ -6,8 +6,6 @@ models:
         ##### Overview:
           Defines the association between a candidate and an educator preparation program. As defined in the Ed-Fi TPDM (EPDM), this association represents a candidate's enrollment in an educator preparation program, including enrollment dates, program pathway, and completion information.
 
-        ##### Primary Key:
-          `k_candidate_educator_preparation_program_association` - There is one record per candidate per educator preparation program.
     config:
       tags: ['tpdm']
       enabled: "{{ var('edu:tpdm:enabled', False) }}"
