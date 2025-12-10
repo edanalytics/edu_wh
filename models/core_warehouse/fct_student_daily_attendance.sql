@@ -121,6 +121,8 @@ excusal_status_streaks  as (
         left join fct_student_school_att
             on stu_enr_att_cal.k_student = fct_student_school_att.k_student
             and stu_enr_att_cal.k_school = fct_student_school_att.k_school
+            -- we are joining on `calendar_date` instead of `k_calendar_date` since the streaks are counted by date, not date + school calendar
+            -- and as a result, different `k_calendar_date`'s for the same `calendar_date` will have the same `consecutive_days_by_excusal_status`
             and stu_enr_att_cal.calendar_date = fct_student_school_att.calendar_date    
         )
 ),
@@ -189,7 +191,7 @@ fill_positive_attendance as (
             bld_attendance_sessions.session_end_date
     left join excusal_status_streaks 
         on stu_enr_att_cal.k_student = excusal_status_streaks.k_student
-        and stu_enr_att_cal.calendar_date = excusal_status_streaks.calendar_date
+        and stu_enr_att_cal.k_calendar_date = excusal_status_streaks.k_calendar_date
         and stu_enr_att_cal.k_school = excusal_status_streaks.k_school
 ),
 positive_attendance_deduped as (
