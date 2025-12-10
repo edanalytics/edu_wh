@@ -1,8 +1,6 @@
 {{
   config(
     post_hook=[
-        "alter table {{ this }} alter column k_candidate_educator_preparation_program_association set not null",
-        "alter table {{ this }} add primary key (k_candidate_educator_preparation_program_association)",
         "alter table {{ this }} add constraint fk_{{ this.name }}_staff foreign key (k_candidate) references {{ ref('dim_candidate') }}",
         "alter table {{ this }} add constraint fk_{{ this.name }}_school foreign key (k_educator_preparation_program) references {{ ref('dim_educator_preparation_program') }}",
     ]
@@ -25,7 +23,6 @@ formatted as (
     select
         dim_candidate.k_candidate,
         dim_candidate.k_candidate_xyear,
-        stage.k_candidate_educator_preparation_program_association,
         dim_epp.k_educator_preparation_program,
         stage.tenant_code,
         stage.school_year,

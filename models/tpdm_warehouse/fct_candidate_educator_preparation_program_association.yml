@@ -16,10 +16,6 @@ models:
         description: Unique key for candidate, foreign key reference to `dim_candidate`
       - name: k_candidate_xyear
         description: Cross-year key for candidate, used for tracking candidates across multiple years
-      - name: k_candidate_educator_preparation_program_association
-        description: Generated primary key for the candidate educator preparation program association
-        tests:
-          - unique
       - name: k_educator_preparation_program
         description: Unique key for educator preparation program, foreign key reference to `dim_educator_preparation_program`
       - name: tenant_code
