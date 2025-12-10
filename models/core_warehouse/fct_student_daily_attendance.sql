@@ -172,7 +172,7 @@ fill_positive_attendance as (
                 when is_enrolled = 1 then fct_student_school_att.is_absent
                 else 1.0
             end, 0.0) as is_present,
-        coalesce(fct_student_school_att.attendance_excusal_status, 'In Attendance') as attendance_excusal_status,
+        coalesce(excusal_status_streaks.attendance_excusal_status, 'In Attendance') as attendance_excusal_status,
         fct_student_school_att.event_duration,
         fct_student_school_att.school_attendance_duration,
         excusal_status_streaks.consecutive_days_by_excusal_status
