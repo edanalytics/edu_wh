@@ -31,6 +31,7 @@ candidate_other_names as (
 formatted as (
     select
         stg_candidates.k_candidate,
+        stg_candidates.k_candidate_xyear,
         stg_candidates.k_person,
         stg_candidates.tenant_code,
         stg_candidates.school_year,

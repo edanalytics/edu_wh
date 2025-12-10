@@ -1,5 +1,6 @@
 # Unreleased
 ## New features
+- Add `dim_educator_preparation_program` and `fct_candidate_educator_preparation_program` models
 ## Under the hood
 ## Fixes
 
