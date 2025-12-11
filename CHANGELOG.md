@@ -3,7 +3,7 @@
 - Add `attendance_excusal_status` and `consecutive_days_by_excusal_status` to `fct_student_daily_attendance`, where:
     - `attendance_excusal_status` classifies each attendance record as 'In Attendance', 'Not Enrolled', 'Excused Absence', or 'Unexcused Absence'
     - `consecutive_days_by_excusal_status` reports the number of consecutive days a student has had the same attendance_excusal_status.
-- Add `attendance_excusal_status` to `fct_student_school_attendance_event`
+- Add `attendance_excusal_status`and `calendar_date` to `fct_student_school_attendance_event`
 ## Under the hood
 ## Fixes
 
