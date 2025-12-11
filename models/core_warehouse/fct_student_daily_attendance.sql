@@ -102,30 +102,6 @@ stu_enr_att_cal as (
     -- absenteeism metrics forward post-enrollment
     where attendance_calendar.calendar_date >= enr.entry_date
 ),
-excusal_status_streaks  as (
-    select 
-        *,
-        dense_rank() over (partition by k_student, k_school, excusal_status_streak_id, attendance_excusal_status order by calendar_date) as consecutive_days_by_excusal_status
-    from 
-        (select 
-            stu_enr_att_cal.k_student,
-            stu_enr_att_cal.k_school,
-            stu_enr_att_cal.k_calendar_date,
-            stu_enr_att_cal.calendar_date,
-            is_absent,
-            attendance_excusal_status,
-            dense_rank() over ( partition by stu_enr_att_cal.k_student, stu_enr_att_cal.k_school order by stu_enr_att_cal.calendar_date ) 
-            - dense_rank() over ( partition by stu_enr_att_cal.k_student,stu_enr_att_cal.k_school, fct_student_school_att.attendance_excusal_status order by stu_enr_att_cal.calendar_date) 
-        as excusal_status_streak_id 
-        from stu_enr_att_cal
-        left join fct_student_school_att
-            on stu_enr_att_cal.k_student = fct_student_school_att.k_student
-            and stu_enr_att_cal.k_school = fct_student_school_att.k_school
-            -- we are joining on `calendar_date` instead of `k_calendar_date` since the streaks are counted by date, not date + school calendar
-            -- and as a result, different `k_calendar_date`'s for the same `calendar_date` will have the same `consecutive_days_by_excusal_status`
-            and stu_enr_att_cal.calendar_date = fct_student_school_att.calendar_date    
-        )
-),
 fill_positive_attendance as (
     select 
         stu_enr_att_cal.k_student,
@@ -172,10 +148,12 @@ fill_positive_attendance as (
                 when is_enrolled = 1 then fct_student_school_att.is_absent
                 else 1.0
             end, 0.0) as is_present,
-        coalesce(excusal_status_streaks.attendance_excusal_status, 'In Attendance') as attendance_excusal_status,
+        case
+            when is_enrolled = 0  then 'Not Enrolled'
+            else coalesce(fct_student_school_att.attendance_excusal_status, 'In Attendance')
+        end as attendance_excusal_status,
         fct_student_school_att.event_duration,
-        fct_student_school_att.school_attendance_duration,
-        excusal_status_streaks.consecutive_days_by_excusal_status
+        fct_student_school_att.school_attendance_duration
     from stu_enr_att_cal
     left join fct_student_school_att
         on stu_enr_att_cal.k_student = fct_student_school_att.k_student
@@ -189,10 +167,6 @@ fill_positive_attendance as (
         and stu_enr_att_cal.calendar_date between 
             bld_attendance_sessions.session_begin_date and 
             bld_attendance_sessions.session_end_date
-    left join excusal_status_streaks 
-        on stu_enr_att_cal.k_student = excusal_status_streaks.k_student
-        and stu_enr_att_cal.k_calendar_date = excusal_status_streaks.k_calendar_date
-        and stu_enr_att_cal.k_school = excusal_status_streaks.k_school
 ),
 positive_attendance_deduped as (
     -- account for multiple overlapping enrollments at the same school by ensuring
@@ -212,39 +186,52 @@ positive_attendance_deduped as (
         )
     }}
 ),
+excusal_status_streaks as (
+    select 
+        *,
+        dense_rank() over (partition by k_student, k_school, excusal_status_streak_id, attendance_excusal_status order by calendar_date) as consecutive_days_by_excusal_status
+    from 
+        (select 
+            *,
+            dense_rank() over ( partition by k_student, k_school order by calendar_date ) 
+            - dense_rank() over ( partition by k_student,k_school, attendance_excusal_status order by calendar_date) 
+        as excusal_status_streak_id 
+        from positive_attendance_deduped
+        )
+),
 cumulatives as (
     select 
-        positive_attendance_deduped.k_student,
-        positive_attendance_deduped.k_student_xyear,
-        positive_attendance_deduped.k_school,
-        positive_attendance_deduped.k_calendar_date,
-        positive_attendance_deduped.calendar_date,
-        positive_attendance_deduped.k_session,
-        positive_attendance_deduped.tenant_code,
-        positive_attendance_deduped.attendance_event_category,
-        positive_attendance_deduped.attendance_event_reason,
-        positive_attendance_deduped.is_absent,
-        positive_attendance_deduped.is_present,
-        positive_attendance_deduped.is_enrolled,
-        positive_attendance_deduped.attendance_excusal_status,
-        positive_attendance_deduped.consecutive_days_by_excusal_status,
-        sum(positive_attendance_deduped.is_enrolled) over(
-            partition by positive_attendance_deduped.k_student, positive_attendance_deduped.k_school) as total_days_enrolled,
-        sum(positive_attendance_deduped.is_absent) over(
-            partition by positive_attendance_deduped.k_student, positive_attendance_deduped.k_school 
-            order by positive_attendance_deduped.calendar_date) as cumulative_days_absent,
-        sum(positive_attendance_deduped.is_present) over(
-            partition by positive_attendance_deduped.k_student, positive_attendance_deduped.k_school 
-            order by positive_attendance_deduped.calendar_date) as cumulative_days_attended,
-        sum(positive_attendance_deduped.is_enrolled) over(
-            partition by positive_attendance_deduped.k_student, positive_attendance_deduped.k_school
-            order by positive_attendance_deduped.calendar_date) as cumulative_days_enrolled,
+        excusal_status_streaks.k_student,
+        excusal_status_streaks.k_student_xyear,
+        excusal_status_streaks.k_school,
+        excusal_status_streaks.k_calendar_date,
+        excusal_status_streaks.calendar_date,
+        excusal_status_streaks.k_session,
+        excusal_status_streaks.tenant_code,
+        excusal_status_streaks.attendance_event_category,
+        excusal_status_streaks.attendance_event_reason,
+        excusal_status_streaks.is_absent,
+        excusal_status_streaks.is_present,
+        excusal_status_streaks.is_enrolled,
+        excusal_status_streaks.attendance_excusal_status,
+        excusal_status_streaks.consecutive_days_by_excusal_status,
+        sum(excusal_status_streaks.is_enrolled) over(
+            partition by excusal_status_streaks.k_student, excusal_status_streaks.k_school) as total_days_enrolled,
+        sum(excusal_status_streaks.is_absent) over(
+            partition by excusal_status_streaks.k_student, excusal_status_streaks.k_school 
+            order by excusal_status_streaks.calendar_date) as cumulative_days_absent,
+        sum(excusal_status_streaks.is_present) over(
+            partition by excusal_status_streaks.k_student, excusal_status_streaks.k_school 
+            order by excusal_status_streaks.calendar_date) as cumulative_days_attended,
+        sum(excusal_status_streaks.is_enrolled) over(
+            partition by excusal_status_streaks.k_student, excusal_status_streaks.k_school
+            order by excusal_status_streaks.calendar_date) as cumulative_days_enrolled,
         round(100 * cumulative_days_attended / nullif(cumulative_days_enrolled, 0), 2) as cumulative_attendance_rate,
         cumulative_days_enrolled >= {{ var('edu:attendance:chronic_absence_min_days') }} as meets_enrollment_threshold,
         {{ msr_chronic_absentee('cumulative_attendance_rate', 'cumulative_days_enrolled') }} as is_chronic_absentee,
-        positive_attendance_deduped.event_duration,
-        positive_attendance_deduped.school_attendance_duration,
-    from positive_attendance_deduped
+        excusal_status_streaks.event_duration,
+        excusal_status_streaks.school_attendance_duration,
+    from excusal_status_streaks
 ),
 metric_labels as (
     select 
