@@ -134,50 +134,102 @@ Students are categorized based on their cumulative attendance rate using thresho
 ## Data Flow Summary
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│  1. Build Attendance Calendar                                   │
-│     • Instructional days only                                   │
-│     • Filter by submission dates and school year status         │
-└─────────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────────┐
-│  2. Create Student-Enrollment Calendar                          │
-│     • Join students to calendar via school enrollment           │
-│     • Start from entry_date, continue through calendar end      │
-└─────────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────────┐
-│  3. Fill Positive Attendance                                    │
-│     • Left join actual attendance events                        │
-│     • Fill missing days as "In Attendance"                      │
-│     • Calculate is_enrolled, is_absent, is_present              │
-└─────────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────────┐
-│  4. Deduplicate Overlapping Enrollments                         │
-│     • Ensure one record per student/school/date                 │
-│     • Prefer enrolled records and smaller sessions              │
-└─────────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────────┐
-│  5. Calculate Excusal Status Streaks                            │
-│     • Track consecutive days by excusal status                  │
-└─────────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────────┐
-│  6. Compute Cumulative Metrics                                  │
-│     • Running totals via window functions                       │
-│     • Calculate attendance rate and chronic absentee flag       │
-└─────────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────────┐
-│  7. Apply Absentee Category Labels                              │
-│     • Join to absentee_categories seed                          │
-│     • Assign rank and label based on attendance rate            │
-└─────────────────────────────────────────────────────────────────┘
-                              ↓
-                    Final Output:
-            One row per student/school/date
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║                              DATA SOURCES                                     ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+
+┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐
+│ dim_calendar_   │  │  dim_session    │  │ fct_student_    │  │ fct_student_    │
+│     date        │  │                 │  │ school_assoc    │  │ school_attend_  │
+│                 │  │ • session dates │  │                 │  │     event       │
+│ • school days   │  │ • total instr.  │  │ • entry/exit    │  │                 │
+│ • calendar      │  │   days          │  │   dates         │  │ • is_absent     │
+│   dates         │  │                 │  │ • school        │  │ • excusal       │
+│                 │  │                 │  │   calendar      │  │   status        │
+└────────┬────────┘  └────────┬────────┘  └────────┬────────┘  └────────┬────────┘
+         │                    │                    │                    │
+         │                    ▼                    │                    │
+         │           ┌─────────────────┐           │                    │
+         │           │ bld_ef3__       │           │                    │
+         │           │ attendance_     │           │                    │
+         │           │ sessions        │           │                    │
+         │           │                 │           │                    │
+         │           │ • maps schools  │           │                    │
+         │           │   to sessions   │           │                    │
+         │           └────────┬────────┘           │                    │
+         │                    │                    │                    │
+         ▼                    ▼                    ▼                    ▼
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║                           TRANSFORMATION STEPS                                ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+
+┌───────────────────────────────────────────────────────────────────────────────┐
+│  1. Build Attendance Calendar                                                 │
+│     • Instructional days only (is_school_day = true)                          │
+│     • Filter: date ≤ today AND date ≤ max submitted attendance by school      │
+│     • Past school years: include all days once calendar has ended             │
+│                                                                               │
+│     Sources: dim_calendar_date                                                │
+└───────────────────────────────────────────────────────────────────────────────┘
+                                       ↓
+┌───────────────────────────────────────────────────────────────────────────────┐
+│  2. Create Student-Enrollment Calendar                                        │
+│     • Join students to attendance calendar via school calendar                │
+│     • Include days from entry_date through end of calendar                    │
+│                                                                               │
+│     Sources: + fct_student_school_association                                 │
+└───────────────────────────────────────────────────────────────────────────────┘
+                                       ↓
+┌───────────────────────────────────────────────────────────────────────────────┐
+│  3. Fill Positive Attendance                                                  │
+│     • LEFT JOIN attendance events to student calendar                         │
+│     • No event = "In Attendance" (student assumed present)                    │
+│     • Calculate: is_enrolled, is_absent, is_present                           │
+│     • Post-withdrawal days marked "Not Enrolled"                              │
+│                                                                               │
+│     Sources: + fct_student_school_attendance_event                            │
+│              + dim_session, bld_ef3__attendance_sessions                      │
+└───────────────────────────────────────────────────────────────────────────────┘
+                                       ↓
+┌───────────────────────────────────────────────────────────────────────────────┐
+│  4. Deduplicate Overlapping Enrollments                                       │
+│     • One record per student/school/date                                      │
+│     • Priority: enrolled > not enrolled, smaller sessions preferred           │
+└───────────────────────────────────────────────────────────────────────────────┘
+                                       ↓
+┌───────────────────────────────────────────────────────────────────────────────┐
+│  5. Calculate Excusal Status Streaks                                          │
+│     • Track consecutive days with same excusal status                         │
+│     • Uses gaps-and-islands pattern                                           │
+└───────────────────────────────────────────────────────────────────────────────┘
+                                       ↓
+┌───────────────────────────────────────────────────────────────────────────────┐
+│  6. Compute Cumulative Metrics                                                │
+│     • cumulative_days_absent, cumulative_days_attended                        │
+│     • cumulative_attendance_rate = 100 × attended / enrolled                  │
+│     • is_chronic_absentee = rate ≤ 90% AND enrolled ≥ 20 days                 │
+└───────────────────────────────────────────────────────────────────────────────┘
+                                       ↓
+┌───────────────────────────────────────────────────────────────────────────────┐
+│  7. Apply Absentee Category Labels                                            │
+│     • Join attendance rate to threshold bands                                 │
+│     • Assign absentee_category_rank and absentee_category_label               │
+│     • Only applied if meets_enrollment_threshold = TRUE                       │
+│                                                                     ┌────────────────┐
+│     Sources: + absentee_categories (seed)                           │ absentee_      │
+│                                                                     │ categories     │
+│                                                                     │                │
+│                                                                     │ • rate bands   │
+│                                                                     │ • labels       │
+│                                                                     └────────────────┘
+└───────────────────────────────────────────────────────────────────────────────┘
+                                       ↓
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║                              FINAL OUTPUT                                     ║
+║                                                                               ║
+║                    fct_student_daily_attendance                               ║
+║                    One row per student / school / date                        ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
 ```
 
 ---
