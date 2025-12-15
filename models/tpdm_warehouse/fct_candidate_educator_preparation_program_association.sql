@@ -37,6 +37,7 @@ formatted as (
         stage.epp_program_pathway,
         stage.v_degree_specializations,
         stage.v_cohort_years
+        {{ edu_edfi_source.extract_extension(model_name='stg_tpdm__candidate_educator_preparation_program_associations', flatten=False) }}
     from stage
     join dim_epp
         on stage.k_educator_preparation_program = dim_epp.k_educator_preparation_program
