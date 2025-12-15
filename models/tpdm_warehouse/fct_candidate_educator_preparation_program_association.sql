@@ -36,7 +36,7 @@ formatted as (
         stage.reason_exited,
         stage.epp_program_pathway,
         stage.v_degree_specializations,
-        stage.v_cohort_years,
+        stage.v_cohort_years
     from stage
     join dim_epp
         on stage.k_educator_preparation_program = dim_epp.k_educator_preparation_program
