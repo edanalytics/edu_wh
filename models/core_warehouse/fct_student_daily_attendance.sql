@@ -10,17 +10,32 @@
     ]
   )
 }}
-with fct_student_school_att as (
+-- {{ is_incremental() }}
+with 
+{% if is_incremental() %}
+-- Identify enrollments that have changed since the last run
+changed_enrollments as (
+    select 
+        k_student,
+        k_school,
+        k_school_calendar
+    from {{ ref('fct_student_school_association') }}
+    where last_modified_timestamp > (select max(enr_last_modified_timestamp) from {{ this }})
+),
+{% endif %}
+fct_student_school_att as (
     select * from {{ ref(var("edu:attendance:daily_attendance_source", 'fct_student_school_attendance_event')) }}
     {% if is_incremental() %}
-    -- Only get from latest year (school_year + 1) to avoid reprocessing all data. +1 because in pre-hook we delete latest year
+    -- Get attendance events that were modified OR belong to students with modified enrollments
     where last_modified_timestamp > (select max(att_last_modified_timestamp) from {{ this }})
+        or (k_student, k_school) in (select k_student, k_school from changed_enrollments)
     {% endif %}
 ),
 dim_calendar_date as (
     select * from {{ ref('dim_calendar_date') }}
     {% if is_incremental() %}
     where k_calendar_date in (select distinct k_calendar_date from fct_student_school_att)
+        or k_school_calendar in (select distinct k_school_calendar from changed_enrollments)
     {% endif %}
 ),
 dim_session as (
@@ -31,9 +46,14 @@ dim_session as (
 ),
 fct_student_school_assoc as (
     select * from {{ ref('fct_student_school_association') }}
-    {# {% if is_incremental() %}
-    where school_year = (select max(school_year) + 1 from {{ this }})
-    {% endif %} #}
+    {% if is_incremental() %}
+    -- Get enrollments for students with modified attendance OR modified enrollments
+    where (k_student, k_school) in (
+        select k_student, k_school from fct_student_school_att
+        union
+        select k_student, k_school from changed_enrollments
+    )
+    {% endif %}
 ),
 metric_absentee_categories as (
     select * from {{ ref('absentee_categories') }}
@@ -84,7 +104,8 @@ stu_enr_att_cal as (
         enr.entry_date,
         attendance_calendar.k_calendar_date,
         attendance_calendar.calendar_date,
-        enr.exit_withdraw_date
+        enr.exit_withdraw_date,
+        enr.last_modified_timestamp as enr_last_modified_timestamp
     from fct_student_school_assoc as enr
     join attendance_calendar
         on enr.k_school_calendar = attendance_calendar.k_school_calendar
@@ -140,7 +161,8 @@ fill_positive_attendance as (
             end, 0.0) as is_present,
         fct_student_school_att.event_duration,
         fct_student_school_att.school_attendance_duration,
-        fct_student_school_att.last_modified_timestamp as att_last_modified_timestamp
+        fct_student_school_att.last_modified_timestamp as att_last_modified_timestamp,
+        stu_enr_att_cal.enr_last_modified_timestamp
     from stu_enr_att_cal
     left join fct_student_school_att
         on stu_enr_att_cal.k_student = fct_student_school_att.k_student
@@ -204,7 +226,8 @@ cumulatives as (
         {{ msr_chronic_absentee('cumulative_attendance_rate', 'cumulative_days_enrolled') }} as is_chronic_absentee,
         positive_attendance_deduped.event_duration,
         positive_attendance_deduped.school_attendance_duration,
-        positive_attendance_deduped.att_last_modified_timestamp
+        positive_attendance_deduped.att_last_modified_timestamp,
+        positive_attendance_deduped.enr_last_modified_timestamp
     from positive_attendance_deduped
 ),
 metric_labels as (

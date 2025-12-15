@@ -141,3 +141,7 @@ models:
         description: >
           True if this is the most recent enrollment (by entry date) at this 
           school in this year.
+      - name: last_modified_timestamp
+        description: >
+          The timestamp of the last modification to this enrollment record in 
+          the source system. Used for incremental processing in downstream models.

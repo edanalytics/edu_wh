@@ -71,3 +71,12 @@ models:
         description: >
           A text label categorizing levels of attendance. Defined in the 
           seed table `absentee_categories`.
+      - name: att_last_modified_timestamp
+        description: >
+          The timestamp of the last modification to the attendance event record
+          in the source system. Used for incremental processing.
+      - name: enr_last_modified_timestamp
+        description: >
+          The timestamp of the last modification to the student's enrollment record
+          in the source system. Used for incremental processing to ensure that 
+          enrollment changes trigger recalculation of attendance records.
