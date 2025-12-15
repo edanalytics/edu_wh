@@ -22,7 +22,7 @@ formatted as (
         stg_epp.program_name,
         stg_epp.accreditation_status,
         stg_epp.v_grade_levels
-        {{ edu_edfi_source.extract_extension(model_name='stg_tpdm__candidate_educator_preparation_program_associations', flatten=False) }}
+        {{ edu_edfi_source.extract_extension(model_name='stg_tpdm__educator_preparation_programs', flatten=False) }}
     from stg_epp
 )
 select * from formatted
