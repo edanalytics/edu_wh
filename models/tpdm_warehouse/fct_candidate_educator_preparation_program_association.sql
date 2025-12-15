@@ -2,7 +2,7 @@
   config(
     post_hook=[
         "alter table {{ this }} add constraint fk_{{ this.name }}_staff foreign key (k_candidate) references {{ ref('dim_candidate') }}",
-        "alter table {{ this }} add constraint fk_{{ this.name }}_school foreign key (k_educator_preparation_program) references {{ ref('dim_educator_preparation_program') }}",
+        "alter table {{ this }} add constraint fk_{{ this.name }}_educator_preparation_program foreign key (k_educator_preparation_program) references {{ ref('dim_educator_preparation_program') }}",
     ]
   )
 }}
