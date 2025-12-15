@@ -150,7 +150,7 @@ fill_positive_attendance as (
             end, 0.0) as is_present,
         case
             when is_enrolled = 0  then 'Not Enrolled'
-            when is_absent = 0 then 'Not Absent'
+            when coalesce(fct_student_school_att.is_absent, 0.0) = 0 then 'Not Absent'
             else coalesce(fct_student_school_att.attendance_excusal_status, 'Unknown Excusal Status')
         end as attendance_excusal_status,
         fct_student_school_att.event_duration,
