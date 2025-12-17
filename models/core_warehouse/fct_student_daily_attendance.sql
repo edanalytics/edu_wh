@@ -1,13 +1,18 @@
 {{
   config(
+    materialized=var('edu:large_wh_materialization', 'table'),
+    unique_key=['k_student', 'k_school', 'calendar_date'],
+    pre_hook=[
+      "{% if  is_incremental() %} edu_wh.incremental_pre_hook_by_year() {% endif %}"
+    ]
     post_hook=[
-        "alter table {{ this }} alter column k_student set not null",
-        "alter table {{ this }} alter column k_school set not null",
-        "alter table {{ this }} alter column calendar_date set not null",
-        "alter table {{ this }} add primary key (k_student, k_school, calendar_date)",
-        "alter table {{ this }} add constraint fk_{{ this.name }}_student foreign key (k_student) references {{ ref('dim_student') }}",
-        "alter table {{ this }} add constraint fk_{{ this.name }}_school foreign key (k_school) references {{ ref('dim_school') }}",
-        "alter table {{ this }} add constraint fk_{{ this.name }}_calendar_date foreign key (k_calendar_date) references {{ ref('dim_calendar_date') }}",
+        "{% if not is_incremental() %} alter table {{ this }} alter column k_student set not null {% endif %}",
+        "{% if not is_incremental() %} alter table {{ this }} alter column k_school set not null {% endif %}",
+        "{% if not is_incremental() %} alter table {{ this }} alter column calendar_date set not null {% endif %}",
+        "{% if not is_incremental() %} alter table {{ this }} add primary key (k_student, k_school, calendar_date) {% endif %}",
+        "{% if not is_incremental() %} alter table {{ this }} add constraint fk_{{ this.name }}_student foreign key (k_student) references {{ ref('dim_student') }} {% endif %}",
+        "{% if not is_incremental() %} alter table {{ this }} add constraint fk_{{ this.name }}_school foreign key (k_school) references {{ ref('dim_school') }} {% endif %}",
+        "{% if not is_incremental() %} alter table {{ this }} add constraint fk_{{ this.name }}_calendar_date foreign key (k_calendar_date) references {{ ref('dim_calendar_date') }} {% endif %}",
     ]
   )
 }}
