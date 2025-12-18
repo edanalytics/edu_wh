@@ -1,6 +1,7 @@
 # Unreleased
 ## New features
-- Add `dim_educator_preparation_program` and `fct_candidate_educator_preparation_program` models
+- Add `fct_candidate_staff_association` model (TPDM)
+- Add `dim_educator_preparation_program` and `fct_candidate_educator_preparation_program` models (TPDM)
 ## Under the hood
 ## Fixes
 
