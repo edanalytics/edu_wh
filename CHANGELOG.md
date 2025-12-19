@@ -4,6 +4,8 @@
     - `attendance_excusal_status` classifies each attendance record as 'In Attendance', 'Not Enrolled', 'Excused Absence', or 'Unexcused Absence'
     - `consecutive_days_by_excusal_status` reports the number of consecutive days a student has had the same attendance_excusal_status.
 - Add `attendance_excusal_status`and `calendar_date` to `fct_student_school_attendance_event`
+- Add `fct_candidate_staff_association` model (TPDM)
+- Add `dim_educator_preparation_program` and `fct_candidate_educator_preparation_program` models (TPDM)
 ## Under the hood
 ## Fixes
 
