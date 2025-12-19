@@ -38,9 +38,8 @@ counted as (
     from dim_calendar_date
     join fct_student_school_assoc
         on dim_calendar_date.k_school_calendar = fct_student_school_assoc.k_school_calendar
-        and dim_calendar_date.calendar_date between 
-            fct_student_school_assoc.entry_date and
-            coalesce(fct_student_school_assoc.exit_withdraw_date, current_date())
+        and dim_calendar_date.calendar_date >= fct_student_school_assoc.entry_date
+        and {{ date_within_end_date('dim_calendar_date.calendar_date', 'fct_student_school_assoc.exit_withdraw_date', var('edu:enroll:exit_withdraw_date_inclusive', True)) }}
     group by 1,2,3
     having duplicate_days > 1
 ),
