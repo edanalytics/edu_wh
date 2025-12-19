@@ -80,11 +80,12 @@ models:
 
     tests:
       - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - k_student
-            - k_program
-            - program_enroll_begin_date
-            - program_service
+          arguments:
+            combination_of_columns:
+              - k_student
+              - k_program
+              - program_enroll_begin_date
+              - program_service
     columns:
       - name: k_student
       - name: k_program

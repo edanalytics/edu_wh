@@ -55,11 +55,12 @@ models:
       tags: ['core']
     tests:
       - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - k_student
-            - k_school
-            - school_year
-            - entry_date
+          arguments:
+            combination_of_columns:
+              - k_student
+              - k_school
+              - school_year
+              - entry_date
     columns:
       - name: k_student
         description: > 
