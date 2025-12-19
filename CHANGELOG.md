@@ -1,7 +1,6 @@
 # Unreleased
 ## New features
 ## Under the hood
-- Update syntax of dbt test argument declarations to avoid deprecated behavior. Requires dbt 1.10.5+
 ## Fixes
 
 # edu_wh v0.6.0
@@ -13,6 +12,7 @@
 - Add TPDM/EPDM domain warehouse models: `dim_educator_preparation_program`, `fct_candidate_educator_preparation_program`, `fct_candidate_staff_association`
 - Add "bridge table" `brg_course_section_program` for convenient linking between course sections & programs
 ## Under the hood
+- Update syntax of dbt test argument declarations to avoid deprecated behavior. Requires dbt 1.10.5+
 ## Fixes
 ## Migrations
 - see Release page
