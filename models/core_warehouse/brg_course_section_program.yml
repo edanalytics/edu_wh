@@ -12,5 +12,6 @@ models:
     config:
       tags: ['core', 'course']
     columns:
+      - name: tenant_code
       - name: k_course_section
       - name: k_program
