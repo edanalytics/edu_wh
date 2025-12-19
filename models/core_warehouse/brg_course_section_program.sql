@@ -21,6 +21,7 @@ dim_program as (
 ),
 joined as (
     select 
+        stg_ef3__sections__programs.tenant_code,
         stg_ef3__sections__programs.k_course_section,
         stg_ef3__sections__programs.k_program
     from stg_ef3__sections__programs
