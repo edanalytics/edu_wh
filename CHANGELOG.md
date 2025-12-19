@@ -1,13 +1,21 @@
 # Unreleased
 ## New features
+## Under the hood
+- Update syntax of dbt test argument declarations to avoid deprecated behavior. Requires dbt 1.10.5+
+## Fixes
+
+# edu_wh v0.6.0
+## New features
 - Add `attendance_excusal_status` and `consecutive_days_by_excusal_status` to `fct_student_daily_attendance`, where:
     - `attendance_excusal_status` classifies each attendance record as 'In Attendance', 'Not Enrolled', 'Excused Absence', or 'Unexcused Absence'
-    - `consecutive_days_by_excusal_status` reports the number of consecutive days a student has had the same attendance_excusal_status.
+    - `consecutive_days_by_excusal_status` reports the number of consecutive days a student has had the same attendance_excusal_status
 - Add `attendance_excusal_status`and `calendar_date` to `fct_student_school_attendance_event`
-- Add `fct_candidate_staff_association` model (TPDM)
-- Add `dim_educator_preparation_program` and `fct_candidate_educator_preparation_program` models (TPDM)
+- Add TPDM/EPDM domain warehouse models: `dim_educator_preparation_program`, `fct_candidate_educator_preparation_program`, `fct_candidate_staff_association`
+- Add "bridge table" `brg_course_section_program` for convenient linking between course sections & programs
 ## Under the hood
 ## Fixes
+## Migrations
+- see Release page
 
 # edu_wh v0.5.3
 ## New features
