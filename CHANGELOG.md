@@ -3,6 +3,60 @@
 ## Under the hood
 ## Fixes
 
+# edu_wh v0.6.0
+## New features
+- Add `attendance_excusal_status` and `consecutive_days_by_excusal_status` to `fct_student_daily_attendance`, where:
+    - `attendance_excusal_status` classifies each attendance record as 'In Attendance', 'Not Enrolled', 'Excused Absence', or 'Unexcused Absence'
+    - `consecutive_days_by_excusal_status` reports the number of consecutive days a student has had the same attendance_excusal_status
+- Add `attendance_excusal_status`and `calendar_date` to `fct_student_school_attendance_event`
+- Add TPDM/EPDM domain warehouse models: `dim_educator_preparation_program`, `fct_candidate_educator_preparation_program`, `fct_candidate_staff_association`
+- Add "bridge table" `brg_course_section_program` for convenient linking between course sections & programs
+## Under the hood
+- Update syntax of dbt test argument declarations to avoid deprecated behavior. Requires dbt 1.10.5+
+## Fixes
+## Migrations
+- see Release page
+
+# edu_wh v0.5.3
+## New features
+- Add `dim_candidate` model
+## Fixes
+- Minor fixes for Databricks compatibility
+
+# edu_wh v0.5.2
+## New features
+- Add `safe_display_name` to `dim_staff`, the logic for this column replicates that of `bld_ef3__immutable_stu_demos`.
+## Fixes
+- Updated tests `dbt_utils_unique_combination_of_columns_fct_student_language_instruction_program_association_k_student__k_program`, `dbt_utils_unique_combination_of_columns_fct_student_program_association_k_student__k_program`, and `dbt_utils_unique_combination_of_columns_fct_student_title_i_part_a_program_association_k_student__k_program` to include two additional columns. Previous test only listed partial primary key. 
+
+# edu_wh v0.5.1
+## New features
+- Add fct models `fct_student_cte_program_associations`, `fct_student_migrant_education_program_associations`, and `fct_student_school_food_service_program_associations`
+- Add `bld_ef3__student__other_names` and conditional code in `dim_student` to pull into columns, if configured in dbt var `'edu:stu_demos:other_names'`.
+- Add tests `sections_without_staff`, `sections_without_students`, `enrollments_without_overlapping_sections`, and `schools_with_enrollments_without_overlapping_sections` to test for rostering data issues.
+- Add QC model `sections_per_enrollment` to assist with identifying school enrollments potentially missing corresponding section enrollment data.
+## Under the hood
+- Update join logic in `bld_ef3__student_assessments_long_results` and `cfg_assessment_scores` to  join on the `assessment_family` and/or `assessment_identifier` fields in `xwalk_assessment_scores`, if they have been provided. This allows for score configuration by either assess ID or family
+## Fixes
+- Fix model `fct_student_daily_attendance` to prevent incorrect 100% attendance rates in prior years. Includes `school_year` in `school_max_submitted.max_date_by_school`.
+## Migration
+- (Optional) Configure `xwalk_assessment_scores`. Add in `assessment_family` field and remove redundant records.
+
+# edu_wh v0.5.0
+## New features
+- Add Databricks platform compatibility
+- Add optional `gender_identity` to `dim_student` as an immutable demographic. This field was introduced to Ed-Fi in Data Standard v5
+- Add optional DS5 fields to `fct_student_school_association`: `is_school_choice`, `school_choice_basis`, `enrollment_type`, `next_year_school_id`, `next_year_grade_level`
+## Under the hood
+- The following 'breaking' under the hood changes were introduced for databricks compatibility:
+  - All columns which are part of the primary key of a table are set explicitly as not null
+  - The primary key of `fct_student_gpa` has been changed to remove is_cumulative, but the logic was adjusted so that the effective grain is the same
+  - Added `fct_staff_school_association.k_staff_school_association` and updated the primary key
+  - Changed column order in `fct_student_assessment` and `fct_student_objective_assessment`
+  - Changed `dim_class_period.start_time` and `end_time` from time data types to strings
+## Fixes
+- Potentially breaking for queryers: `bld_ef3__combine_gpas` (and downstream `fct_student_gpa`) `gpa_type` `'Unknown'` values have been made more specific: `'Cumulative, unknown weighting'` and `'Non-cumulative, unknown weighting'` to respect the grain of the table.
+
 # edu_wh v0.5.0
 ## New features
 - Add Databricks platform compatibility

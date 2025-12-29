@@ -34,11 +34,21 @@ school_max_submitted as (
     -- find the most recently submitted attendance date by school
     select 
         fct_student_school_att.k_school,
+        dim_calendar_date.school_year,
         max(dim_calendar_date.calendar_date) as max_date_by_school
     from fct_student_school_att 
     join dim_calendar_date 
         on fct_student_school_att.k_calendar_date = dim_calendar_date.k_calendar_date
-    group by 1
+    group by 1, 2
+),
+max_calendar as (
+    -- find the last day of the school calendar
+    select 
+        dim_calendar_date.k_school,
+        dim_calendar_date.school_year,
+        max(dim_calendar_date.calendar_date) as max_calendar_date
+    from dim_calendar_date
+    group by 1,2
 ),
 attendance_calendar as (
     -- a dataset of all possible days on which school attendance could be recorded
@@ -47,16 +57,32 @@ attendance_calendar as (
         dim_calendar_date.k_school_calendar,
         dim_calendar_date.k_calendar_date,
         dim_calendar_date.school_year,
-        dim_calendar_date.calendar_date
+        dim_calendar_date.calendar_date,
+        school_max_submitted.max_date_by_school,
+        max_calendar.max_calendar_date
     from dim_calendar_date
     join school_max_submitted
         on dim_calendar_date.k_school = school_max_submitted.k_school
+        and dim_calendar_date.school_year = school_max_submitted.school_year
+    join max_calendar
+        on dim_calendar_date.k_school = max_calendar.k_school
+        and dim_calendar_date.school_year = max_calendar.school_year
     -- only include instructional days in the attendance calendar
     where dim_calendar_date.is_school_day
-    -- don't include dates in the future, as of run-time
-    and dim_calendar_date.calendar_date <= current_date()
-    -- don't include dates beyond the max submitted attendance event by school
-    and dim_calendar_date.calendar_date <= school_max_submitted.max_date_by_school
+    and 
+    (
+        -- The first part of this OR statement handles dates in the current school year.
+        -- The second part handles dates in past school years.
+        (   
+            -- don't include dates in the future, as of run-time
+            dim_calendar_date.calendar_date <= current_date()
+            -- don't include dates beyond the max submitted attendance event by school
+            and dim_calendar_date.calendar_date <= school_max_submitted.max_date_by_school
+        )
+        -- or the max_calendar_date is before the current date
+        -- ensures days from the last attendance event until the end of the school calendar are counted
+        or max_calendar_date <= current_date()
+    )
 ),
 stu_enr_att_cal as (
     -- create an attendance calendar by student, conditional on enrollment
@@ -110,6 +136,7 @@ fill_positive_attendance as (
                     fct_student_school_att.attendance_event_category,
                     '{{ var("edu:attendance:in_attendance_code") }}') 
         end as attendance_event_category,
+        
         coalesce(
             case 
                 when is_enrolled = 1 then fct_student_school_att.is_absent
@@ -121,6 +148,11 @@ fill_positive_attendance as (
                 when is_enrolled = 1 then fct_student_school_att.is_absent
                 else 1.0
             end, 0.0) as is_present,
+        case
+            when is_enrolled = 0  then 'Not Enrolled'
+            when coalesce(fct_student_school_att.is_absent, 0.0) = 0 then 'Not Absent'
+            else coalesce(fct_student_school_att.attendance_excusal_status, 'Unknown Excusal Status')
+        end as attendance_excusal_status,
         fct_student_school_att.event_duration,
         fct_student_school_att.school_attendance_duration
     from stu_enr_att_cal
@@ -155,37 +187,52 @@ positive_attendance_deduped as (
         )
     }}
 ),
+excusal_status_streaks as (
+    select 
+        *,
+        dense_rank() over (partition by k_student, k_school, excusal_status_streak_id, attendance_excusal_status order by calendar_date) as consecutive_days_by_excusal_status
+    from 
+        (select 
+            *,
+            dense_rank() over ( partition by k_student, k_school order by calendar_date ) 
+            - dense_rank() over ( partition by k_student,k_school, attendance_excusal_status order by calendar_date) 
+        as excusal_status_streak_id 
+        from positive_attendance_deduped
+        )
+),
 cumulatives as (
     select 
-        positive_attendance_deduped.k_student,
-        positive_attendance_deduped.k_student_xyear,
-        positive_attendance_deduped.k_school,
-        positive_attendance_deduped.k_calendar_date,
-        positive_attendance_deduped.calendar_date,
-        positive_attendance_deduped.k_session,
-        positive_attendance_deduped.tenant_code,
-        positive_attendance_deduped.attendance_event_category,
-        positive_attendance_deduped.attendance_event_reason,
-        positive_attendance_deduped.is_absent,
-        positive_attendance_deduped.is_present,
-        positive_attendance_deduped.is_enrolled,
-        sum(is_enrolled) over(
-            partition by k_student, k_school) as total_days_enrolled,
-        sum(is_absent) over(
-            partition by k_student, k_school 
-            order by calendar_date) as cumulative_days_absent,
-        sum(is_present) over(
-            partition by k_student, k_school 
-            order by calendar_date) as cumulative_days_attended,
-        sum(is_enrolled) over(
-            partition by k_student, k_school
-            order by calendar_date) as cumulative_days_enrolled,
+        excusal_status_streaks.k_student,
+        excusal_status_streaks.k_student_xyear,
+        excusal_status_streaks.k_school,
+        excusal_status_streaks.k_calendar_date,
+        excusal_status_streaks.calendar_date,
+        excusal_status_streaks.k_session,
+        excusal_status_streaks.tenant_code,
+        excusal_status_streaks.attendance_event_category,
+        excusal_status_streaks.attendance_event_reason,
+        excusal_status_streaks.is_absent,
+        excusal_status_streaks.is_present,
+        excusal_status_streaks.is_enrolled,
+        excusal_status_streaks.attendance_excusal_status,
+        excusal_status_streaks.consecutive_days_by_excusal_status,
+        sum(excusal_status_streaks.is_enrolled) over(
+            partition by excusal_status_streaks.k_student, excusal_status_streaks.k_school) as total_days_enrolled,
+        sum(excusal_status_streaks.is_absent) over(
+            partition by excusal_status_streaks.k_student, excusal_status_streaks.k_school 
+            order by excusal_status_streaks.calendar_date) as cumulative_days_absent,
+        sum(excusal_status_streaks.is_present) over(
+            partition by excusal_status_streaks.k_student, excusal_status_streaks.k_school 
+            order by excusal_status_streaks.calendar_date) as cumulative_days_attended,
+        sum(excusal_status_streaks.is_enrolled) over(
+            partition by excusal_status_streaks.k_student, excusal_status_streaks.k_school
+            order by excusal_status_streaks.calendar_date) as cumulative_days_enrolled,
         round(100 * cumulative_days_attended / nullif(cumulative_days_enrolled, 0), 2) as cumulative_attendance_rate,
         cumulative_days_enrolled >= {{ var('edu:attendance:chronic_absence_min_days') }} as meets_enrollment_threshold,
         {{ msr_chronic_absentee('cumulative_attendance_rate', 'cumulative_days_enrolled') }} as is_chronic_absentee,
-        positive_attendance_deduped.event_duration,
-        positive_attendance_deduped.school_attendance_duration
-    from positive_attendance_deduped
+        excusal_status_streaks.event_duration,
+        excusal_status_streaks.school_attendance_duration,
+    from excusal_status_streaks
 ),
 metric_labels as (
     select 
@@ -203,5 +250,8 @@ metric_labels as (
         on cumulative_attendance_rate > metric_absentee_categories.threshold_lower
         and cumulative_attendance_rate <= metric_absentee_categories.threshold_upper
 )
-select * from metric_labels
-order by tenant_code, k_school, k_student, cumulative_days_enrolled
+
+select * from metric_labels 
+
+
+

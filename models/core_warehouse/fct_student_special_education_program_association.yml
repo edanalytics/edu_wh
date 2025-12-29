@@ -7,17 +7,19 @@ models:
         This fact table contains student special education program enrollment information.
 
       ##### Primary Key:
-        `k_student, k_program, program_enroll_begin_date` -- There is one record per student, year, special education program, and enrollment begin date.
+        `k_student, k_student_xyear, k_program, program_enroll_begin_date` -- There is one 
+        record per student, year, program enrol begin date, and special education program
 
     config:
       tags: ['special_ed']
       enabled: "{{ var('src:program:special_ed:enabled', True) }}" 
     tests:
       - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - k_student
-            - k_program
-            - program_enroll_begin_date
+          arguments:
+            combination_of_columns:
+              - k_student
+              - k_program
+              - program_enroll_begin_date
     columns:
       - name: k_student
       - name: k_student_xyear
@@ -46,3 +48,4 @@ models:
       - name: special_education_setting
       - name: special_education_program_services
       - name: primary_disability_type
+

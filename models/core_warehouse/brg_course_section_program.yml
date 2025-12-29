@@ -1,0 +1,17 @@
+version: 1 
+
+models:
+  - name: brg_course_section_program
+    description: >
+      ##### Overview:
+        Exposes the relationship between Sections and Programs that may be associated with them.
+
+      ##### Primary Key:
+        `k_course_section, k_program` - There is one record per course section and program combination.
+
+    config:
+      tags: ['core', 'course']
+    columns:
+      - name: tenant_code
+      - name: k_course_section
+      - name: k_program

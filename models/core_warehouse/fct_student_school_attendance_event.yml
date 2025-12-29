@@ -18,17 +18,19 @@ models:
       tags: ['core']
     tests:
       - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - k_student
-            - k_school
-            - k_calendar_date
-            - k_session
-            - attendance_event_category
+          arguments:
+            combination_of_columns:
+              - k_student
+              - k_school
+              - k_calendar_date
+              - k_session
+              - attendance_event_category
     columns:
       - name: k_student
       - name: k_student_xyear
       - name: k_school
       - name: k_calendar_date
+      - name: calendar_date
       - name: k_session
       - name: tenant_code
       - name: attendance_event_category
@@ -38,3 +40,5 @@ models:
       - name: arrival_time
       - name: departure_time
       - name: educational_environment
+      - name: attendance_excusal_status
+  
