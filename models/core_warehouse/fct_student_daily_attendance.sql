@@ -12,6 +12,9 @@
   )
 }}
 
+{{ cds_depends_on('edu:student_daily_attendance:custom_data_sources') }}
+{% set custom_data_sources = var('edu:student_daily_attendance:custom_data_sources', []) %}
+
 with fct_student_school_att as (
     select * from {{ ref(var("edu:attendance:daily_attendance_source", 'fct_student_school_attendance_event')) }}
 ),
@@ -231,7 +234,7 @@ cumulatives as (
         cumulative_days_enrolled >= {{ var('edu:attendance:chronic_absence_min_days') }} as meets_enrollment_threshold,
         {{ msr_chronic_absentee('cumulative_attendance_rate', 'cumulative_days_enrolled') }} as is_chronic_absentee,
         excusal_status_streaks.event_duration,
-        excusal_status_streaks.school_attendance_duration,
+        excusal_status_streaks.school_attendance_duration
     from excusal_status_streaks
 ),
 metric_labels as (
@@ -245,10 +248,17 @@ metric_labels as (
             when meets_enrollment_threshold then metric_absentee_categories.level_label 
             else null
         end as absentee_category_label
+        
+        -- custom data sources columns
+        {{ add_cds_columns(custom_data_sources=custom_data_sources) }}
     from cumulatives
     left join metric_absentee_categories
         on cumulative_attendance_rate > metric_absentee_categories.threshold_lower
         and cumulative_attendance_rate <= metric_absentee_categories.threshold_upper
+        
+    -- custom data sources
+    {{ add_cds_joins_v1(custom_data_sources=custom_data_sources, driving_alias='cumulatives', join_cols=['k_student', 'k_school', 'calendar_date']) }}
+    {{ add_cds_joins_v2(custom_data_sources=custom_data_sources) }}
 )
 
 select * from metric_labels 

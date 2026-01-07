@@ -15,6 +15,9 @@
   )
 }}
 
+{{ cds_depends_on('edu:student_grades:custom_data_sources') }}
+{% set custom_data_sources = var('edu:student_grades:custom_data_sources', []) %}
+
 with stg_grades as (
     select * from {{ ref('stg_ef3__grades') }}
 ),
@@ -51,6 +54,9 @@ formatted as (
         letter_grade_xwalk.grade_sort_index
         {# add any extension columns configured from stg_ef3__grades #}
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__grades', flatten=False) }}
+
+        -- custom data sources columns
+        {{ add_cds_columns(custom_data_sources=custom_data_sources) }}
     from stg_grades
     join dim_student
         on stg_grades.k_student = dim_student.k_student
@@ -62,5 +68,9 @@ formatted as (
         on stg_grades.k_course_section = dim_course_section.k_course_section
     left join letter_grade_xwalk
         on lower(stg_grades.letter_grade_earned) = letter_grade_xwalk.letter_grade
+        
+    -- custom data sources
+    {{ add_cds_joins_v1(custom_data_sources=custom_data_sources, driving_alias='stg_grades', join_cols=['k_grading_period', 'k_student', 'k_school', 'k_course_section', 'grade_type']) }}
+    {{ add_cds_joins_v2(custom_data_sources=custom_data_sources) }}
 )
 select * from formatted

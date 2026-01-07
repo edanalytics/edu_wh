@@ -13,6 +13,9 @@
   )
 }}
 
+{{ cds_depends_on('edu:student_disability:custom_data_sources') }}
+{% set custom_data_sources = var('edu:student_disability:custom_data_sources', []) %}
+
 with student_disabilities as (
     select * from {{ ref('bld_ef3__student__disabilities') }}
 ),
@@ -68,5 +71,17 @@ formatted as (
         and sd.tenant_code = disability_designations.tenant_code
         and sd.school_year = disability_designations.school_year
         and sd.disability_type = disability_designations.disability_type
+),
+cds_cols as (
+    select
+        f.*
+
+        -- custom data sources columns
+        {{ add_cds_columns(custom_data_sources=custom_data_sources) }}
+    from formatted f
+
+    -- custom data sources
+    {{ add_cds_joins_v1(custom_data_sources=custom_data_sources, driving_alias='f', join_cols=['k_student_disability']) }}
+    {{ add_cds_joins_v2(custom_data_sources=custom_data_sources) }}
 )
-select * from formatted
+select * from cds_cols

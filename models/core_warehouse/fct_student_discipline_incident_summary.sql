@@ -11,6 +11,9 @@
   )
 }}
 
+{{ cds_depends_on('edu:student_discipline_incident_summary:custom_data_sources') }}
+{% set custom_data_sources = var('edu:student_discipline_incident_summary:custom_data_sources', []) %}
+
 with stu_discipline_incident_behaviors_actions as (
     select * from {{ ref('stg_ef3__discipline_actions__student_discipline_incident_behaviors') }}
 ),
@@ -67,6 +70,9 @@ formatted as (
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__discipline_actions__student_discipline_incident_behaviors', flatten=False) }}
         {# add any extension columns configured from stg_ef3__discipline_actions__disciplines #}
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__discipline_actions__disciplines', flatten=False) }}
+
+        -- custom data sources columns
+        {{ add_cds_columns(custom_data_sources=custom_data_sources) }}
     from fct_student_discipline_incident_behaviors
     left join stu_discipline_incident_behaviors_actions
         on fct_student_discipline_incident_behaviors.k_student = stu_discipline_incident_behaviors_actions.k_student
@@ -89,6 +95,11 @@ formatted as (
         on fct_student_discipline_incident_behaviors.k_student = actions_array.k_student
         and fct_student_discipline_incident_behaviors.k_student_xyear = actions_array.k_student_xyear
         and fct_student_discipline_incident_behaviors.incident_id = actions_array.incident_id
+        
+    -- custom data sources
+    {{ add_cds_joins_v1(custom_data_sources=custom_data_sources, driving_alias='fct_student_discipline_incident_behaviors', join_cols=['k_student', 'k_discipline_incident']) }}
+    {{ add_cds_joins_v2(custom_data_sources=custom_data_sources) }}
+    
     -- in order to keep the grain of k_student and k_discipline_incident, we want to keep this subset 
     -- even if we do not have the severity orders defined
     qualify 1 = row_number() over (partition by fct_student_discipline_incident_behaviors.k_student, fct_student_discipline_incident_behaviors.k_discipline_incident order by fct_student_discipline_actions.severity_order desc nulls last, fct_student_discipline_incident_behaviors.severity_order desc nulls last)
