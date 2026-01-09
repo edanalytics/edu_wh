@@ -1,0 +1,12 @@
+version: 2
+
+models:
+  - name: fct_performance_evaluation_rating
+    description: >
+        ##### Overview:
+          The summary rating for a Performance Evaluation across all Evaluation instruments for an individual educator.
+
+
+    config:
+      tags: ['tpdm']
+      enabled: "{{ var('edu:tpdm:enabled', False) }}"
