@@ -15,7 +15,7 @@ formatted as (
     select
         stg_perf_eval.k_performance_evaluation,
         stg_perf_eval.tenant_code,
-        stg_perf_eaval.school_year,
+        stg_perf_eval.school_year,
         stg_perf_eval.ed_org_id,
         stg_perf_eval.evaluation_period,
         stg_perf_eval.performance_evaluation_title,
