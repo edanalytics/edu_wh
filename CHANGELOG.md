@@ -2,6 +2,7 @@
 ## New features
 ## Under the hood
 ## Fixes
+- Fix `period_duration` calculation in `dim_class_period` to account for different time formats.
 
 # edu_wh v0.6.0
 ## New features
