@@ -1,0 +1,13 @@
+version: 2
+
+models:
+  - name: dim_performance_evaluation
+    description: >
+        ##### Overview:
+          A performance evaluation of an educator, typically regularly scheduled and uniformly applied, composed of one or more Evaluations.
+
+        ##### Primary Key:
+          `k_performance_evaluation` - There is one record per performance evaluation ... ?
+    config:
+      tags: ['tpdm']
+      enabled: "{{ var('edu:tpdm:enabled', False) }}"
