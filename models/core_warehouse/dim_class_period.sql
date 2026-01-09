@@ -44,7 +44,7 @@ formatted as (
             end
         end as end_time,
         case 
-          when start_time < end_time then timediff(MINUTE, concat('2020-01-01 ', start_time)::timestamp, concat('2020-01-01 ', end_time)::timestamp) 
+          when start_time <= end_time then timediff(MINUTE, concat('2020-01-01 ', start_time)::timestamp, concat('2020-01-01 ', end_time)::timestamp) 
           else timediff(MINUTE, concat('2020-01-01 ', start_time)::timestamp, dateadd(hour, 12 , concat('2020-01-01 ', end_time)::timestamp))   
         end as period_duration
 
