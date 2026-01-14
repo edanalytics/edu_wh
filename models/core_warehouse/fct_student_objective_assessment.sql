@@ -34,7 +34,7 @@ stu_obj_assessment_surrogate_keys as (
     select
         {{ dbt_utils.generate_surrogate_key(
             ['student_assessment_cross_tenant.tenant_code',
-            'student_assessment_cross_tenant.api_year',
+            'student_assessment_cross_tenant.school_year',
             'lower(student_obj_assessments.academic_subject)',
             'lower(student_obj_assessments.assessment_identifier)',
             'lower(student_obj_assessments.namespace)',
@@ -43,7 +43,7 @@ stu_obj_assessment_surrogate_keys as (
         ) }} as k_student_objective_assessment,
         {{ dbt_utils.generate_surrogate_key(
             ['student_assessment_cross_tenant.tenant_code',
-            'student_assessment_cross_tenant.api_year',
+            'student_assessment_cross_tenant.school_year',
             'lower(student_obj_assessments.assess_academic_subject)',
             'lower(student_obj_assessments.academic_subject)',
             'lower(student_obj_assessments.assessment_identifier)',
@@ -52,10 +52,16 @@ stu_obj_assessment_surrogate_keys as (
             ]
         ) }} as k_objective_assessment,
         student_obj_assessments.k_student_objective_assessment as k_student_objective_assessment__original,
+        student_assessment_cross_tenant.k_student_assessment,
+        student_assessment_cross_tenant.k_student_assessment__original,
+        student_assessment_cross_tenant.k_student,
+        student_assessment_cross_tenant.k_student_xyear,
         student_assessment_cross_tenant.k_assessment,
         student_assessment_cross_tenant.k_assessment__original,
         student_assessment_cross_tenant.tenant_code,
-        student_assessment_cross_tenant.school_year
+        student_assessment_cross_tenant.school_year,
+        student_assessment_cross_tenant.is_original_record,
+        student_assessment_cross_tenant.original_tenant_code
     from student_obj_assessments
     join student_assessment_cross_tenant
         on student_obj_assessments.k_student_assessment = k_student_assessment__original
@@ -70,6 +76,7 @@ combined_with_cross_tenant as (
         coalesce(stu_obj_assessment_surrogate_keys.k_student_xyear, student_obj_assessments.k_student_xyear) as k_student_xyear,
         coalesce(stu_obj_assessment_surrogate_keys.tenant_code, student_obj_assessments.tenant_code) as tenant_code,
         coalesce(stu_obj_assessment_surrogate_keys.school_year, student_obj_assessments.school_year) as school_year,
+        coalesce(stu_obj_assessment_surrogate_keys.k_student_objective_assessment__original, student_obj_assessments.k_student_objective_assessment) as k_student_objective_assessment__original,
         coalesce(stu_obj_assessment_surrogate_keys.k_student_assessment__original, student_obj_assessments.k_student_assessment) as k_student_assessment__original,
         coalesce(stu_obj_assessment_surrogate_keys.is_original_record, True) as is_original_record,
         coalesce(stu_obj_assessment_surrogate_keys.original_tenant_code, student_obj_assessments.tenant_code) as original_tenant_code,
@@ -81,7 +88,7 @@ combined_with_cross_tenant as (
     -- left join because this model can return empty
         -- and to avoid enforcing a current school association
     left join stu_obj_assessment_surrogate_keys
-        on student_assessments.k_student_objective_assessment = stu_obj_assessment_surrogate_keys.k_student_objective_assessment__original
+        on student_obj_assessments.k_student_objective_assessment = stu_obj_assessment_surrogate_keys.k_student_objective_assessment__original
 ),
 student_obj_assessments_wide as (
     select
@@ -127,7 +134,7 @@ student_obj_assessments_wide as (
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_objective_assessments', flatten=False) }}
     from combined_with_cross_tenant as stu_xtenant
     left join student_obj_assessments_long_results
-        on tu_xtenant.k_student_objective_assessment__original = student_obj_assessments_long_results.k_student_objective_assessment
+        on stu_xtenant.k_student_objective_assessment__original = student_obj_assessments_long_results.k_student_objective_assessment
         and student_obj_assessments_long_results.normalized_score_name != 'other'
     -- left join to allow 'historic' records (assess records with no corresponding stu demographics)
     left join dim_student
@@ -146,7 +153,7 @@ student_obj_assessments_wide as (
         select distinct k_student_xyear
         from dim_student
     )
-    {{ dbt_utils.group_by(n=18) }}
+    {{ dbt_utils.group_by(n=21) }}
 )
 -- add v_other_results to the end because variant columns cannot be included in a group by in Databricks
 select 
