@@ -8,13 +8,16 @@
         "alter table {{ this }} add constraint fk_{{ this.name }}_student foreign key (k_student) references {{ ref('dim_student') }}"
     ]
   )
-}}
+}} 
 
 with student_obj_assessments_long_results as (
     select * from {{ ref('bld_ef3__student_objective_assessments_long_results') }}
 ),
 student_obj_assessments as (
     select * from {{ ref('stg_ef3__student_objective_assessments') }}
+),
+student_assessment_cross_tenant as (
+    select * from {{ ref('bld_ef3__student_assessment_cross_tenant') }}
 ),
 dim_student as (
     select * from {{ ref('dim_student') }}
@@ -27,22 +30,78 @@ object_agg_other_results as (
     where normalized_score_name = 'other'
     group by 1
 ),
+stu_obj_assessment_surrogate_keys as (
+    select
+        {{ dbt_utils.generate_surrogate_key(
+            ['student_assessment_cross_tenant.tenant_code',
+            'student_assessment_cross_tenant.api_year',
+            'lower(student_obj_assessments.academic_subject)',
+            'lower(student_obj_assessments.assessment_identifier)',
+            'lower(student_obj_assessments.namespace)',
+            'lower(student_obj_assessments.objective_assessment_identification_code)',
+            'lower(student_obj_assessments.student_assessment_identifier)']
+        ) }} as k_student_objective_assessment,
+        {{ dbt_utils.generate_surrogate_key(
+            ['student_assessment_cross_tenant.tenant_code',
+            'student_assessment_cross_tenant.api_year',
+            'lower(student_obj_assessments.assess_academic_subject)',
+            'lower(student_obj_assessments.academic_subject)',
+            'lower(student_obj_assessments.assessment_identifier)',
+            'lower(student_obj_assessments.namespace)',
+            'lower(student_obj_assessments.objective_assessment_identification_code)'
+            ]
+        ) }} as k_objective_assessment,
+        student_obj_assessments.k_student_objective_assessment as k_student_objective_assessment__original,
+        student_assessment_cross_tenant.k_assessment,
+        student_assessment_cross_tenant.k_assessment__original,
+        student_assessment_cross_tenant.tenant_code,
+        student_assessment_cross_tenant.school_year
+    from student_obj_assessments
+    join student_assessment_cross_tenant
+        on student_obj_assessments.k_student_assessment = k_student_assessment__original
+),
+combined_with_cross_tenant as (
+    select
+        coalesce(stu_obj_assessment_surrogate_keys.k_student_objective_assessment, student_obj_assessments.k_student_objective_assessment) as k_student_objective_assessment,
+        coalesce(stu_obj_assessment_surrogate_keys.k_objective_assessment, student_obj_assessments.k_objective_assessment) as k_objective_assessment,
+        coalesce(stu_obj_assessment_surrogate_keys.k_student_assessment, student_obj_assessments.k_student_assessment) as k_student_assessment,
+        coalesce(stu_obj_assessment_surrogate_keys.k_assessment, student_obj_assessments.k_assessment) as k_assessment,
+        coalesce(stu_obj_assessment_surrogate_keys.k_student, student_obj_assessments.k_student) as k_student,
+        coalesce(stu_obj_assessment_surrogate_keys.k_student_xyear, student_obj_assessments.k_student_xyear) as k_student_xyear,
+        coalesce(stu_obj_assessment_surrogate_keys.tenant_code, student_obj_assessments.tenant_code) as tenant_code,
+        coalesce(stu_obj_assessment_surrogate_keys.school_year, student_obj_assessments.school_year) as school_year,
+        coalesce(stu_obj_assessment_surrogate_keys.k_student_assessment__original, student_obj_assessments.k_student_assessment) as k_student_assessment__original,
+        coalesce(stu_obj_assessment_surrogate_keys.is_original_record, True) as is_original_record,
+        coalesce(stu_obj_assessment_surrogate_keys.original_tenant_code, student_obj_assessments.tenant_code) as original_tenant_code,
+        {{ accordion_columns(
+            source_table='stg_ef3__student_objective_assessments', 
+            source_alias='student_obj_assessments',
+            exclude_columns=['k_student_objective_assessment', 'k_objective_assessment', 'k_student_assessment', 'k_assessment', 'k_student', 'k_student_xyear', 'tenant_code', 'school_year']) }}
+    from student_obj_assessments
+    -- left join because this model can return empty
+        -- and to avoid enforcing a current school association
+    left join stu_obj_assessment_surrogate_keys
+        on student_assessments.k_student_objective_assessment = stu_obj_assessment_surrogate_keys.k_student_objective_assessment__original
+),
 student_obj_assessments_wide as (
     select
-        student_obj_assessments.k_student_objective_assessment,
-        student_obj_assessments.k_objective_assessment,
-        student_obj_assessments.k_student_assessment,
-        student_obj_assessments.k_assessment,
+        stu_xtenant.k_student_objective_assessment,
+        stu_xtenant.k_student_objective_assessment__original,
+        stu_xtenant.k_objective_assessment,
+        stu_xtenant.k_student_assessment,
+        stu_xtenant.k_assessment,
         dim_student.k_student,
-        student_obj_assessments.k_student_xyear,
-        student_obj_assessments.tenant_code,
+        stu_xtenant.k_student_xyear,
+        stu_xtenant.tenant_code,
+        stu_xtenant.is_original_record,
+        stu_xtenant.original_tenant_code,
         {% if var('edu:school_year:assessment_dates_xwalk_enabled', False) %}
         iff(dates_xwalk.override_existing,
-            coalesce(dates_xwalk.school_year, student_obj_assessments.school_year, {{derive_school_year('student_obj_assessments.administration_date')}}),
-            coalesce(student_obj_assessments.school_year, dates_xwalk.school_year, {{derive_school_year('student_obj_assessments.administration_date')}}))
+            coalesce(dates_xwalk.school_year, stu_xtenant.school_year, {{derive_school_year('stu_xtenant.administration_date')}}),
+            coalesce(stu_xtenant.school_year, dates_xwalk.school_year, {{derive_school_year('stu_xtenant.administration_date')}}))
         as school_year,
         {% else %}
-        coalesce(student_obj_assessments.school_year, {{derive_school_year('student_obj_assessments.administration_date')}}) as school_year,
+        coalesce(stu_xtenant.school_year, {{derive_school_year('stu_xtenant.administration_date')}}) as school_year,
         {% endif %}
         administration_date,
         administration_end_date,
@@ -66,24 +125,24 @@ student_obj_assessments_wide as (
         {%- endif %}
         {# add any extension columns configured from stg_ef3__student_objective_assessments #}
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_objective_assessments', flatten=False) }}
-    from student_obj_assessments
+    from combined_with_cross_tenant as stu_xtenant
     left join student_obj_assessments_long_results
-        on student_obj_assessments.k_student_objective_assessment = student_obj_assessments_long_results.k_student_objective_assessment
+        on tu_xtenant.k_student_objective_assessment__original = student_obj_assessments_long_results.k_student_objective_assessment
         and student_obj_assessments_long_results.normalized_score_name != 'other'
     -- left join to allow 'historic' records (assess records with no corresponding stu demographics)
     left join dim_student
-        on student_obj_assessments.k_student = dim_student.k_student
+        on stu_xtenant.k_student = dim_student.k_student
     {% if var('edu:school_year:assessment_dates_xwalk_enabled', False) %}
     left join {{ ref('xwalk_assessment_school_year_dates') }} dates_xwalk
         -- note: between means A >= X AND A <= Y, so date upper/lower bounds should not overlap across years
-        on student_obj_assessments.administration_date between start_date::date and end_date::date
+        on stu_xtenant.administration_date between start_date::date and end_date::date
         -- we want to allow for the school year cutoffs to differ by assessment 
         -- but also allow those fields to remain null if xwalk is desired but not to differ across assessments
-        and ifnull(dates_xwalk.assessment_identifier, '1') = iff(dates_xwalk.assessment_identifier is null, '1', student_obj_assessments.assessment_identifier)
-        and ifnull(dates_xwalk.namespace, '1') = iff(dates_xwalk.namespace is null, '1', student_obj_assessments.namespace)
+        and ifnull(dates_xwalk.assessment_identifier, '1') = iff(dates_xwalk.assessment_identifier is null, '1', stu_xtenant.assessment_identifier)
+        and ifnull(dates_xwalk.namespace, '1') = iff(dates_xwalk.namespace is null, '1', stu_xtenant.namespace)
     {% endif %}
     -- FILTER to students who EVER have a record in dim_student
-    where student_obj_assessments.k_student_xyear in (
+    where stu_xtenant.k_student_xyear in (
         select distinct k_student_xyear
         from dim_student
     )
@@ -91,8 +150,8 @@ student_obj_assessments_wide as (
 )
 -- add v_other_results to the end because variant columns cannot be included in a group by in Databricks
 select 
-    student_obj_assessments_wide.*,
+    {{ edu_edfi_source.star('student_obj_assessments_wide', except=['k_student_objective_assessment__original']) }},
     v_other_results
 from student_obj_assessments_wide
 left join object_agg_other_results
-    on student_obj_assessments_wide.k_student_objective_assessment = object_agg_other_results.k_student_objective_assessment
+    on student_obj_assessments_wide.k_student_objective_assessment__original = object_agg_other_results.k_student_objective_assessment

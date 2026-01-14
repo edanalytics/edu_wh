@@ -33,6 +33,7 @@ active_enrollments as (
         on dim_student.k_student = {{ removed_students_source }}.k_student
     where is_active_enrollment
     and {{ removed_students_source }}.k_student is not null
+    qualify count(distinct fct_student_school.tenant_code) over(partition by dim_student.student_unique_id) > 1
     {% else %}
     where is_active_enrollment
     -- below is default logic to ensure the chosen 'global' IDs actually represent the same student
