@@ -36,7 +36,7 @@ obj_assessment_surrogate_keys as (
     select
         {{ dbt_utils.generate_surrogate_key(
             ['dedupe_cross_tenant_assessments.tenant_code',
-            'dedupe_cross_tenant_assessments.school_year',
+            'dedupe_cross_tenant_assessments.api_year',
             'lower(stg_obj_assessments.assess_academic_subject)',
             'lower(stg_obj_assessments.academic_subject)',
             'lower(stg_obj_assessments.assessment_identifier)',
@@ -58,7 +58,7 @@ formatted as (
         coalesce(obj_assessment_surrogate_keys.k_objective_assessment, stg_obj_assessments.k_objective_assessment) as k_objective_assessment,
         coalesce(obj_assessment_surrogate_keys.k_assessment, stg_obj_assessments.k_assessment) as k_assessment,
         coalesce(obj_assessment_surrogate_keys.tenant_code, stg_obj_assessments.tenant_code) as tenant_code,
-        coalesce(obj_assessment_surrogate_keys.school_year, stg_obj_assessments.api_year) as school_year,
+        coalesce(obj_assessment_surrogate_keys.api_year, stg_obj_assessments.api_year) as school_year,
         stg_obj_assessments.assessment_identifier,
         stg_obj_assessments.namespace,
         stg_obj_assessments.objective_assessment_description,

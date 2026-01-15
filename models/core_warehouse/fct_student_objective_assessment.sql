@@ -34,7 +34,7 @@ stu_obj_assessment_surrogate_keys as (
     select
         {{ dbt_utils.generate_surrogate_key(
             ['student_assessment_cross_tenant.tenant_code',
-            'student_assessment_cross_tenant.school_year',
+            'student_assessment_cross_tenant.api_year',
             'lower(student_obj_assessments.academic_subject)',
             'lower(student_obj_assessments.assessment_identifier)',
             'lower(student_obj_assessments.namespace)',
@@ -43,7 +43,7 @@ stu_obj_assessment_surrogate_keys as (
         ) }} as k_student_objective_assessment,
         {{ dbt_utils.generate_surrogate_key(
             ['student_assessment_cross_tenant.tenant_code',
-            'student_assessment_cross_tenant.school_year',
+            'student_assessment_cross_tenant.api_year',
             'lower(student_obj_assessments.assess_academic_subject)',
             'lower(student_obj_assessments.academic_subject)',
             'lower(student_obj_assessments.assessment_identifier)',
