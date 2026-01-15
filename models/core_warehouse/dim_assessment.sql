@@ -19,11 +19,26 @@ assessment_pls as (
 assessment_grades as (
     select * from {{ ref('bld_ef3__assessment_grade_levels') }}
 ),
+student_assessment_cross_tenant as (
+    select * from {{ ref('bld_ef3__student_assessment_cross_tenant') }}
+),
+-- we need to use the student level data to determine which tenant/assessment combos we need records for
+-- some of those actual tenant/assessment combos might exist already, but some might not
+-- we need to create records when they don't exist, using the metadata from the original tenant
+dedupe_cross_tenant_assessments as (
+    {{
+        dbt_utils.deduplicate(
+            relation='student_assessment_cross_tenant',
+            partition_by='k_assessment',
+            order_by='tenant_code,school_year'
+        )
+    }}
+),
 formatted as (
     select
-        stg_assessments.k_assessment,
-        stg_assessments.tenant_code,
-        stg_assessments.api_year as school_year,
+        coalesce(dedupe_cross_tenant_assessments.k_assessment, stg_assessments.k_assessment) as k_assessment,
+        coalesce(dedupe_cross_tenant_assessments.tenant_code, stg_assessments.tenant_code) as tenant_code,
+        coalesce(dedupe_cross_tenant_assessments.school_year, stg_assessments.api_year) as school_year,
         stg_assessments.assessment_identifier,
         stg_assessments.namespace,
         stg_assessments.assessment_title,
@@ -50,6 +65,18 @@ formatted as (
         on stg_assessments.k_assessment = assessment_pls.k_assessment
     left join assessment_grades
         on stg_assessments.k_assessment = assessment_grades.k_assessment
+    -- this could result in dupes if the assessment already exists, will dedupe below
+    left join dedupe_cross_tenant_assessments
+        on stg_assessments.k_assessment = k_assessment__original
+),
+dedupe_assessments as (
+    {{
+        dbt_utils.deduplicate(
+            relation='formatted',
+            partition_by='k_assessment',
+            order_by='tenant_code,school_year'
+        )
+    }}
 )
-select * from formatted
+select * from dedupe_assessments
 order by tenant_code, k_assessment

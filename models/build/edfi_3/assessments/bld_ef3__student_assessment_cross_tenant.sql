@@ -1,0 +1,169 @@
+{% if var("edu:assessments:assessment_cross_tenant", False) -%}
+
+{# Load students to remove source from var #}
+{% set removed_students_source = var("edu:assessments:removed_students_source", none) %}
+
+with dim_student as (
+    select * from {{ ref('dim_student') }}
+),
+stg_student_assessment as (
+    select * from {{ ref('stg_ef3__student_assessments') }}
+),
+fct_student_school as (
+    select * from {{ ref('fct_student_school_association') }}
+),
+-- goal of this model is to determine which tenants have active enrollments
+-- this will contain duplicates because the grain is of a school enrollment
+active_enrollments as (
+    select 
+        fct_student_school.school_year,
+        fct_student_school.tenant_code,
+        fct_student_school.k_student,
+        fct_student_school.k_student_xyear,
+        dim_student.student_unique_id,
+        dim_student.birth_date,
+        dim_student.first_name,
+        dim_student.last_name
+    from fct_student_school
+    join dim_student
+        on fct_student_school.k_student = dim_student.k_student
+    -- if this source is configured, remove these students instead of using default logic below
+    {% if removed_students_source is not none and removed_students_source | length -%}
+    left join {{ ref(removed_students_source) }}
+        on dim_student.k_student = {{ removed_students_source }}.k_student
+    where is_active_enrollment
+    and {{ removed_students_source }}.k_student is not null
+    {% else %}
+    where is_active_enrollment
+    -- below is default logic to ensure the chosen 'global' IDs actually represent the same student
+    -- only to be used if a students to remove source is not configured
+    qualify 
+        -- either the birthdates are the same
+        (count(distinct dim_student.birth_date) over (partition by dim_student.student_unique_id) <= 1
+            -- at least 1 of birthdate, first name, or last name must be the same
+            or (
+                count(distinct dim_student.birth_date) over (partition by dim_student.student_unique_id)
+                + count(distinct lower(dim_student.first_name)) over (partition by dim_student.student_unique_id)
+                + count(distinct lower(dim_student.last_name))  over (partition by dim_student.student_unique_id)
+            ) <= 5
+        and count(distinct fct_student_school.tenant_code) over(partition by dim_student.student_unique_id) > 1 )
+    {% endif %}
+),
+-- we need to use school enrollments to look at start and end dates, but we want the grain to be unique by student, year, and tenant
+deduped_enrollments as (
+    {{
+        dbt_utils.deduplicate(
+            relation='active_enrollments',
+            partition_by='school_year,tenant_code,k_student',
+            order_by='school_year,tenant_code,k_student'
+        )
+    }}
+),
+subset_assessments as (
+    -- edge case:
+    -- this ensures that we maintain original records for students who are no
+    -- longer enrolled in their original tenant _and_ are enrolled in a different tenant
+    select
+        stg_student_assessment.tenant_code,
+        stg_student_assessment.school_year,
+        stg_student_assessment.api_year,
+        stg_student_assessment.k_student,
+        stg_student_assessment.k_student_xyear,
+        stg_student_assessment.k_assessment,
+        stg_student_assessment.k_student_assessment,
+        stg_student_assessment.k_student_assessment as k_student_assessment__original,
+        stg_student_assessment.k_assessment as k_assessment__original,
+        stg_student_assessment.student_unique_id,
+        -- todo: delete?
+        stg_student_assessment.student_assessment_identifier,
+        true as is_original_record,
+        stg_student_assessment.tenant_code as original_tenant_code
+    from stg_student_assessment
+        -- we only want to keep records for students with a current enrollment (for performance reasons)
+        -- records for students with no current enrollments will be kept as normal in downstream models
+        join deduped_enrollments
+        -- NOTE: in the future, this could be configurable
+        on stg_student_assessment.student_unique_id = deduped_enrollments.student_unique_id
+
+    union all
+
+    select
+        -- bring in the tenant code and student surrogate keys from enrollments
+        deduped_enrollments.tenant_code,
+        -- we want to keep the school year from the assessment record and not enrollment
+        stg_student_assessment.school_year,
+        -- need this for correct keys downstream
+        stg_student_assessment.api_year,
+        deduped_enrollments.k_student,
+        deduped_enrollments.k_student_xyear,
+        -- recreate the surrogate keys with new tenant code
+        {{dbt_utils.generate_surrogate_key(
+            ['deduped_enrollments.tenant_code',
+            'stg_student_assessment.api_year',
+            'lower(stg_student_assessment.academic_subject)',
+            'lower(stg_student_assessment.assessment_identifier)',
+            'lower(stg_student_assessment.namespace)']
+        ) }} as k_assessment,
+        {{ dbt_utils.generate_surrogate_key(
+            ['deduped_enrollments.tenant_code',
+            'stg_student_assessment.api_year',
+            'lower(stg_student_assessment.academic_subject)',
+            'lower(stg_student_assessment.assessment_identifier)',
+            'lower(stg_student_assessment.namespace)',
+            'lower(stg_student_assessment.student_assessment_identifier)',
+            'lower(stg_student_assessment.student_unique_id)']
+        ) }} as k_student_assessment,
+        -- keep the original k_student_assessment for merging downstream
+        stg_student_assessment.k_student_assessment as k_student_assessment__original,
+        stg_student_assessment.k_assessment as k_assessment__original,
+        stg_student_assessment.student_unique_id,
+        -- todo: delete?
+        stg_student_assessment.student_assessment_identifier,
+        stg_student_assessment.tenant_code = deduped_enrollments.tenant_code as is_original_record,
+        stg_student_assessment.tenant_code as original_tenant_code
+    from stg_student_assessment
+    -- this code will intentionally create dupes to associate a student assessment record
+    -- to every tenant where a current enrollment exists for that student_unique_id
+
+    -- inner join is enforcing at least 1 current SCHOOL enrollment within a tenant
+    -- which we don't otherwise enforce, but we are left joining downstream to avoid this issue broadly
+    join deduped_enrollments
+        -- NOTE: in the future, this could be configurable
+        on stg_student_assessment.student_unique_id = deduped_enrollments.student_unique_id
+    -- because of the above section of code, we only want to keep records here
+    -- where the enrolled tenant is different than the original record
+    where stg_student_assessment.tenant_code != deduped_enrollments.tenant_code
+),
+-- if an assessment record for a student exists in two tenants (duplicate student_unique_id and student_assessment_id), they will be duplicated
+-- this handles that by depuping on the newly created k_student_assessment
+deduped_assessments as (
+    {{
+        dbt_utils.deduplicate(
+            relation='subset_assessments',
+            partition_by='k_student_assessment',
+            order_by='is_original_record desc'
+        )
+    }}
+)
+-- todo: currently missing records for students who are no longer currently enrolled at OG district, but currently enrolled in new district
+select *
+from deduped_assessments
+{% else %}
+  -- if this feature is not turned on, force return a zero row table
+  select *
+  from (select
+          null as tenant_code,
+          null as school_year,
+          null as api_year,
+          null as k_student,
+          null as k_student_xyear,
+          null as k_assessment,
+          null as k_student_assessment,
+          null as k_student_assessment__original,
+          null as k_assessment__original,
+          null as student_unique_id,
+          null as is_original_record,
+          null as original_tenant_code
+       ) blank_subquery
+  limit 0
+{% endif %}
