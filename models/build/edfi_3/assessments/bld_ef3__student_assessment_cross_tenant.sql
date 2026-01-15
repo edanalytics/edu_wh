@@ -60,6 +60,33 @@ deduped_enrollments as (
     }}
 ),
 subset_assessments as (
+    -- edge case:
+    -- this ensures that we maintain original records for students who are no
+    -- longer enrolled in their original tenant _and_ are enrolled in a different tenant
+    select
+        stg_student_assessment.tenant_code,
+        stg_student_assessment.school_year,
+        stg_student_assessment.api_year,
+        stg_student_assessment.k_student,
+        stg_student_assessment.k_student_xyear,
+        stg_student_assessment.k_assessment,
+        stg_student_assessment.k_student_assessment,
+        stg_student_assessment.k_student_assessment as k_student_assessment__original,
+        stg_student_assessment.k_assessment as k_assessment__original,
+        stg_student_assessment.student_unique_id,
+        -- todo: delete?
+        stg_student_assessment.student_assessment_identifier,
+        true as is_original_record,
+        stg_student_assessment.tenant_code as original_tenant_code
+    from stg_student_assessment
+        -- we only want to keep records for students with a current enrollment (for performance reasons)
+        -- records for students with no current enrollments will be kept as normal in downstream models
+        join deduped_enrollments
+        -- NOTE: in the future, this could be configurable
+        on stg_student_assessment.student_unique_id = deduped_enrollments.student_unique_id
+
+    union all
+
     select
         -- bring in the tenant code and student surrogate keys from enrollments
         deduped_enrollments.tenant_code,
@@ -90,6 +117,7 @@ subset_assessments as (
         stg_student_assessment.k_student_assessment as k_student_assessment__original,
         stg_student_assessment.k_assessment as k_assessment__original,
         stg_student_assessment.student_unique_id,
+        -- todo: delete?
         stg_student_assessment.student_assessment_identifier,
         stg_student_assessment.tenant_code = deduped_enrollments.tenant_code as is_original_record,
         stg_student_assessment.tenant_code as original_tenant_code
@@ -100,12 +128,11 @@ subset_assessments as (
     -- inner join is enforcing at least 1 current SCHOOL enrollment within a tenant
     -- which we don't otherwise enforce, but we are left joining downstream to avoid this issue broadly
     join deduped_enrollments
-        -- TODO: how to ensure this to be globally unique?
-            -- only enforced uniqueness is by partner/yr
-            -- test or bake into code somehow?
-                -- qualify 1 = count(distinct bday) by student_unique_id
         -- NOTE: in the future, this could be configurable
         on stg_student_assessment.student_unique_id = deduped_enrollments.student_unique_id
+    -- because of the above section of code, we only want to keep records here
+    -- where the enrolled tenant is different than the original record
+    where stg_student_assessment.tenant_code != deduped_enrollments.tenant_code
 ),
 -- if an assessment record for a student exists in two tenants (duplicate student_unique_id and student_assessment_id), they will be duplicated
 -- this handles that by depuping on the newly created k_student_assessment
@@ -114,7 +141,7 @@ deduped_assessments as (
         dbt_utils.deduplicate(
             relation='subset_assessments',
             partition_by='k_student_assessment',
-            order_by='school_year,tenant_code,k_student'
+            order_by='is_original_record desc'
         )
     }}
 )
