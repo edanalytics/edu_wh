@@ -48,7 +48,8 @@ obj_assessment_surrogate_keys as (
         dedupe_cross_tenant_assessments.k_assessment,
         dedupe_cross_tenant_assessments.k_assessment__original,
         dedupe_cross_tenant_assessments.tenant_code,
-        dedupe_cross_tenant_assessments.school_year
+        dedupe_cross_tenant_assessments.school_year,
+        dedupe_cross_tenant_assessments.api_year
     from stg_obj_assessments
     join dedupe_cross_tenant_assessments
         on stg_obj_assessments.k_assessment = k_assessment__original
