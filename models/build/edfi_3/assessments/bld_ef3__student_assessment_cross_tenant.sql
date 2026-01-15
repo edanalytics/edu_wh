@@ -33,7 +33,6 @@ active_enrollments as (
         on dim_student.k_student = {{ removed_students_source }}.k_student
     where is_active_enrollment
     and {{ removed_students_source }}.k_student is not null
-    qualify count(distinct fct_student_school.tenant_code) over(partition by dim_student.student_unique_id) > 1
     {% else %}
     where is_active_enrollment
     -- below is default logic to ensure the chosen 'global' IDs actually represent the same student
@@ -46,8 +45,8 @@ active_enrollments as (
                 count(distinct dim_student.birth_date) over (partition by dim_student.student_unique_id)
                 + count(distinct lower(dim_student.first_name)) over (partition by dim_student.student_unique_id)
                 + count(distinct lower(dim_student.last_name))  over (partition by dim_student.student_unique_id)
-            ) <= 5)
-        and count(distinct fct_student_school.tenant_code) over(partition by dim_student.student_unique_id) > 1
+            ) <= 5
+        and count(distinct fct_student_school.tenant_code) over(partition by dim_student.student_unique_id) > 1 )
     {% endif %}
 ),
 -- we need to use school enrollments to look at start and end dates, but we want the grain to be unique by student, year, and tenant
@@ -66,19 +65,21 @@ subset_assessments as (
         deduped_enrollments.tenant_code,
         -- we want to keep the school year from the assessment record and not enrollment
         stg_student_assessment.school_year,
+        -- need this for correct keys downstream
+        stg_student_assessment.api_year,
         deduped_enrollments.k_student,
         deduped_enrollments.k_student_xyear,
         -- recreate the surrogate keys with new tenant code
         {{dbt_utils.generate_surrogate_key(
             ['deduped_enrollments.tenant_code',
-            'deduped_enrollments.school_year',
+            'stg_student_assessment.api_year',
             'lower(stg_student_assessment.academic_subject)',
             'lower(stg_student_assessment.assessment_identifier)',
             'lower(stg_student_assessment.namespace)']
         ) }} as k_assessment,
         {{ dbt_utils.generate_surrogate_key(
             ['deduped_enrollments.tenant_code',
-            'deduped_enrollments.school_year',
+            'stg_student_assessment.api_year',
             'lower(stg_student_assessment.academic_subject)',
             'lower(stg_student_assessment.assessment_identifier)',
             'lower(stg_student_assessment.namespace)',
@@ -89,6 +90,7 @@ subset_assessments as (
         stg_student_assessment.k_student_assessment as k_student_assessment__original,
         stg_student_assessment.k_assessment as k_assessment__original,
         stg_student_assessment.student_unique_id,
+        stg_student_assessment.student_assessment_identifier,
         stg_student_assessment.tenant_code = deduped_enrollments.tenant_code as is_original_record,
         stg_student_assessment.tenant_code as original_tenant_code
     from stg_student_assessment
@@ -102,18 +104,30 @@ subset_assessments as (
             -- only enforced uniqueness is by partner/yr
             -- test or bake into code somehow?
                 -- qualify 1 = count(distinct bday) by student_unique_id
-
         -- NOTE: in the future, this could be configurable
         on stg_student_assessment.student_unique_id = deduped_enrollments.student_unique_id
+),
+-- if an assessment record for a student exists in two tenants (duplicate student_unique_id and student_assessment_id), they will be duplicated
+-- this handles that by depuping on the newly created k_student_assessment
+deduped_assessments as (
+    {{
+        dbt_utils.deduplicate(
+            relation='subset_assessments',
+            partition_by='k_student_assessment',
+            order_by='school_year,tenant_code,k_student'
+        )
+    }}
 )
+-- todo: currently missing records for students who are no longer currently enrolled at OG district, but currently enrolled in new district
 select *
-from subset_assessments
+from deduped_assessments
 {% else %}
   -- if this feature is not turned on, force return a zero row table
   select *
   from (select
           null as tenant_code,
           null as school_year,
+          null as api_year,
           null as k_student,
           null as k_student_xyear,
           null as k_assessment,
