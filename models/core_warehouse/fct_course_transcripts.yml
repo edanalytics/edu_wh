@@ -48,6 +48,9 @@ models:
               - course_attempt_result
     columns:
       - name: k_course
+        description: >
+          Unique identifier for the course in a school year. 
+          Foreign key reference to dim_course composed of [tenant_code + api_year + course_code + ed_org_id].
       - name: k_student_academic_record
       - name: k_lea
       - name: k_school
