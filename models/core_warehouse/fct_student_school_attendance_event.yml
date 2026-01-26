@@ -33,6 +33,7 @@ models:
       - name: calendar_date
       - name: k_session
       - name: tenant_code
+      - name: school_year
       - name: attendance_event_category
       - name: attendance_event_reason
       - name: is_absent

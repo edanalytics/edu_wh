@@ -53,6 +53,7 @@ formatted as (
         fct_student_discipline_incident_behaviors.k_student_xyear,
         fct_student_discipline_incident_behaviors.k_discipline_incident,
         fct_student_discipline_incident_behaviors.tenant_code,
+        fct_student_discipline_incident_behaviors.school_year,
         behaviors_array.behavior_types_array,
         actions_array.discipline_actions_array,
         -- we want to include the most severe behavior type and discipline action

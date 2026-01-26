@@ -57,6 +57,7 @@ formatted as (
         fct_student_discipline_actions.k_student_xyear,
         fct_student_discipline_actions.k_discipline_actions_event,
         fct_student_discipline_actions.tenant_code,
+        fct_student_discipline_actions.school_year,
         behaviors_array.behavior_types_array,
         behaviors_array.incident_id_array,
         actions_array.discipline_actions_array,
