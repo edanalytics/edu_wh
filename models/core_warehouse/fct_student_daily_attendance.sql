@@ -93,6 +93,7 @@ stu_enr_att_cal as (
         enr.tenant_code,
         enr.entry_date,
         attendance_calendar.k_calendar_date,
+        attendance_calendar.school_year,
         attendance_calendar.calendar_date,
         enr.exit_withdraw_date
     from fct_student_school_assoc as enr
@@ -108,6 +109,7 @@ fill_positive_attendance as (
         stu_enr_att_cal.k_student_xyear,
         stu_enr_att_cal.k_school,
         stu_enr_att_cal.k_calendar_date,
+        stu_enr_att_cal.school_year,
         coalesce(
             fct_student_school_att.k_session, 
             bld_attendance_sessions.k_session
@@ -206,6 +208,7 @@ cumulatives as (
         excusal_status_streaks.k_student_xyear,
         excusal_status_streaks.k_school,
         excusal_status_streaks.k_calendar_date,
+        excusal_status_streaks.school_year,
         excusal_status_streaks.calendar_date,
         excusal_status_streaks.k_session,
         excusal_status_streaks.tenant_code,
