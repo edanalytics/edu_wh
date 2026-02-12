@@ -7,8 +7,7 @@ models:
         This fact table contains student Title I Part A program enrollment information.
 
       ##### Primary Key:
-        k_student, k_student_xyear, k_program, program_enroll_begin_date` -- There is one 
-        record per student, year, program enrol begin date, and Title I Part A program.
+        k_student_program` -- There is one record per student, year, ed_org_id, program enroll begin date, and Title I Part A program.
 
     config:
       tags: ['title_i']
@@ -20,15 +19,17 @@ models:
             combination_of_columns:
               - k_student
               - k_program
-              - k_student_xyear
+              - ed_org_id
               - program_enroll_begin_date
 
     columns:
+      - name: k_student_program
       - name: k_student
       - name: k_student_xyear
       - name: k_program
       - name: k_lea
       - name: k_school
+      - name: ed_org_id
       - name: tenant_code
       - name: school_year
       - name: program_enroll_begin_date

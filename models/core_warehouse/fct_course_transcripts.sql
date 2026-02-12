@@ -12,6 +12,9 @@
   )
 }}
 
+{{ cds_depends_on('edu:course_transcripts:custom_data_sources') }}
+{% set custom_data_sources = var('edu:course_transcripts:custom_data_sources', []) %}
+
 with course_transcripts as (
     select * from {{ ref('stg_ef3__course_transcripts') }}
 ),
@@ -53,8 +56,15 @@ formatted as (
         course_transcripts.v_credit_categories
         {# add any extension columns configured from stg_ef3__course_transcripts #}
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__course_transcripts', flatten=False) }}
+
+        -- custom data sources columns
+        {{ add_cds_columns(custom_data_sources=custom_data_sources) }}
     from course_transcripts
     join fct_student_academic_record
         on course_transcripts.k_student_academic_record = fct_student_academic_record.k_student_academic_record
+
+    -- custom data sources
+    {{ add_cds_joins_v1(custom_data_sources=custom_data_sources, driving_alias='course_transcripts', join_cols=['k_course', 'k_student_academic_record', 'course_attempt_result']) }}
+    {{ add_cds_joins_v2(custom_data_sources=custom_data_sources) }}
 )
 select * from formatted
