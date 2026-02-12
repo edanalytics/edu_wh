@@ -45,6 +45,7 @@ models:
           The type of grade in a report card or transcript (e.g., Final, 
           Exam, Grading Period).
       - name: tenant_code
+      - name: school_year
       - name: letter_grade_earned
       - name: numeric_grade_earned
       - name: diagnostic_statement

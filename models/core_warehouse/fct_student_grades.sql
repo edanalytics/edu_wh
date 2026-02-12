@@ -41,6 +41,7 @@ formatted as (
         dim_grading_period.k_grading_period,
         stg_grades.grade_type,
         stg_grades.tenant_code,
+        stg_grades.school_year,
         stg_grades.letter_grade_earned,
         stg_grades.numeric_grade_earned,
         stg_grades.diagnostic_statement,

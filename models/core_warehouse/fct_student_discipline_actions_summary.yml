@@ -31,6 +31,7 @@ models:
         description: >
           A key containing discipline_action_id and discipline_date to represent a single discipline action event.
       - name: tenant_code
+      - name: school_year
       - name: behavior_types_array
         description: >
           An array of behavior types, which are defined as a category of behavior describing the 
