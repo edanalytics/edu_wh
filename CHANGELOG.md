@@ -1,5 +1,10 @@
 # Unreleased
 ## New features
+## Under the hood
+## Fixes
+
+# edu_wh v0.6.1
+## New features
 - Add `school_year` column to `fct_student_grades`, `fct_student_discipline_incident_behaviors`, `fct_student_discipline_incident_summary`, `fct_student_discipline_actions_summary`, `fct_student_school_attendance_event`, `fct_student_section_attendance_event`, `fct_student_daily_attendance`
 ## Under the hood
 - Expand yml documentation for `fct_student_section_attendance_event`
