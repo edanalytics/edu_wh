@@ -1,11 +1,13 @@
 {{
   config(
     post_hook=[
+        "alter table {{ this }} alter column k_student_program set not null",
         "alter table {{ this }} alter column k_student set not null",
         "alter table {{ this }} alter column k_student_xyear set not null",
         "alter table {{ this }} alter column k_program set not null",
         "alter table {{ this }} alter column program_enroll_begin_date set not null",
-        "alter table {{ this }} add primary key (k_student, k_student_xyear, k_program, program_enroll_begin_date)",
+        "alter table {{ this }} alter column ed_org_id set not null",
+        "alter table {{ this }} add primary key (k_student_program)",
         "alter table {{ this }} add constraint fk_{{ this.name }}_student foreign key (k_student) references {{ ref('dim_student') }}",
         "alter table {{ this }} add constraint fk_{{ this.name }}_program foreign key (k_program) references {{ ref('dim_program') }}",
     ]
@@ -26,11 +28,13 @@ dim_program as (
 
 formatted as (
     select
+        stage.k_student_program,
         dim_student.k_student,
         dim_student.k_student_xyear,
         dim_program.k_program,
         dim_program.k_lea,
         dim_program.k_school,
+        stage.ed_org_id, 
 
         stage.tenant_code,
         dim_program.school_year,

@@ -9,8 +9,11 @@ be included in a table.
   - coalesce_value: if this value is specified, a coalesce function will be added with
     this value as the second parameter (to be returned if the value in the column is null).
     If none (default), the coalesce function will not be added.
+  - add_trailing_comma: if this value is specified, a trailing comma will be added to the last
+    column. If not passed in, a trailing comma is added for backward compatibility
 -#}
-{% macro accordion_columns(source_table, exclude_columns, source_alias=none, coalesce_value=none) %}
+
+{% macro accordion_columns(source_table, exclude_columns, source_alias=none, coalesce_value=none, add_trailing_comma=true) %}
   {%- if source_alias is none -%}
    {%- set source_alias = source_table -%} 
   {%- endif -%}
@@ -20,11 +23,11 @@ be included in a table.
     ) %}
   {%- if coalesce_value is none %}
     {%- for col in keep_cols %}
-      {{ source_alias }}.{{ col }},
+      {{ source_alias }}.{{ col }}{% if not loop.last %},{% elif add_trailing_comma %},{% endif %}
     {%- endfor %}
   {%- else -%}
     {%- for col in keep_cols %}
-      coalesce({{ source_alias }}.{{ col }}, {{ coalesce_value }}) as {{ col }},
+      coalesce({{ source_alias }}.{{ col }}, {{ coalesce_value }}) as {{ col }}{% if not loop.last %},{% elif add_trailing_comma %},{% endif %}
     {%- endfor %}  
   {%- endif -%}
 {% endmacro %}

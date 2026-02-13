@@ -1,0 +1,86 @@
+version: 3
+
+models: 
+  - name: fct_student_disability
+    description: >
+     ##### Overview:
+       This fact table provides student disabilities, which could be assigned from multiple sources.
+       It references any or all of the following models:
+      - [stg_ef3__stu_ed_org__disabilities](#!/model/model.edu_edfi_source.stg_ef3__stu_ed_org__disabilities)
+      - [stg_ef3__stu_spec_ed__disabilities](#!/model/model.edu_edfi_source.stg_ef3__stu_spec_ed__disabilities)
+
+     ##### Primary Key:
+       `k_student_disability` --
+       There is one record per student, year, ed org / program
+
+     ##### Important business rules:
+        - This table is at two different grains since both Ed Orgs and Special Ed Programs can have disabilities listed. This is why this table has 
+           a surrogate key being made up of the two grains that fit in this table. If k_program is null then this is an ed org disability. 
+           If k_program is not null then it is a program disability. 
+        - `program_enroll_begin_date` is included in the unique key, because a student may be associated with the same program at multiple times,
+           and those associations may have different disabilities. When joining this table to `fct_student_{program_type}_program_association`,
+           always include `program_enroll_begin_date` in the join (see example query below).
+
+     ##### Example Use Cases:
+       1. Join Disabilities to Student Special Education data to find students' Special Ed disabilities
+       they received as part of that program:  
+         
+        ```
+          SELECT
+            assoc.k_student,
+            assoc.school_year,
+            assoc.k_program,
+            dim_program.program_type,
+            dim_program.program_id,
+            dim_program.program_name,
+            assoc.program_enroll_begin_date,
+            assoc.program_enroll_end_date,
+            dis.disability_type,
+            dis.disability_source_type,
+            dis.disability_diagnosis,
+            dis.order_of_disability
+          FROM analytics.prod_wh.fct_student_special_education_program_association assoc
+          JOIN analytics.prod_wh.dim_program
+            ON assoc.k_program = dim_program.k_program
+          -- left join because some programs may not have disabilities
+          LEFT join analytics.prod_wh.fct_student_disability dis
+            ON assoc.k_student = dis.k_student
+            AND assoc.k_program = dis.k_program
+            AND assoc.program_enroll_begin_date = dis.program_enroll_begin_date;
+        ```
+
+
+    config:
+      tags: ['special_ed']
+      enabled: >
+        {%- set var_values = [] -%}
+        {%- for variable in [
+             'src:program:special_ed:enabled',
+        ] -%}
+           {%- do var_values.append(var(variable, none)) -%}
+        {%- endfor -%}
+
+        {%- if True in var_values -%}
+           {{ True  | as_bool }}
+        {%- elif False in var_values -%}
+           {{ False | as_bool }}
+        {%- else -%}
+           {{ True  | as_bool }}
+        {%- endif -%}
+        
+    columns:
+      - name: k_student_disability, 
+      - name: k_student
+      - name: k_student_xyear
+      - name: k_lea
+      - name: k_school
+      - name: k_program
+      - name: program_enroll_begin_date
+      - name: program_enroll_end_date
+      - name: tenant_code
+      - name: api_year
+      - name: school_year
+      - name: disability_type
+      - name: disability_source_type
+      - name: disability_diagnosis
+      - name: order_of_disability
