@@ -4,6 +4,7 @@
 ## Under the hood
 - Expand yml documentation for `fct_student_section_attendance_event`
 ## Fixes
+- Fix `period_duration` calculation in `dim_class_period` to account for different time formats.
 
 # edu_wh v0.6.0
 ## New features
