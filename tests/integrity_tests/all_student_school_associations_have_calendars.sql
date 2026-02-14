@@ -55,8 +55,6 @@ join first_school_day
   and first_school_day.k_school_calendar is null
 where true 
 -- exclude students who exited before first day of school
-and (fct_stu_school_assoc.exit_withdraw_date > first_school_day.first_school_day
-or fct_stu_school_assoc.exit_withdraw_date is null)
-
+and {{ date_within_end_date('first_school_day.first_school_day', 'fct_stu_school_assoc.exit_withdraw_date', var('edu:enroll:exit_withdraw_date_inclusive', True)) }}
 group by 1,2,3
 having n_students_missing_calendar != 0

@@ -41,7 +41,7 @@ fct_student_school_assoc as (
     */
     select 
         *,
-        date(coalesce(exit_withdraw_date,getdate())) - entry_date as enrollment_length
+        {{ day_count_in_range('entry_date', 'exit_withdraw_date', var('edu:enroll:exit_withdraw_date_inclusive', True)) }} as enrollment_length
     from {{ ref('fct_student_school_association') }}
 ),
 xwalk_att_events as (
@@ -82,7 +82,8 @@ joined as (
     join dim_calendar_date
          on fct_student_school_assoc.k_school_calendar = dim_calendar_date.k_school_calendar
          and stg_stu_sch_attend.attendance_event_date = dim_calendar_date.calendar_date
-         and dim_calendar_date.calendar_date between fct_student_school_assoc.entry_date and coalesce(fct_student_school_assoc.exit_withdraw_date,current_date())
+         and dim_calendar_date.calendar_date >= fct_student_school_assoc.entry_date 
+         and {{ date_within_end_date('dim_calendar_date.calendar_date', 'fct_student_school_assoc.exit_withdraw_date', var('edu:enroll:exit_withdraw_date_inclusive', True)) }}
     join xwalk_att_events
         on stg_stu_sch_attend.attendance_event_category = xwalk_att_events.attendance_event_descriptor
 ),
