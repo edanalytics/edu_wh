@@ -34,8 +34,16 @@ models:
       +enabled: "{{ var('edu:tpdm:enabled', False) }}"
     qc:
       +schema: qc
+    cortex_schemas:
+      +schema: cortex_schemas
+      +materialized: table
+      +tags: ['cortex']
 
 vars:
+  # Cortex Analyst schema generation settings
+  cortex_database: ''
+  cortex_stage: '@CORTEX_ANALYST_STAGE'
+
   # labels for generated race/ethnicity groups
   'edu:stu_demos:multiple_races_code': Multiple
   'edu:stu_demos:hispanic_latino_code': Latinx

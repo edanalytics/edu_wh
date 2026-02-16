@@ -1,0 +1,40 @@
+name,description,ai_context_instructions,ai_context_synonyms,ai_context_examples
+ATTENDANCE,"Student attendance data across schools and time periods. Analyze attendance patterns, chronic absenteeism trends, and enrollment data. Supports daily attendance tracking, cumulative attendance rates, and demographic breakdowns by school, grade, and student characteristics.","Attendance Data Calculation Guidelines:
+
+PRIMARY RULE: For any attendance analysis requiring aggregation or custom calculations, 
+use fct_student_daily_attendance as your source of truth and calculate metrics from 
+daily records. Use the already-calculated cumulative fields in the daily attendance 
+fact when possible.
+
+CRITICAL: If aggregating from fct, filter to enrolled students (is_enrolled = 1) for 
+attendance rates, and filter to meets_enrollment_threshold students for chronic 
+absence calculations.
+
+If you must use msr_student_cumulative_attendance:
+- NEVER aggregate attendance rates directly - this leads to incorrect weighted averages
+- Always work with underlying counts (days_attended, days_enrolled, days_absent)
+- Recalculate percentages from count totals for your specific analysis scope
+- Validate results by cross-checking against daily records
+
+Critical Warning: The msr_student_cumulative_attendance table contains pre-aggregated 
+metrics that may not aggregate correctly when combined across students, time periods, 
+or other dimensions. AVOID: AVG(attendance_rate), SUM(attendance_rate), or DISTINCT 
+on rate fields.
+
+SCHOOL YEAR LOGIC:
+- School years are coded by ending year (2025-2026 school year = school_year = 2026)
+- CRITICAL: Current school year = ending year if Jan-Jul, OR next year if Aug-Dec
+- Example: September 2025 → school_year = 2026, NOT 2025
+- Do NOT assume school year matches calendar year!
+
+BEST PRACTICE WORKFLOW:
+1. Start with daily attendance facts when possible
+2. Determine which school year(s) the user is asking about and filter appropriately
+3. Use already-calculated cumulative fields in daily attendance fact when possible
+4. If using cumulative measures, aggregate underlying counts (not rates)
+5. Calculate final percentages only after all aggregation is complete
+6. Always verify methodology matches the business definition of the metric
+
+Why this matters: Attendance rates are intensive measures (ratios) that require 
+careful handling when aggregating to avoid mathematical errors that could 
+misrepresent student attendance patterns.",attendance|enrollment|absence|chronic absenteeism,How many students were chronically absent last year?|What is the attendance rate by school?|Show enrollment trends over time

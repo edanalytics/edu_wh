@@ -1,0 +1,8 @@
+semantic_model,name,source_model,primary_key,description,ai_context_synonyms,ai_context_instructions
+ATTENDANCE,DIM_CALENDAR_DATE,dim_calendar_date,K_CALENDAR_DATE,Calendar information,Days,
+ATTENDANCE,DIM_SCHOOL,dim_school,K_SCHOOL,School characteristics,School info,
+ATTENDANCE,DIM_SESSION,dim_session,K_SESSION,Academic session/term information,,
+ATTENDANCE,DIM_STUDENT,dim_student,K_STUDENT,Student characteristics,Student info,
+ATTENDANCE,FCT_STUDENT_DAILY_ATTENDANCE,fct_student_daily_attendance,K_SCHOOL|K_STUDENT|K_CALENDAR_DATE,Student attendance records by day,Daily attendance|student daily records,Use this as the primary source for attendance analysis. Filter is_enrolled = 1 for rates.
+ATTENDANCE,FCT_STUDENT_SCHOOL_ASSOCIATION,fct_student_school_association,K_SCHOOL|ENTRY_DATE|K_STUDENT,Enrollment records,Enrollments|student associations,
+ATTENDANCE,MSR_STUDENT_CUMULATIVE_ATTENDANCE,msr_student_cumulative_attendance,SCHOOL_YEAR|K_SCHOOL|K_STUDENT,Cumulative or aggregate attendance by student,attendance rates|Total attendance,NEVER aggregate rates directly. Always use underlying counts then recalculate percentages.

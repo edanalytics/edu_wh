@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: generate_cortex_schemas
+    description: >
+      Translates OSI-format seed data into Snowflake Cortex Analyst YAML.
+      osi_semantic_models is the top-level parent; all other seeds link to it.
+      ai_context (instructions, synonyms, examples) is captured at every level:
+      semantic model, dataset, field, and relationship.
+      Reads from osi_semantic_models, osi_datasets (resolved via _osi_resolved_datasets),
+      osi_fields, osi_relationships, osi_metrics, and osi_verified_queries seeds.
+      Outputs one row per semantic model with the translated Cortex YAML.
+      Post-hooks upload to stage and create the semantic view.
+    config:
+      tags: ['cortex', 'semantic']
+      materialized: table
+      schema: cortex_schemas
+      cortex_database: "{{ var('cortex_database', '') }}"
+      cortex_stage: "{{ var('cortex_stage', '@CORTEX_ANALYST_STAGE') }}"
+    columns:
+      - name: schema_name
+        description: Name of the Cortex Analyst schema (e.g., ATTENDANCE)
+      - name: yaml_content
+        description: The generated Cortex Analyst YAML as a string
+      - name: generated_at
+        description: Timestamp when the schema was generated

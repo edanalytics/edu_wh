@@ -1,0 +1,51 @@
+semantic_model,name,question,sql,verified_by,verified_at,use_as_onboarding
+ATTENDANCE,lowest_attendance_day,What was the day with the lowest attendance rate in the 2024-2025 school year?  Show the date and attendance rate for the worst attendance day.,"WITH daily_attendance AS (
+  SELECT
+    cd.calendar_date,
+    SUM(fda.is_present) AS total_present,
+    SUM(fda.is_enrolled) AS total_enrolled
+  FROM fct_student_daily_attendance AS fda
+  INNER JOIN dim_calendar_date AS cd 
+    ON fda.k_calendar_date = cd.k_calendar_date
+  WHERE cd.school_year = 2025
+    AND fda.is_enrolled = 1
+  GROUP BY cd.calendar_date
+),
+daily_rates AS (
+  SELECT
+    calendar_date,
+    total_present,
+    total_enrolled,
+    CASE
+      WHEN total_enrolled > 0 THEN total_present / NULLIF(total_enrolled, 0)
+      ELSE 0
+    END AS attendance_rate
+  FROM daily_attendance
+)
+SELECT
+  calendar_date,
+  attendance_rate
+FROM daily_rates
+WHERE total_enrolled > 0
+ORDER BY attendance_rate ASC
+LIMIT 1",Rob Little,2025-09-24,false
+ATTENDANCE,top_absence_reasons,What were the top absence reasons last school year?,"WITH last_school_year_data AS (
+  SELECT
+    fda.attendance_event_reason,
+    COUNT(*) AS absence_count
+  FROM fct_student_daily_attendance AS fda
+  INNER JOIN dim_calendar_date AS dcd 
+    ON fda.k_calendar_date = dcd.k_calendar_date
+  WHERE dcd.school_year = (
+      SELECT MAX(school_year) - 1
+      FROM dim_calendar_date
+    )
+    AND fda.is_absent = 1
+    AND fda.is_enrolled = 1
+  GROUP BY fda.attendance_event_reason
+)
+SELECT
+  attendance_event_reason,
+  absence_count
+FROM last_school_year_data
+ORDER BY absence_count DESC NULLS LAST",Rob Little,2025-09-24,false
