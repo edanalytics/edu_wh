@@ -1,5 +1,8 @@
 # Unreleased
 ## New features
+
+- Student-program association fct tables include `program_enroll_begin_date` in the `unique_combination_of_columns` test. `k_student_xyear` was removed, because this is redundant when `k_student` is present.
+
 ## Under the hood
 ## Fixes
 
