@@ -116,8 +116,8 @@ formatted as (
           or bld_school_calendar_windows.first_school_day is null
           )
     {% endif %}
-    -- exclude students whose exit day is before their entry day
-    and ( {{ date_within_end_date('entry_date', 'exit_withdraw_date', var('edu:enroll:exit_withdraw_date_inclusive', True)) }} )
+    -- make sure exit is after entry
+    and (exit_withdraw_date is null or exit_withdraw_date >= entry_date)
     -- exclude students who never actually enrolled
     {% set excl_withdraw_codes =  var('edu:enroll:exclude_withdraw_codes')  %}
     {% if excl_withdraw_codes | length -%}
