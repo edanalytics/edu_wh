@@ -63,3 +63,75 @@ models:
         description: Definition The Federal Information Processing Standards (FIPS) numeric code for the county issued by the National Institute of Standards and Technology (NIST). Counties are considered to be the "first-order subdivisions" of each State and statistically equivalent entity, regardless of their local designations (county, parish, borough, etc.) Counties in different States will have the same code. A unique county number is created when combined with the 2-digit FIPS State Code.
       - name: latitude
       - name: longitude
+
+semantic_models:
+  - name: dim_school
+    description: School characteristics dimension including name, address, and classification.
+    model: ref('dim_school')
+
+    entities:
+      - name: school
+        type: primary
+        expr: k_school
+      - name: lea
+        type: foreign
+        expr: k_lea
+
+    dimensions:
+      - name: school_id
+        type: categorical
+        description: Unique identifier for the school
+        expr: school_id
+      - name: school_name
+        type: categorical
+        expr: school_name
+      - name: school_short_name
+        type: categorical
+        expr: school_short_name
+      - name: lea_name
+        type: categorical
+        description: Local Education Agency (school district) name
+        expr: lea_name
+      - name: lea_id
+        type: categorical
+        expr: lea_id
+      - name: school_category
+        type: categorical
+        description: Category of school (High School, Middle School, Elementary School)
+        expr: school_category
+      - name: school_type
+        type: categorical
+        description: Education institution type (Regular, Alternative, Special Education)
+        expr: school_type
+      - name: operational_status
+        type: categorical
+        description: Current operational status (active, inactive)
+        expr: operational_status
+      - name: charter_status
+        type: categorical
+        description: Charter school category
+        expr: charter_status
+      - name: title_i_part_a_school_designation
+        type: categorical
+        description: Title I Part A designation
+        expr: title_i_part_a_school_designation
+      - name: magnet_type
+        type: categorical
+        description: Magnet school emphasis/type
+        expr: magnet_type
+      - name: city
+        type: categorical
+        expr: city
+      - name: state_code
+        type: categorical
+        expr: state_code
+      - name: postal_code
+        type: categorical
+        expr: postal_code
+      - name: locale
+        type: categorical
+        description: Urban/suburban/rural classification
+        expr: locale
+      - name: tenant_code
+        type: categorical
+        expr: tenant_code

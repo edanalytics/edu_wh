@@ -2,5 +2,85 @@ version: 2
 
 models:
   - name: msr_student_cumulative_attendance
+    description: >
+      Aggregated attendance metrics by student, school, and school year.
+      WARNING: Avoid aggregating pre-calculated rates (attendance_rate) directly.
+      Use underlying counts (days_attended, days_enrolled, days_absent) and
+      recalculate percentages for your specific analysis scope.
     config:
       tags: ['core']
+
+semantic_models:
+  - name: msr_student_cumulative_attendance
+    description: >
+      Aggregated attendance metrics by student, school, and school year.
+      WARNING: Avoid aggregating pre-calculated rates (attendance_rate) directly.
+      Use underlying counts (days_attended, days_enrolled, days_absent) and
+      recalculate percentages for your specific analysis scope.
+    model: ref('msr_student_cumulative_attendance')
+    defaults:
+      agg_time_dimension: snapshot_date
+
+    entities:
+      - name: student_cumulative_attendance
+        type: primary
+        expr: "k_student || '-' || k_school || '-' || school_year"
+      - name: student
+        type: foreign
+        expr: k_student
+      - name: school
+        type: foreign
+        expr: k_school
+
+    measures:
+      - name: total_days_absent
+        description: Total days absent for the student-school-year
+        agg: sum
+        expr: days_absent
+      - name: total_days_attended
+        description: Total days attended for the student-school-year
+        agg: sum
+        expr: days_attended
+      - name: total_days_enrolled
+        description: Total days enrolled for the student-school-year
+        agg: sum
+        expr: days_enrolled
+      - name: student_count
+        description: Count of unique student-school-year records
+        agg: count
+        expr: "1"
+      - name: chronic_absentee_student_count
+        description: Count of students flagged as chronic absentees
+        agg: sum
+        expr: "case when is_chronic_absentee then 1 else 0 end"
+      - name: meets_threshold_student_count
+        description: Count of students meeting enrollment threshold
+        agg: sum
+        expr: "case when meets_enrollment_threshold then 1 else 0 end"
+
+    dimensions:
+      - name: absentee_category_label
+        type: categorical
+        description: Text label categorizing student's overall attendance level
+        expr: absentee_category_label
+      - name: is_chronic_absentee
+        type: categorical
+        description: Whether student is considered chronically absent for the year
+        expr: is_chronic_absentee
+      - name: meets_enrollment_threshold
+        type: categorical
+        description: Whether student meets minimum enrollment days for chronic absence
+        expr: meets_enrollment_threshold
+      - name: school_year
+        type: categorical
+        description: School year by ending year
+        expr: school_year
+      - name: tenant_code
+        type: categorical
+        expr: tenant_code
+      - name: snapshot_date
+        type: time
+        description: Placeholder time dimension for MetricFlow (uses time spine)
+        type_params:
+          time_granularity: day
+        expr: current_date()

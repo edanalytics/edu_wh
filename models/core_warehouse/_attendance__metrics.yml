@@ -1,0 +1,254 @@
+version: 2
+
+metrics:
+  # ===========================================================================
+  # CORE ATTENDANCE METRICS (from daily attendance)
+  # ===========================================================================
+  
+  # ---------------------------------------------------------------------------
+  # Simple Aggregation Metrics
+  # ---------------------------------------------------------------------------
+  - name: total_days_absent
+    description: Total count of absent days
+    type: simple
+    label: Days Absent
+    type_params:
+      measure: days_absent
+
+  - name: total_days_present
+    description: Total count of days students were present
+    type: simple
+    label: Days Present
+    type_params:
+      measure: days_present
+
+  - name: total_days_enrolled
+    description: Total count of enrolled days
+    type: simple
+    label: Days Enrolled
+    type_params:
+      measure: days_enrolled
+
+  - name: total_student_days
+    description: Total count of student-days in the dataset
+    type: simple
+    label: Student Days
+    type_params:
+      measure: student_day_count
+
+  - name: total_chronic_absentees
+    description: Count of students flagged as chronic absentees
+    type: simple
+    label: Chronic Absentees
+    type_params:
+      measure: chronic_absentee_count
+
+  - name: total_enrolled_students
+    description: Count of enrolled student-days
+    type: simple
+    label: Enrolled Students
+    type_params:
+      measure: enrolled_student_count
+
+  # ---------------------------------------------------------------------------
+  # Attendance Rate Metrics (Derived)
+  # ---------------------------------------------------------------------------
+  - name: attendance_rate
+    description: >
+      Percentage of days attended out of days enrolled. 
+      Formula: (days_present / days_enrolled) * 100
+    type: derived
+    label: Attendance Rate (%)
+    type_params:
+      expr: (days_present / nullif(days_enrolled, 0)) * 100
+      metrics:
+        - name: total_days_present
+          alias: days_present
+        - name: total_days_enrolled
+          alias: days_enrolled
+
+  - name: absence_rate
+    description: >
+      Percentage of days absent out of days enrolled.
+      Formula: (days_absent / days_enrolled) * 100
+    type: derived
+    label: Absence Rate (%)
+    type_params:
+      expr: (days_absent / nullif(days_enrolled, 0)) * 100
+      metrics:
+        - name: total_days_absent
+          alias: days_absent
+        - name: total_days_enrolled
+          alias: days_enrolled
+
+  # ---------------------------------------------------------------------------
+  # Chronic Absenteeism Metrics
+  # ---------------------------------------------------------------------------
+  - name: chronic_absenteeism_rate
+    description: >
+      Percentage of students who are chronically absent (attendance rate <= 90%
+      and enrolled for at least minimum threshold days).
+      Formula: (chronic_absentees / students_meeting_threshold) * 100
+    type: derived
+    label: Chronic Absenteeism Rate (%)
+    type_params:
+      expr: (chronic_absentees / nullif(threshold_students, 0)) * 100
+      metrics:
+        - name: total_chronic_absentees
+          alias: chronic_absentees
+        - name: students_meeting_enrollment_threshold
+          alias: threshold_students
+
+  - name: students_meeting_enrollment_threshold
+    description: >
+      Count of students meeting minimum enrollment threshold for chronic absence calculation
+    type: simple
+    label: Students Meeting Threshold
+    type_params:
+      measure: meets_threshold_count
+
+  # ===========================================================================
+  # CUMULATIVE ATTENDANCE METRICS (from aggregated table)
+  # ===========================================================================
+  
+  - name: cumulative_days_absent
+    description: Total days absent from cumulative attendance table
+    type: simple
+    label: Cumulative Days Absent
+    type_params:
+      measure:
+        name: total_days_absent
+        join_to_timespine: false
+
+  - name: cumulative_days_attended
+    description: Total days attended from cumulative attendance table  
+    type: simple
+    label: Cumulative Days Attended
+    type_params:
+      measure:
+        name: total_days_attended
+        join_to_timespine: false
+
+  - name: cumulative_days_enrolled
+    description: Total days enrolled from cumulative attendance table
+    type: simple
+    label: Cumulative Days Enrolled
+    type_params:
+      measure:
+        name: total_days_enrolled
+        join_to_timespine: false
+
+  - name: total_students
+    description: Count of unique student-school-year records
+    type: simple
+    label: Total Students
+    type_params:
+      measure:
+        name: student_count
+        join_to_timespine: false
+
+  - name: chronic_absentee_students
+    description: Count of students classified as chronic absentees
+    type: simple
+    label: Chronic Absentee Students
+    type_params:
+      measure:
+        name: chronic_absentee_student_count
+        join_to_timespine: false
+
+  # ---------------------------------------------------------------------------
+  # Cumulative Rate Metrics (Derived)
+  # ---------------------------------------------------------------------------
+  - name: cumulative_attendance_rate
+    description: >
+      Attendance rate calculated from cumulative totals.
+      Formula: (cumulative_days_attended / cumulative_days_enrolled) * 100
+    type: derived
+    label: Cumulative Attendance Rate (%)
+    type_params:
+      expr: (attended / nullif(enrolled, 0)) * 100
+      metrics:
+        - name: cumulative_days_attended
+          alias: attended
+        - name: cumulative_days_enrolled
+          alias: enrolled
+
+  - name: student_chronic_absenteeism_rate
+    description: >
+      Percentage of students who are chronically absent (from cumulative table).
+      Formula: (chronic_absentee_students / students_meeting_threshold) * 100
+    type: derived
+    label: Student Chronic Absenteeism Rate (%)
+    type_params:
+      expr: (chronic_students / nullif(threshold_students, 0)) * 100
+      metrics:
+        - name: chronic_absentee_students
+          alias: chronic_students
+        - name: students_with_enrollment_threshold
+          alias: threshold_students
+
+  - name: students_with_enrollment_threshold
+    description: Count of students meeting enrollment threshold (from cumulative table)
+    type: simple
+    label: Students with Enrollment Threshold
+    type_params:
+      measure:
+        name: meets_threshold_student_count
+        join_to_timespine: false
+
+  # ===========================================================================
+  # CALENDAR METRICS
+  # ===========================================================================
+  
+  - name: instructional_days
+    description: Count of instructional/school days
+    type: simple
+    label: Instructional Days
+    type_params:
+      measure: school_day_count
+
+  - name: max_day_of_school_year
+    description: Highest instructional day number (useful for tracking year progress)
+    type: simple
+    label: Day of School Year
+    type_params:
+      measure: day_of_school_year
+
+  - name: current_week_of_school_year
+    description: Current week number in the school year
+    type: simple
+    label: Week of School Year
+    type_params:
+      measure: week_of_school_year
+
+  # ===========================================================================
+  # ENROLLMENT METRICS
+  # ===========================================================================
+  
+  - name: total_enrollments
+    description: Total count of enrollment records
+    type: simple
+    label: Total Enrollments
+    type_params:
+      measure: enrollment_count
+
+  - name: active_enrollments
+    description: Count of currently active enrollments
+    type: simple
+    label: Active Enrollments
+    type_params:
+      measure: active_enrollment_count
+
+  - name: students_repeating_grade
+    description: Count of students flagged as repeating a grade
+    type: simple
+    label: Students Repeating Grade
+    type_params:
+      measure: repeat_grade_count
+
+  - name: session_instructional_days
+    description: Total instructional days in a session
+    type: simple
+    label: Session Instructional Days
+    type_params:
+      measure: total_instructional_days

@@ -1,0 +1,20 @@
+version: 2
+
+models:
+  - name: metricflow_time_spine
+    description: >
+      Time spine table required by the dbt semantic layer (MetricFlow).
+      Contains one row per day from 2015 through 10 years in the future.
+      This model is used for time-based metric calculations.
+    config:
+      tags: ['core', 'metricflow']
+    columns:
+      - name: date_day
+        description: Calendar date
+
+time_spines:
+  - name: metricflow_time_spine
+    model: ref('metricflow_time_spine')
+    primary_column:
+      name: date_day
+      time_granularity: day

@@ -75,7 +75,110 @@ models:
           seed table `absentee_categories`.
       - name: attendance_excusal_status
         description: >
-          A text label categorizing whether a student's absence is unexcused or not. 
+          Excusal status only (e.g. Unexcused, Excused, Not Absent, Not Enrolled). Use with attendance_day_scope for full/partial distinction.
+      - name: attendance_day_scope
+        description: >
+          When absent, 'Full' or 'Partial' based on event_duration vs edu:attendance:full_day_event_duration_threshold; null when not absent. Use for rules like "10 consecutive full unexcused" (filter excusal_status = Unexcused and day_scope = Full, then consecutive_days_by_excusal_status).
+      - name: excusal_streak_key
+        description: >
+          Status combined with day scope (e.g. 'Unexcused | Full', 'Unexcused | Partial') for streak grouping. Consecutive days are counted within this key.
       - name: consecutive_days_by_excusal_status
         description: >
-          A rolling number of a student's consecutive unexcused absences on school days. 
+          Consecutive days with the same excusal_streak_key (e.g. for "10 consecutive full unexcused" filter where excusal_streak_key = 'Unexcused | Full' and this >= 10). 
+
+semantic_models:
+  - name: fct_student_daily_attendance
+    description: >
+      Student daily attendance records. Use this as the primary source for 
+      attendance analysis requiring aggregation or custom calculations. Contains
+      both point-in-time values (is_absent, is_present) and cumulative metrics.
+    model: ref('fct_student_daily_attendance')
+    defaults:
+      agg_time_dimension: calendar_date
+
+    entities:
+      - name: student_daily_attendance
+        type: primary
+        expr: "k_student || '-' || k_school || '-' || calendar_date"
+      - name: student
+        type: foreign
+        expr: k_student
+      - name: school
+        type: foreign
+        expr: k_school
+      - name: calendar_date_key
+        type: foreign
+        expr: k_calendar_date
+
+    measures:
+      - name: days_absent
+        description: Count of absent days (1 = absent, 0 = present)
+        agg: sum
+        expr: is_absent
+      - name: days_present
+        description: Count of present days (1 = present, 0 = absent)
+        agg: sum
+        expr: is_present
+      - name: days_enrolled
+        description: Count of enrolled days
+        agg: sum
+        expr: is_enrolled
+      - name: student_day_count
+        description: Count of student-days (for denominator calculations)
+        agg: count
+        expr: "1"
+      - name: chronic_absentee_count
+        description: Count of students flagged as chronic absentees on a given day
+        agg: sum
+        expr: "case when is_chronic_absentee then 1 else 0 end"
+      - name: enrolled_student_count
+        description: Count of enrolled student-days (where is_enrolled = 1)
+        agg: sum
+        expr: "case when is_enrolled = 1 then 1 else 0 end"
+      - name: meets_threshold_count
+        description: Count of students meeting enrollment threshold for chronic absence calculation
+        agg: sum
+        expr: "case when meets_enrollment_threshold then 1 else 0 end"
+
+    dimensions:
+      - name: attendance_event_category
+        type: categorical
+        description: The type of attendance event (In Attendance, Excused Absence, Unexcused Absence)
+        expr: attendance_event_category
+      - name: attendance_event_reason
+        type: categorical
+        description: Specific reason for the attendance event
+        expr: attendance_event_reason
+      - name: attendance_excusal_status
+        type: categorical
+        description: Whether absence is excused, unexcused, or not absent
+        expr: attendance_excusal_status
+      - name: absentee_category_label
+        type: categorical
+        description: >
+          Text label categorizing attendance levels (e.g., Satisfactory Attendance, 
+          At Risk Attendance, Moderate Chronic Absence)
+        expr: absentee_category_label
+      - name: is_chronic_absentee
+        type: categorical
+        description: Whether student is considered chronically absent as of this day
+        expr: is_chronic_absentee
+      - name: meets_enrollment_threshold
+        type: categorical
+        description: Whether student meets minimum enrollment days for chronic absence calculation
+        expr: meets_enrollment_threshold
+      - name: tenant_code
+        type: categorical
+        expr: tenant_code
+      - name: calendar_date
+        type: time
+        description: The date of the attendance record
+        type_params:
+          time_granularity: day
+        expr: calendar_date
+      - name: school_year
+        type: categorical
+        description: >
+          School year by ending year (e.g., 2024-2025 school year = 2025).
+          Current school year = ending year if Jan-Jul, or next year if Aug-Dec.
+        expr: school_year

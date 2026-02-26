@@ -2,5 +2,60 @@ version: 2
 
 models:
   - name: dim_session
+    description: >
+      Academic session/term information. Defines periods within the school year
+      (semesters, trimesters, annual) with their date ranges and instructional days.
     config:
       tags: ['core']
+
+semantic_models:
+  - name: dim_session
+    description: >
+      Academic session/term information. Defines periods within the school year
+      (semesters, trimesters, annual) with their date ranges and instructional days.
+    model: ref('dim_session')
+    defaults:
+      agg_time_dimension: session_begin_date
+
+    entities:
+      - name: session
+        type: primary
+        expr: k_session
+      - name: school
+        type: foreign
+        expr: k_school
+
+    measures:
+      - name: total_instructional_days
+        description: Total instructional days in the session
+        agg: max
+        expr: total_instructional_days
+
+    dimensions:
+      - name: session_name
+        type: categorical
+        description: Session identifier (T1, T2, A, etc.)
+        expr: session_name
+      - name: academic_term
+        type: categorical
+        description: Academic term type (1st Trimester, Annual, 2nd Semester)
+        expr: academic_term
+      - name: session_begin_date
+        type: time
+        description: Session start date
+        type_params:
+          time_granularity: day
+        expr: session_begin_date
+      - name: session_end_date
+        type: time
+        description: Session end date
+        type_params:
+          time_granularity: day
+        expr: session_end_date
+      - name: school_year
+        type: categorical
+        description: School year by ending year
+        expr: school_year
+      - name: tenant_code
+        type: categorical
+        expr: tenant_code

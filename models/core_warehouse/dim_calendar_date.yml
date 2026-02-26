@@ -45,4 +45,73 @@ models:
         description: Counting across calendar weeks
       - name: week_of_school_year
         description: Counting across weeks of the school year
+
+semantic_models:
+  - name: dim_calendar_date
+    description: >
+      Calendar dates by school calendar. Provides time-based attributes for
+      attendance and other date-based analysis.
+    model: ref('dim_calendar_date')
+    defaults:
+      agg_time_dimension: calendar_date
+
+    entities:
+      - name: calendar_date_key
+        type: primary
+        expr: k_calendar_date
+      - name: school
+        type: foreign
+        expr: k_school
+      - name: school_calendar
+        type: foreign
+        expr: k_school_calendar
+
+    dimensions:
+      - name: calendar_date
+        type: time
+        description: The calendar date
+        type_params:
+          time_granularity: day
+        expr: calendar_date
+      - name: school_year
+        type: categorical
+        description: School year by ending year
+        expr: school_year
+      - name: calendar_code
+        type: categorical
+        description: Descriptive label for the calendar
+        expr: calendar_code
+      - name: calendar_event
+        type: categorical
+        description: Descriptor for type of day (Instructional day, Non-instructional day)
+        expr: calendar_event
+      - name: is_school_day
+        type: categorical
+        description: Whether this is an instructional day
+        expr: is_school_day
+      - name: week_day
+        type: categorical
+        description: Day of week (Mon, Tue, Wed, etc.)
+        expr: week_day
+      - name: tenant_code
+        type: categorical
+        expr: tenant_code
+
+    measures:
+      - name: day_of_school_year
+        description: The instructional day number within the school year
+        agg: max
+        expr: day_of_school_year
+      - name: week_of_school_year
+        description: Week number within the school year
+        agg: max
+        expr: week_of_school_year
+      - name: week_of_calendar_year
+        description: Week number within the calendar year
+        agg: max
+        expr: week_of_calendar_year
+      - name: school_day_count
+        description: Count of school days (is_school_day = true)
+        agg: sum
+        expr: "case when is_school_day then 1 else 0 end"
       

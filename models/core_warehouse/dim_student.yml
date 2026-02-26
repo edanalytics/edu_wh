@@ -78,3 +78,84 @@ models:
         description: Display name with student ID, safe for use in grouping operations in a BI tool, to avoid combining students with the same name.
       - name: has_hispanic_latino_ethnicity
         description: An indication that the individual traces his or her origin or descent to Mexico, Puerto Rico, Cuba, Central, and South America, and other Spanish cultures, regardless of race. The term, "Spanish origin," can be used in addition to "Hispanic or Latino."
+
+semantic_models:
+  - name: dim_student
+    description: >
+      Student characteristics dimension. Note that k_student is annualized 
+      (tenant_code + student_unique_id + school_year). Use k_student_xyear for
+      cross-year longitudinal analysis.
+    model: ref('dim_student')
+
+    entities:
+      - name: student
+        type: primary
+        expr: k_student
+      - name: student_xyear
+        type: unique
+        expr: k_student_xyear
+        description: Cross-year student identifier for longitudinal analysis
+
+    dimensions:
+      - name: student_unique_id
+        type: categorical
+        description: Student's unique ID in the education organization
+        expr: student_unique_id
+      - name: first_name
+        type: categorical
+        expr: first_name
+      - name: last_name
+        type: categorical
+        expr: last_name
+      - name: display_name
+        type: categorical
+        description: Student's formatted display name (Last, First M.)
+        expr: display_name
+      - name: safe_display_name
+        type: categorical
+        description: Display name with student ID, safe for grouping operations
+        expr: safe_display_name
+      - name: gender
+        type: categorical
+        expr: gender
+      - name: grade_level
+        type: categorical
+        description: Student's grade level for the given year
+        expr: grade_level
+      - name: grade_level_integer
+        type: categorical
+        description: Grade level as integer for sorting
+        expr: grade_level_integer
+      - name: race_ethnicity
+        type: categorical
+        description: Single value for student's race/ethnicity (includes multi-racial and Hispanic logic)
+        expr: race_ethnicity
+      - name: has_hispanic_latino_ethnicity
+        type: categorical
+        description: Whether student identifies as Hispanic or Latino
+        expr: has_hispanic_latino_ethnicity
+      - name: lep_code
+        type: categorical
+        description: Limited English Proficiency status (Limited, Formerly Limited, Not Limited)
+        expr: lep_code
+      - name: is_special_education_annual
+        type: categorical
+        description: Special education status for the given year
+        expr: is_special_education_annual
+      - name: is_special_education_active
+        type: categorical
+        description: Current/end-of-year special education status
+        expr: is_special_education_active
+      - name: school_year
+        type: categorical
+        description: School year for this student record
+        expr: school_year
+      - name: tenant_code
+        type: categorical
+        expr: tenant_code
+      - name: birth_date
+        type: time
+        description: Student's date of birth
+        type_params:
+          time_granularity: day
+        expr: birth_date
