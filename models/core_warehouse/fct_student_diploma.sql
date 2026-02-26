@@ -51,7 +51,7 @@ joined_with_xwalk as (
         {% if xwalk_academic_term_enabled %} 
         xwalk_academic_terms.sort_index
         {% else %}
-        NULL as sort_index
+        cast(NULL as int) as sort_index
         {% endif %}
     from joined_diploma
     {% if xwalk_academic_term_enabled %}
