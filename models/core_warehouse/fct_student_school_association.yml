@@ -142,3 +142,101 @@ models:
         description: >
           True if this is the most recent enrollment (by entry date) at this 
           school in this year.
+
+semantic_models:
+  - name: fct_student_school_association
+    description: >
+      Student enrollment records by school. A student can have multiple enrollments
+      within a year (multiple schools or re-enrollments). Use is_active_enrollment
+      for current enrollments, is_latest_annual_entry for most recent per student-school-year.
+    model: ref('fct_student_school_association')
+    defaults:
+      agg_time_dimension: entry_date
+
+    entities:
+      - name: student_enrollment
+        type: primary
+        expr: "k_student || '-' || k_school || '-' || entry_date"
+      - name: student
+        type: foreign
+        expr: k_student
+      - name: school
+        type: foreign
+        expr: k_school
+      - name: school_calendar
+        type: foreign
+        expr: k_school_calendar
+      - name: lea
+        type: foreign
+        expr: k_lea
+
+    measures:
+      - name: enrollment_count
+        description: Count of enrollment records
+        agg: count
+        expr: "1"
+      - name: active_enrollment_count
+        description: Count of active enrollments
+        agg: sum
+        expr: "case when is_active_enrollment then 1 else 0 end"
+      - name: primary_school_enrollment_count
+        description: Count of enrollments flagged as primary school
+        agg: sum
+        expr: "case when is_primary_school then 1 else 0 end"
+      - name: repeat_grade_count
+        description: Count of students repeating a grade
+        agg: sum
+        expr: "case when is_repeat_grade then 1 else 0 end"
+
+    dimensions:
+      - name: entry_date
+        type: time
+        description: Date student entered and began receiving services
+        type_params:
+          time_granularity: day
+        expr: entry_date
+      - name: exit_withdraw_date
+        type: time
+        description: Date student exited or withdrew
+        type_params:
+          time_granularity: day
+        expr: exit_withdraw_date
+      - name: is_active_enrollment
+        type: categorical
+        description: Whether enrollment is currently active (current year, started, not ended)
+        expr: is_active_enrollment
+      - name: is_primary_school
+        type: categorical
+        description: Whether this is the student's primary school record
+        expr: is_primary_school
+      - name: is_repeat_grade
+        type: categorical
+        description: Whether student is repeating a grade
+        expr: is_repeat_grade
+      - name: is_latest_annual_entry
+        type: categorical
+        description: Whether this is the most recent enrollment at this school this year
+        expr: is_latest_annual_entry
+      - name: entry_grade_level
+        type: categorical
+        description: Grade level at enrollment
+        expr: entry_grade_level
+      - name: entry_type
+        type: categorical
+        description: How student entered (Next year school, Re-entry, New to system)
+        expr: entry_type
+      - name: exit_withdraw_type
+        type: categorical
+        description: Circumstances of exit (Transferred, Completed, etc.)
+        expr: exit_withdraw_type
+      - name: residency_status
+        type: categorical
+        description: Location of legal residence relative to school boundaries
+        expr: residency_status
+      - name: school_year
+        type: categorical
+        description: School year by ending year
+        expr: school_year
+      - name: tenant_code
+        type: categorical
+        expr: tenant_code
