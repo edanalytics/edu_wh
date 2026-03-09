@@ -60,7 +60,8 @@ joined as (
         stg_stu_sch_attend.attendance_event_category,
         stg_stu_sch_attend.attendance_event_reason,
         xwalk_att_events.is_absent,
-        xwalk_att_events.attendance_excusal_status,
+        {{ var("edu:attendance:excusal_status_column_logic", "xwalk_att_events.attendance_excusal_status") }}
+            as attendance_excusal_status,
         stg_stu_sch_attend.event_duration,
         stg_stu_sch_attend.school_attendance_duration,
         stg_stu_sch_attend.arrival_time,
