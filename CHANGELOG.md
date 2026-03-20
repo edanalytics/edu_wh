@@ -1,5 +1,6 @@
 # Unreleased
 ## New features
+- Add `course_level_characteristics_array` to `dim_course_section` (sourced from `bld_ef3__course_char__combined_wide`): a sorted, distinct array of raw Ed-Fi course-level characteristic descriptor strings for the section, combining Course, Course Offering, and Section payloads. Existing dynamic `is_*` boolean columns are unchanged.
 ## Under the hood
 ## Fixes
 
