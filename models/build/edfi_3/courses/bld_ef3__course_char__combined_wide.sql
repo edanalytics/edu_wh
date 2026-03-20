@@ -13,7 +13,7 @@ pivoted as (
         {{ edu_edfi_source.json_array_agg(
             'course_level_characteristic',
             order_by='course_level_characteristic',
-            is_terminal=False
+            is_terminal=True
         ) }} as course_level_characteristics_array
         {%- if not is_empty_model('xwalk_course_level_characteristics') -%},
           {{ ea_pivot(
