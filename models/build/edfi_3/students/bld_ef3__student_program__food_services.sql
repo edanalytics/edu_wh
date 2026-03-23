@@ -40,7 +40,7 @@ maxed as (
         {%- endif %}
 
         max(direct_certification) as direct_certification,
-        max(served_outside_of_regular_session) as served_outside_of_regular_session,
+        max(served_outside_of_regular_session) as served_outside_of_regular_session
 
     from stage
     group by 1, 2

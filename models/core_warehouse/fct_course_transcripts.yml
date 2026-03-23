@@ -41,10 +41,11 @@ models:
       tags: ['core']
     tests:
       - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - k_course
-            - k_student_academic_record
-            - course_attempt_result
+          arguments:
+            combination_of_columns:
+              - k_course
+              - k_student_academic_record
+              - course_attempt_result
     columns:
       - name: k_course
       - name: k_student_academic_record

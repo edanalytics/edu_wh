@@ -29,6 +29,7 @@ choose_email as (
 formatted as (
     select 
         stg_staff.k_staff,
+        stg_staff.k_person,
         stg_staff.tenant_code,
         stg_staff.staff_unique_id,
         {{ accordion_columns(
@@ -38,6 +39,7 @@ formatted as (
         choose_email.email_address,
         choose_email.email_type,
         stg_staff.last_name || ', ' || stg_staff.first_name as display_name,
+        concat(display_name, ' (', stg_staff.staff_unique_id, ')') as safe_display_name,
         stg_staff.first_name,
         stg_staff.last_name,
         stg_staff.middle_name,

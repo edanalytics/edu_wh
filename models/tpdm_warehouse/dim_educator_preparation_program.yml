@@ -1,0 +1,40 @@
+version: 2
+
+models:
+  - name: dim_educator_preparation_program
+    description: >
+        ##### Overview:
+          Defines an educator preparation program. As defined in the Ed-Fi TPDM (EPDM), an educator preparation program is a program that prepares candidates to become educators.
+
+        ##### Primary Key:
+          `k_educator_preparation_program` - There is one record per educator preparation program, tenant, and year.
+    config:
+      tags: ['tpdm']
+      enabled: "{{ var('edu:tpdm:enabled', False) }}"
+    columns:
+      - name: k_educator_preparation_program
+        description: Generated primary key from `tenant_code`, `api_year`, `ed_org_id`, and `program_id`
+        tests: 
+          - unique
+      - name: tenant_code
+        description: Code defining the Tenant (may be an LEA, SEA, etc.) of the Ed-Fi ODS from which this record was pulled
+      - name: program_id
+        description: >
+          A unique number or alphanumeric code assigned to a program
+          by a school, school system, a state, or other agency or entity.
+      - name: ed_org_id
+        description: The identifier for the educational organization that offers the educator preparation program
+      - name: ed_org_type
+        description: >
+          The type of educational organization that offers the program
+          e.g., School, LocalEducationAgency, or PostSecondaryInstitution.
+      - name: program_name
+        description: The name of the educator preparation program
+      - name: program_type
+        description: The type or category of the educator preparation program (e.g., Traditional, Alternative, Residency)
+      - name: accreditation_status
+        description: The current accreditation status of the educator preparation program (e.g., Accredited, Probationary, Not Accredited)
+      - name: v_grade_levels
+        description: >
+          This list defines the set of grade levels for which the educator preparation program prepares candidates.
+          The map to known Ed-Fi enumeration values is required. 

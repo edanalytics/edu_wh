@@ -3,6 +3,40 @@
 ## Under the hood
 ## Fixes
 
+# edu_wh v0.6.1
+## New features
+- Add `school_year` column to `fct_student_grades`, `fct_student_discipline_incident_behaviors`, `fct_student_discipline_incident_summary`, `fct_student_discipline_actions_summary`, `fct_student_school_attendance_event`, `fct_student_section_attendance_event`, `fct_student_daily_attendance`
+## Under the hood
+- Expand yml documentation for `fct_student_section_attendance_event`
+## Fixes
+- Fix `period_duration` calculation in `dim_class_period` to account for different time formats.
+
+# edu_wh v0.6.0
+## New features
+- Add `attendance_excusal_status` and `consecutive_days_by_excusal_status` to `fct_student_daily_attendance`, where:
+    - `attendance_excusal_status` classifies each attendance record as 'In Attendance', 'Not Enrolled', 'Excused Absence', or 'Unexcused Absence'
+    - `consecutive_days_by_excusal_status` reports the number of consecutive days a student has had the same attendance_excusal_status
+- Add `attendance_excusal_status`and `calendar_date` to `fct_student_school_attendance_event`
+- Add TPDM/EPDM domain warehouse models: `dim_educator_preparation_program`, `fct_candidate_educator_preparation_program`, `fct_candidate_staff_association`
+- Add "bridge table" `brg_course_section_program` for convenient linking between course sections & programs
+## Under the hood
+- Update syntax of dbt test argument declarations to avoid deprecated behavior. Requires dbt 1.10.5+
+## Fixes
+## Migrations
+- see Release page
+
+# edu_wh v0.5.3
+## New features
+- Add `dim_candidate` model
+## Fixes
+- Minor fixes for Databricks compatibility
+
+# edu_wh v0.5.2
+## New features
+- Add `safe_display_name` to `dim_staff`, the logic for this column replicates that of `bld_ef3__immutable_stu_demos`.
+## Fixes
+- Updated tests `dbt_utils_unique_combination_of_columns_fct_student_language_instruction_program_association_k_student__k_program`, `dbt_utils_unique_combination_of_columns_fct_student_program_association_k_student__k_program`, and `dbt_utils_unique_combination_of_columns_fct_student_title_i_part_a_program_association_k_student__k_program` to include two additional columns. Previous test only listed partial primary key. 
+
 # edu_wh v0.5.1
 ## New features
 - Add fct models `fct_student_cte_program_associations`, `fct_student_migrant_education_program_associations`, and `fct_student_school_food_service_program_associations`

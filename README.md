@@ -71,10 +71,10 @@ and refer to the [CHANGELOG](https://github.com/edanalytics/edu_wh/blob/main/CHA
 and release notes for more information on changes across versions.
 
 ## Platform Compatibility
-Currently only Snowflake is supported.
+Currently Snowflake and Databricks are supported.
 
-We are working on adding the scaffolding for multi-platform support, and once 
-this is in place would welcome contributions.
+We have built the scaffolding for multi-platform support via dbt macros, and we welcome contributions
+for new platforms.
 
 [Contact us](mailto:edu@edanalytics.org) if you're interested in support in another
 platform or contributing to this effort.

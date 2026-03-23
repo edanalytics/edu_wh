@@ -13,11 +13,12 @@ models:
 
     tests:
       - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - k_student
-            - k_student_xyear
-            - k_discipline_incident
-            - behavior_type
+          arguments:
+            combination_of_columns:
+              - k_student
+              - k_student_xyear
+              - k_discipline_incident
+              - behavior_type
     columns:
       - name: k_student
       - name: k_student_xyear
@@ -26,6 +27,7 @@ models:
         description: >
           A key containing incident_id and school_id to represent a single discipline incident.
       - name: tenant_code
+      - name: school_year
       - name: school_id
       - name: incident_id
         description: > 

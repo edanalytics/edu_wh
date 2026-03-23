@@ -31,6 +31,7 @@ formatted as (
         dim_course_section.k_school,
         dim_course_section.k_course_section,
         stg_stu_section_attendance.tenant_code,
+        stg_stu_section_attendance.school_year,
         stg_stu_section_attendance.attendance_event_date,
         stg_stu_section_attendance.attendance_event_category,
         stg_stu_section_attendance.attendance_event_reason,
