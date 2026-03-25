@@ -154,11 +154,22 @@ student_obj_assessments_wide as (
         from dim_student
     )
     {{ dbt_utils.group_by(n=21) }}
+),
+-- mirror bld_ef3__student_assessment_cross_tenant deduped_assessments: same k_* can appear more than once
+-- after cross-tenant surrogate rebuild; keep one row per k_student_objective_assessment preferring is_original_record
+student_obj_assessments_wide_deduped as (
+    {{
+        dbt_utils.deduplicate(
+            relation='student_obj_assessments_wide',
+            partition_by='k_student_objective_assessment',
+            order_by='is_original_record desc'
+        )
+    }}
 )
 -- add v_other_results to the end because variant columns cannot be included in a group by in Databricks
 select 
-    {{ edu_edfi_source.star('student_obj_assessments_wide', except=['k_student_objective_assessment__original']) }},
+    {{ edu_edfi_source.star('student_obj_assessments_wide_deduped', except=['k_student_objective_assessment__original']) }},
     v_other_results
-from student_obj_assessments_wide
+from student_obj_assessments_wide_deduped
 left join object_agg_other_results
-    on student_obj_assessments_wide.k_student_objective_assessment__original = object_agg_other_results.k_student_objective_assessment
+    on student_obj_assessments_wide_deduped.k_student_objective_assessment__original = object_agg_other_results.k_student_objective_assessment
