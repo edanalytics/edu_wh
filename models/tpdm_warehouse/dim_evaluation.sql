@@ -8,7 +8,7 @@
 }}
 
 with stg_eval as (
-    select * from {{ ref('stg_tpdm_evaluations') }}
+    select * from {{ ref('stg_tpdm__evaluations') }}
 ),
 
 formatted as (
