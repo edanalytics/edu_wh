@@ -32,7 +32,7 @@ active_enrollments as (
     left join {{ ref(removed_students_source) }}
         on dim_student.k_student = {{ removed_students_source }}.k_student
     where is_active_enrollment
-    and {{ removed_students_source }}.k_student is not null
+    and {{ removed_students_source }}.k_student is null
     {% else %}
     where is_active_enrollment
     -- below is default logic to ensure the chosen 'global' IDs actually represent the same student
