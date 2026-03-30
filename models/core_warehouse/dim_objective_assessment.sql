@@ -17,49 +17,25 @@ obj_assessment_scores as (
 obj_assessment_pls as (
     select * from {{ ref('bld_ef3__objective_assessment_performance_levels') }}
 ),
-student_assessment_cross_tenant as (
-    select * from {{ ref('bld_ef3__student_assessment_cross_tenant') }}
+student_obj_assessment_cross_tenant as (
+    select * from {{ ref('bld_ef3__student_objective_assessment_cross_tenant') }}
 ),
--- we need to use the student level data to determine which tenant/assessment combos we need records for
--- some of those actual tenant/assessment combos might exist already, but some might not
--- we need to create records when they don't exist, using the metadata from the original tenant
-dedupe_cross_tenant_assessments as (
+-- dedupe to one cross-tenant row per objective assessment (grain of dim)
+dedupe_cross_tenant as (
     {{
         dbt_utils.deduplicate(
-            relation='student_assessment_cross_tenant',
-            partition_by='k_assessment',
+            relation='student_obj_assessment_cross_tenant',
+            partition_by='k_objective_assessment',
             order_by='tenant_code,school_year'
         )
     }}
 ),
-obj_assessment_surrogate_keys as (
-    select
-        {{ dbt_utils.generate_surrogate_key(
-            ['dedupe_cross_tenant_assessments.tenant_code',
-            'dedupe_cross_tenant_assessments.api_year',
-            'lower(stg_obj_assessments.assess_academic_subject)',
-            'lower(stg_obj_assessments.academic_subject)',
-            'lower(stg_obj_assessments.assessment_identifier)',
-            'lower(stg_obj_assessments.namespace)',
-            'lower(stg_obj_assessments.objective_assessment_identification_code)'
-            ]
-        ) }} as k_objective_assessment,
-        stg_obj_assessments.k_objective_assessment as k_objective_assessment__original,
-        dedupe_cross_tenant_assessments.k_assessment,
-        dedupe_cross_tenant_assessments.k_assessment__original,
-        dedupe_cross_tenant_assessments.tenant_code,
-        dedupe_cross_tenant_assessments.school_year,
-        dedupe_cross_tenant_assessments.api_year
-    from stg_obj_assessments
-    join dedupe_cross_tenant_assessments
-        on stg_obj_assessments.k_assessment = k_assessment__original
-),
 formatted as (
     select
-        coalesce(obj_assessment_surrogate_keys.k_objective_assessment, stg_obj_assessments.k_objective_assessment) as k_objective_assessment,
-        coalesce(obj_assessment_surrogate_keys.k_assessment, stg_obj_assessments.k_assessment) as k_assessment,
-        coalesce(obj_assessment_surrogate_keys.tenant_code, stg_obj_assessments.tenant_code) as tenant_code,
-        coalesce(obj_assessment_surrogate_keys.api_year, stg_obj_assessments.api_year) as school_year,
+        coalesce(dedupe_cross_tenant.k_objective_assessment, stg_obj_assessments.k_objective_assessment) as k_objective_assessment,
+        coalesce(dedupe_cross_tenant.k_assessment, stg_obj_assessments.k_assessment) as k_assessment,
+        coalesce(dedupe_cross_tenant.tenant_code, stg_obj_assessments.tenant_code) as tenant_code,
+        coalesce(dedupe_cross_tenant.school_year, stg_obj_assessments.api_year) as school_year,
         stg_obj_assessments.assessment_identifier,
         stg_obj_assessments.namespace,
         stg_obj_assessments.objective_assessment_description,
@@ -72,13 +48,13 @@ formatted as (
         obj_assessment_pls.performance_levels_array
     from stg_obj_assessments
     -- making all of these left joins because none of these are actually required
-    left join obj_assessment_scores 
+    left join obj_assessment_scores
         on stg_obj_assessments.k_objective_assessment = obj_assessment_scores.k_objective_assessment
     left join obj_assessment_pls
         on stg_obj_assessments.k_objective_assessment = obj_assessment_pls.k_objective_assessment
-     -- this could result in dupes if the assessment already exists, will dedupe below
-    left join obj_assessment_surrogate_keys
-        on stg_obj_assessments.k_objective_assessment = k_objective_assessment__original
+    -- left join fans out to one original row + one row per cross-tenant mapping
+    left join dedupe_cross_tenant
+        on stg_obj_assessments.k_objective_assessment = dedupe_cross_tenant.k_objective_assessment__original
 ),
 dedupe_objective_assessments as (
     {{

@@ -41,7 +41,7 @@ combined_with_cross_tenant as (
         coalesce(student_assessment_cross_tenant.is_original_record, True) as is_original_record,
         coalesce(student_assessment_cross_tenant.original_tenant_code, student_assessments.tenant_code) as original_tenant_code,
         {{ accordion_columns(
-            source_table='stg_ef3__student_assessments', 
+            source_table='stg_ef3__student_assessments',
             source_alias='student_assessments',
             exclude_columns=['k_student_assessment', 'k_assessment', 'k_student', 'k_student_xyear', 'tenant_code', 'school_year']) }}
     from student_assessments
@@ -103,8 +103,8 @@ student_assessments_wide as (
     {% if var('edu:school_year:assessment_dates_xwalk_enabled', False) %}
     left join {{ ref('xwalk_assessment_school_year_dates') }} dates_xwalk
         -- note: between means A >= X AND A <= Y, so date upper/lower bounds should not overlap across years
-        on stu_xtenant.administration_date between dates_xwalk.start_date::date and dates_xwalk.end_date::date 
-        -- we want to allow for the school year cutoffs to differ by assessment 
+        on stu_xtenant.administration_date between dates_xwalk.start_date::date and dates_xwalk.end_date::date
+        -- we want to allow for the school year cutoffs to differ by assessment
         -- but also allow those fields to remain null if xwalk is desired but not to differ across assessments
         and ifnull(dates_xwalk.assessment_identifier, '1') = iff(dates_xwalk.assessment_identifier is null, '1', stu_xtenant.assessment_identifier)
         and ifnull(dates_xwalk.namespace, '1') = iff(dates_xwalk.namespace is null, '1', stu_xtenant.namespace)
@@ -117,8 +117,8 @@ student_assessments_wide as (
     {{ dbt_utils.group_by(n=21) }}
 )
 -- add v_other_results to the end because variant columns cannot be included in a group by in Databricks
-select 
-    {{ edu_edfi_source.star('student_assessments_wide', except=['k_student_assessment__original']) }}, 
+select
+    {{ edu_edfi_source.star('student_assessments_wide', except=([] if var('edu:assessment:cross_tenant_enabled', False) else ['k_student_assessment__original', 'is_original_record', 'original_tenant_code'])) }},
     v_other_results
 from student_assessments_wide
 left join object_agg_other_results

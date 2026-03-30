@@ -1,4 +1,4 @@
-{% if var("edu:assessments:assessment_cross_tenant", False) -%}
+{% if var("edu:assessment:cross_tenant_enabled", False) -%}
 
 {# Load students to remove source from var #}
 {% set removed_students_source = var("edu:assessments:removed_students_source", none) %}
