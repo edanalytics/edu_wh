@@ -23,7 +23,7 @@ section_chars as (
     from sections
     join offerings
         on sections.k_course_offering = offerings.k_course_offering
-        {{ edu_edfi_source.json_flatten('sections.v_section_characteristics', outer=True) }}
+        {{ edu_edfi_source.json_flatten('sections.v_course_level_characteristics', outer=True) }}
 ), 
 offering_chars as (
     select 
