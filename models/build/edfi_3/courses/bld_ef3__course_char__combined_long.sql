@@ -19,7 +19,7 @@ section_chars as (
         offerings.k_course,
         sections.k_course_offering,
         sections.k_course_section,
-        {{ edu_edfi_source.extract_descriptor('value:sectionCharacteristicDescriptor::string') }} as characteristic
+        {{ edu_edfi_source.extract_descriptor('value:courseLevelCharacteristicDescriptor::string') }} as characteristic
     from sections
     join offerings
         on sections.k_course_offering = offerings.k_course_offering
