@@ -20,6 +20,8 @@ formatted as (
         stage.certification_exam_date,
         stage.attempt_number,
         stage.certification_exam_pass_indicator,
+        stage.certification_exam_score,
+        stage.certification_exam_status_descriptor,
         stage.person_source_system_descriptor
     from stage
 )
