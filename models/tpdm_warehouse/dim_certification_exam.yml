@@ -23,3 +23,6 @@ models:
           School year specified by Spring year.
           e.g. the 2021-2022 year would be 2022.
       - name: certification_exam_id
+        description: Certification exam ID.
+      - name: namespace
+        description: Namespace for the certiifcation exam.

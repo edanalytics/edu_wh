@@ -17,6 +17,7 @@ formatted as (
         stg_exam.tenant_code,
         stg_exam.school_year,
         stg_exam.certification_exam_id,
+        stg_exam.namespace,
         stg_exam.certification_exam_title,
         stg_exam.certification_exam_type,
         stg_exam.effective_date,
