@@ -27,17 +27,11 @@ active_enrollments as (
     from fct_student_school
     join dim_student
         on fct_student_school.k_student = dim_student.k_student
-    -- if this source is configured, remove these students instead of using default logic below
-    {% if removed_students_source is not none and removed_students_source | length -%}
-    left join {{ ref(removed_students_source) }}
-        on dim_student.k_student = {{ removed_students_source }}.k_student
     where is_active_enrollment
-    and {{ removed_students_source }}.k_student is null
-    {% else %}
-    where is_active_enrollment
+    {% if removed_students_source is none or not removed_students_source | length -%}
     -- below is default logic to ensure the chosen 'global' IDs actually represent the same student
     -- only to be used if a students to remove source is not configured
-    qualify 
+    qualify
         -- either the birthdates are the same
         (count(distinct dim_student.birth_date) over (partition by dim_student.student_unique_id) <= 1
             -- at least 1 of birthdate, first name, or last name must be the same
@@ -130,9 +124,21 @@ subset_assessments as (
     join deduped_enrollments
         -- NOTE: in the future, this could be configurable
         on stg_student_assessment.student_unique_id = deduped_enrollments.student_unique_id
+    {% if removed_students_source is not none and removed_students_source | length -%}
+    -- exclude records where the original tenant is in the removed list (prevents sharing FROM excluded tenant)
+    left join {{ ref(removed_students_source) }} as removed_sharing
+        on stg_student_assessment.k_student = removed_sharing.k_student
+    -- exclude records where the receiving tenant is in the removed list (prevents sharing TO excluded tenant)
+    left join {{ ref(removed_students_source) }} as removed_receiving
+        on deduped_enrollments.k_student = removed_receiving.k_student
+    where stg_student_assessment.tenant_code != deduped_enrollments.tenant_code
+    and removed_sharing.k_student is null
+    and removed_receiving.k_student is null
+    {% else %}
     -- because of the above section of code, we only want to keep records here
     -- where the enrolled tenant is different than the original record
     where stg_student_assessment.tenant_code != deduped_enrollments.tenant_code
+    {% endif %}
 ),
 -- if an assessment record for a student exists in two tenants (duplicate student_unique_id and student_assessment_id), they will be duplicated
 -- this handles that by depuping on the newly created k_student_assessment
