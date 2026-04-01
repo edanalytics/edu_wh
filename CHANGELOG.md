@@ -2,6 +2,7 @@
 ## New features
 ## Under the hood
 ## Fixes
+- Fix default sort_index for databricks compatability
 
 # edu_wh v0.6.1
 ## New features
