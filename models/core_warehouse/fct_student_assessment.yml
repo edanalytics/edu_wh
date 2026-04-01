@@ -79,6 +79,20 @@ models:
         description: >
           This is an array of all additional score results that were not
           mapped in the seed table `xwalk_assessment_scores`.
+      - name: k_student_assessment__original
+        description: >
+          The pre-remap surrogate key for the assessment event, scoped to the source tenant. Used internally
+          to join back to staging data. Only present when `edu:assessment:cross_tenant_enabled` is `True`.
+      - name: is_original_record
+        description: >
+          `True` if `tenant_code` is the source tenant that originally administered the assessment.
+          `False` if this row is a copy attributed to an active tenant where the student is currently enrolled.
+          Only present when `edu:assessment:cross_tenant_enabled` is `True`.
+      - name: original_tenant_code
+        description: >
+          The `tenant_code` of the source tenant that originally collected the assessment data.
+          Identical to `tenant_code` for original records; differs for cross-tenant copies.
+          Only present when `edu:assessment:cross_tenant_enabled` is `True`.
       - name: scale_score
         description: >
           One of the results columns that could exist if mapped in the seed table `xwalk_assessment_scores`.
