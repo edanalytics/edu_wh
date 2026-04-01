@@ -17,12 +17,25 @@ obj_assessment_scores as (
 obj_assessment_pls as (
     select * from {{ ref('bld_ef3__objective_assessment_performance_levels') }}
 ),
+student_obj_assessment_cross_tenant as (
+    select * from {{ ref('bld_ef3__student_objective_assessment_cross_tenant') }}
+),
+-- dedupe to one cross-tenant row per objective assessment (grain of dim)
+dedupe_cross_tenant as (
+    {{
+        dbt_utils.deduplicate(
+            relation='student_obj_assessment_cross_tenant',
+            partition_by='k_objective_assessment',
+            order_by='tenant_code,school_year'
+        )
+    }}
+),
 formatted as (
     select
-        stg_obj_assessments.k_objective_assessment,
-        stg_obj_assessments.k_assessment,
-        stg_obj_assessments.tenant_code,
-        stg_obj_assessments.api_year as school_year,
+        coalesce(dedupe_cross_tenant.k_objective_assessment, stg_obj_assessments.k_objective_assessment) as k_objective_assessment,
+        coalesce(dedupe_cross_tenant.k_assessment, stg_obj_assessments.k_assessment) as k_assessment,
+        coalesce(dedupe_cross_tenant.tenant_code, stg_obj_assessments.tenant_code) as tenant_code,
+        coalesce(dedupe_cross_tenant.school_year, stg_obj_assessments.api_year) as school_year,
         stg_obj_assessments.assessment_identifier,
         stg_obj_assessments.namespace,
         stg_obj_assessments.objective_assessment_description,
@@ -35,10 +48,22 @@ formatted as (
         obj_assessment_pls.performance_levels_array
     from stg_obj_assessments
     -- making all of these left joins because none of these are actually required
-    left join obj_assessment_scores 
+    left join obj_assessment_scores
         on stg_obj_assessments.k_objective_assessment = obj_assessment_scores.k_objective_assessment
     left join obj_assessment_pls
         on stg_obj_assessments.k_objective_assessment = obj_assessment_pls.k_objective_assessment
+    -- left join fans out to one original row + one row per cross-tenant mapping
+    left join dedupe_cross_tenant
+        on stg_obj_assessments.k_objective_assessment = dedupe_cross_tenant.k_objective_assessment__original
+),
+dedupe_objective_assessments as (
+    {{
+        dbt_utils.deduplicate(
+            relation='formatted',
+            partition_by='k_assessment,k_objective_assessment',
+            order_by='tenant_code,school_year'
+        )
+    }}
 )
-select * from formatted
+select * from dedupe_objective_assessments
 order by tenant_code, k_objective_assessment
