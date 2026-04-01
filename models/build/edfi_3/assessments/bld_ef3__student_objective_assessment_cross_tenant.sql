@@ -62,21 +62,21 @@ select * from deduped
 
 select * from (
     select
-        null as k_student_objective_assessment,
-        null as k_objective_assessment,
-        null as k_student_objective_assessment__original,
-        null as k_objective_assessment__original,
-        null as k_student_assessment,
-        null as k_student_assessment__original,
-        null as k_student,
-        null as k_student_xyear,
-        null as k_assessment,
-        null as k_assessment__original,
-        null as tenant_code,
-        null as school_year,
-        null as api_year,
-        null as is_original_record,
-        null as original_tenant_code
+        null::varchar as k_student_objective_assessment,
+        null::varchar as k_objective_assessment,
+        null::varchar as k_student_objective_assessment__original,
+        null::varchar as k_objective_assessment__original,
+        null::varchar as k_student_assessment,
+        null::varchar as k_student_assessment__original,
+        null::varchar as k_student,
+        null::varchar as k_student_xyear,
+        null::varchar as k_assessment,
+        null::varchar as k_assessment__original,
+        null::varchar as tenant_code,
+        null::int as school_year,
+        null::int as api_year,
+        null::boolean as is_original_record,
+        null::varchar as original_tenant_code
 ) limit 0
 
 {% endif %}
