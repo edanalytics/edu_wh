@@ -84,7 +84,14 @@ joined as (
          on fct_student_school_assoc.k_school_calendar = dim_calendar_date.k_school_calendar
          and stg_stu_sch_attend.attendance_event_date = dim_calendar_date.calendar_date
          and dim_calendar_date.calendar_date >= fct_student_school_assoc.entry_date 
-         and {{ date_within_end_date('dim_calendar_date.calendar_date', 'fct_student_school_assoc.exit_withdraw_date', var('edu:enroll:exit_withdraw_date_inclusive', True)) }}
+         -- confirm attendance event date is within the enrollment exit date range,
+         -- coalesce the end date to today to include today if it's within the range, to avoid keeping attendance events from the future
+         and {{ date_within_end_date(
+                'dim_calendar_date.calendar_date',
+                'fct_student_school_assoc.exit_withdraw_date',
+                var('edu:enroll:exit_withdraw_date_inclusive', True),
+                coalesce_to_today=True) 
+            }}
     join xwalk_att_events
         on stg_stu_sch_attend.attendance_event_category = xwalk_att_events.attendance_event_descriptor
 ),

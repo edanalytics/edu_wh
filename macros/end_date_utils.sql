@@ -1,4 +1,4 @@
-{% macro date_within_end_date(date_col, end_date, inclusive=true) %}
+{% macro date_within_end_date(date_col, end_date, inclusive=true, coalesce_to_today=false) %}
 {#- 
     Produces sql to determine if a date is within an end date or not.
 
@@ -20,10 +20,14 @@
     end_date: the end date of some date range.
     inclusive: should the end_date be considered inclusive or not
  -#}
-    {% if inclusive %}
-        ({{ end_date }} is null or {{ date_col }} <= {{ end_date }})
+    {% if coalesce_to_today %}
+        {{ date_col }} <= coalesce({{ end_date }}, current_date())
     {% else %}
-        ({{ end_date }} is null or {{ date_col }} < {{ end_date }})
+        {% if inclusive %}
+            ({{ end_date }} is null or {{ date_col }} <= {{ end_date }})
+        {% else %}
+            ({{ end_date }} is null or {{ date_col }} < {{ end_date }})
+        {% endif %}
     {% endif %}
 {% endmacro %}
 
