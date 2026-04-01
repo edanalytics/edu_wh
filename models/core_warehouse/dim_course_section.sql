@@ -50,10 +50,11 @@ joined as (
         -- section characteristics
         {{ accordion_columns(
             source_table='bld_ef3__course_char__combined_wide',
-            exclude_columns=['tenant_code', 'api_year', 'k_course', 'k_course_offering', 'k_course_section'],
+            exclude_columns=['tenant_code', 'api_year', 'k_course', 'k_course_offering', 'k_course_section', 'course_level_characteristics_array'],
             source_alias='section_chars',
             coalesce_value = 'FALSE'
         ) }}
+        section_chars.course_level_characteristics_array,
 
         stg_ef3__sections.educational_environment_type,
         stg_ef3__sections.instruction_language,
