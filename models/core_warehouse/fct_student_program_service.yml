@@ -84,12 +84,15 @@ models:
             combination_of_columns:
               - k_student
               - k_program
+              - ed_org_id
               - program_enroll_begin_date
               - program_service
     columns:
+      - name: k_student_program
       - name: k_student
       - name: k_program
       - name: tenant_code
+      - name: ed_org_id
       - name: program_enroll_begin_date
       - name: program_service
       - name: primary_indicator

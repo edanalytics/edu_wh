@@ -5,7 +5,7 @@ models:
     description: >
       Student program enrollment information.
 
-      *Primary Key:* `k_student, k_program`
+      *Primary Key:* `k_student_program, program_enroll_begin_date, participation_status`
 
     config:
       tags: ['core']
@@ -15,14 +15,16 @@ models:
             combination_of_columns:
               - k_student
               - k_program
-              - k_student_xyear
+              - ed_org_id
               - program_enroll_begin_date
     columns:
+      - name: k_student_program
       - name: k_student
       - name: k_student_xyear
       - name: k_program
       - name: k_lea
       - name: k_school
+      - name: ed_org_id
       - name: tenant_code
       - name: school_year
       - name: program_enroll_begin_date
