@@ -2,6 +2,7 @@
 ## New features
 ## Under the hood
 ## Fixes
+- Fix propagation of course level characteristics in `dim_course_section` by correcting the field pulled by `bld_ef3__course_char__combined_long`
 
 # edu_wh v0.6.1
 ## New features
