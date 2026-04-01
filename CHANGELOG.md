@@ -1,5 +1,6 @@
 # Unreleased
 ## New features
+- Add two TPDM/EPDM models, `dim_certification_exam` and `fct_certification_exam_result`
 ## Under the hood
 ## Fixes
 - Fix propagation of course level characteristics in `dim_course_section` by correcting the field pulled by `bld_ef3__course_char__combined_long`
