@@ -2,6 +2,7 @@
 ## New features
 - Add `course_level_characteristics_array` to `dim_course_section` (sourced from `bld_ef3__course_char__combined_wide`): a sorted, distinct array of raw Ed-Fi course-level characteristic descriptor strings for the section, combining Course, Course Offering, and Section payloads. Existing dynamic `is_*` boolean columns are unchanged.
 - Add two TPDM/EPDM models, `dim_certification_exam` and `fct_certification_exam_result`
+- Make `attendance_excusal_status` logic configurable via new var `edu:attendance:excusal_status_column_logic`
 ## Under the hood
 ## Fixes
 - Fix default sort_index for databricks compatability
