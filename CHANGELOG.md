@@ -6,6 +6,7 @@
 ## Fixes
 - Fix default sort_index for databricks compatability
 - Fix propagation of course level characteristics in `dim_course_section` by correcting the field pulled by `bld_ef3__course_char__combined_long`
+- Fix `unique_combination_of_columns` tests for program association tables, to include `program_enroll_begin_date`
 
 # edu_wh v0.6.1
 ## New features
