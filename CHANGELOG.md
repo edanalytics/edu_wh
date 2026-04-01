@@ -4,7 +4,7 @@
 - Add two TPDM/EPDM models, `dim_certification_exam` and `fct_certification_exam_result`
 ## Under the hood
 ## Fixes
-- Fix default sort_index for databricks compatability
+- Fix default `fct_student_diploma.sort_index` (from NULL -> 1) for databricks compatability
 - Fix propagation of course level characteristics in `dim_course_section` by correcting the field pulled by `bld_ef3__course_char__combined_long`
 - Fix `unique_combination_of_columns` tests for program association tables, to include `program_enroll_begin_date`
 
