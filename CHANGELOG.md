@@ -1,12 +1,21 @@
 # Unreleased
 ## New features
+## Under the hood
+## Fixes
+
+# edu_wh v0.6.2
+## New features
+- Add Cross-Tenant Assessment sharing functionality. OFF by default. New vars `edu:assessment:cross_tenant_enabled` and `edu:assessments:removed_students_source`
+- Add configurable behavior for inclusivity/exclusivity of exit dates in enrollment windows. Default behavior (inclusivity) remains the same
 - Add `course_level_characteristics_array` to `dim_course_section` (sourced from `bld_ef3__course_char__combined_wide`)
 - Add two TPDM/EPDM models, `dim_certification_exam` and `fct_certification_exam_result`
+- Make `attendance_excusal_status` logic configurable via new var `edu:attendance:excusal_status_column_logic`
 ## Under the hood
 ## Fixes
 - Fix default `fct_student_diploma.sort_index` (from NULL -> 1) for databricks compatability
 - Fix propagation of course level characteristics in `dim_course_section` by correcting the field pulled by `bld_ef3__course_char__combined_long`
 - Fix `unique_combination_of_columns` tests for program association tables, to include `program_enroll_begin_date`
+
 
 # edu_wh v0.6.1
 ## New features
