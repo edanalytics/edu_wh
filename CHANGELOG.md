@@ -1,5 +1,6 @@
 # Unreleased
 ## New features
+- Make `attendance_excusal_status` logic configurable via new var `edu:attendance:excusal_status_column_logic`
 ## Under the hood
 ## Fixes
 
