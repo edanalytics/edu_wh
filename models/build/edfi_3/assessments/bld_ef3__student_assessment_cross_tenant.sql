@@ -155,18 +155,18 @@ from deduped_assessments
   -- if this feature is not turned on, force return a zero row table
   select *
   from (select
-          null as tenant_code,
-          null as school_year,
-          null as api_year,
-          null as k_student,
-          null as k_student_xyear,
-          null as k_assessment,
-          null as k_student_assessment,
-          null as k_student_assessment__original,
-          null as k_assessment__original,
-          null as student_unique_id,
-          null as is_original_record,
-          null as original_tenant_code
+          null::varchar as tenant_code,
+          null::int as school_year,
+          null::int as api_year,
+          null::varchar as k_student,
+          null::varchar as k_student_xyear,
+          null::varchar as k_assessment,
+          null::varchar as k_student_assessment,
+          null::varchar as k_student_assessment__original,
+          null::varchar as k_assessment__original,
+          null::varchar as student_unique_id,
+          null::boolean as is_original_record,
+          null::varchar as original_tenant_code
        ) blank_subquery
   limit 0
 {% endif %}
