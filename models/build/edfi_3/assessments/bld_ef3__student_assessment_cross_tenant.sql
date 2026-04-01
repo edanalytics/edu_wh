@@ -68,7 +68,6 @@ subset_assessments as (
         stg_student_assessment.k_student_assessment as k_student_assessment__original,
         stg_student_assessment.k_assessment as k_assessment__original,
         stg_student_assessment.student_unique_id,
-        -- todo: delete?
         stg_student_assessment.student_assessment_identifier,
         true as is_original_record,
         stg_student_assessment.tenant_code as original_tenant_code
@@ -111,7 +110,6 @@ subset_assessments as (
         stg_student_assessment.k_student_assessment as k_student_assessment__original,
         stg_student_assessment.k_assessment as k_assessment__original,
         stg_student_assessment.student_unique_id,
-        -- todo: delete?
         stg_student_assessment.student_assessment_identifier,
         stg_student_assessment.tenant_code = deduped_enrollments.tenant_code as is_original_record,
         stg_student_assessment.tenant_code as original_tenant_code
@@ -151,7 +149,6 @@ deduped_assessments as (
         )
     }}
 )
--- todo: currently missing records for students who are no longer currently enrolled at OG district, but currently enrolled in new district
 select *
 from deduped_assessments
 {% else %}
