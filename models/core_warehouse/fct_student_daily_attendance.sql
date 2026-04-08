@@ -233,7 +233,7 @@ cumulatives as (
         cumulative_days_enrolled >= {{ var('edu:attendance:chronic_absence_min_days') }} as meets_enrollment_threshold,
         {{ msr_chronic_absentee('cumulative_attendance_rate', 'cumulative_days_enrolled') }} as is_chronic_absentee,
         excusal_status_streaks.event_duration,
-        excusal_status_streaks.school_attendance_duration,
+        excusal_status_streaks.school_attendance_duration
     from excusal_status_streaks
 ),
 metric_labels as (
