@@ -43,7 +43,8 @@ combined_with_cross_tenant as (
         {{ accordion_columns(
             source_table='stg_ef3__student_assessments',
             source_alias='student_assessments',
-            exclude_columns=['k_student_assessment', 'k_assessment', 'k_student', 'k_student_xyear', 'tenant_code', 'school_year']) }}
+            exclude_columns=['k_student_assessment', 'k_assessment', 'k_student', 'k_student_xyear', 'tenant_code', 'school_year'],
+            add_trailing_comma=false) }}
     from student_assessments
     -- left join because this model can return empty
         -- and to avoid enforcing a current school association
