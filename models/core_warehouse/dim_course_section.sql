@@ -22,8 +22,11 @@ stg_ef3__sections as (
 dim_course as (
     select * from {{ ref('dim_course') }}
 ),
-section_chars as (
+course_level_chars as (
     select * from {{ ref('bld_ef3__course_char__combined_wide') }}
+),
+section_chars as (
+    select * from {{ ref('bld_ef3__section__wide_section_characteristics') }}
 ),
 joined as (
     select 
@@ -47,14 +50,23 @@ joined as (
         stg_ef3__sections.is_official_attendance_period,
         stg_ef3__sections.sequence_of_course,
 
-        -- section characteristics
+        -- course level characteristics
         {{ accordion_columns(
             source_table='bld_ef3__course_char__combined_wide',
             exclude_columns=['tenant_code', 'api_year', 'k_course', 'k_course_offering', 'k_course_section', 'course_level_characteristics_array'],
+            source_alias='course_level_chars',
+            coalesce_value = 'FALSE'
+        ) }}
+        course_level_chars.course_level_characteristics_array,
+
+        -- section characteristics
+        {{ accordion_columns(
+            source_table='bld_ef3__section__wide_section_characteristics',
+            exclude_columns=['k_course_section', 'section_characteristics_array'],
             source_alias='section_chars',
             coalesce_value = 'FALSE'
         ) }}
-        section_chars.course_level_characteristics_array,
+        section_chars.section_characteristics_array,
 
         stg_ef3__sections.educational_environment_type,
         stg_ef3__sections.instruction_language,
@@ -79,6 +91,8 @@ joined as (
         on stg_ef3__sections.k_course_offering = offering.k_course_offering
     join dim_course 
         on offering.k_course = dim_course.k_course
+    left join course_level_chars 
+        on stg_ef3__sections.k_course_section = course_level_chars.k_course_section
     left join section_chars 
         on stg_ef3__sections.k_course_section = section_chars.k_course_section
     -- custom data sources
