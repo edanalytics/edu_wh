@@ -6,8 +6,9 @@
     ]
   )
 }}
-{# Load custom data sources from var #}
-{% set custom_data_sources = var("edu:staff:custom_data_sources", []) %}
+
+{{ cds_depends_on('edu:staff:custom_data_sources') }}
+{% set custom_data_sources = var('edu:staff:custom_data_sources', []) %}
 
 with stg_staff as (
     select * from {{ ref('stg_ef3__staffs') }}
@@ -56,14 +57,8 @@ formatted as (
         stg_staff.years_of_prior_professional_experience,
         stg_staff.years_of_prior_teaching_experience
 
-        -- custom indicators
-        {% if custom_data_sources is not none and custom_data_sources | length -%}
-          {%- for source in custom_data_sources -%}
-            {%- for indicator in custom_data_sources[source] -%}
-              , {{ custom_data_sources[source][indicator]['where'] }} as {{ indicator }}
-            {%- endfor -%}
-          {%- endfor -%}
-        {%- endif %}
+        -- custom data sources columns
+        {{ add_cds_columns(custom_data_sources=custom_data_sources) }}
     from stg_staff
     left join bld_ef3__wide_ids_staff 
         on stg_staff.k_staff = bld_ef3__wide_ids_staff.k_staff
@@ -71,13 +66,10 @@ formatted as (
         on stg_staff.k_staff = choose_email.k_staff
     left join staff_race_ethnicity
         on stg_staff.k_staff = staff_race_ethnicity.k_staff
+
     -- custom data sources
-    {% if custom_data_sources is not none and custom_data_sources | length -%}
-      {%- for source in custom_data_sources -%}
-        left join {{ ref(source) }}
-          on stg_staff.k_staff = {{ source }}.k_staff
-      {% endfor %}
-    {%- endif %}
+    {{ add_cds_joins_v1(custom_data_sources=custom_data_sources, driving_alias='stg_staff', join_cols=['k_staff']) }}
+    {{ add_cds_joins_v2(custom_data_sources=custom_data_sources) }}
 )
 select * from formatted
 order by tenant_code, k_staff

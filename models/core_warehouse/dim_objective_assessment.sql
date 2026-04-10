@@ -8,6 +8,9 @@
   )
 }}
 
+{{ cds_depends_on('edu:objective_assessment:custom_data_sources') }}
+{% set custom_data_sources = var('edu:objective_assessment:custom_data_sources', []) %}
+
 with stg_obj_assessments as (
     select * from {{ ref('stg_ef3__objective_assessments') }}
 ),
@@ -52,6 +55,7 @@ formatted as (
         on stg_obj_assessments.k_objective_assessment = obj_assessment_scores.k_objective_assessment
     left join obj_assessment_pls
         on stg_obj_assessments.k_objective_assessment = obj_assessment_pls.k_objective_assessment
+
     -- left join fans out to one original row + one row per cross-tenant mapping
     left join dedupe_cross_tenant
         on stg_obj_assessments.k_objective_assessment = dedupe_cross_tenant.k_objective_assessment__original
@@ -64,6 +68,18 @@ dedupe_objective_assessments as (
             order_by='tenant_code,school_year'
         )
     }}
+),
+add_cds_columns as (
+    select dedupe_objective_assessments.*
+
+        -- custom data sources columns
+        {{ add_cds_columns(custom_data_sources=custom_data_sources) }}
+    from dedupe_objective_assessments
+
+    -- custom data sources
+    {{ add_cds_joins_v1(custom_data_sources=custom_data_sources, driving_alias='dedupe_objective_assessments', join_cols=['k_objective_assessment']) }}
+    {{ add_cds_joins_v2(custom_data_sources=custom_data_sources) }}
+
 )
-select * from dedupe_objective_assessments
+select * from add_cds_columns
 order by tenant_code, k_objective_assessment

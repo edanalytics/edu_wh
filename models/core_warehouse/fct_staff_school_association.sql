@@ -9,6 +9,9 @@
   )
 }}
 
+{{ cds_depends_on('edu:staff_school_association:custom_data_sources') }}
+{% set custom_data_sources = var('edu:staff_school_association:custom_data_sources', []) %}
+
 with stg_staff_school as (
     select * from {{ ref('stg_ef3__staff_school_associations') }}
 ),
@@ -104,5 +107,17 @@ check_active as (
             true, false
         ) as is_active_assignment
     from formatted
+),
+cds_cols as (
+    select 
+        ca.*
+
+        -- custom data sources columns
+        {{ add_cds_columns(custom_data_sources=custom_data_sources) }}
+    from check_active ca
+
+    -- custom data sources
+    {{ add_cds_joins_v1(custom_data_sources=custom_data_sources, driving_alias='ca', join_cols=['k_staff_school_association']) }}
+    {{ add_cds_joins_v2(custom_data_sources=custom_data_sources) }}
 )
-select * from check_active
+select * from cds_cols

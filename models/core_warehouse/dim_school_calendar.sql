@@ -8,6 +8,9 @@
   )
 }}
 
+{{ cds_depends_on('edu:school_calendar:custom_data_sources') }}
+{% set custom_data_sources = var('edu:school_calendar:custom_data_sources', []) %}
+
 with stg_calendar as (
     select * from {{ ref('stg_ef3__calendars') }}
 ),
@@ -33,11 +36,18 @@ formatted as (
         stg_calendar.calendar_code,
         stg_calendar.calendar_type,
         aggregated_grades.applicable_grade_levels_array
+
+        -- custom data sources columns
+        {{ add_cds_columns(custom_data_sources=custom_data_sources) }}
     from stg_calendar
     join dim_school
         on stg_calendar.k_school = dim_school.k_school
     left join aggregated_grades
         on stg_calendar.k_school_calendar = aggregated_grades.k_school_calendar
+
+    -- custom data sources
+    {{ add_cds_joins_v1(custom_data_sources=custom_data_sources, driving_alias='stg_calendar', join_cols=['k_school_calendar']) }}
+    {{ add_cds_joins_v2(custom_data_sources=custom_data_sources) }}
 )
 select * from formatted
 order by tenant_code, k_school, k_school_calendar
