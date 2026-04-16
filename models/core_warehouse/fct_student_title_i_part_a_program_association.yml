@@ -20,7 +20,6 @@ models:
             combination_of_columns:
               - k_student
               - k_program
-              - k_student_xyear
               - program_enroll_begin_date
 
     columns:

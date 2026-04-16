@@ -1,0 +1,28 @@
+version: 2
+
+models:
+  - name: dim_certification_exam
+    description: >
+        ##### Overview:
+          Defines a certification exam
+
+        ##### Primary Key:
+          `k_certification_exam` - There is one record per certification exam.
+    config:
+      tags: ['tpdm']
+      enabled: "{{ var('edu:tpdmcommunity:enabled', False) }}"
+    columns:
+      - name: k_certification_exam
+        description: Generated primary key from `certificationExamIdentifier`and `namespace`
+        tests: 
+          - unique
+      - name: tenant_code
+        description: Code defining the Tenant (may be an LEA, SEA, etc.) of the Ed-Fi ODS from which this record was pulled
+      - name: school_year
+        description: >
+          School year specified by Spring year.
+          e.g. the 2021-2022 year would be 2022.
+      - name: certification_exam_id
+        description: Certification exam ID.
+      - name: namespace
+        description: Namespace for the certiifcation exam.

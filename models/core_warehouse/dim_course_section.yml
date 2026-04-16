@@ -16,6 +16,7 @@ models:
         To populate these fields, we combine characteristics found in Course, Course Offering, and Sections, because it's
         possible for implementations to populate characterstics at any of these three levels in Ed-Fi. The model that 
         combines these characteristics is [bld_ef3__course_char__combined_long](#!/model/model.edu_wh.bld_ef3__course_char__combined_long)
+        `course_level_characteristics_array` lists every characteristic descriptor string in effect for the section (including descriptors not mapped in **xwalk_course_level_characteristics**). Use the `is_*` booleans for consistent filters; use the array for display and exploration.
 
       
     config:
@@ -122,3 +123,10 @@ models:
       - name: available_credit_type
         description: >
           The type of credits or units of value awarded for the completion of a course.
+      - name: course_level_characteristics_array
+        description: >
+          Sorted array of course-level characteristic descriptor strings for this section, after combining
+          Ed-Fi Course, Course Offering, and Section characteristic payloads (see
+          [bld_ef3__course_char__combined_wide](#!/model/model.edu_wh.bld_ef3__course_char__combined_wide)).
+          Null when the section has no such characteristics (no row in the combined-wide build). Not coerced through the xwalk, so
+          it may include descriptors that do not have a matching `is_*` column.
