@@ -4,7 +4,7 @@ models:
   - name: fct_student_program_association
     description: >
       ##### Overview:
-        This table defines associations between programs and a student. 
+        This fact table defines associations between programs and a student. 
       
       ##### Primary Key:
         `k_student, k_program` -- There is one record per tenant, year, student, and program.
