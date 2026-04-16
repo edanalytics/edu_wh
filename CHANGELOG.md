@@ -1,5 +1,6 @@
 # Unreleased
 ## New features
+- Updated docs for the following dbt models: `dim_objective_assessment`, `dim_parent`, `dim_school_calendar`, `dim_session`, `fct_student_discipline_actions_summary`, `fct_student_discipline_incident_summary`, `fct_student_parent_association`, `fct_student_program_association`
 ## Under the hood
 ## Fixes
 
