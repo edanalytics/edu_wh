@@ -3,9 +3,11 @@ version: 2
 models:
   - name: fct_student_program_association
     description: >
-      Student program enrollment information.
-
-      *Primary Key:* `k_student, k_program`
+      ##### Overview:
+        This table defines associations between programs and a student. 
+      
+      ##### Primary Key:
+        `k_student, k_program` -- There is one record per tenant, year, student, and program.
 
     config:
       tags: ['core']

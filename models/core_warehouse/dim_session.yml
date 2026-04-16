@@ -2,5 +2,27 @@ version: 2
 
 models:
   - name: dim_session
+    description: >
+      ##### Overview:
+        This dimension table defines a session during which instruction is provided, grades are reported and academic credits are awarded to students (whenever applicable).
+
+      ##### Primary Key:
+        `k_session` -- There is one record per tenant, school, year, and session.
+        
     config:
       tags: ['core']
+    columns:
+      - name: k_session
+        description: Primary key for the session record.
+        tests:
+          - not_null
+          - unique
+      - name: k_school
+      - name: tenant_code
+      - name: school_year
+      - name: session_name
+        description: Identifier for the calendar for the academic session.
+      - name: session_begin_date
+      - name: session_end_date
+      - name: total_instructional_days
+      - name: academic_term

@@ -3,17 +3,18 @@ version: 2
 models: 
   - name: fct_student_parent_association
     description: >
-      Associations between students and parents. 
+      ##### Overview:
+        This table defines associations between students and parents. 
       
-      Note: We chose to only keep current associations by determining the most recent
-      student record, subsetting to parent associations from that year, then applying the
-      information to all other years (for cross-year analytical/reporting purposes).
+      Note: We chose to only keep current associations by determining the most recent student record, subsetting to parent associations from that year, then 
+      applying the information to all other years (for cross-year analytical/reporting purposes).
 
-      The Parents resource in Ed-Fi was renamed to Contacts in Data Standard v5.0. This model
-      includes records from both the StudentParentAssociations and StudentContactAssociations
-      resources.
+      The Parents resource in Ed-Fi was renamed to Contacts in Data Standard v5.0. This model includes records from both the StudentParentAssociations and 
+      StudentContactAssociations resources.
+      
+      ##### Primary Key:
+        `k_student, k_parent` -- There is one record per tenant, year, student, and parent.
 
-      *Primary Key:* `k_student, k_parent`
     config:
       tags: ['core']
     tests:

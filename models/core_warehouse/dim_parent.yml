@@ -3,10 +3,15 @@ version: 2
 models:
   - name: dim_parent
     description: >
-      Defines parents, some of their key characteristics, and their contact information.
+      ##### Overview:
+        This dimension table defines parents, some of their key characteristics, and their contact information.
+        
+        The Parents resource in Ed-Fi was renamed to Contacts in Data Standard v5.0. This model
+        includes records from both the Parents and Contacts resources.
 
-      The Parents resource in Ed-Fi was renamed to Contacts in Data Standard v5.0. This model
-      includes records from both the Parents and Contacts resources.
+
+      ##### Primary Key:
+        `k_parent` -- There is one record per parent within a tenant.
     config:
       tags: ['core']
     columns:

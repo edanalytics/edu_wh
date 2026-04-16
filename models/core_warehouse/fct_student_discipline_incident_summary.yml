@@ -3,26 +3,19 @@ version: 2
 models: 
   - name: fct_student_discipline_incident_summary
     description: >
-      This table provides a summary of student discipline incidents
-      by linking discipline incidents to all associated discipline 
-      actions, regardless of whether the discipline actions belong 
-      to different discipline action events. To keep the grain at a single 
-      student and discipline incident but also represent the multiple 
-      behaviors and actions, we included both as lists. Additionally, 
-      we included the most severe discipline action (across all 
-      associated discipline action events) and the most severe behavior 
-      (for a discipline incident).
-
-      Rows represent a student and discipline incident.
-
-      *Primary Key:* k_student, k_student_xyear, k_discipline_incident
+      ##### Overview:
+        This table provides a summary of student discipline incidents by linking discipline incidents to all associated discipline actions, regardless of whether the discipline actions belong 
+        to different discipline action events. To keep the grain at a single student and discipline incident but also represent the multiple behaviors and actions, we included both as lists. Additionally, 
+        we included the most severe discipline action (across all associated discipline action events) and the most severe behavior (for a discipline incident).
+      
+      ##### Primary Key:
+        `k_student, k_discipline_incident` -- There is one record per tenant, year, student, and discipline incident.
 
     tests:
       - dbt_utils.unique_combination_of_columns:
           arguments:
             combination_of_columns:
               - k_student
-              - k_student_xyear
               - k_discipline_incident
     columns:
       - name: k_student
