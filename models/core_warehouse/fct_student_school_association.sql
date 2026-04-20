@@ -63,10 +63,20 @@ formatted as (
         -- create indicator for active enrollment
         iff(
             -- is highest school year observed by tenant
-            stg_stu_school.school_year = max(stg_stu_school.school_year) 
+            stg_stu_school.school_year = max(stg_stu_school.school_year)
                 over(partition by stg_stu_school.tenant_code)
-            -- not yet exited
-            and {{ date_within_end_date('current_date()', 'exit_withdraw_date', var('edu:enroll:exit_withdraw_date_inclusive', True)) }}
+            and (
+                -- standard: not yet exited as of today
+                {{ date_within_end_date('current_date()', 'exit_withdraw_date', var('edu:enroll:exit_withdraw_date_inclusive', True)) }}
+                {% if var('edu:enroll:year_end_active_extension', False) %}
+                -- extended: enrolled through end of school year; stays active until next year's data loads
+                or exit_withdraw_date >= dateadd(
+                    day,
+                    -{{ var('edu:enroll:year_end_active_buffer_days', 7) }},
+                    bld_school_calendar_windows.last_school_day
+                )
+                {% endif %}
+            )
             -- enrollment has begun
             and entry_date <= current_date(),
             true, false
