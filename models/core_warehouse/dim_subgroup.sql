@@ -1,5 +1,6 @@
 {{
   config(
+    unique_key=['k_subgroup'],
     post_hook=[
         "alter table {{ this }} alter column k_subgroup set not null",
         "alter table {{ this }} add primary key (k_subgroup)",

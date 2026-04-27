@@ -1,5 +1,6 @@
 {{
   config(
+    unique_key=['k_parent'],
     post_hook=[
         "alter table {{ this }} alter column k_parent set not null",
         "alter table {{ this }} add primary key (k_parent)",

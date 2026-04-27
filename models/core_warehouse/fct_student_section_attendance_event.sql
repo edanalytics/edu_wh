@@ -1,5 +1,6 @@
 {{
   config(
+    unique_key=['k_student', 'k_course_section', 'attendance_event_category', 'attendance_event_date'],
     post_hook=[
         "alter table {{ this }} alter column k_student set not null",
         "alter table {{ this }} alter column k_course_section set not null",

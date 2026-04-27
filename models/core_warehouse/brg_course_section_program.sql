@@ -1,5 +1,6 @@
 {{
   config(
+    unique_key=['k_course_section', 'k_program'],
     post_hook=[
         "alter table {{ this }} alter column k_course_section set not null",
         "alter table {{ this }} alter column k_program set not null",

@@ -1,5 +1,6 @@
 {{
   config(
+    unique_key=['k_calendar_date'],
     post_hook=[
         "alter table {{ this }} alter column k_calendar_date set not null",
         "alter table {{ this }} add primary key (k_calendar_date)",
