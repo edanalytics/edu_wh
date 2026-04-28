@@ -30,6 +30,9 @@ models:
               - k_student
               - k_school
               - calendar_date
+    constraints:
+      - type: primary_key
+        columns: [k_student, k_school, calendar_date]
     columns:
       - name: k_student
       - name: k_school

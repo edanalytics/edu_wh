@@ -25,6 +25,9 @@ models:
               - k_calendar_date
               - k_session
               - attendance_event_category
+    constraints:
+      - type: primary_key
+        columns: [k_student, k_school, k_session, attendance_event_category, k_calendar_date]
     columns:
       - name: k_student
       - name: k_student_xyear

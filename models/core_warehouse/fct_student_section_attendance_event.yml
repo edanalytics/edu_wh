@@ -23,6 +23,9 @@ models:
               - k_course_section
               - attendance_event_category
               - attendance_event_date
+    constraints:
+      - type: primary_key
+        columns: [k_student, k_course_section, attendance_event_category, attendance_event_date]
     columns:
       - name: k_student
         description: Unique identifier for the student. Foreign key reference to dim_student.

@@ -11,6 +11,9 @@ models:
 
     config:
       tags: ['core', 'course']
+    constraints:
+      - type: primary_key
+        columns: [k_course_section, k_program]
     columns:
       - name: tenant_code
       - name: k_course_section

@@ -11,6 +11,9 @@ models:
 
     config:
       tags: ['core']
+    constraints:
+      - type: primary_key
+        columns: [k_classroom]
     columns:
       - name: k_classroom
         description: Defining key for school locations

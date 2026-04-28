@@ -16,6 +16,9 @@ models:
               - k_student
               - k_program
               - program_enroll_begin_date
+    constraints:
+      - type: primary_key
+        columns: [k_student, k_student_xyear, k_program, program_enroll_begin_date]
     columns:
       - name: k_student
       - name: k_student_xyear

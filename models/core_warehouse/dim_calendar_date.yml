@@ -12,6 +12,9 @@ models:
 
     config:
       tags: ['core']
+    constraints:
+      - type: primary_key
+        columns: [k_calendar_date]
     columns:
       - name: k_calendar_date
         description: >

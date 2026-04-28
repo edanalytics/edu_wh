@@ -31,6 +31,9 @@ models:
 
     config:
       tags: ['core']
+    constraints:
+      - type: primary_key
+        columns: [k_student_academic_record, gpa_type]
     columns:
       - name: k_student_academic_record
       - name: k_student_xyear

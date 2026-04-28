@@ -18,6 +18,9 @@ models:
               - k_student
               - k_student_xyear
               - k_discipline_incident
+    constraints:
+      - type: primary_key
+        columns: [k_student, k_student_xyear, k_discipline_incident]
     columns:
       - name: k_student
       - name: k_student_xyear

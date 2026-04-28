@@ -126,6 +126,9 @@ models:
               - k_student_xyear
               - k_discipline_actions_event
               - discipline_action
+    constraints:
+      - type: primary_key
+        columns: [k_student, k_discipline_actions_event, discipline_action]
     columns:
       - name: k_student
       - name: k_student_xyear

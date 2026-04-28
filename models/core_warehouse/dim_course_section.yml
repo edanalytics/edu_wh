@@ -21,6 +21,9 @@ models:
       
     config:
       tags: ['core', 'course']
+    constraints:
+      - type: primary_key
+        columns: [k_course_section]
     columns:
       - name: k_course_section
         description: Defining key for course sections

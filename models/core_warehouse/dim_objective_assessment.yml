@@ -7,6 +7,9 @@ models:
     config:
       tags: ['assessment']
       enabled: "{{ var('src:domain:assessment:enabled', True) }}"
+    constraints:
+      - type: primary_key
+        columns: [k_objective_assessment]
     columns:
       - name: k_objective_assessment
         description: >

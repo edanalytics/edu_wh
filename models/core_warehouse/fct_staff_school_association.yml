@@ -47,6 +47,9 @@ models:
         join dim_school
           on most_recent_assoc.k_school = dim_school.k_school
        ```
+    constraints:
+      - type: primary_key
+        columns: [k_staff_school_association]
     columns:
       - name: k_staff
         description: "Unique key for staff, foreign key reference to `dim_staff`"

@@ -84,6 +84,9 @@ models:
             combination_of_columns:
               - k_student
               - k_subgroup
+    constraints:
+      - type: primary_key
+        columns: [k_student, k_subgroup]
     columns:
       - name: k_student
       - name: k_student_xyear

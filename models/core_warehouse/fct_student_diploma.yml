@@ -23,7 +23,9 @@ models:
               - k_school
               - diploma_type
               - diploma_award_date
-          
+    constraints:
+      - type: primary_key
+        columns: [ k_student, k_student_xyear, school_year, k_lea, k_school, diploma_type, diploma_award_date]
     columns:
       - name: tenant_code
       - name: k_student

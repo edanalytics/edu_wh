@@ -24,6 +24,9 @@ models:
               - k_student
               - k_student_xyear
               - k_discipline_actions_event
+    constraints:
+      - type: primary_key
+        columns: [k_student, k_student_xyear, k_discipline_actions_event]
     columns:
       - name: k_student
       - name: k_student_xyear

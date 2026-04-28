@@ -21,6 +21,9 @@ models:
               - k_student
               - k_course_section
               - begin_date
+    constraints:
+      - type: primary_key
+        columns: [k_student, k_course_section, begin_date]
     columns:
       - name: k_student
         description: "Unique key for student + year, foreign key reference to `dim_student`"

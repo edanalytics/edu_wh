@@ -18,6 +18,9 @@ models:
           arguments:
             combination_of_columns:
               - k_school
+    constraints:
+      - type: primary_key
+        columns: [k_school]
     columns:
       - name: k_school
       - name: k_lea

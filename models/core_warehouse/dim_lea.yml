@@ -4,3 +4,7 @@ models:
   - name: dim_lea
     config:
       tags: ['core']
+
+    constraints:
+      - type: primary_key
+        columns: [k_lea]

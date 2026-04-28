@@ -4,3 +4,7 @@ models:
   - name: msr_student_cumulative_attendance
     config:
       tags: ['core']
+
+    constraints:
+      - type: primary_key
+        columns: [k_student, k_school, school_year]

@@ -46,6 +46,9 @@ models:
               - k_course
               - k_student_academic_record
               - course_attempt_result
+    constraints:
+      - type: primary_key
+        columns: [k_course, k_student_academic_record, course_attempt_result]
     columns:
       - name: k_course
       - name: k_student_academic_record

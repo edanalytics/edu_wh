@@ -22,6 +22,9 @@ models:
             combination_of_columns:
               - k_student
               - k_parent
+    constraints:
+      - type: primary_key
+        columns: [k_student, k_parent]
     columns:
       - name: k_student
       - name: k_student_xyear

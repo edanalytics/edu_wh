@@ -17,6 +17,9 @@ models:
 
     config:
       tags: ['core']
+    constraints:
+      - type: primary_key
+        columns: [k_staff, k_course_section, begin_date]
     columns:
       - name: k_staff
         description: "Unique key for staff, foreign key reference to `dim_staff`"
