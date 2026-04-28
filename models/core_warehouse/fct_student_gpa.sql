@@ -1,5 +1,6 @@
 {{
   config(
+    unique_key=['k_student_academic_record', 'gpa_type'],
     post_hook=[
         "alter table {{ this }} alter column k_student_academic_record set not null",
         "alter table {{ this }} alter column gpa_type set not null",

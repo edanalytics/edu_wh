@@ -1,3 +1,9 @@
+{{
+    config(
+        unique_key = [ 'k_student', 'k_student_xyear', 'school_year', 'k_lea', 'k_school', 'diploma_type', 'diploma_award_date']
+    )
+}}
+
 {% set xwalk_academic_term_enabled = var('edu:xwalk_academic_terms:enabled', False) %}
 
 with stg_diplomas as (

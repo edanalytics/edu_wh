@@ -1,5 +1,6 @@
 {{
   config(
+    unique_key=['k_grading_period'],
     post_hook=[
         "alter table {{ this }} alter column k_grading_period set not null",
         "alter table {{ this }} add primary key (k_grading_period)",

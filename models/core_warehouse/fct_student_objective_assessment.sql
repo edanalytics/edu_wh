@@ -1,5 +1,6 @@
 {{
   config(
+    unique_key=['k_student_objective_assessment'],
     post_hook=[
         "alter table {{ this }} alter column k_student_objective_assessment set not null",
         "alter table {{ this }} add primary key (k_student_objective_assessment)",

@@ -1,5 +1,6 @@
 {{
   config(
+    unique_key=['k_grading_period', 'k_student', 'k_school', 'k_course_section', 'grade_type', 'k_learning_standard'],
     post_hook=[
         "alter table {{ this }} alter column k_grading_period set not null",
         "alter table {{ this }} alter column k_student set not null",

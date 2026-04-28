@@ -1,6 +1,7 @@
 -- depends_on: {{ ref('dim_network') }}
 {{
   config(
+    unique_key=['k_school'],
     post_hook=[
         "alter table {{ this }} alter column k_school set not null",
         "alter table {{ this }} add primary key (k_school)",

@@ -1,5 +1,6 @@
 {{
   config(
+    unique_key=['k_school_calendar'],
     post_hook=[
         "alter table {{ this }} alter column k_school_calendar set not null",
         "alter table {{ this }} add primary key (k_school_calendar)",

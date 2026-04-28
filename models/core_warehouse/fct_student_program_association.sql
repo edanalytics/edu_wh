@@ -1,5 +1,6 @@
 {{
   config(
+    unique_key=['k_student', 'k_program', 'program_enroll_begin_date'],
     post_hook=[
         "alter table {{ this }} alter column k_student set not null",
         "alter table {{ this }} alter column k_student_xyear set not null",
