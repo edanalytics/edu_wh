@@ -1,5 +1,6 @@
 # Unreleased
 ## New features
+- Add `constraints` to `.yml` config files of all `core_warehouse` models.
 ## Under the hood
 ## Fixes
 
