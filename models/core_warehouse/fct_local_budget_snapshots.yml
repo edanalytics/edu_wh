@@ -1,0 +1,42 @@
+version: 2
+
+models:
+  - name: fct_local_budget_snapshots
+    config:
+      tags: ['finance']
+    description: >
+      Fact table for budget financial transactions. One row per budget amount snapshot.
+      Includes an is_latest_snapshot flag to identify the most recent snapshot per local account.
+    columns:
+      - name: k_local_account
+        description: Foreign key to dim_local_account
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_local_account')
+              field: k_local_account
+      - name: k_local_budget_snapshot
+        description: Primary key — surrogate for the budget record at account / as-of / collection grain
+        tests:
+          - unique
+          - not_null
+      - name: tenant_code
+        description: Data owner identifier
+      - name: api_year
+        description: School year of the ODS (api_year from staging)
+      - name: as_of_date
+        description: The point-in-time date of the financial snapshot
+      - name: local_account_identifier
+        description: Local account identifier from the local account reference on the budget
+      - name: ed_org_id
+        description: Education organization id from the local account reference
+      - name: fiscal_year
+        description: The fiscal year of the financial record
+      - name: amount
+        description: The dollar amount of the budget
+      - name: financial_collection
+        description: The financial collection descriptor
+      - name: is_latest_snapshot
+        description: >
+          Boolean flag indicating whether this is the most recent snapshot
+          for the local account

@@ -1,0 +1,17 @@
+version: 2
+
+models:
+  - name: dim_chart_of_account
+    config:
+      tags: ['finance']
+    description: >
+      Chart of accounts dimension — one row per k_chart_of_account. Carries tenant and
+      identity/value fields from staging (excluding JSON reference columns), v_reporting_tags,
+      finance dimension display names from bld_ef3__chart_of_accounts_dimensions, and
+      Ed-Fi extension columns via extract_extension like other warehouse dims.
+    columns:
+      - name: k_chart_of_account
+        description: Primary key — matches stg_ef3__chart_of_accounts.k_chart_of_account
+        tests:
+          - unique
+          - not_null
