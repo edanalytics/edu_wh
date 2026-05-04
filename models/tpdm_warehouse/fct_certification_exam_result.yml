@@ -1,0 +1,36 @@
+version: 2
+
+models:
+  - name: fct_certification_exam_result
+    description: >
+        ##### Overview:
+          Defines the result of a certification exam for a person, including attempt and pass information for a given school year.
+
+    config:
+      tags: ['tpdm']
+      enabled: "{{ var('edu:tpdmcommunity:enabled', False) }}"
+    columns:
+      - name: k_certification_exam_result
+        description: Unique key for person, exam, exam result, attempt.
+      - name: k_person
+        description: Unique key for the person
+      - name: k_certification_exam
+        description: Unique key for the certification exam and namespace, foreign key reference to `dim_certification_exam`.
+      - name: tenant_code
+        description: Code defining the Tenant (may be an LEA, SEA, etc.) of the Ed-Fi ODS from which this record was pulled
+      - name: school_year
+        description: >
+          School year specified by Spring year.
+          e.g. the 2021-2022 year would be 2022.
+      - name: certification_exam_date
+        description: The date on which the certification exam was taken.
+      - name: attempt_number
+        description: The attempt number for this certification exam.
+      - name: certification_exam_pass_indicator
+        description: Indicates whether the certification exam attempt was passed.
+      - name: certification_exam_score
+        description: Certification exam score.
+      - name: certificaiton_exam_status_descriptor
+        description: Descriptor identifying the certificaiton exam status.
+      - name: person_source_system_descriptor
+        description: Descriptor identifying the source system of the person record.

@@ -16,10 +16,11 @@ models:
       tags: ['core']
     tests:
       - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - k_student
-            - k_course_section
-            - begin_date
+          arguments:
+            combination_of_columns:
+              - k_student
+              - k_course_section
+              - begin_date
     columns:
       - name: k_student
         description: "Unique key for student + year, foreign key reference to `dim_student`"

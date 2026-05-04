@@ -19,16 +19,12 @@ left join fct_student_section_association
     and fct_student_school_association.k_school = fct_student_section_association.k_school
     and (
         (
-            fct_student_section_association.begin_date
-            between fct_student_school_association.entry_date and coalesce(
-                fct_student_school_association.exit_withdraw_date, current_date()
-            )
+            fct_student_section_association.begin_date >= fct_student_school_association.entry_date 
+            and {{ date_within_end_date('fct_student_section_association.begin_date', 'fct_student_school_association.exit_withdraw_date', var('edu:enroll:exit_withdraw_date_inclusive', True)) }}
         )
         or (
-            fct_student_section_association.end_date
-            between fct_student_school_association.entry_date and coalesce(
-                fct_student_school_association.exit_withdraw_date, current_date()
-            )
+            fct_student_section_association.end_date >= fct_student_school_association.entry_date
+            and {{ date_within_end_date('fct_student_section_association.end_date', 'fct_student_school_association.exit_withdraw_date', var('edu:enroll:exit_withdraw_date_inclusive', True)) }}
         )
     )
 group by 1, 2, 3, 4, 5

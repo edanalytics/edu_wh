@@ -41,7 +41,7 @@ fct_student_school_assoc as (
     */
     select 
         *,
-        date(coalesce(exit_withdraw_date,getdate())) - entry_date as enrollment_length
+        {{ day_count_in_range('entry_date', 'exit_withdraw_date', var('edu:enroll:exit_withdraw_date_inclusive', True)) }} as enrollment_length
     from {{ ref('fct_student_school_association') }}
 ),
 xwalk_att_events as (
@@ -53,11 +53,15 @@ joined as (
         dim_student.k_student_xyear,
         dim_school.k_school,
         dim_calendar_date.k_calendar_date,
+        dim_calendar_date.calendar_date,
         dim_session.k_session,
         stg_stu_sch_attend.tenant_code,
+        stg_stu_sch_attend.school_year,
         stg_stu_sch_attend.attendance_event_category,
         stg_stu_sch_attend.attendance_event_reason,
         xwalk_att_events.is_absent,
+        {{ var("edu:attendance:excusal_status_column_logic", "xwalk_att_events.attendance_excusal_status") }}
+            as attendance_excusal_status,
         stg_stu_sch_attend.event_duration,
         stg_stu_sch_attend.school_attendance_duration,
         stg_stu_sch_attend.arrival_time,
@@ -79,7 +83,15 @@ joined as (
     join dim_calendar_date
          on fct_student_school_assoc.k_school_calendar = dim_calendar_date.k_school_calendar
          and stg_stu_sch_attend.attendance_event_date = dim_calendar_date.calendar_date
-         and dim_calendar_date.calendar_date between fct_student_school_assoc.entry_date and coalesce(fct_student_school_assoc.exit_withdraw_date,current_date())
+         and dim_calendar_date.calendar_date >= fct_student_school_assoc.entry_date 
+         -- confirm attendance event date is within the enrollment exit date range,
+         -- coalesce the end date to today to include today if it's within the range, to avoid keeping attendance events from the future
+         and {{ date_within_end_date(
+                'dim_calendar_date.calendar_date',
+                'fct_student_school_assoc.exit_withdraw_date',
+                var('edu:enroll:exit_withdraw_date_inclusive', True),
+                coalesce_to_today=True) 
+            }}
     join xwalk_att_events
         on stg_stu_sch_attend.attendance_event_category = xwalk_att_events.attendance_event_descriptor
 ),
@@ -101,9 +113,12 @@ formatted as (
         k_calendar_date,
         k_session,
         tenant_code,
+        school_year,
+        calendar_date,
         attendance_event_category,
         attendance_event_reason,
         is_absent,
+        attendance_excusal_status,
         event_duration,
         school_attendance_duration,
         arrival_time,

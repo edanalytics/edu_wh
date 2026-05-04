@@ -3,6 +3,48 @@
 ## Under the hood
 ## Fixes
 
+# edu_wh v0.6.2
+## New features
+- Add Cross-Tenant Assessment sharing functionality. OFF by default. New vars `edu:assessment:cross_tenant_enabled` and `edu:assessments:removed_students_source`
+- Add configurable behavior for inclusivity/exclusivity of exit dates in enrollment windows. Default behavior (inclusivity) remains the same
+- Add `course_level_characteristics_array` to `dim_course_section` (sourced from `bld_ef3__course_char__combined_wide`)
+- Add two TPDM/EPDM models, `dim_certification_exam` and `fct_certification_exam_result`
+- Make `attendance_excusal_status` logic configurable via new var `edu:attendance:excusal_status_column_logic`
+## Under the hood
+## Fixes
+- Fix default `fct_student_diploma.sort_index` (from NULL -> 1) for databricks compatability
+- Fix propagation of course level characteristics in `dim_course_section` by correcting the field pulled by `bld_ef3__course_char__combined_long`
+- Fix `unique_combination_of_columns` tests for program association tables, to include `program_enroll_begin_date`
+
+
+# edu_wh v0.6.1
+## New features
+- Add `school_year` column to `fct_student_grades`, `fct_student_discipline_incident_behaviors`, `fct_student_discipline_incident_summary`, `fct_student_discipline_actions_summary`, `fct_student_school_attendance_event`, `fct_student_section_attendance_event`, `fct_student_daily_attendance`
+## Under the hood
+- Expand yml documentation for `fct_student_section_attendance_event`
+## Fixes
+- Fix `period_duration` calculation in `dim_class_period` to account for different time formats.
+
+# edu_wh v0.6.0
+## New features
+- Add `attendance_excusal_status` and `consecutive_days_by_excusal_status` to `fct_student_daily_attendance`, where:
+    - `attendance_excusal_status` classifies each attendance record as 'In Attendance', 'Not Enrolled', 'Excused Absence', or 'Unexcused Absence'
+    - `consecutive_days_by_excusal_status` reports the number of consecutive days a student has had the same attendance_excusal_status
+- Add `attendance_excusal_status`and `calendar_date` to `fct_student_school_attendance_event`
+- Add TPDM/EPDM domain warehouse models: `dim_educator_preparation_program`, `fct_candidate_educator_preparation_program`, `fct_candidate_staff_association`
+- Add "bridge table" `brg_course_section_program` for convenient linking between course sections & programs
+## Under the hood
+- Update syntax of dbt test argument declarations to avoid deprecated behavior. Requires dbt 1.10.5+
+## Fixes
+## Migrations
+- see Release page
+
+# edu_wh v0.5.3
+## New features
+- Add `dim_candidate` model
+## Fixes
+- Minor fixes for Databricks compatibility
+
 # edu_wh v0.5.2
 ## New features
 - Add `safe_display_name` to `dim_staff`, the logic for this column replicates that of `bld_ef3__immutable_stu_demos`.

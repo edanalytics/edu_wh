@@ -15,8 +15,9 @@ models:
       tags: ['core']
     tests:
       - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - k_school
+          arguments:
+            combination_of_columns:
+              - k_school
     columns:
       - name: k_school
       - name: k_lea

@@ -40,7 +40,7 @@ maxed as (
         {%- endif %}
 
         max(priority_for_service) as priority_for_service,
-        max(continuation_of_services_reason) as continuation_of_services_reason, 
+        max(continuation_of_services_reason) as continuation_of_services_reason
 
 
     from stage

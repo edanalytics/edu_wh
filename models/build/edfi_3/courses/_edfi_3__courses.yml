@@ -7,6 +7,11 @@ models:
   - name: bld_ef3__course_char__combined_wide
     config:
       tags: ['core']
+    columns:
+      - name: course_level_characteristics_array
+        description: >
+          Sorted array of raw course-level characteristic descriptor strings for each section,
+          derived from the same long grain as the pivoted `is_*` flags (Course, Course Offering, and Section).
   - name: bld_ef3__wide_ids_course
     config:
       tags: ['core']

@@ -2,5 +2,53 @@ version: 2
 
 models:
   - name: fct_student_section_attendance_event
+    description: >
+      ##### Overview:
+        Defines student-section-level attendance events (period/class attendance).
+
+        Since attendance is generally recorded only in the negative, this is 
+        typically a table of absences only. This is more granular than school-level
+        attendance, tracking attendance at the individual class/section level.
+
+      ##### Primary Key:
+        `k_student, k_course_section, attendance_event_category, attendance_event_date`
+
     config:
       tags: ['core']
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - k_student
+              - k_course_section
+              - attendance_event_category
+              - attendance_event_date
+    columns:
+      - name: k_student
+        description: Unique identifier for the student. Foreign key reference to dim_student.
+      - name: k_student_xyear
+        description: Unique identifier for the student across all years.
+      - name: k_school
+        description: Unique identifier for the school. Derived from the course section.
+      - name: k_course_section
+        description: Unique identifier for the course section. Foreign key reference to dim_course_section.
+      - name: tenant_code
+      - name: school_year
+      - name: attendance_event_date
+        description: The date of the attendance event.
+      - name: attendance_event_category
+        description: The descriptor value from AttendanceEventCategoryDescriptor.
+      - name: attendance_event_reason
+        description: The reason for the attendance event (e.g., reason for absence).
+      - name: is_absent
+        description: Indicator for absence. Defined via descriptor mapping in `xwalk_attendance_events`.
+      - name: event_duration
+        description: The amount of time for the event as recognized by the school.
+      - name: section_attendance_duration
+        description: The duration of the section attendance event.
+      - name: arrival_time
+        description: The time of arrival for the student.
+      - name: departure_time
+        description: The time of departure for the student.
+      - name: educational_environment
+        description: The setting in which a child receives education and related services.
