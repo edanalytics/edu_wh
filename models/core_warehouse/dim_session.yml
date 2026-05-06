@@ -4,3 +4,12 @@ models:
   - name: dim_session
     config:
       tags: ['core']
+
+    constraints:
+      - type: primary_key
+        columns: [k_session]
+      - type: foreign_key
+        name: fk_dim_session_school
+        columns: [k_school]
+        to: ref('dim_school')
+        to_columns: [k_school]

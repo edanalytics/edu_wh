@@ -21,6 +21,11 @@ models:
 
     config:
       tags: ['core', 'special_ed', 'homeless', 'language_instruction', 'title_i']
+    
+    constraints:
+      - type: primary_key
+        columns: [k_student]
+
     columns:
       - name: k_student
         description: Defining key for the student in this school year.
