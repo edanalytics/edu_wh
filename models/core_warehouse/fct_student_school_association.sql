@@ -68,12 +68,17 @@ formatted as (
             and (
                 -- standard: not yet exited as of today
                 {{ date_within_end_date('current_date()', 'exit_withdraw_date', var('edu:enroll:exit_withdraw_date_inclusive', True)) }}
-                {% if var('edu:enroll:year_end_active_extension', False) %}
-                -- extended: enrolled through end of school year; stays active until next year's data loads
-                or exit_withdraw_date >= dateadd(
+
+                {% set buffer_days = var('edu:enroll:year_end_active_buffer_days', false) %}
+                {% if buffer_days %}
+                -- extended: if configured, enrolled through end of school year; stays active until next year's data loads
+                or (exit_withdraw_date >= dateadd(
                     day,
-                    -{{ var('edu:enroll:year_end_active_buffer_days', 7) }},
+                    -{{ buffer_days }},
                     bld_school_calendar_windows.last_school_day
+                    )
+                    -- only apply to cases where calendar end is in the current year (exclude from active if calendar ended in Fall or previous year, or tenant only has data from last year)
+                    AND year(bld_school_calendar_windows.last_school_day) = year(current_date())
                 )
                 {% endif %}
             )
