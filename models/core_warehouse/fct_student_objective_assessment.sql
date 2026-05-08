@@ -66,14 +66,7 @@ student_obj_assessments_wide as (
         stu_xtenant.tenant_code,
         stu_xtenant.is_original_record,
         stu_xtenant.original_tenant_code,
-        {% if var('edu:school_year:assessment_dates_xwalk_enabled', False) %}
-        iff(dates_xwalk.override_existing,
-            coalesce(dates_xwalk.school_year, stu_xtenant.school_year, {{derive_school_year('stu_xtenant.administration_date')}}),
-            coalesce(stu_xtenant.school_year, dates_xwalk.school_year, {{derive_school_year('stu_xtenant.administration_date')}}))
-        as school_year,
-        {% else %}
-        coalesce(stu_xtenant.school_year, {{derive_school_year('stu_xtenant.administration_date')}}) as school_year,
-        {% endif %}
+        stu_xtenant.school_year,
         administration_date,
         administration_end_date,
         event_description,
@@ -103,15 +96,6 @@ student_obj_assessments_wide as (
     -- left join to allow 'historic' records (assess records with no corresponding stu demographics)
     left join dim_student
         on stu_xtenant.k_student = dim_student.k_student
-    {% if var('edu:school_year:assessment_dates_xwalk_enabled', False) %}
-    left join {{ ref('xwalk_assessment_school_year_dates') }} dates_xwalk
-        -- note: between means A >= X AND A <= Y, so date upper/lower bounds should not overlap across years
-        on stu_xtenant.administration_date between start_date::date and end_date::date
-        -- we want to allow for the school year cutoffs to differ by assessment
-        -- but also allow those fields to remain null if xwalk is desired but not to differ across assessments
-        and ifnull(dates_xwalk.assessment_identifier, '1') = iff(dates_xwalk.assessment_identifier is null, '1', stu_xtenant.assessment_identifier)
-        and ifnull(dates_xwalk.namespace, '1') = iff(dates_xwalk.namespace is null, '1', stu_xtenant.namespace)
-    {% endif %}
     -- FILTER to students who EVER have a record in dim_student
     where stu_xtenant.k_student_xyear in (
         select distinct k_student_xyear
