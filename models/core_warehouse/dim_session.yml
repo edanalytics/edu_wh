@@ -11,18 +11,44 @@ models:
         
     config:
       tags: ['core']
+
+    constraints:
+      - type: primary_key
+        columns: [k_session]
+      - type: foreign_key
+        name: fk__dim_session__k_school
+        columns: [k_school]
+        to: ref('dim_school')
+        to_columns: [k_school]
+    
     columns:
       - name: k_session
-        description: Primary key for the session record.
+        description: The unique identifier for a session. Sessions are unique to schools and school years.
         tests:
           - not_null
           - unique
       - name: k_school
+        description: The unique identifier for a school.
       - name: tenant_code
+        description: The tenant associated with the record.
       - name: school_year
+        description: School year specified by Spring year, e.g. the 2021-2022 year would be 2022.
       - name: session_name
-        description: Identifier for the calendar for the academic session.
+        description: Identifier code for a session.
       - name: session_begin_date
+        description: The date the session began.
+        config:
+            meta:
+                type: 'date'
       - name: session_end_date
+        description: The date the session ended.
+        config:
+            meta:
+                type: 'date'
       - name: total_instructional_days
+        description: The total number of instructional days associated with a session.
+        config:
+            meta:
+                type: 'fact'
       - name: academic_term
+        description: The name for a session. For example - "Spring Semester", "First Quarter".

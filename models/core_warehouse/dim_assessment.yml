@@ -12,6 +12,11 @@ models:
     config:
       tags: ['assessment']
       enabled: "{{ var('src:domain:assessment:enabled', True) }}"
+
+    constraints:
+      - type: primary_key
+        columns: [k_assessment]
+
     columns:
       - name: k_assessment
         description: Generated primary key composed of `tenant_code`, `api_year`, `academicSubjectDescriptor`, `assessmentIdentifier`, and `namespace`.

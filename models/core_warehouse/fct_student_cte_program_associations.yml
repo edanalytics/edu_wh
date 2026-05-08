@@ -7,12 +7,26 @@ models:
         This fact table contains student cte program enrollment information.
 
       ##### Primary Key:
-        `k_student, k_student_xyear, k_program, program_enroll_begin_date` -- There 
+        `k_student, k_program, program_enroll_begin_date` -- There 
         is one record per student, year, program enrol begin date, and cte program.
 
     config:
       tags: ['cte']
       enabled: "{{ var('src:program:cte:enabled', True) }}"
+
+    constraints:
+      - type: primary_key
+        columns: [k_student, k_program, program_enroll_begin_date]
+      - type: foreign_key
+        name: fk__fct_student_cte_program_associations__k_student
+        columns: [k_student]
+        to: ref('dim_student')
+        to_columns: [k_student]
+      - type: foreign_key
+        name: fk__fct_student_cte_program_associations__k_program
+        columns: [k_program]
+        to: ref('dim_program')
+        to_columns: [k_program]
 
     tests:
       - dbt_utils.unique_combination_of_columns:

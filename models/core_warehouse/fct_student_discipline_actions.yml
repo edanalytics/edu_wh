@@ -118,12 +118,26 @@ models:
     config:
       tags: ['discipline']
       enabled: "{{ var('src:domain:discipline:enabled', True) }}"
+
+    constraints:
+      - type: primary_key
+        columns: [k_student, k_discipline_actions_event, discipline_action]
+      - type: foreign_key
+        name: fk__fct_student_discipline_actions__k_student
+        columns: [k_student]
+        to: ref('dim_student')
+        to_columns: [k_student]
+      - type: foreign_key
+        name: fk__fct_student_discipline_actions__k_school
+        columns: [k_school]
+        to: ref('dim_school')
+        to_columns: [k_school]
+
     tests:
       - dbt_utils.unique_combination_of_columns:
           arguments:
             combination_of_columns:
               - k_student
-              - k_student_xyear
               - k_discipline_actions_event
               - discipline_action
     columns:

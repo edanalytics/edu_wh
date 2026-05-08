@@ -62,21 +62,21 @@ select * from deduped
 
 select * from (
     select
-        null::varchar as k_student_objective_assessment,
-        null::varchar as k_objective_assessment,
-        null::varchar as k_student_objective_assessment__original,
-        null::varchar as k_objective_assessment__original,
-        null::varchar as k_student_assessment,
-        null::varchar as k_student_assessment__original,
-        null::varchar as k_student,
-        null::varchar as k_student_xyear,
-        null::varchar as k_assessment,
-        null::varchar as k_assessment__original,
-        null::varchar as tenant_code,
+        null::{{ dbt.type_string() }} as k_student_objective_assessment,
+        null::{{ dbt.type_string() }} as k_objective_assessment,
+        null::{{ dbt.type_string() }} as k_student_objective_assessment__original,
+        null::{{ dbt.type_string() }} as k_objective_assessment__original,
+        null::{{ dbt.type_string() }} as k_student_assessment,
+        null::{{ dbt.type_string() }} as k_student_assessment__original,
+        null::{{ dbt.type_string() }} as k_student,
+        null::{{ dbt.type_string() }} as k_student_xyear,
+        null::{{ dbt.type_string() }} as k_assessment,
+        null::{{ dbt.type_string() }} as k_assessment__original,
+        null::{{ dbt.type_string() }} as tenant_code,
         null::int as school_year,
         null::int as api_year,
         null::boolean as is_original_record,
-        null::varchar as original_tenant_code
+        null::{{ dbt.type_string() }} as original_tenant_code
 ) limit 0
 
 {% endif %}

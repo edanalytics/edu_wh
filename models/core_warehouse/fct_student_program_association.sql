@@ -2,7 +2,6 @@
   config(
     post_hook=[
         "alter table {{ this }} alter column k_student set not null",
-        "alter table {{ this }} alter column k_student_xyear set not null",
         "alter table {{ this }} alter column k_program set not null",
         "alter table {{ this }} alter column program_enroll_begin_date set not null",
         "alter table {{ this }} add primary key (k_student, k_program, program_enroll_begin_date)",

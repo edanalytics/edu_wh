@@ -4,3 +4,57 @@ models:
   - name: msr_student_cumulative_attendance
     config:
       tags: ['core']
+    
+    constraints:
+      - type: primary_key
+        columns: [k_student, k_school, school_year]
+      - type: foreign_key
+        name: fk__msr_student_cumulative_attendance__k_student
+        columns: [k_student]
+        to: ref('dim_student')
+        to_columns: [k_student]
+      - type: foreign_key
+        name: fk__msr_student_cumulative_attendance__k_school
+        columns: [k_school]
+        to: ref('dim_school')
+        to_columns: [k_school]
+
+    columns:
+      - name: k_student
+        description: Unique identifier for a student in a particular year.
+      - name: k_student_xyear
+        description: Unique identifier for a student across all years the student is present in the data.
+      - name: k_school
+        description: Unique identifier for a school.
+      - name: school_year
+        description: School year specified by Spring year, e.g. the 2021-2022 year would be 2022.
+      - name: tenant_code
+        description: The tenant associated with the record.
+      - name: days_absent
+        description: Number of days a student has been absent from a school.
+        config:
+            meta:
+                type: 'fact'
+      - name: days_attended
+        description: Number of days a astudent has attended at a school.
+        config:
+            meta:
+                type: 'fact'
+      - name: days_enrolled
+        description: Number of days a student has been enrolled at a school.
+        config:
+            meta:
+                type: 'fact'
+      - name: attendance_rate
+        description: Percentage of enrolled days a student has attended. days_attended/days_enrolled.
+        config:
+            meta:
+                type: 'fact'
+      - name: meets_enrollment_threshold
+        description: Whether the student meets the minimum enrollment threshold.
+      - name: is_chronic_absentee
+        description: Whether the student is classified as chronically absent.
+      - name: absentee_category_rank
+        description: The category of absenteeism a student falls into.
+      - name: absentee_category_label
+        description: The label for the category of absenteeism the student is in.

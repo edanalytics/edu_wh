@@ -28,6 +28,16 @@ models:
 
     config:
       tags: ['core']
+
+    constraints:
+      - type: primary_key
+        columns: [k_student_academic_record]
+      - type: foreign_key
+        name: fk__fct_student_academic_record__k_student
+        columns: [k_student]
+        to: ref('dim_student')
+        to_columns: [k_student]
+
     columns:
       - name: k_student_academic_record
       - name: k_student_xyear

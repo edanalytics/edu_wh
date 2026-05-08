@@ -8,6 +8,15 @@ models:
 
       ##### Primary Key:
         `k_discipline_incident` - There is one record per incident ID, school, and year.
+    constraints:
+      - type: primary_key
+        columns: [k_discipline_incident]
+      - type: foreign_key
+        name: fk__dim_discipline_incident__k_school
+        columns: [k_school]
+        to: ref('dim_school')
+        to_columns: [k_school]
+
     columns:
       - name: k_discipline_incident
         description: Generated primary key composed of `tenant_code`, `api_year`, `incident_id`, and `school_id`.

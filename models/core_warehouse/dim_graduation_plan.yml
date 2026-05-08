@@ -10,6 +10,11 @@ models:
           `k_graduation_plan` - There is one record per graduation plan (plan type + ed_org_id + graduation_school_year)
     config:
       tags: ['core']
+
+    constraints:
+      - type: primary_key
+        columns: [k_graduation_plan]
+
     columns:
       - name: k_graduation_plan
         description: Generated primary key composed of 'graduation_plan_type', 'ed_org_id', and 'graduation_school_year' (generated in [stg_ef3__graduation_plans](#!/model/model.edu_edfi_source.stg_ef3__graduation_plans))

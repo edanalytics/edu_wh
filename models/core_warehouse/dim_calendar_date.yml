@@ -12,37 +12,52 @@ models:
 
     config:
       tags: ['core']
+
+    constraints:
+      - type: primary_key
+        columns: [k_calendar_date]
+      - type: foreign_key
+        name: fk__dim_calendar_date__k_school_calendar
+        columns: [k_school_calendar]
+        to: ref('dim_school_calendar')
+        to_columns: [k_school_calendar]
+      - type: foreign_key
+        name: fk__dim_calendar_date__k_school
+        columns: [k_school]
+        to: ref('dim_school')
+        to_columns: [k_school]
+
     columns:
       - name: k_calendar_date
-        description: >
-          Generated primary key for an individual day in a single calendar
-          at a single school.
+        description: Generated primary key for an individual day in a single calendar at a single school.
         tests:
           - unique
       - name: k_school_calendar
         description: Association to a single named calendar at a school.
       - name: k_school
-        description: Association to a single school
+        description: Association to a single school.
       - name: tenant_code
+        description: The tenant associated with the record.
       - name: calendar_code
-        description: Descriptive label for a calendar
+        description: Descriptive label for a calendar.
       - name: school_year
-        description: > 
-          School year specified by Spring year,
-          e.g. the 2021-2022 year would be 2022.
+        description: School year specified by Spring year, e.g. the 2021-2022 year would be 2022.
       - name: calendar_date
+        description: Date on school calendar.
+        config:
+            meta:
+                type: 'date'
       - name: calendar_event
-        description: A descriptor code for types of days within a school calendar
+        description: A descriptor code for types of days within a school calendar.
       - name: calendar_events_array
         description: The list of events for this day, if there are multiple.
       - name: is_school_day
         description: Is this an instructional day?
       - name: day_of_school_year
-        description: Counting across instructional days
+        description: Counting across instructional days.
       - name: week_day
-        description: Labeled day of the week
+        description: Labeled day of the week.
       - name: week_of_calendar_year
-        description: Counting across calendar weeks
+        description: Counting across calendar weeks.
       - name: week_of_school_year
-        description: Counting across weeks of the school year
-      
+        description: Counting across weeks of the school year.

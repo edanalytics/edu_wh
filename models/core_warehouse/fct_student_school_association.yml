@@ -53,6 +53,21 @@ models:
 
     config:
       tags: ['core']
+
+    constraints:
+      - type: primary_key
+        columns: [k_student, k_school, k_entry_date]
+      - type: foreign_key
+        name: fk__fct_student_school_association__k_student
+        columns: [k_student]
+        to: ref('dim_student')
+        to_columns: [k_student]
+      - type: foreign_key
+        name: fk__fct_student_school_association__k_school
+        columns: [k_school]
+        to: ref('dim_school')
+        to_columns: [k_school]
+      
     tests:
       - dbt_utils.unique_combination_of_columns:
           arguments:
@@ -81,13 +96,21 @@ models:
           The school calendar used by the student. This is important for 
           calculating attendance.
       - name: tenant_code
+        description: The tenant associated with the record.
       - name: school_year
+        description: School year specified by Spring year, e.g. the 2021-2022 year would be 2022.
       - name: entry_date
         description: > 
           The month, day, and year on which an individual enters and begins to 
           receive instructional services in a school.
+        config:
+            meta:
+                type: 'date'
       - name: exit_withdraw_date
         description: The recorded exit or withdraw date for the student.	
+        config:
+            meta:
+                type: 'date'
       - name: is_primary_school
         description: > 
           Indicates if a given enrollment record should be considered the primary
