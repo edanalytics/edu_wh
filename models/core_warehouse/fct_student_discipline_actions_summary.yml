@@ -15,14 +15,22 @@ models:
 
       Rows represent a student and discipline action event.
 
-      *Primary Key:* k_student, k_student_xyear, k_discipline_actions_event
+      *Primary Key:* k_student, k_discipline_actions_event
+
+    constraints:
+      - type: primary_key
+        columns: [k_student, k_discipline_actions_event]
+      - type: foreign_key
+        name: fk__fct_student_discipline_actions_summary__k_student
+        columns: [k_student]
+        to: ref('dim_student')
+        to_columns: [k_student]
 
     tests:
       - dbt_utils.unique_combination_of_columns:
           arguments:
             combination_of_columns:
               - k_student
-              - k_student_xyear
               - k_discipline_actions_event
     columns:
       - name: k_student

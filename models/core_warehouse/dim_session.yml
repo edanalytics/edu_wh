@@ -9,7 +9,7 @@ models:
       - type: primary_key
         columns: [k_session]
       - type: foreign_key
-        name: fk_dim_session_school
+        name: fk__dim_session__k_school
         columns: [k_school]
         to: ref('dim_school')
         to_columns: [k_school]

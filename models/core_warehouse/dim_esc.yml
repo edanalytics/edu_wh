@@ -12,3 +12,7 @@ models:
     config:
       tags: ['esc']
       enabled: "{{ var('src:ed_orgs:esc:enabled', True) }}"
+
+    constraints:
+      - type: primary_key
+        columns: [k_esc]

@@ -16,6 +16,21 @@ models:
       *Primary Key:* `k_student, k_parent`
     config:
       tags: ['core']
+
+    constraints:
+      - type: primary_key
+        columns: [k_student, k_parent]
+      - type: foreign_key
+        name: fk__fct_student_parent_association__k_student
+        columns: [k_student]
+        to: ref('dim_student')
+        to_columns: [k_student]
+      - type: foreign_key
+        name: fk__fct_student_parent_association__k_parent
+        columns: [k_parent]
+        to: ref('dim_parent')
+        to_columns: [k_parent]
+
     tests:
       - dbt_utils.unique_combination_of_columns:
           arguments:

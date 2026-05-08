@@ -19,6 +19,11 @@ models:
 
     config:
       tags: ['core']
+
+    constraints:
+      - type: primary_key
+        columns: [k_program]
+
     columns:
       - name: k_program
         description: Defining key for programs. Surrogate key for [`api_year` + `ed_org_id` + `program_name` + `program_type`]

@@ -7,6 +7,16 @@ models:
     config:
       tags: ['assessment']
       enabled: "{{ var('src:domain:assessment:enabled', True) }}"
+
+    constraints:
+      - type: primary_key
+        columns: [k_objective_assessment]
+      - type: foreign_key
+        name: fk__dim_objective_assessment__k_assessment
+        columns: [k_assessment]
+        to: ref('dim_assessment')
+        to_columns: [k_assessment]
+
     columns:
       - name: k_objective_assessment
         description: >

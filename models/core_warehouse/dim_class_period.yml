@@ -4,3 +4,7 @@ models:
   - name: dim_class_period
     config:
       tags: ['core']
+
+    constraints:
+      - type: primary_key
+        columns: [k_class_period]

@@ -21,6 +21,26 @@ models:
       
     config:
       tags: ['core', 'course']
+
+    constraints:
+      - type: primary_key
+        columns: [k_course_section]
+      - type: foreign_key
+        name: fk__dim_course_section__k_course
+        columns: [k_course]
+        to: ref('dim_course')
+        to_columns: [k_course]
+      - type: foreign_key
+        name: fk__dim_course_section__k_school
+        columns: [k_school]
+        to: ref('dim_school')
+        to_columns: [k_school]
+      - type: foreign_key
+        name: fk__dim_course_section__k_session
+        columns: [k_session]
+        to: ref('dim_session')
+        to_columns: [k_session]
+
     columns:
       - name: k_course_section
         description: Defining key for course sections

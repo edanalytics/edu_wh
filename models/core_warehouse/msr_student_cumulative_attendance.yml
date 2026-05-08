@@ -9,12 +9,12 @@ models:
       - type: primary_key
         columns: [k_student, k_school, school_year]
       - type: foreign_key
-        name: fk_msr_student_cumulative_attendance_student
+        name: fk__msr_student_cumulative_attendance__k_student
         columns: [k_student]
         to: ref('dim_student')
         to_columns: [k_student]
       - type: foreign_key
-        name: fk_msr_student_cumulative_attendance_school
+        name: fk__msr_student_cumulative_attendance__k_school
         columns: [k_school]
         to: ref('dim_school')
         to_columns: [k_school]

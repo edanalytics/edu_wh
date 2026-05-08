@@ -7,12 +7,26 @@ models:
         This fact table contains student Title I Part A program enrollment information.
 
       ##### Primary Key:
-        k_student, k_student_xyear, k_program, program_enroll_begin_date` -- There is one 
+        k_student, k_program, program_enroll_begin_date` -- There is one 
         record per student, year, program enrol begin date, and Title I Part A program.
 
     config:
       tags: ['title_i']
       enabled: "{{ var('src:program:title_i:enabled', True) }}"
+
+    constraints:
+      - type: primary_key
+        columns: [k_student, k_program, program_enroll_begin_date]
+      - type: foreign_key
+        name: fk__fct_student_title_i_part_a_program_association__k_student
+        columns: [k_student]
+        to: ref('dim_student')
+        to_columns: [k_student]
+      - type: foreign_key
+        name: fk__fct_student_title_i_part_a_program_association__k_program
+        columns: [k_program]
+        to: ref('dim_program')
+        to_columns: [k_program]
 
     tests:
       - dbt_utils.unique_combination_of_columns:

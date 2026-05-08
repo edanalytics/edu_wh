@@ -9,6 +9,11 @@ models:
       includes records from both the Parents and Contacts resources.
     config:
       tags: ['core']
+
+    constraints:
+      - type: primary_key
+        columns: [k_parent]
+
     columns:
       - name: k_parent
         description: Defining key for the parent, which is consistent across years.

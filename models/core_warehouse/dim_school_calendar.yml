@@ -4,3 +4,12 @@ models:
   - name: dim_school_calendar
     config:
       tags: ['core']
+
+    constraints:
+      - type: primary_key
+        columns: [k_school_calendar]
+      - type: foreign_key
+        name: fk__dim_school_calendar__k_school
+        columns: [k_school]
+        to: ref('dim_school')
+        to_columns: [k_school]

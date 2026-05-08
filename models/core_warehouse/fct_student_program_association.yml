@@ -9,6 +9,21 @@ models:
 
     config:
       tags: ['core']
+
+    constraints:
+      - type: primary_key
+        columns: [k_student, k_program, program_enroll_begin_date]
+      - type: foreign_key
+        name: fk__fct_student_program_association__k_student
+        columns: [k_student]
+        to: ref('dim_student')
+        to_columns: [k_student]
+      - type: foreign_key
+        name: fk__fct_student_program_association__k_program
+        columns: [k_program]
+        to: ref('dim_program')
+        to_columns: [k_program]
+
     tests:
       - dbt_utils.unique_combination_of_columns:
           arguments:

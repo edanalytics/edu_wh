@@ -17,6 +17,11 @@ models:
 
     config:
       tags: ['core']
+
+    constraints:
+      - type: primary_key
+        columns: [k_subgroup]
+
     columns:
       - name: k_subgroup
         description: Defining key for subgroups. A surrogate key for [`subgroup_category` + `subgroup_value`]

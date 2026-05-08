@@ -11,6 +11,21 @@ models:
 
     config:
       tags: ['core', 'course']
+
+    constraints:
+      - type: primary_key
+        columns: [k_course_section, k_program]
+      - type: foreign_key
+        name: fk__brg_course_section_program__k_course_section
+        columns: [k_course_section]
+        to: ref('dim_course_section')
+        to_columns: [k_course_section]
+      - type: foreign_key
+        name: fk__brg_course_section_program__k_program
+        columns: [k_program]
+        to: ref('dim_program')
+        to_columns: [k_program]
+
     columns:
       - name: tenant_code
       - name: k_course_section

@@ -11,6 +11,16 @@ models:
 
     config:
       tags: ['core']
+
+    constraints:
+      - type: primary_key
+        columns: [k_classroom]
+      - type: foreign_key
+        name: fk__dim_classroom__k_school
+        columns: [k_school]
+        to: ref('dim_school')
+        to_columns: [k_school]
+
     columns:
       - name: k_classroom
         description: Defining key for school locations

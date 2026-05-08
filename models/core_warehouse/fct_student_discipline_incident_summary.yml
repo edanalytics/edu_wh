@@ -15,14 +15,27 @@ models:
 
       Rows represent a student and discipline incident.
 
-      *Primary Key:* k_student, k_student_xyear, k_discipline_incident
+      *Primary Key:* k_student, k_discipline_incident
+
+    constraints:
+      - type: primary_key
+        columns: [k_student, k_discipline_incident]
+      - type: foreign_key
+        name: fk__fct_student_discipline_incident_summary__k_student
+        columns: [k_student]
+        to: ref('dim_student')
+        to_columns: [k_student]
+      - type: foreign_key
+        name: fk__fct_student_discipline_incident_summary__k_discipline_incident
+        columns: [k_discipline_incident]
+        to: ref('dim_discipline_incident')
+        to_columns: [k_discipline_incident]
 
     tests:
       - dbt_utils.unique_combination_of_columns:
           arguments:
             combination_of_columns:
               - k_student
-              - k_student_xyear
               - k_discipline_incident
     columns:
       - name: k_student
