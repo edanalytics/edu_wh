@@ -56,7 +56,7 @@ models:
 
     constraints:
       - type: primary_key
-        columns: [k_student, k_school, k_entry_date]
+        columns: [k_student, k_school, entry_date]
       - type: foreign_key
         name: fk__fct_student_school_association__k_student
         columns: [k_student]
