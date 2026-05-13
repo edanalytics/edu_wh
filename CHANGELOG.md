@@ -1,8 +1,20 @@
 # Unreleased
 ## New features
-- Updated docs for the following dbt models: `dim_objective_assessment`, `dim_parent`, `dim_school_calendar`, `dim_session`, `fct_student_discipline_actions_summary`, `fct_student_discipline_incident_summary`, `fct_student_parent_association`, `fct_student_program_association`
 ## Under the hood
 ## Fixes
+
+# edu_wh v0.6.3
+## New features
+- Update `is_active_enrollment` logic in `fct_student_school_association` to allow for extending active periods into Summer, if configured
+- Update docs with better descriptions, column descriptions, etc. for several models
+- Add `constraints` - `primary_key` and `foreign_key` declarations in dbt model configs for all `core_warehouse` models
+- Add new columns to `fct_course_transcripts`, including `external_ed_org_id` and `external_ed_org_name`
+## Under the hood
+- Move `derive_school_year` macro and logic upstream to `edu_edfi_source`
+- Refine regex to allow apostrophes in `bld_ef3__staff_emails`
+## Fixes
+- Fix non-databricks-compatible code from 0.6.2 release
+
 
 # edu_wh v0.6.2
 ## New features
