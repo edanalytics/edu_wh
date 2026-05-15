@@ -1,6 +1,6 @@
 # Unreleased
 ## New features
-- Add fct models `fct_student_iep`, `fct_idea_event`, and `fct_student_iep_disability`
+- **Breaking Change**: Add fct models `fct_student_iep`, `fct_idea_event`, and `fct_student_iep_disability`.  These new models require adding the corresponding sources.
 ## Under the hood
 ## Fixes
 
