@@ -12,6 +12,7 @@ models:
 
     config:
       tags: ['sedm']
+      enabled: "{{ var('edu:sedm:enabled', False) }}"
 
     constraints:
       - type: primary_key
