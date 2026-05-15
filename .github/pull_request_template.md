@@ -68,7 +68,7 @@ Make sure the following have been completed before approving this PR:
 - [ ] If a new configuration variable was added:
   - [ ] The code is written such that the variable is optional (preferred), and this behavior was tested, OR
   - [ ] The code is written such that the variable is required, and a default value was added to edu_project_template, and this PR is flagged as breaking change (not for patch release)
-  - [ ] A description for the new variable has been added to EDU documentation site [here](https://github.com/edanalytics/edu_docs/blob/main/docs/docs/manage_extend/reference/configure_dbt_vars.md) 
+  - [ ] A description for the new variable has been added to EDU documentation site [here](https://github.com/edanalytics/edu_docs/blob/main/docs/docs/references/manage_extend/configure_dbt_vars.md) 
 
 <!---## Future ToDos & Questions:-->
 <!---
