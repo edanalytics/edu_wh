@@ -1,0 +1,39 @@
+version: 2
+
+models:
+  - name: fct_student_iep_disability
+    description: >
+      ##### Overview:
+        This fact table lists disabilities associated with each student IEP, as recorded
+        in the source disability collection.
+
+      ##### Grain:
+        One row per IEP disability entry, typically unique by `k_student_iep` and
+        `order_of_disability`.
+
+    config:
+      tags: ['sedm']
+
+    constraints:
+      - type: foreign_key
+        name: fk__fct_student_iep_disability__k_student_iep
+        columns: [k_student_iep]
+        to: ref('fct_student_iep')
+        to_columns: [k_student_iep]
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - k_student_iep
+              - order_of_disability
+
+    columns:
+      - name: k_student_iep
+      - name: tenant_code
+      - name: school_year
+      - name: ed_org_id
+      - name: disability_descriptor
+      - name: disability_determination_source_type_descriptor
+      - name: disability_diagnosis
+      - name: order_of_disability

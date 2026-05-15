@@ -1,0 +1,44 @@
+version: 2
+
+models:
+  - name: fct_idea_event
+    description: >
+      ##### Overview:
+        This fact table contains IDEA-related events for students (for example, meetings,
+        evaluations, or other documented IDEA processes), keyed to the warehouse student.
+
+      ##### Primary Key:
+        `k_idea_event` -- There is one record per IDEA event association in the source data.
+
+    config:
+      tags: ['sedm']
+
+    constraints:
+      - type: primary_key
+        columns: [k_idea_event]
+      - type: foreign_key
+        name: fk__fct_idea_event__k_student
+        columns: [k_student]
+        to: ref('dim_student')
+        to_columns: [k_student]
+
+    columns:
+      - name: k_idea_event
+        tests:
+          - unique
+          - not_null
+      - name: k_student
+        description: Defining key for the student in this school year.
+      - name: k_student_xyear
+        description: Defining key for the student, which is consistent across years.
+      - name: tenant_code
+      - name: school_year
+      - name: idea_event_id
+      - name: ed_org_id
+      - name: ed_org_type
+      - name: idea_event
+      - name: event_begin_date
+      - name: event_end_date
+      - name: event_narrative
+      - name: event_reason
+      - name: event_compliance
