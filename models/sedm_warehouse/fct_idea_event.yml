@@ -35,11 +35,18 @@ models:
       - name: tenant_code
       - name: school_year
       - name: idea_event_id
+        description: A unique identifier for the event record as assigned by the provider of IEP services.
       - name: ed_org_id
       - name: ed_org_type
       - name: idea_event
+        description: The specific legal step, procedure, or standard event milestone captured as part of IDEA compliance requirements.
       - name: event_begin_date
+        description: The date when the IDEA related event started.
       - name: event_end_date
+        description: The date when the IDEA related event concluded.
       - name: event_narrative
+        description: Detailed and summary notes recorded during the event.
       - name: event_reason
+        description: The reason why the IDEA event occurred.
       - name: event_compliance
+        description: The type of compliance represented by this event.
