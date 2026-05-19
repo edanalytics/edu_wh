@@ -29,6 +29,9 @@ models:
         +enabled: "{{ var('edu:tpdm:enabled', False) }}"
     core_warehouse:
       +schema: wh
+    sedm_warehouse:
+      +schema: wh
+      +enabled: "{{ var('edu:sedm:enabled', False) }}"
     tpdm_warehouse:
       +schema: wh
       +enabled: "{{ var('edu:tpdm:enabled', False) }}"

@@ -1,0 +1,60 @@
+version: 2
+
+models:
+  - name: fct_idea_event
+    description: >
+      ##### Overview:
+        This fact table contains IDEA-related events for students (for example, meetings,
+        evaluations, or other documented IDEA processes), keyed to the warehouse student.
+
+      ##### Primary Key:
+        `k_idea_event` -- There is one record per IDEA event association in the source data.
+
+    config:
+      tags: ['sedm']
+      enabled: "{{ var('edu:sedm:enabled', False) }}"
+
+    constraints:
+      - type: primary_key
+        columns: [k_idea_event]
+      - type: foreign_key
+        name: fk__fct_idea_event__k_student
+        columns: [k_student]
+        to: ref('dim_student')
+        to_columns: [k_student]
+
+    columns:
+      - name: k_idea_event
+        tests:
+          - unique
+          - not_null
+      - name: k_student
+        description: Defining key for the student in this school year.
+      - name: k_student_xyear
+        description: Defining key for the student, which is consistent across years.
+      - name: tenant_code
+        description: The tenant associated with the record.
+      - name: school_year
+        description: >
+          School year specified by Spring year.
+          e.g. the 2021-2022 year would be 2022.
+      - name: idea_event_id
+        description: A unique identifier for the event record as assigned by the provider of IEP services.
+      - name: ed_org_id
+        description: The identifier for the educational organization associated with the IDEA event.
+      - name: ed_org_type
+        description: >
+          The type of educational organization
+          e.g., School or LocalEducationAgency.
+      - name: idea_event
+        description: The specific legal step, procedure, or standard event milestone captured as part of IDEA compliance requirements.
+      - name: event_begin_date
+        description: The date when the IDEA related event started.
+      - name: event_end_date
+        description: The date when the IDEA related event concluded.
+      - name: event_narrative
+        description: Detailed and summary notes recorded during the event.
+      - name: event_reason
+        description: The reason why the IDEA event occurred.
+      - name: event_compliance
+        description: The type of compliance represented by this event.
