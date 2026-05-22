@@ -50,6 +50,9 @@ formatted as (
         bld_chart_of_accounts_dimensions.project_dimension_code,
         bld_chart_of_accounts_dimensions.project_dimension_fiscal_year,
         bld_chart_of_accounts_dimensions.project_dimension_code_name,
+        bld_chart_of_accounts_dimensions.source_dimension_code,
+        bld_chart_of_accounts_dimensions.source_dimension_fiscal_year,
+        bld_chart_of_accounts_dimensions.source_dimension_code_name,
 
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__local_accounts', flatten=False) }}
 
