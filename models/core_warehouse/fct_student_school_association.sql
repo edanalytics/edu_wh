@@ -60,15 +60,43 @@ formatted as (
         stg_stu_school.is_school_choice,
         stg_stu_school.school_choice_basis,
         stg_stu_school.enrollment_type,
+
         -- create indicator for active enrollment
         iff(
-            -- is highest school year observed by tenant
-            stg_stu_school.school_year = max(stg_stu_school.school_year) 
-                over(partition by stg_stu_school.tenant_code)
-            -- not yet exited
-            and {{ date_within_end_date('current_date()', 'exit_withdraw_date', var('edu:enroll:exit_withdraw_date_inclusive', True)) }}
             -- enrollment has begun
-            and entry_date <= current_date(),
+            entry_date <= current_date()
+            -- not yet exited, or 'year-end extension' if configured
+            and (
+                -- standard: not yet exited as of the last day of the school year for the enrollment record
+                {{ date_within_end_date(
+                    'current_date()', 
+                    'coalesce(stg_stu_school.exit_withdraw_date, bld_school_calendar_windows.last_school_day)', 
+                    var('edu:enroll:exit_withdraw_date_inclusive', True)) }}
+                
+                -- extended: if configured, students who exit at the end of the school year are still active until buffer days
+                {%- set buffer_days = var('edu:enroll:year_end_active_buffer_days', none) -%}
+                {%- if buffer_days is not none %}
+                    or (exit_withdraw_date >= dateadd(
+                        day,
+                        -- Adjust last_school_day by buffer_days to determine the cutoff date for "active enrollment":
+                        -- If buffer_days > 0: Move cutoff date earlier (prior to last_school_day) (use to keep students active who exit during the last buffer_days days of the school year)
+                        -- If buffer_days < 0: Move cutoff date later (after last_school_day) (use to keep students active who exit after the last school day)
+                        -- If buffer_days == 0: Use last_school_day as-is (use to keep students active who exit on or after the last school day)
+                        {% if buffer_days > 0 %}
+                            -{{ buffer_days }}
+                        {% elif buffer_days < 0 %}
+                            {{ -buffer_days }}
+                        {% else %}
+                            0
+                        {% endif %},
+
+                        bld_school_calendar_windows.last_school_day
+                        )
+                        -- only apply to cases where calendar end is in the current year (exclude from active if calendar ended in Fall or previous year, or tenant only has data from last year)
+                        AND year(bld_school_calendar_windows.last_school_day) = year(current_date())
+                    )
+                {% endif %}
+            ),
             true, false
         ) as is_active_enrollment,
         stg_stu_school.entry_grade_level,
