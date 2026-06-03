@@ -17,6 +17,11 @@ models:
 
     config:
       tags: ['core']
+
+    constraints:
+      - type: primary_key
+        columns: [k_staff]
+
     columns:
       - name: k_staff
         description: "Primary key generated using `tenant_code` and `staff_unique_id`"

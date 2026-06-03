@@ -14,6 +14,21 @@ models:
 
     config:
       tags: ['core']
+
+    constraints:
+      - type: primary_key
+        columns: [k_student, k_course_section, begin_date]
+      - type: foreign_key
+        name: fk__fct_student_section_association__k_student
+        columns: [k_student]
+        to: ref('dim_student')
+        to_columns: [k_student]
+      - type: foreign_key
+        name: fk__fct_student_section_association__k_course_section
+        columns: [k_course_section]
+        to: ref('dim_course_section')
+        to_columns: [k_course_section]
+
     tests:
       - dbt_utils.unique_combination_of_columns:
           arguments:

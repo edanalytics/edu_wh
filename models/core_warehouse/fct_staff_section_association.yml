@@ -17,6 +17,21 @@ models:
 
     config:
       tags: ['core']
+
+    constraints:
+      - type: primary_key
+        columns: [k_staff, k_course_section, begin_date]
+      - type: foreign_key
+        name: fk__fct_staff_section_association__k_staff
+        columns: [k_staff]
+        to: ref('dim_staff')
+        to_columns: [k_staff]
+      - type: foreign_key
+        name: fk__fct_staff_section_association__k_course_section
+        columns: [k_course_section]
+        to: ref('dim_course_section')
+        to_columns: [k_course_section]
+
     columns:
       - name: k_staff
         description: "Unique key for staff, foreign key reference to `dim_staff`"

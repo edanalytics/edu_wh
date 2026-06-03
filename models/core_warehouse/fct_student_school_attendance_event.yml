@@ -16,6 +16,21 @@ models:
 
     config:
       tags: ['core']
+
+    constraints:
+      - type: primary_key
+        columns: [k_student, k_school, k_session, attendance_event_category, k_calendar_date]
+      - type: foreign_key
+        name: fk__fct_student_school_attendance_event__k_student
+        columns: [k_student]
+        to: ref('dim_student')
+        to_columns: [k_student]
+      - type: foreign_key
+        name: fk__fct_student_school_attendance_event__k_school
+        columns: [k_school]
+        to: ref('dim_school')
+        to_columns: [k_school]
+
     tests:
       - dbt_utils.unique_combination_of_columns:
           arguments:

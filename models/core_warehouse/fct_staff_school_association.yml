@@ -4,6 +4,21 @@ models:
   - name: fct_staff_school_association
     config:
       tags: ['core']
+
+    constraints:
+      - type: primary_key
+        columns: [k_staff_school_association]
+      - type: foreign_key
+        name: fk__fct_staff_school_association__k_staff
+        columns: [k_staff]
+        to: ref('dim_staff')
+        to_columns: [k_staff]
+      - type: foreign_key
+        name: fk__fct_staff_school_association__k_school
+        columns: [k_school]
+        to: ref('dim_school')
+        to_columns: [k_school]
+
     description: >
      ##### Overview:
        This fact table provides information on the associations between Staff and Schools. It includes both active and historic associations.

@@ -2,5 +2,38 @@ version: 2
 
 models:
   - name: dim_school_calendar
+    description: >
+      ##### Overview:
+        This dimension table defines a set of dates associated with a school.
+
+      ##### Primary Key:
+        `k_school_calendar` -- There is one record per tenant, calendar code, school, year.
+
     config:
       tags: ['core']
+
+
+    constraints:
+      - type: primary_key
+        columns: [k_school_calendar]
+      - type: foreign_key
+        name: fk__dim_school_calendar__k_school
+        columns: [k_school]
+        to: ref('dim_school')
+        to_columns: [k_school]
+    columns:
+      - name: k_school_calendar
+        description: Primary key for the school calendar record.
+        tests:
+          - not_null
+          - unique
+      - name: k_school
+        description: Foreign key to `dim_school`, identifying the school associated with the calendar.
+      - name: tenant_code
+      - name: school_year
+      - name: calendar_code
+        description: Identifier for the calendar.
+      - name: calendar_type
+      - name: applicable_grade_levels_array
+        description: The grade level associated with the calendar.
+

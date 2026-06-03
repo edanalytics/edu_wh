@@ -39,6 +39,26 @@ models:
 
     config:
       tags: ['core']
+
+    constraints:
+      - type: primary_key
+        columns: [k_course, k_student_academic_record, course_attempt_result]
+      - type: foreign_key
+        name: fk__fct_course_transcripts__k_course
+        columns: [k_course]
+        to: ref('dim_course')
+        to_columns: [k_course]
+      - type: foreign_key
+        name: fk__fct_course_transcripts__k_student_academic_record
+        columns: [k_student_academic_record]
+        to: ref('fct_student_academic_record')
+        to_columns: [k_student_academic_record]
+      - type: foreign_key
+        name: fk__fct_course_transcripts__k_student
+        columns: [k_student]
+        to: ref('dim_student')
+        to_columns: [k_student]
+
     tests:
       - dbt_utils.unique_combination_of_columns:
           arguments:
@@ -94,8 +114,24 @@ models:
         description: The organization code or name assigning the course identification code.
       - name: course_catalog_url
         description: The URL for the course catalog that defines the course identification code.
+      - name: external_ed_org_id
+        description: The external institution where the student completed the course (e.g., the original education organization for a transferred course transcript, or the provider for an online course).
+      - name: external_ed_org_name
+        description: Name of the external institution where the student completed the course; to be used only when the reference external education organization is not available.
       - name: v_earned_additional_credits
         description: >
           This is an array of additional credits a student attempted and 
           could earn for successfully completing a given course (e.g., dual credit, AP, IB).
+      - name: v_credit_categories
+        description: An array of categorizations for the course transcript credits awarded in the course transcript.
+      - name: v_academic_subjects
+        description: An array of subject areas for the course transcript credits awarded in the course transcript.
+      - name: v_alternative_course_identification_codes
+        description: An array of codes that identify the course, course offering, the code from an external educational organization, or other alternate course code.
+      - name: v_programs
+        description: An array of the program(s) that the student participated in the context of the course.
+      - name: v_sections
+        description: An array of the section(s) associated with the course transcript.
+      - name: v_partial_course_transcript_awards
+        description: A collection of partial credits and/or grades a student earned against the course over the session, used when awards of credit are incremental.
       

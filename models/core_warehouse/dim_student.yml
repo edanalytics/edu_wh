@@ -21,6 +21,11 @@ models:
 
     config:
       tags: ['core', 'special_ed', 'homeless', 'language_instruction', 'title_i']
+    
+    constraints:
+      - type: primary_key
+        columns: [k_student]
+
     columns:
       - name: k_student
         description: Defining key for the student in this school year.
@@ -32,6 +37,7 @@ models:
         tests:
           - not_null
       - name: tenant_code
+        description: The tenant associated with the record.
       - name: school_year
         description: >
           School year specified by Spring year.
@@ -50,6 +56,9 @@ models:
         description: The student's last name, first name, and middle initial.
       - name: birth_date
         description: The student's birthday formatted as YYYY-MM-DD.
+        config:
+            meta:
+                type: 'date'
       - name: birth_country
         description: The student's birth country.
       - name: lep_code

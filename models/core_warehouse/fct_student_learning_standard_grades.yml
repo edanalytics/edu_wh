@@ -33,6 +33,36 @@ models:
 
     config:
       tags: ['core', 'course']
+
+    constraints:
+      - type: primary_key
+        columns: [k_grading_period, k_student, k_school, k_course_section, grade_type, k_learning_standard]
+      - type: foreign_key
+        name: fk__fct_student_learning_standard_grades__k_grading_period
+        columns: [k_grading_period]
+        to: ref('dim_grading_period')
+        to_columns: [k_grading_period]
+      - type: foreign_key
+        name: fk__fct_student_learning_standard_grades__k_student
+        columns: [k_student]
+        to: ref('dim_student')
+        to_columns: [k_student]
+      - type: foreign_key
+        name: fk__fct_student_learning_standard_grades__k_school
+        columns: [k_school]
+        to: ref('dim_school')
+        to_columns: [k_school]
+      - type: foreign_key
+        name: fk__fct_student_learning_standard_grades__k_course_section
+        columns: [k_course_section]
+        to: ref('dim_course_section')
+        to_columns: [k_course_section]
+      - type: foreign_key
+        name: fk__fct_student_learning_standard_grades__k_learning_standard
+        columns: [k_learning_standard]
+        to: ref('dim_learning_standard')
+        to_columns: [k_learning_standard]
+
     tests:
       - dbt_utils.unique_combination_of_columns:
           arguments:

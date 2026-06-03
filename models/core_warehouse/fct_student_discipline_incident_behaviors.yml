@@ -11,12 +11,30 @@ models:
       ##### Primary Key:
         `k_student, k_discipline_incident, behavior_type` -- There is one record per student, year, incident ID, school, and behavior.
 
+    constraints:
+      - type: primary_key
+        columns: [k_student, k_discipline_incident, behavior_type]
+      - type: foreign_key
+        name: fk__fct_student_discipline_incident_behaviors__k_student
+        columns: [k_student]
+        to: ref('dim_student')
+        to_columns: [k_student]
+      - type: foreign_key
+        name: fk__fct_student_discipline_incident_behaviors__k_school
+        columns: [k_school]
+        to: ref('dim_school')
+        to_columns: [k_school]
+      - type: foreign_key
+        name: fk__fct_student_discipline_incident_behaviors__k_discipline_incident
+        columns: [k_discipline_incident]
+        to: ref('dim_discipline_incident')
+        to_columns: [k_discipline_incident]
+
     tests:
       - dbt_utils.unique_combination_of_columns:
           arguments:
             combination_of_columns:
               - k_student
-              - k_student_xyear
               - k_discipline_incident
               - behavior_type
     columns:

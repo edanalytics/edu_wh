@@ -13,26 +13,40 @@ models:
 
     config:
       tags: ['core']
+
+    constraints:
+      - type: primary_key
+        columns: [k_school]
+
     tests:
       - dbt_utils.unique_combination_of_columns:
           arguments:
             combination_of_columns:
               - k_school
+
     columns:
       - name: k_school
+        description: Unique key identifying a school.
       - name: k_lea
+        description: Unique key identifying a Local Education Agency (LEA).
       - name: tenant_code
+        description: The tenant associated with the record.
       - name: school_id
         description: The unique identifier assigned to a school.
       - name: department_school_code
+        description: Department school identifier, if provided.
       - name: local_school_code
-        description: Local school identifier
+        description: Local school identifier, if provided.
       - name: state_school_code
-        description: State school identifier
+        description: State school identifier, if provided.
       - name: school_name
+        description: Name of the school.
       - name: school_short_name
+        description: Short name of the school, if provided.
       - name: lea_name
+        description: Name of the Local Education Agency (LEA) with which the school is associated.
       - name: lea_id
+        description: Identifier of the Local Education Agency (LEA) with which the school is associated.
       - name: school_category
         description: The category of school. For example - High School, Middle School, Elementary School.
       - name: school_type
@@ -50,16 +64,28 @@ models:
       - name: magnet_type
         description: Emphasis of magnet school. A magnet school is a school that has been designed to attract students of different racial/ethnic backgrounds for the purpose of reducing, preventing or eliminating racial isolation; and/or to provide an academic or social focus on a particular theme (e.g., science/math, performing arts, gifted/talented, or foreign language).
       - name: website
+        description: Website associated with a school.
       - name: address_type
+        description: The type of address listed. For example - Physical, Mailing.
       - name: street_address
+        description: Street address a school is associated with.
       - name: city
+        description: City that the school address is associated with.
       - name: name_of_county
+        description: Name of the county the school address is associated with.
       - name: state_code
+        description: 2-character state code. State codes are maintained by the USPS.
       - name: postal_code
+        description: Zip code associated with the school address.
       - name: building_site_number
+        description: Number for a building site, if provided.
       - name: locale
+        description: Locale code associated with the school. Locale codes are maintained by the National Center for Education Statistics (NCES).
       - name: congressional_district
+        description: Congressional districts associated with the school.
       - name: county_fips_code
         description: Definition The Federal Information Processing Standards (FIPS) numeric code for the county issued by the National Institute of Standards and Technology (NIST). Counties are considered to be the "first-order subdivisions" of each State and statistically equivalent entity, regardless of their local designations (county, parish, borough, etc.) Counties in different States will have the same code. A unique county number is created when combined with the 2-digit FIPS State Code.
       - name: latitude
+        description: Latitude of a school building location.
       - name: longitude
+        description: Longitude of a school building location.

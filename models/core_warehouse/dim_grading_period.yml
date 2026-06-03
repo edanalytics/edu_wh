@@ -10,6 +10,16 @@ models:
           `k_grading_period` - There is one record per grading period.
     config:
       tags: ['core', 'course']
+
+    constraints:
+      - type: primary_key
+        columns: [k_grading_period]
+      - type: foreign_key
+        name: fk__dim_grading_period__k_school
+        columns: [k_school]
+        to: ref('dim_school')
+        to_columns: [k_school]
+
     columns:
       - name: k_grading_period
         description: Generated primary key composed of 'grading_period', 'period_sequence', 'school_id', and 'school_year' (generated in [stg_ef3__grading_periods](#!/model/model.edu_edfi_source.stg_ef3__grading_periods))

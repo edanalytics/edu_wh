@@ -3,26 +3,30 @@ version: 2
 models: 
   - name: fct_student_discipline_actions_summary
     description: >
-      This table provides a summary of student discipline action events
-      by linking discipline action events (defined as a discipline action
-      id and a discipline date) to all associated behaviors, regardless
-      of whether the behaviors belong to different incident IDs. To 
-      keep the grain at a single student and discipline action event but 
-      also represent the multiple behaviors and actions, we included both as 
-      lists. Additionally, we included the most severe discipline action 
-      (for a discipline action event) and the most severe behavior (across 
-      all associated incident IDs).
+      ##### Overview:
+        This fact table provides a summary of student discipline action events by linking discipline action events (defined as a discipline action id 
+        and a discipline date) to all associated behaviors, regardless of whether the behaviors belong to different incident IDs. 
+        
+        To keep the grain at a single student and discipline action event but also represent the multiple behaviors and actions, we included both as lists. 
+        Additionally, we included the most severe discipline action (for a discipline action event) and the most severe behavior (across all associated incident IDs).
+      
+      ##### Primary Key:
+        `k_student, k_discipline_actions_event` -- There is one record per tenant, year, student, and discipline action event.
 
-      Rows represent a student and discipline action event.
-
-      *Primary Key:* k_student, k_student_xyear, k_discipline_actions_event
+    constraints:
+      - type: primary_key
+        columns: [k_student, k_discipline_actions_event]
+      - type: foreign_key
+        name: fk__fct_student_discipline_actions_summary__k_student
+        columns: [k_student]
+        to: ref('dim_student')
+        to_columns: [k_student]
 
     tests:
       - dbt_utils.unique_combination_of_columns:
           arguments:
             combination_of_columns:
               - k_student
-              - k_student_xyear
               - k_discipline_actions_event
     columns:
       - name: k_student

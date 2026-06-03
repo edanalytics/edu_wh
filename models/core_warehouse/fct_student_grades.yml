@@ -22,6 +22,31 @@ models:
 
     config:
       tags: ['core', 'course']
+
+    constraints:
+      - type: primary_key
+        columns: [k_grading_period, k_student, k_school, k_course_section, grade_type]
+      - type: foreign_key
+        name: fk__fct_student_grades__k_grading_period
+        columns: [k_grading_period]
+        to: ref('dim_grading_period')
+        to_columns: [k_grading_period]
+      - type: foreign_key
+        name: fk__fct_student_grades__k_student
+        columns: [k_student]
+        to: ref('dim_student')
+        to_columns: [k_student]
+      - type: foreign_key
+        name: fk__fct_student_grades__k_school
+        columns: [k_school]
+        to: ref('dim_school')
+        to_columns: [k_school]
+      - type: foreign_key
+        name: fk__fct_student_grades__k_course_section
+        columns: [k_course_section]
+        to: ref('dim_course_section')
+        to_columns: [k_course_section]
+
     tests:
       - dbt_utils.unique_combination_of_columns:
           arguments:

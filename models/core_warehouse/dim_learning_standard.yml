@@ -12,6 +12,11 @@ models:
       
     config:
       tags: ['core', 'course']
+
+    constraints:
+      - type: primary_key
+        columns: [k_learning_standard]
+
     columns:
       - name: k_learning_standard
         description: Unique identifier for a learning standard.
