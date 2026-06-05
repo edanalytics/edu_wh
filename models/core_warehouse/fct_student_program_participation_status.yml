@@ -1,6 +1,6 @@
-version: 1
+version: 2
 
-models: 
+models:
   - name: fct_student_program_participation_status
     description: >
      ##### Overview:
@@ -9,20 +9,21 @@ models:
       - [stg_ef3__stu_spec_ed__program_participation_statuses](#!/model/model.edu_edfi_source.stg_ef3__stu_spec_ed__program_participation_statuses)
       - [stg_ef3__stu_lang_instr__program_participation_statuses](#!/model/model.edu_edfi_source.stg_ef3__stu_lang_instr__program_participation_statuses)
       - [stg_ef3__stu_homeless__program_participation_statuses](#!/model/model.edu_edfi_source.stg_ef3__stu_homeless__program_participation_statuses)
-      - [stg_ef3__stu_title_i__program_participation_statuses](#!/model/model.edu_edfi_source.stg_ef3__stu_title_i__program_participation_statuses)
+      - [stg_ef3__stu_title_i_part_a__program_participation_statuses](#!/model/model.edu_edfi_source.stg_ef3__stu_title_i_part_a__program_participation_statuses)
       - [stg_ef3__stu_cte__program_participation_statuses](#!/model/model.edu_edfi_source.stg_ef3__stu_cte__program_participation_statuses)
-      - [stg_ef3__stu_migrant_edu__program_participation_statusess](#!/model/model.edu_edfi_source.stg_ef3__stu_migrant_edu__program_participation_statuses)
+      - [stg_ef3__stu_migrant_edu__program_participation_statuses](#!/model/model.edu_edfi_source.stg_ef3__stu_migrant_edu__program_participation_statuses)
       - [stg_ef3__stu_school_food_service__program_participation_statuses](#!/model/model.edu_edfi_source.stg_ef3__stu_school_food_service__program_participation_statuses)
       - [stg_ef3__stu_program__program_participation_statuses](#!/model/model.edu_edfi_source.stg_ef3__stu_program__program_participation_statuses)
 
      ##### Primary Key:
        `k_student_program, participation_status, status_begin_date` --
-       There is one record per student, year, program, ed org, program start date, program participation status, and status begin date.
+       There is one record per student, year, program enrollment window, participation status, and status begin date.
 
      ##### Important business rules:
-        - `program_enroll_begin_date` is included in the unique key, because a student may be associated with the same program at multiple times,
-           and those associations may have different program participation statuses. When joining this table to `fct_student_{program_type}_program_association`,
-           always include `program_enroll_begin_date` in the join.
+        - `program_enroll_begin_date` is encoded within `k_student_program`. When joining this table to
+           `fct_student_{program_type}_program_association`, always include `k_student_program` or
+           `program_enroll_begin_date` in the join condition, because a student may have multiple enrollment
+           windows for the same program with different participation statuses.
 
     config:
       tags: ['special_ed', 'homeless', 'language_instruction', 'title_i', 'cte', 'migrant_education', 'food_service']
@@ -47,13 +48,35 @@ models:
         {%- else -%}
            {{ True  | as_bool }}
         {%- endif -%}
-        
+
+    constraints:
+      - type: primary_key
+        columns: [k_student_program, participation_status, status_begin_date]
+      - type: foreign_key
+        name: fk__fct_student_program_participation_status__k_student
+        columns: [k_student]
+        to: ref('dim_student')
+        to_columns: [k_student]
+      - type: foreign_key
+        name: fk__fct_student_program_participation_status__k_program
+        columns: [k_program]
+        to: ref('dim_program')
+        to_columns: [k_program]
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - k_student_program
+              - participation_status
+              - status_begin_date
+
     columns:
       - name: k_student_program
       - name: k_student
+      - name: k_student_xyear
       - name: k_program
       - name: tenant_code
-      - name: ed_org_id
       - name: program_enroll_begin_date
       - name: participation_status
       - name: status_begin_date

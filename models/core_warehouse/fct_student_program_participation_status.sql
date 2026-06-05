@@ -5,7 +5,6 @@
         "alter table {{ this }} alter column k_student set not null",
         "alter table {{ this }} alter column k_program set not null",
         "alter table {{ this }} alter column program_enroll_begin_date set not null",
-        "alter table {{ this }} alter column ed_org_id set not null",
         "alter table {{ this }} alter column participation_status set not null",
         "alter table {{ this }} alter column status_begin_date set not null",
         "alter table {{ this }} add primary key (k_student_program, participation_status, status_begin_date)",
@@ -53,7 +52,7 @@
 
 -- Food Service
 {% if var('src:program:food_service:enabled', True) %}
-    {% do stage_program_relations.append(ref('stg_ef3__stu_school_food_service__program_services')) %}
+    {% do stage_program_relations.append(ref('stg_ef3__stu_school_food_service__program_participation_statuses')) %}
 {% endif %}
 
 with dim_student as (
@@ -85,7 +84,6 @@ subset as (
     stacked.k_student_xyear,
     stacked.k_program,
     stacked.tenant_code,
-    stacked.ed_org_id,
     stacked.program_enroll_begin_date,
     stacked.participation_status,
     stacked.status_begin_date,

@@ -43,7 +43,6 @@ models:
       - name: k_program
       - name: k_lea
       - name: k_school
-      - name: ed_org_id
       - name: tenant_code
       - name: school_year
       - name: program_enroll_begin_date

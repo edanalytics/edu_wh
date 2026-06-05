@@ -5,7 +5,6 @@
         "alter table {{ this }} alter column k_student set not null",
         "alter table {{ this }} alter column k_program set not null",
         "alter table {{ this }} alter column program_enroll_begin_date set not null",
-        "alter table {{ this }} alter column ed_org_id set not null",
         "alter table {{ this }} alter column program_service set not null",
         "alter table {{ this }} add primary key (k_student_program, program_service)",
         "alter table {{ this }} add constraint fk_{{ this.name }}_student foreign key (k_student) references {{ ref('dim_student') }}",
@@ -85,13 +84,10 @@ subset as (
     stacked.k_student_xyear,
     stacked.k_program,
     stacked.tenant_code,
-    stacked.ed_org_id,
     stacked.program_enroll_begin_date,
     stacked.program_service,
     stacked.primary_indicator,
-    {% if var('src:program:special_ed:enabled', True) %}
-        stacked.v_providers,
-    {% endif %}
+    stacked.v_providers,
     {% if var('src:program:cte:enabled', True) %}
         stacked.cip_code,
     {% endif %}

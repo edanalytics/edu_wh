@@ -7,7 +7,7 @@ models:
         This fact table defines associations between programs and a student. 
       
       ##### Primary Key:
-        `k_student, k_program` -- There is one record per tenant, year, student, and program.
+        `k_student, k_program, program_enroll_begin_date` -- There is one record per student, year, program, and program enroll begin date.
 
     config:
       tags: ['core']
@@ -40,7 +40,6 @@ models:
       - name: k_program
       - name: k_lea
       - name: k_school
-      - name: ed_org_id
       - name: tenant_code
       - name: school_year
       - name: program_enroll_begin_date

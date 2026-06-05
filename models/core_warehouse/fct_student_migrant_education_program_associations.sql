@@ -32,7 +32,6 @@ formatted as (
         dim_program.k_program,
         dim_program.k_lea,
         dim_program.k_school,
-        stage.ed_org_id, 
         stage.tenant_code,
         dim_program.school_year,
         stage.program_enroll_begin_date,

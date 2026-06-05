@@ -6,17 +6,18 @@ models:
      ##### Overview:
        This fact table provides student program services, received as part of a program enrollment, like counseling or occupational therapy.
        It references any or all of the following models:
+      - [stg_ef3__stu_program__program_services](#!/model/model.edu_edfi_source.stg_ef3__stu_program__program_services)
       - [stg_ef3__stu_spec_ed__program_services](#!/model/model.edu_edfi_source.stg_ef3__stu_spec_ed__program_services)
       - [stg_ef3__stu_lang_instr__program_services](#!/model/model.edu_edfi_source.stg_ef3__stu_lang_instr__program_services)
       - [stg_ef3__stu_homeless__program_services](#!/model/model.edu_edfi_source.stg_ef3__stu_homeless__program_services)
-      - [stg_ef3__stu_title_i__program_services](#!/model/model.edu_edfi_source.stg_ef3__stu_title_i__program_services)
+      - [stg_ef3__stu_title_i_part_a__program_services](#!/model/model.edu_edfi_source.stg_ef3__stu_title_i_part_a__program_services)
       - [stg_ef3__stu_cte__program_services](#!/model/model.edu_edfi_source.stg_ef3__stu_cte__program_services)
       - [stg_ef3__stu_migrant_edu__program_services](#!/model/model.edu_edfi_source.stg_ef3__stu_migrant_edu__program_services)
       - [stg_ef3__stu_school_food_service__program_services](#!/model/model.edu_edfi_source.stg_ef3__stu_school_food_service__program_services)
 
      ##### Primary Key:
-       `k_student, k_program, program_enroll_begin_date, program_service` --
-       There is one record per student, year, program, program start date, and program service
+       `k_student_program, program_service` --
+       There is one record per student, year, program enrollment window, and program service.
 
      ##### Important business rules:
         - `program_enroll_begin_date` is included in the unique key, because a student may be associated with the same program at multiple times,
@@ -80,7 +81,7 @@ models:
 
     constraints:
       - type: primary_key
-        columns: [k_student, k_program, program_enroll_begin_date, program_service]
+        columns: [k_student_program, program_service]
       - type: foreign_key
         name: fk__fct_student_program_service__k_student
         columns: [k_student]
@@ -96,17 +97,13 @@ models:
       - dbt_utils.unique_combination_of_columns:
           arguments:
             combination_of_columns:
-              - k_student
-              - k_program
-              - ed_org_id
-              - program_enroll_begin_date
+              - k_student_program
               - program_service
     columns:
       - name: k_student_program
       - name: k_student
       - name: k_program
       - name: tenant_code
-      - name: ed_org_id
       - name: program_enroll_begin_date
       - name: program_service
       - name: primary_indicator
