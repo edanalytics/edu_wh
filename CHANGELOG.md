@@ -1,5 +1,6 @@
 # Unreleased
 ## New features
+- Add `course_level_characteristics_array` column to `dim_course`. This column was previously added to `dim_course_section`.
 ## Under the hood
 ## Fixes
 
