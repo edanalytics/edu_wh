@@ -30,8 +30,8 @@ formatted as (
         dim_student.k_student,
         dim_student.k_student_xyear,
         dim_program.k_program,
-        dim_program.k_lea,
-        dim_program.k_school,
+        stage.k_lea,
+        stage.k_school,
 
         stage.tenant_code,
         dim_program.school_year,
