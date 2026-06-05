@@ -17,7 +17,7 @@ models:
 
      ##### Primary Key:
        `k_student_program, participation_status, status_begin_date` --
-       There is one record per student, year, program enrollment window, participation status, and status begin date.
+       There is one record per student, year, program, ed org, program enrollment begin date, participation status, and status begin date.
 
      ##### Important business rules:
         - `program_enroll_begin_date` is encoded within `k_student_program`. When joining this table to
