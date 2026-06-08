@@ -3,9 +3,10 @@ with stage_program_services as (
 ),
 
 wide as (
-    select 
+    select
         tenant_code,
         api_year,
+        k_student_program,
         k_student,
         k_student_xyear,
         k_program,
@@ -16,7 +17,7 @@ wide as (
 
     from stage_program_services
 
-    {{ dbt_utils.group_by(n=8) }}
+    {{ dbt_utils.group_by(n=9) }}
 )
 
 select * from wide
