@@ -20,6 +20,10 @@ dim_student as (
     select * from {{ ref('dim_student') }}
 ),
 
+dim_program as (
+    select * from {{ ref('dim_program') }}
+),
+
 formatted as (
     select
         stage.k_student_program,
@@ -49,6 +53,9 @@ formatted as (
 
         inner join dim_student
             on stage.k_student = dim_student.k_student
+
+        inner join dim_program
+            on stage.k_program = dim_program.k_program
 )
 
 select * from formatted

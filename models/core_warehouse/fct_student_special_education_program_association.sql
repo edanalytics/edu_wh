@@ -20,6 +20,10 @@ dim_student as (
     select * from {{ ref('dim_student') }}
 ),
 
+dim_program as (
+    select * from {{ ref('dim_program') }}
+),
+
 bld_program_services as (
     select * From {{ ref ('bld_ef3__student_program__special_education__program_services')}}
 ),
@@ -64,7 +68,10 @@ formatted as (
     
         inner join dim_student
             on stage.k_student = dim_student.k_student
-            
+
+        inner join dim_program
+            on stage.k_program = dim_program.k_program
+
         -- left join because not all special ed programs include services (and they're optional in EdFi)
         left join bld_program_services
             on stage.k_student_program = bld_program_services.k_student_program
