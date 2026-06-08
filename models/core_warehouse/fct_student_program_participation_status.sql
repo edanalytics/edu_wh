@@ -59,10 +59,6 @@ with dim_student as (
     select * from {{ ref('dim_student') }}
 ),
 
-dim_program as (
-    select * from {{ ref('dim_program') }}
-),
-
 stacked as (
     {{ dbt_utils.union_relations(
 
@@ -93,8 +89,6 @@ subset as (
     {{ edu_edfi_source.extract_extension(model_name=relation_names, flatten=False) }}
 
   from stacked
-  join dim_program
-    on stacked.k_program = dim_program.k_program
 )
 
 select * from subset

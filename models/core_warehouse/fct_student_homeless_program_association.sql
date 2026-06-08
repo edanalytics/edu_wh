@@ -20,21 +20,17 @@ dim_student as (
     select * from {{ ref('dim_student') }}
 ),
 
-dim_program as (
-    select * from {{ ref('dim_program') }}
-),
-
 formatted as (
     select
         stage.k_student_program,
         dim_student.k_student,
         dim_student.k_student_xyear,
-        dim_program.k_program,
+        stage.k_program,
         stage.k_lea,
         stage.k_school,
 
         stage.tenant_code,
-        dim_program.school_year,
+        stage.school_year,
         stage.program_enroll_begin_date,
         stage.program_enroll_end_date,
 
@@ -54,9 +50,6 @@ formatted as (
 
         inner join dim_student
             on stage.k_student = dim_student.k_student
-
-        inner join dim_program
-            on stage.k_program = dim_program.k_program
 )
 
 select * from formatted
