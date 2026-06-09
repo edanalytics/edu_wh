@@ -1,7 +1,7 @@
 -- Define all optional disability models here.
 {% set stage_disability_relations = [] %}
 
---Ed Org Disabilities
+-- Ed Org Disabilities
 {% do stage_disability_relations.append(ref('stg_ef3__stu_ed_org__disabilities')) %}
 
 -- Special Education

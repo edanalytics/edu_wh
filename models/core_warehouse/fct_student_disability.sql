@@ -50,7 +50,7 @@ formatted as (
         student_disabilities.disability_source_type,
         student_disabilities.disability_diagnosis,
         student_disabilities.order_of_disability,
-        -- disability designations
+        -- Pivot disability designation descriptors into boolean columns.
         {{ accordion_columns(
             source_table='bld_ef3__student__wide_disability_designations',
             exclude_columns=['tenant_code', 'api_year', 'school_year', 'k_student', 'k_lea', 'k_school', 'k_program', 'disability_type'],
@@ -58,7 +58,7 @@ formatted as (
             add_trailing_comma=false
         ) }}
     from student_disabilities
-    join dim_student
+    inner join dim_student
         on dim_student.k_student = student_disabilities.k_student
     left join student_disability_designations
         on student_disabilities.k_student = student_disability_designations.k_student
