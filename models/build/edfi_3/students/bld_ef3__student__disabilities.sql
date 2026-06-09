@@ -16,6 +16,18 @@ with stacked as (
 ),
 formatted as (
     select
+        -- Generated here so bld_ef3__student__wide_disability_designations can carry it forward,
+        -- allowing fct_student_disability to join on a single key rather than a null-safe multi-column join.
+        {{ dbt_utils.generate_surrogate_key([
+            'tenant_code',
+            'school_year',
+            'k_student',
+            'k_lea',
+            'k_school',
+            'k_program',
+            'program_enroll_begin_date',
+            'disability_type',
+        ]) }} as k_student_disability,
         tenant_code,
         api_year,
         school_year,

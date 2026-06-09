@@ -6,6 +6,7 @@ xwalk_disability_designations as (
 ),
 flattened as (
     select
+        k_student_disability,
         tenant_code,
         api_year,
         school_year,
@@ -13,6 +14,8 @@ flattened as (
         k_lea,
         k_school,
         k_program,
+        k_student_program,
+        is_program,
         disability_type,
         {{ edu_edfi_source.extract_descriptor('designation.value:disabilityDesignationDescriptor::string') }} as disability_designation
     from student_disabilities
@@ -20,6 +23,7 @@ flattened as (
 ),
 pivoted as (
     select
+        k_student_disability,
         tenant_code,
         api_year,
         school_year,
@@ -27,6 +31,8 @@ pivoted as (
         k_lea,
         k_school,
         k_program,
+        k_student_program,
+        is_program,
         disability_type
         {%- if not is_empty_model('xwalk_disability_designations') -%},
             {{ ea_pivot(

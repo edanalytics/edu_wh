@@ -24,16 +24,7 @@ student_disability_designations as (
 ),
 formatted as (
     select
-        {{ dbt_utils.generate_surrogate_key(
-            ['student_disabilities.tenant_code',
-            'student_disabilities.school_year',
-            'student_disabilities.k_student',
-            'student_disabilities.k_lea',
-            'student_disabilities.k_school',
-            'student_disabilities.k_program',
-            'student_disabilities.program_enroll_begin_date',
-            'student_disabilities.disability_type',]
-        ) }} as k_student_disability,
+        student_disabilities.k_student_disability,
         student_disabilities.k_student,
         dim_student.k_student_xyear,
         student_disabilities.k_lea,
@@ -53,7 +44,7 @@ formatted as (
         -- Pivot disability designation descriptors into boolean columns.
         {{ accordion_columns(
             source_table='bld_ef3__student__wide_disability_designations',
-            exclude_columns=['tenant_code', 'api_year', 'school_year', 'k_student', 'k_lea', 'k_school', 'k_program', 'disability_type'],
+            exclude_columns=['k_student_disability', 'tenant_code', 'api_year', 'school_year', 'k_student', 'k_lea', 'k_school', 'k_program', 'k_student_program', 'is_program', 'disability_type'],
             source_alias='student_disability_designations',
             add_trailing_comma=false
         ) }}
@@ -61,12 +52,6 @@ formatted as (
     inner join dim_student
         on dim_student.k_student = student_disabilities.k_student
     left join student_disability_designations
-        on student_disabilities.k_student = student_disability_designations.k_student
-        and (student_disabilities.k_lea = student_disability_designations.k_lea or (student_disabilities.k_lea is null and student_disability_designations.k_lea is null))
-        and (student_disabilities.k_school = student_disability_designations.k_school or (student_disabilities.k_school is null and student_disability_designations.k_school is null))
-        and (student_disabilities.k_program = student_disability_designations.k_program or (student_disabilities.k_program is null and student_disability_designations.k_program is null))
-        and student_disabilities.tenant_code = student_disability_designations.tenant_code
-        and student_disabilities.school_year = student_disability_designations.school_year
-        and student_disabilities.disability_type = student_disability_designations.disability_type
+        on student_disabilities.k_student_disability = student_disability_designations.k_student_disability
 )
 select * from formatted
