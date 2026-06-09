@@ -38,6 +38,8 @@ formatted as (
         sd.k_lea,
         sd.k_school,
         sd.k_program,
+        sd.k_student_program,
+        sd.is_program,
         sd.program_enroll_begin_date,
         sd.program_enroll_end_date,
         sd.tenant_code,

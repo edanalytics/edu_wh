@@ -23,13 +23,16 @@ formatted as (
         k_lea,
         k_school,
         k_program,
+        k_student_program,
         program_enroll_begin_date,
         program_enroll_end_date,
         disability_type,
         disability_source_type,
         disability_diagnosis,
         order_of_disability,
-        v_designations
+        v_designations,
+        -- if k_program is populated, this is a program disability; otherwise it is an ed org disability.
+        k_program is not null as is_program
     from stacked
 )
 select * from formatted
