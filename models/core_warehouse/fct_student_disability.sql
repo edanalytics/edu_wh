@@ -54,7 +54,7 @@ formatted as (
         {{ accordion_columns(
             source_table='bld_ef3__student__wide_disability_designations',
             exclude_columns=['tenant_code', 'api_year', 'school_year', 'k_student', 'k_lea', 'k_school', 'k_program', 'disability_type'],
-            source_alias='disability_designations',
+            source_alias='student_disability_designations',
             add_trailing_comma=false
         ) }}
     from student_disabilities
