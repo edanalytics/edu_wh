@@ -1,5 +1,7 @@
 # Unreleased
 ## New features
+- Added `fct_student_disability`, a new fact table unifying student disabilities from ed org associations and special education program associations into a single model. Includes `is_program` to distinguish the two grains, `k_student_program` for joining to program association fact tables, and extensible boolean designation columns via `xwalk_disability_designations`.
+- Breaking change: New xwalk is required, `xwalk_disability_designations`, to pivot disability designation descriptors into boolean indicator columns in `fct_student_disability`. Expected columns: `disability_designation_descriptor` (the Ed-Fi descriptor value to match) and `indicator_name` (the name of the resulting boolean column). If the seed is empty, the designation columns are omitted and the model builds without them.
 ## Under the hood
 ## Fixes
 
