@@ -19,21 +19,36 @@
 
 with fct_student_school_att as (
     select * from {{ ref(var("edu:attendance:daily_attendance_source", 'fct_student_school_attendance_event')) }}
+    {% if is_incremental() %}
+    where school_year = (select max(school_year) from {{ this }})
+    {% endif %}
 ),
 dim_calendar_date as (
     select * from {{ ref('dim_calendar_date') }}
+    {% if is_incremental() %}
+    where school_year = (select max(school_year) from {{ this }})
+    {% endif %}
 ),
 dim_session as (
     select * from {{ ref('dim_session') }}
+    {% if is_incremental() %}
+    where school_year = (select max(school_year) from {{ this }})
+    {% endif %}
 ),
 fct_student_school_assoc as (
     select * from {{ ref('fct_student_school_association') }}
+    {% if is_incremental() %}
+    where school_year = (select max(school_year) from {{ this }})
+    {% endif %}
 ),
 metric_absentee_categories as (
     select * from {{ ref('absentee_categories') }}
 ),
 bld_attendance_sessions as (
     select * from {{ ref('bld_ef3__attendance_sessions') }}
+    {% if is_incremental() %}
+    where school_year = (select max(school_year) from {{ this }})
+    {% endif %}
 ),
 school_max_submitted as (
     -- find the most recently submitted attendance date by school
