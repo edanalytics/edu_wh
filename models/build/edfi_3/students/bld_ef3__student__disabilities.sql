@@ -20,7 +20,6 @@ formatted as (
         api_year,
         school_year,
         k_student,
-        ed_org_id,
         k_lea,
         k_school,
         k_program,

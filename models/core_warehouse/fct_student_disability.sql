@@ -31,7 +31,6 @@ formatted as (
             'sd.k_lea',
             'sd.k_school',
             'sd.k_program',
-            'sd.ed_org_id',
             'sd.program_enroll_begin_date',]
         ) }} as k_student_disability,
         sd.k_student,
@@ -39,7 +38,6 @@ formatted as (
         sd.k_lea,
         sd.k_school,
         sd.k_program,
-        sd.ed_org_id,
         sd.program_enroll_begin_date,
         sd.program_enroll_end_date,
         sd.tenant_code,
@@ -52,7 +50,7 @@ formatted as (
         -- disability designations
         {{ accordion_columns(
             source_table='bld_ef3__student__wide_disability_designations',
-            exclude_columns=['tenant_code', 'api_year', 'school_year', 'k_student', 'ed_org_id', 'k_lea', 'k_school', 'k_program', 'disability_type'],
+            exclude_columns=['tenant_code', 'api_year', 'school_year', 'k_student', 'k_lea', 'k_school', 'k_program', 'disability_type'],
             source_alias='disability_designations',
             add_trailing_comma=false
         ) }}
@@ -64,7 +62,6 @@ formatted as (
         and (sd.k_lea = disability_designations.k_lea or (sd.k_lea is null and disability_designations.k_lea is null))
         and (sd.k_school = disability_designations.k_school or (sd.k_school is null and disability_designations.k_school is null))
         and (sd.k_program = disability_designations.k_program or (sd.k_program is null and disability_designations.k_program is null))
-        and sd.ed_org_id = disability_designations.ed_org_id
         and sd.tenant_code = disability_designations.tenant_code
         and sd.school_year = disability_designations.school_year
         and sd.disability_type = disability_designations.disability_type
