@@ -25,31 +25,31 @@ student_disability_designations as (
 formatted as (
     select
         {{ dbt_utils.generate_surrogate_key(
-            ['sd.tenant_code',
-            'sd.school_year',
-            'sd.k_student',
-            'sd.k_lea',
-            'sd.k_school',
-            'sd.k_program',
-            'sd.program_enroll_begin_date',
-            'sd.disability_type',]
+            ['student_disabilities.tenant_code',
+            'student_disabilities.school_year',
+            'student_disabilities.k_student',
+            'student_disabilities.k_lea',
+            'student_disabilities.k_school',
+            'student_disabilities.k_program',
+            'student_disabilities.program_enroll_begin_date',
+            'student_disabilities.disability_type',]
         ) }} as k_student_disability,
-        sd.k_student,
-        stu.k_student_xyear,
-        sd.k_lea,
-        sd.k_school,
-        sd.k_program,
-        sd.k_student_program,
-        sd.is_program,
-        sd.program_enroll_begin_date,
-        sd.program_enroll_end_date,
-        sd.tenant_code,
-        sd.api_year,
-        sd.school_year,
-        sd.disability_type,
-        sd.disability_source_type,
-        sd.disability_diagnosis,
-        sd.order_of_disability,
+        student_disabilities.k_student,
+        dim_student.k_student_xyear,
+        student_disabilities.k_lea,
+        student_disabilities.k_school,
+        student_disabilities.k_program,
+        student_disabilities.k_student_program,
+        student_disabilities.is_program,
+        student_disabilities.program_enroll_begin_date,
+        student_disabilities.program_enroll_end_date,
+        student_disabilities.tenant_code,
+        student_disabilities.api_year,
+        student_disabilities.school_year,
+        student_disabilities.disability_type,
+        student_disabilities.disability_source_type,
+        student_disabilities.disability_diagnosis,
+        student_disabilities.order_of_disability,
         -- disability designations
         {{ accordion_columns(
             source_table='bld_ef3__student__wide_disability_designations',
@@ -57,16 +57,16 @@ formatted as (
             source_alias='disability_designations',
             add_trailing_comma=false
         ) }}
-    from student_disabilities sd
-    join dim_student stu
-        on stu.k_student = sd.k_student
-    left join student_disability_designations disability_designations
-        on sd.k_student = disability_designations.k_student
-        and (sd.k_lea = disability_designations.k_lea or (sd.k_lea is null and disability_designations.k_lea is null))
-        and (sd.k_school = disability_designations.k_school or (sd.k_school is null and disability_designations.k_school is null))
-        and (sd.k_program = disability_designations.k_program or (sd.k_program is null and disability_designations.k_program is null))
-        and sd.tenant_code = disability_designations.tenant_code
-        and sd.school_year = disability_designations.school_year
-        and sd.disability_type = disability_designations.disability_type
+    from student_disabilities
+    join dim_student
+        on dim_student.k_student = student_disabilities.k_student
+    left join student_disability_designations
+        on student_disabilities.k_student = student_disability_designations.k_student
+        and (student_disabilities.k_lea = student_disability_designations.k_lea or (student_disabilities.k_lea is null and student_disability_designations.k_lea is null))
+        and (student_disabilities.k_school = student_disability_designations.k_school or (student_disabilities.k_school is null and student_disability_designations.k_school is null))
+        and (student_disabilities.k_program = student_disability_designations.k_program or (student_disabilities.k_program is null and student_disability_designations.k_program is null))
+        and student_disabilities.tenant_code = student_disability_designations.tenant_code
+        and student_disabilities.school_year = student_disability_designations.school_year
+        and student_disabilities.disability_type = student_disability_designations.disability_type
 )
 select * from formatted
