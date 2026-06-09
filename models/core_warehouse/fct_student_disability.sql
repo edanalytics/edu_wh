@@ -31,7 +31,8 @@ formatted as (
             'sd.k_lea',
             'sd.k_school',
             'sd.k_program',
-            'sd.program_enroll_begin_date',]
+            'sd.program_enroll_begin_date',
+            'sd.disability_type',]
         ) }} as k_student_disability,
         sd.k_student,
         stu.k_student_xyear,
