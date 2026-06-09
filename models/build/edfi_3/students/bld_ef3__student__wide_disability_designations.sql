@@ -42,7 +42,7 @@ pivoted as (
             ) }}
         {%- endif %}
     from flattened
-    left outer join xwalk_disability_designations
+    left join xwalk_disability_designations
         on flattened.disability_designation = xwalk_disability_designations.disability_designation_descriptor
     group by all
 )
