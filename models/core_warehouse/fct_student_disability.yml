@@ -1,4 +1,4 @@
-version: 3
+version: 2
 
 models:
   - name: fct_student_disability
@@ -10,16 +10,13 @@ models:
       - [stg_ef3__stu_spec_ed__disabilities](#!/model/model.edu_edfi_source.stg_ef3__stu_spec_ed__disabilities)
 
      ##### Primary Key:
-       `k_student_disability` --
-       There is one record per student, year, ed org / program
+       `k_student_disability`: one record per student, year, ed org or program enrollment, and disability type.
 
      ##### Important business rules:
-        - This table is at two different grains since both Ed Orgs and Special Ed Programs can have disabilities listed. This is why this table has
-           a surrogate key being made up of the two grains that fit in this table. If k_program is null then this is an ed org disability.
-           If k_program is not null then it is a program disability.
-        - `program_enroll_begin_date` is included in the unique key, because a student may be associated with the same program at multiple times,
-           and those associations may have different disabilities. When joining this table to `fct_student_{program_type}_program_association`,
-           always include `program_enroll_begin_date` in the join (see example query below).
+        - This table is at two different grains since both Ed Orgs and Special Ed Programs can have disabilities listed.
+          Use `is_program` to distinguish: `false` means an ed org disability, `true` means a program disability.
+        - `program_enroll_begin_date`, `k_program` and `k_student_program` are null for ed org rows. When joining to
+           `fct_student_{program_type}_program_association`, join on `k_student_program` (see example query below).
 
      ##### Example Use Cases:
        1. Join Disabilities to Student Special Education data to find students' Special Ed disabilities
@@ -43,38 +40,23 @@ models:
           JOIN analytics.prod_wh.dim_program
             ON assoc.k_program = dim_program.k_program
           -- left join because some programs may not have disabilities
-          LEFT join analytics.prod_wh.fct_student_disability dis
-            ON assoc.k_student = dis.k_student
-            AND assoc.k_program = dis.k_program
-            AND assoc.program_enroll_begin_date = dis.program_enroll_begin_date;
+          LEFT JOIN analytics.prod_wh.fct_student_disability dis
+            ON assoc.k_student_program = dis.k_student_program;
         ```
 
 
     config:
       tags: ['special_ed']
-      enabled: >
-        {%- set var_values = [] -%}
-        {%- for variable in [
-             'src:program:special_ed:enabled',
-        ] -%}
-           {%- do var_values.append(var(variable, none)) -%}
-        {%- endfor -%}
-
-        {%- if True in var_values -%}
-           {{ True  | as_bool }}
-        {%- elif False in var_values -%}
-           {{ False | as_bool }}
-        {%- else -%}
-           {{ True  | as_bool }}
-        {%- endif -%}
 
     columns:
-      - name: k_student_disability,
+      - name: k_student_disability
       - name: k_student
       - name: k_student_xyear
       - name: k_lea
       - name: k_school
       - name: k_program
+      - name: k_student_program
+      - name: is_program
       - name: program_enroll_begin_date
       - name: program_enroll_end_date
       - name: tenant_code
