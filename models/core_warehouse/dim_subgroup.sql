@@ -8,6 +8,9 @@
     )
 }}
 
+{{ cds_depends_on('edu:subgroup:custom_data_sources') }}
+{% set custom_data_sources = var('edu:subgroup:custom_data_sources', []) %}
+
 with dim_student as (
     select * from {{ ref('dim_student') }}
 ),
@@ -90,7 +93,14 @@ keyed as (
     joined_with_display_names.subgroup_category_display_name,
     joined_with_display_names.subgroup_value,
     joined_with_display_names.subgroup_value_display_name
+
+    -- custom data sources columns
+    {{ add_cds_columns(custom_data_sources=custom_data_sources) }}
   from joined_with_display_names
+
+  -- custom data sources
+  {{ add_cds_joins_v1(custom_data_sources=custom_data_sources, driving_alias='joined_with_display_names', join_cols=['subgroup_category', 'subgroup_value']) }}
+  {{ add_cds_joins_v2(custom_data_sources=custom_data_sources) }}
 )
 
 select * from keyed
