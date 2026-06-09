@@ -20,8 +20,9 @@
     ]
   )
 }}
-{# Load custom data sources from var #}
-{% set custom_data_sources = var("edu:schools:custom_data_sources", []) %}
+
+{{ cds_depends_on('edu:schools:custom_data_sources') }}
+{% set custom_data_sources = var('edu:schools:custom_data_sources', []) %}
 
 with stg_school as (
     select * from {{ ref('stg_ef3__schools') }}
@@ -98,14 +99,8 @@ formatted as (
         choose_address.latitude,
         choose_address.longitude
 
-        -- custom data sources
-        {% if custom_data_sources is not none and custom_data_sources | length -%}
-          {%- for source in custom_data_sources -%}
-            {%- for indicator in custom_data_sources[source] -%}
-              , {{ custom_data_sources[source][indicator]['where'] }} as {{ indicator }}
-            {%- endfor -%}
-          {%- endfor -%}
-        {%- endif %}
+        -- custom data sources columns
+        {{ add_cds_columns(custom_data_sources=custom_data_sources) }}
     from stg_school
     join dim_lea 
         on stg_school.k_lea = dim_lea.k_lea
@@ -115,13 +110,10 @@ formatted as (
         on stg_school.k_school = choose_address.k_school
     left join bld_network_associations
         on stg_school.k_school = bld_network_associations.k_school
+
     -- custom data sources
-    {% if custom_data_sources is not none and custom_data_sources | length -%}
-      {%- for source in custom_data_sources -%}
-        left join {{ ref(source) }}
-          on stg_school.k_school = {{ source }}.k_school
-      {% endfor %}
-    {%- endif %}
+    {{ add_cds_joins_v1(custom_data_sources=custom_data_sources, driving_alias='stg_school', join_cols=['k_school']) }}
+    {{ add_cds_joins_v2(custom_data_sources=custom_data_sources) }}
 )
 select * from formatted
 order by tenant_code, k_school

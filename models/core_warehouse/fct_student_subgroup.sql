@@ -9,6 +9,9 @@
     )
 }}
 
+{{ cds_depends_on('edu:student_subgroup:custom_data_sources') }}
+{% set custom_data_sources = var('edu:student_subgroup:custom_data_sources', []) %}
+
 with dim_student as (
     select * from {{ ref('dim_student') }}
 ),
@@ -77,12 +80,19 @@ keyed as (
     dim_subgroup.k_subgroup,
     stu_long_subgroup.tenant_code,
     stu_long_subgroup.school_year
+
+    -- custom data sources columns
+    {{ add_cds_columns(custom_data_sources=custom_data_sources) }}
   from stu_long_subgroup_with_all stu_long_subgroup
   -- todo: use dbt_utils.generate_surrogate_key() instead?
   -- lower() is because unpivot makes values capitalized
   join dim_subgroup
     on lower(stu_long_subgroup.subgroup_category) = lower(dim_subgroup.subgroup_category)
     and lower(stu_long_subgroup.subgroup_value) = lower(dim_subgroup.subgroup_value)
+        
+  -- custom data sources
+  {{ add_cds_joins_v1(custom_data_sources=custom_data_sources, driving_alias='stu_long_subgroup_with_all', join_cols=['k_student', 'subgroup_category', 'subgroup_value']) }}
+  {{ add_cds_joins_v2(custom_data_sources=custom_data_sources) }}
 )
 
 select * from keyed

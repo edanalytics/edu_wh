@@ -11,6 +11,9 @@
   )
 }}
 
+{{ cds_depends_on('edu:staff_section_association:custom_data_sources') }}
+{% set custom_data_sources = var('edu:staff_section_association:custom_data_sources', []) %}
+
 with stg_staff_section as (
     select * from {{ ref('stg_ef3__staff_section_associations') }}
 ),
@@ -47,10 +50,17 @@ formatted as (
         ) as is_active_assignment
         {# add any extension columns configured from stg_ef3__staff_section_associations #}
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__staff_section_associations', flatten=False) }}
+
+        -- custom data sources columns
+        {{ add_cds_columns(custom_data_sources=custom_data_sources) }}
     from stg_staff_section
     join dim_staff
         on stg_staff_section.k_staff = dim_staff.k_staff
     join dim_course_section
         on stg_staff_section.k_course_section = dim_course_section.k_course_section
+        
+    -- custom data sources
+    {{ add_cds_joins_v1(custom_data_sources=custom_data_sources, driving_alias='stg_staff_section', join_cols=['k_staff', 'k_course_section', 'begin_date']) }}
+    {{ add_cds_joins_v2(custom_data_sources=custom_data_sources) }}
 )
 select * from formatted

@@ -11,6 +11,9 @@
   )
 }}
 
+{{ cds_depends_on('edu:discipline_actions:custom_data_sources') }}
+{% set custom_data_sources = var('edu:discipline_actions:custom_data_sources', []) %}
+
 with stg_discipline_actions as (
     select * from {{ ref('stg_ef3__discipline_actions') }}
 ),
@@ -83,6 +86,9 @@ formatted as (
         bld_discipline_incident_associations.k_student_discipline_incident_behavior_array
         {# add any extension columns configured from stg_ef3__discipline_actions #}
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__discipline_actions', flatten=False) }}
+
+        -- custom data sources columns
+        {{ add_cds_columns(custom_data_sources=custom_data_sources) }}
     from stg_discipline_actions
     join dim_student 
         on stg_discipline_actions.k_student = dim_student.k_student
@@ -100,6 +106,11 @@ formatted as (
         on stg_discipline_actions.k_student = agg_staff_keys.k_student
         and stg_discipline_actions.discipline_action_id = agg_staff_keys.discipline_action_id
         and stg_discipline_actions.discipline_date = agg_staff_keys.discipline_date
+        
+    -- custom data sources
+    {{ add_cds_joins_v1(custom_data_sources=custom_data_sources, driving_alias='stg_discipline_actions', join_cols=['k_student', 'discipline_date', 'discipline_action_id']) }}
+    {{ add_cds_joins_v2(custom_data_sources=custom_data_sources) }}
+
     {{ edu_edfi_source.json_flatten('v_disciplines') }}
     -- brule: one or the other school must be populated
     where (assignment_school_id is not null or responsibility_school_id is not null)
@@ -132,3 +143,4 @@ join_descriptor_interpretation as (
         on formatted.discipline_action = xwalk_discipline_actions.discipline_action
 )
 select * from join_descriptor_interpretation
+
