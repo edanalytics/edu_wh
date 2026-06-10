@@ -133,7 +133,7 @@ formatted as (
 ),
 
 add_custom_data_source as (
-    {{ add_custom_data_source() }}
+    {{ add_custom_data_source(relation='formatted') }}
 )
 
 select * from add_custom_data_source

@@ -5,56 +5,104 @@
     How it works:
         1. Add a source config in dbt_project.yml under `edu:custom_data_sources`, keyed by the warehouse model name.
         2. Each warehouse model declares an `add_custom_data_source` CTE between its last CTE and its final
-           SELECT, calling the macro inside it to emit the SELECT body.
-        3. The macro emits the SELECT body that left-joins each configured source and appends its columns.
+           SELECT, calling the macro inside it to append the SELECT body.
+        3. The macro appends the SELECT body that left-joins each configured source and appends its columns.
            If nothing is configured, it passes through with a transparent `select * from base`.
 
     Config format:
         ```YAML
         vars:
             edu:custom_data_sources:
-                dim_student:
-                    bld_ef3__ell_annual:               # name of a dbt model in the stadium repo
-                        add_cols:
-                            is_ell_annual: { as: is_english_language_learner_annual, default: false }
+                dim_student:                 # name of a dbt model in the edu_wh repo you would like to append CDS to.
+                    bld_ef3__ell_annual:     # name of a dbt model in the stadium implementation with CDS.
+                        add_cols:            # columns to add to the core model (dim_student) from the CDS source (bld_ef3__ell_annual).
+                            is_ell_annual:   # name of the column in the CDS source model (bld_ef3__ell_annual.is_ell_annual) to add to the core model.
+                                as: is_english_language_learner_annual  # alias for the column in the final SELECT output (dim_student.is_english_language_learner_annual).
+                                default: false   # default value to use when there is no match in the source model (i.e. the LEFT JOIN fails). Optional, defaults to False.
         ```
 
-        By default, the source is joined on the models primary key as declared in its schema YAML
-        constraints. Specify `joins` in the source config to override with custom conditions:
+        By default, the source is joined on the models primary key as declared in its schema YAML constraints.
+        Specify `joins` in the source config to override with custom conditions:
 
         ```YAML
         vars:
             edu:custom_data_sources:
                 fct_student_school_association:
-                    my_source:
+                    bld_ef3__cds_enrollment:
                         joins:
                             - "formatted.k_student = my_source.k_student"
                             - "formatted.entry_date >= my_source.begin_date"
                         add_cols:
-                            my_col: { as: my_col_alias, default: false }
+                            my_col:
+                                as: my_col_alias
+                                default: null
         ```
 
     Model usage:
+
+        --- edu_wh model SQL file with logic.
         ...
         formatted as (...SQL...),
 
+        -- add the custom data source CTE.
         add_custom_data_source as (
-            {{ add_custom_data_source() }}
+            {{ add_custom_data_source(relation='formatted') }}
         )
         select * from add_custom_data_source
 
-        -- when the base CTE has a non-default name:
+        -- pass the name of whichever CTE immediately precedes this one:
         add_custom_data_source as (
             {{ add_custom_data_source(relation='dedupe_assessments') }}
         )
         select * from add_custom_data_source
 
     Macros in this file:
-        add_custom_data_source         : emits the SELECT body for the add_custom_data_source CTE.
+        add_custom_data_source         : appends the SELECT body for the add_custom_data_source CTE.
         add_custom_data_source_joins   : appends LEFT JOIN clauses.
         add_custom_data_source_columns : appends column expressions.
         custom_data_source_depends_on  : appends depends_on comments for dbts static parser.
 -#}
+
+
+{%- macro add_custom_data_source(relation) -%}
+    {#-
+        Appends the SELECT body for the `add_custom_data_source` CTE declared in each warehouse model.
+
+        Left-joins any configured sources and appends their columns to `SELECT *` from the relation CTE.
+        When no sources are configured, appends a transparent `select * from relation`.
+
+        Reads the current models primary key from the `primary_key` constraint in its schema YAML and
+        uses those columns as the default join condition. Individual sources can override this with a
+        `joins` key in their config.
+
+        Uses the dbt `model` context variable directly (no need to pass it). This variable is
+        always available during warehouse model compilation.
+
+        Parameters:
+            relation : name of the base CTE to select from (e.g. 'formatted').
+
+        Example:
+            add_custom_data_source as (
+                {{ add_custom_data_source(relation='formatted') }}
+            )
+            select * from add_custom_data_source
+    -#}
+    {%- set model_name = model.name -%}
+    {%- set pk_constraint = model.constraints | selectattr('type', 'equalto', 'primary_key') | list | first-%}
+    {%- set default_join_cols = pk_constraint.columns if pk_constraint else [] %}
+    {%- set all_cds = var('edu:custom_data_sources', {}) %}
+    {%- set custom_data_source = all_cds[model_name] if all_cds and model_name in all_cds else {} %}
+    {{ custom_data_source_depends_on(model_name) }}
+    select 
+        {{ relation }}.*
+        {{ add_custom_data_source_columns(custom_data_sources=custom_data_source) }}
+    from {{ relation }}
+    {{ add_custom_data_source_joins(
+        custom_data_sources=custom_data_source,
+        default_join_cols=default_join_cols,
+        driving_alias=relation
+    ) }}
+{%- endmacro -%}
 
 
 {%- macro custom_data_source_depends_on(model_name) -%}
@@ -71,6 +119,35 @@
             {%- for source_name, _ in custom_data_source.items() %}
     -- depends_on: {{ ref(source_name) }}
             {%- endfor %}
+    {%- endif %}
+{%- endmacro -%}
+
+
+{%- macro add_custom_data_source_columns(custom_data_sources) -%}
+    {#-
+        Appends a column expression for each configured source. Columns are listed under
+        `add_cols` with an alias (`as`) and a default value for unmatched rows.
+
+            ```YAML
+            bld_ef3__ell_annual:
+                add_cols:
+                    is_ell_annual: { as: is_english_language_learner_annual, default: false }
+            ```
+            ```SQL
+            -- compiles to:
+            , coalesce(bld_ef3__ell_annual.is_ell_annual, false) as is_english_language_learner_annual
+            ```
+    -#}
+    {%- if custom_data_sources is mapping and custom_data_sources|length %}
+        {%- for source_name, source_config in custom_data_sources|dictsort %}
+            {%- if 'add_cols' in source_config and source_config.add_cols %}
+                {%- for src_col_name, src_col_config in source_config.add_cols.items() %}
+                    {%- if loop.first -%},{% endif %}
+                    {%- set col_default = src_col_config.default if 'default' in src_col_config else false %}
+        coalesce({{ source_name }}.{{ src_col_name }}, {{ 'null' if col_default is none else col_default }}) as {{ src_col_config.as }}{% if not loop.last %},{% endif %}
+                {%- endfor %}
+            {%- endif %}
+        {%- endfor %}
     {%- endif %}
 {%- endmacro -%}
 
@@ -127,77 +204,6 @@
                     {%- else %}
             and {{ driving_alias }}.{{ col }} = {{ source_name }}.{{ col }}
                     {%- endif %}
-                {%- endfor %}
-            {%- endif %}
-        {%- endfor %}
-    {%- endif %}
-{%- endmacro -%}
-
-
-{%- macro add_custom_data_source(relation='formatted') -%}
-    {#-
-        Emits the SELECT body for the `add_custom_data_source` CTE declared in each warehouse model.
-
-        Left-joins any configured sources and appends their columns to `SELECT *` from the relation CTE.
-        When no sources are configured, emits a transparent `select * from relation`.
-
-        Reads the current models primary key from the `primary_key` constraint in its schema YAML and
-        uses those columns as the default join condition. Individual sources can override this with a
-        `joins` key in their config.
-
-        Uses the dbt `model` context variable directly (no need to pass it). This variable is
-        always available during warehouse model compilation.
-
-        Parameters:
-            relation : (optional) name of the base CTE to select from; defaults to 'formatted'.
-
-        Example:
-            add_custom_data_source as (
-                {{ add_custom_data_source() }}
-            )
-            select * from add_custom_data_source
-    -#}
-    {%- set model_name = model.name -%}
-    {%- set pk_constraint = model.constraints | selectattr('type', 'equalto', 'primary_key') | list | first-%}
-    {%- set default_join_cols = pk_constraint.columns if pk_constraint else [] %}
-    {%- set all_cds = var('edu:custom_data_sources', {}) %}
-    {%- set custom_data_source = all_cds[model_name] if all_cds and model_name in all_cds else {} %}
-    {{ custom_data_source_depends_on(model_name) }}
-    select 
-        {{ relation }}.*
-        {{ add_custom_data_source_columns(custom_data_sources=custom_data_source) }}
-    from {{ relation }}
-    {{ add_custom_data_source_joins(
-        custom_data_sources=custom_data_source,
-        default_join_cols=default_join_cols,
-        driving_alias=relation
-    ) }}
-{%- endmacro -%}
-
-
-{%- macro add_custom_data_source_columns(custom_data_sources) -%}
-    {#-
-        Appends a column expression for each configured source. Columns are listed under
-        `add_cols` with an alias (`as`) and a default value for unmatched rows.
-
-            ```YAML
-            bld_ef3__ell_annual:
-                add_cols:
-                    is_ell_annual: { as: is_english_language_learner_annual, default: false }
-            ```
-            ```SQL
-            -- compiles to:
-            , coalesce(bld_ef3__ell_annual.is_ell_annual, false) as is_english_language_learner_annual
-            ```
-    -#}
-
-    {%- if custom_data_sources is mapping and custom_data_sources|length %}
-        {%- for source_name, source_config in custom_data_sources|dictsort %}
-            {%- if 'add_cols' in source_config and source_config.add_cols %}
-                {%- for src_col_name, src_col_config in source_config.add_cols.items() %}
-                    {%- if loop.first -%},{% endif %}
-                    {%- set col_default = src_col_config.default if 'default' in src_col_config else false %}
-        coalesce({{ source_name }}.{{ src_col_name }}, {{ 'null' if col_default is none else col_default }}) as {{ src_col_config.as }}{% if not loop.last %},{% endif %}
                 {%- endfor %}
             {%- endif %}
         {%- endfor %}

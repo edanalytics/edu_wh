@@ -53,7 +53,7 @@ formatted as (
 ),
 
 add_custom_data_source as (
-    {{ add_custom_data_source() }}
+    {{ add_custom_data_source(relation='formatted') }}
 )
 
 select {{ edu_edfi_source.star('add_custom_data_source', except=['meeting_time']) }}
