@@ -7,8 +7,6 @@
   )
 }}
 
-{{ cds_depends_on('edu:assessment:custom_data_sources') }}
-{% set custom_data_sources = var('edu:assessment:custom_data_sources', []) %}
 
 with stg_assessments as (
     select * from {{ ref('stg_ef3__assessments') }}
@@ -80,18 +78,7 @@ dedupe_assessments as (
             order_by='tenant_code,school_year'
         )
     }}
-),
-add_cds_columns as (
-    select dedupe_assessments.*
-
-        -- custom data sources columns
-        {{ add_cds_columns(custom_data_sources=custom_data_sources) }}
-    from dedupe_assessments
-
-    -- custom data sources
-    {{ add_cds_joins_v1(custom_data_sources=custom_data_sources, driving_alias='dedupe_assessments', join_cols=['k_assessment']) }}
-    {{ add_cds_joins_v2(custom_data_sources=custom_data_sources) }}
-
 )
-select * from add_cds_columns
+{{ add_custom_data_source('edu:assessment:custom_data_sources', base='dedupe_assessments', join_cols=['k_assessment']) }}
+select * from add_custom_data_source
 order by tenant_code, k_assessment

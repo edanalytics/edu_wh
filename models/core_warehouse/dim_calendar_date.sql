@@ -9,8 +9,6 @@
   )
 }}
 
-{{ cds_depends_on('edu:calendar_date:custom_data_sources') }}
-{% set custom_data_sources = var('edu:calendar_date:custom_data_sources', []) %}
 
 with stg_calendar_date as (
     select * from {{ ref('stg_ef3__calendar_dates') }}
@@ -106,15 +104,11 @@ week_calculation as (
             else week_of_calendar_year + 52 - start_week_offset
         end as week_of_school_year
 
-        -- custom data sources columns
-        {{ add_cds_columns(custom_data_sources=custom_data_sources) }}
     from augmented
     join week_offset
         on augmented.k_school_calendar = week_offset.k_school_calendar
-    
-    -- custom data sources
-    {{ add_cds_joins_v1(custom_data_sources=custom_data_sources, driving_alias='augmented', join_cols=['k_calendar_date']) }}
-    {{ add_cds_joins_v2(custom_data_sources=custom_data_sources) }}
+
 )
-select * from week_calculation
+{{ add_custom_data_source('edu:calendar_date:custom_data_sources', base='week_calculation', join_cols=['k_calendar_date']) }}
+select * from add_custom_data_source
 order by tenant_code, k_school, calendar_date desc

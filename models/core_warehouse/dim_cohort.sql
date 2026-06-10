@@ -7,8 +7,6 @@
   )
 }}
 
-{{ cds_depends_on('edu:cohort:custom_data_sources') }}
-{% set custom_data_sources = var('edu:cohort:custom_data_sources', []) %}
 
 with stg_cohorts as (
     select * from {{ ref('stg_ef3__cohorts') }}
@@ -27,13 +25,9 @@ formatted as (
         stg_cohorts.cohort_scope,
         stg_cohorts.cohort_type
         
-        -- custom data sources_columns
-        {{ add_cds_columns(custom_data_sources=custom_data_sources) }}
     from stg_cohorts
 
-    -- custom data sources
-    {{ add_cds_joins_v1(custom_data_sources=custom_data_sources, driving_alias='stg_cohorts', join_cols=['k_cohort']) }}
-    {{ add_cds_joins_v2(custom_data_sources=custom_data_sources) }}
 )
-select * from formatted
+{{ add_custom_data_source('edu:cohort:custom_data_sources', join_cols=['k_cohort']) }}
+select * from add_custom_data_source
 order by tenant_code, school_year desc, k_cohort

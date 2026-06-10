@@ -7,8 +7,6 @@
   )
 }}
 
-{{ cds_depends_on('edu:program:custom_data_sources') }}
-{% set custom_data_sources = var('edu:program:custom_data_sources', []) %}
 
 with stg_programs as (
     select * from {{ ref('stg_ef3__programs') }}
@@ -27,13 +25,10 @@ formatted as (
         stg_programs.program_name,
         stg_programs.program_type
 
-        -- custom data sources columns
-        {{ add_cds_columns(custom_data_sources=custom_data_sources) }}
     from stg_programs
 
-    -- custom data sources
-    {{ add_cds_joins_v1(custom_data_sources=custom_data_sources, driving_alias='stg_programs', join_cols=['k_program']) }}
-    {{ add_cds_joins_v2(custom_data_sources=custom_data_sources) }}
 )
 
-select * from formatted
+{{ add_custom_data_source('edu:program:custom_data_sources', join_cols=['k_program']) }}
+
+select * from add_custom_data_source

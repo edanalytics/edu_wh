@@ -21,8 +21,6 @@
   )
 }}
 
-{{ cds_depends_on('edu:schools:custom_data_sources') }}
-{% set custom_data_sources = var('edu:schools:custom_data_sources', []) %}
 
 with stg_school as (
     select * from {{ ref('stg_ef3__schools') }}
@@ -78,7 +76,6 @@ formatted as (
         stg_school.charter_approval_agency,
         stg_school.magnet_type,
 
-        -- custom indicators
         {% set custom_indicators = var('edu:schools:custom_indicators') %}
         {%- if custom_indicators is not none and custom_indicators | length -%}
           {%- for indicator in custom_indicators -%}
@@ -99,8 +96,6 @@ formatted as (
         choose_address.latitude,
         choose_address.longitude
 
-        -- custom data sources columns
-        {{ add_cds_columns(custom_data_sources=custom_data_sources) }}
     from stg_school
     join dim_lea 
         on stg_school.k_lea = dim_lea.k_lea
@@ -111,9 +106,7 @@ formatted as (
     left join bld_network_associations
         on stg_school.k_school = bld_network_associations.k_school
 
-    -- custom data sources
-    {{ add_cds_joins_v1(custom_data_sources=custom_data_sources, driving_alias='stg_school', join_cols=['k_school']) }}
-    {{ add_cds_joins_v2(custom_data_sources=custom_data_sources) }}
 )
-select * from formatted
+{{ add_custom_data_source('edu:schools:custom_data_sources', join_cols=['k_school']) }}
+select * from add_custom_data_source
 order by tenant_code, k_school

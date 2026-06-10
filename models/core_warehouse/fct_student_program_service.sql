@@ -12,8 +12,6 @@
   )
 }}
 
-{{ cds_depends_on('edu:student_program_service:custom_data_sources') }}
-{% set custom_data_sources = var('edu:student_program_service:custom_data_sources', []) %}
 
 -- Define all optional program service models here.
 {% set stage_program_relations = [] %}
@@ -90,16 +88,13 @@ subset as (
     {# add any extension columns configured from all stage_program_relations #}
     {{ edu_edfi_source.extract_extension(model_name=relation_names, flatten=False) }}
 
-    -- custom data sources columns
-        {{ add_cds_columns(custom_data_sources=custom_data_sources) }}
 
   from stacked
   join dim_program
     on stacked.k_program = dim_program.k_program
 
-  -- custom data sources
-  {{ add_cds_joins_v1(custom_data_sources=custom_data_sources, driving_alias='stacked', join_cols=['k_student_program', 'program_service']) }}
-  {{ add_cds_joins_v2(custom_data_sources=custom_data_sources) }}
 )
 
-select * from subset
+{{ add_custom_data_source('edu:student_program_service:custom_data_sources', base='subset', join_cols=['k_student_program', 'program_service']) }}
+
+select * from add_custom_data_source

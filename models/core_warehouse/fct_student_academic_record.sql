@@ -8,8 +8,6 @@
   )
 }}
 
-{{ cds_depends_on('edu:student_academic_record:custom_data_sources') }}
-{% set custom_data_sources = var('edu:student_academic_record:custom_data_sources', []) %}
 
 with stg_academic_record as (
     select * from {{ ref('stg_ef3__student_academic_records') }}
@@ -50,8 +48,6 @@ formatted as (
         {# add any extension columns configured from stg_ef3__student_academic_records #}
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_academic_records', flatten=False) }}
         
-        -- custom data sources columns
-        {{ add_cds_columns(custom_data_sources=custom_data_sources) }}
     from stg_academic_record
     left join dim_school
         on stg_academic_record.k_school = dim_school.k_school
@@ -59,8 +55,6 @@ formatted as (
         on stg_academic_record.k_student_xyear = dim_student.k_student_xyear
         and stg_academic_record.school_year = dim_student.school_year
         
-    -- custom data sources
-    {{ add_cds_joins_v1(custom_data_sources=custom_data_sources, driving_alias='stg_academic_record', join_cols=['k_student_academic_record']) }}
-    {{ add_cds_joins_v2(custom_data_sources=custom_data_sources) }}
 )
-select * from formatted
+{{ add_custom_data_source('edu:student_academic_record:custom_data_sources', join_cols=['k_student_academic_record']) }}
+select * from add_custom_data_source

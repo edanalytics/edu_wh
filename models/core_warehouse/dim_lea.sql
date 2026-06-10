@@ -7,8 +7,6 @@
   )
 }}
 
-{{ cds_depends_on('edu:lea:custom_data_sources') }}
-{% set custom_data_sources = var('edu:lea:custom_data_sources', []) %}
 
 with stg_lea as (
     select * from {{ ref('stg_ef3__local_education_agencies') }}
@@ -54,8 +52,6 @@ formatted as (
         choose_address.latitude,
         choose_address.longitude
 
-        -- custom data sources columns
-        {{ add_cds_columns(custom_data_sources=custom_data_sources) }}
     from stg_lea
     left join choose_address 
         on stg_lea.k_lea = choose_address.k_lea
@@ -63,9 +59,7 @@ formatted as (
         on stg_lea.tenant_code = tenant_lea_ownership.tenant_code
         and stg_lea.lea_id = cast(tenant_lea_ownership.lea_id as int)
 
-    -- custom data sources
-    {{ add_cds_joins_v1(custom_data_sources=custom_data_sources, driving_alias='stg_lea', join_cols=['k_lea']) }}
-    {{ add_cds_joins_v2(custom_data_sources=custom_data_sources) }}
 )
-select * from formatted
+{{ add_custom_data_source('edu:lea:custom_data_sources', join_cols=['k_lea']) }}
+select * from add_custom_data_source
 order by tenant_code, k_lea

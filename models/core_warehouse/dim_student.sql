@@ -7,8 +7,6 @@
   )
 }}
 
-{{ cds_depends_on('edu:stu_demos:custom_data_sources') }}
-{% set custom_data_sources = var('edu:stu_demos:custom_data_sources', []) %}
 
 {# If edu var has been configured to make demos immutable, set join var to `k_student_xyear` bc demos are unique by xyear #}
 {# otherwise, use k_student bc demos are unique by student+year #}
@@ -255,8 +253,6 @@ formatted as (
         stu_cohort_year.cohort_year_array,
         stu_immutable_demos.safe_display_name
 
-        -- custom data sources columns
-        {{ add_cds_columns(custom_data_sources=custom_data_sources) }}
 
     from stg_student
 
@@ -321,11 +317,10 @@ formatted as (
             on stu_demos.k_student = stu_migrant_education.k_student
     {% endif %}
 
-    -- custom data sources
     -- Note, dbt test "custom_demo_sources_are_unique_on_k_student" is configured to fail if any not unique by k_student
-    {{ add_cds_joins_v1(custom_data_sources=custom_data_sources, driving_alias='stu_demos', join_cols=['k_student']) }}
-    {{ add_cds_joins_v2(custom_data_sources=custom_data_sources) }}
 )
 
-select * from formatted
+{{ add_custom_data_source('edu:stu_demos:custom_data_sources', join_cols=['k_student']) }}
+
+select * from add_custom_data_source
 order by tenant_code, school_year desc, k_student

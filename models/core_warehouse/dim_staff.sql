@@ -7,8 +7,6 @@
   )
 }}
 
-{{ cds_depends_on('edu:staff:custom_data_sources') }}
-{% set custom_data_sources = var('edu:staff:custom_data_sources', []) %}
 
 with stg_staff as (
     select * from {{ ref('stg_ef3__staffs') }}
@@ -57,8 +55,6 @@ formatted as (
         stg_staff.years_of_prior_professional_experience,
         stg_staff.years_of_prior_teaching_experience
 
-        -- custom data sources columns
-        {{ add_cds_columns(custom_data_sources=custom_data_sources) }}
     from stg_staff
     left join bld_ef3__wide_ids_staff 
         on stg_staff.k_staff = bld_ef3__wide_ids_staff.k_staff
@@ -67,9 +63,7 @@ formatted as (
     left join staff_race_ethnicity
         on stg_staff.k_staff = staff_race_ethnicity.k_staff
 
-    -- custom data sources
-    {{ add_cds_joins_v1(custom_data_sources=custom_data_sources, driving_alias='stg_staff', join_cols=['k_staff']) }}
-    {{ add_cds_joins_v2(custom_data_sources=custom_data_sources) }}
 )
-select * from formatted
+{{ add_custom_data_source('edu:staff:custom_data_sources', join_cols=['k_staff']) }}
+select * from add_custom_data_source
 order by tenant_code, k_staff

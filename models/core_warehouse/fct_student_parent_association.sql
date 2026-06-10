@@ -10,8 +10,6 @@
   )
 }}
 
-{{ cds_depends_on('edu:student_parent_association:custom_data_sources') }}
-{% set custom_data_sources = var('edu:student_parent_association:custom_data_sources', []) %}
 
 with stg_stu_parent as (
     -- parents were renamed to contacts in Data Standard v5.0
@@ -47,8 +45,6 @@ formatted as (
         {# add any extension columns configured from stg_ef3__student_contact_associations #}
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_contact_associations', flatten=False) }}
 
-        -- custom data sources columns
-        {{ add_cds_columns(custom_data_sources=custom_data_sources) }}
     from stg_stu_parent
     -- subset to only the stu/parent records associated with the most recent student records
     join most_recent_k_student
@@ -59,8 +55,6 @@ formatted as (
     join dim_parent
         on stg_stu_parent.k_contact = dim_parent.k_parent
         
-    -- custom data sources
-    {{ add_cds_joins_v1(custom_data_sources=custom_data_sources, driving_alias='stg_stu_parent', join_cols=['k_student', 'k_contact']) }}
-    {{ add_cds_joins_v2(custom_data_sources=custom_data_sources) }}
 )
-select * from formatted
+{{ add_custom_data_source('edu:student_parent_association:custom_data_sources', join_cols=['k_student', 'k_contact']) }}
+select * from add_custom_data_source
