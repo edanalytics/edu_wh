@@ -318,9 +318,11 @@ formatted as (
     {% endif %}
 
     -- Note, dbt test "custom_demo_sources_are_unique_on_k_student" is configured to fail if any not unique by k_student
-)
+),
 
-{{ add_custom_data_source('edu:stu_demos:custom_data_sources', join_cols=['k_student']) }}
+add_custom_data_source as (
+    {{ add_custom_data_source() }}
+)
 
 select * from add_custom_data_source
 order by tenant_code, school_year desc, k_student

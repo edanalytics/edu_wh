@@ -53,6 +53,10 @@ formatted as (
     join xwalk_att_events
         on stg_stu_section_attendance.attendance_event_category = xwalk_att_events.attendance_event_descriptor
         
+),
+
+add_custom_data_source as (
+    {{ add_custom_data_source() }}
 )
-{{ add_custom_data_source('edu:student_section_attendance_event:custom_data_sources', join_cols=['k_student', 'k_course_section', 'attendance_event_category', 'attendance_event_date']) }}
+
 select * from add_custom_data_source

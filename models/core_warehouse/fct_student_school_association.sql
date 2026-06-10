@@ -164,6 +164,10 @@ formatted as (
     {% if var('edu:enroll:exclude_cross_year_enrollments', False)%}
     and dim_student.school_year = stg_stu_school.school_year
     {% endif %}
+),
+
+add_custom_data_source as (
+    {{ add_custom_data_source() }}
 )
-{{ add_custom_data_source('edu:student_school_association:custom_data_sources', join_cols=['k_student', 'k_school', 'entry_date']) }}
+
 select * from add_custom_data_source

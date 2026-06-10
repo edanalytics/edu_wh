@@ -106,7 +106,11 @@ formatted as (
     left join bld_network_associations
         on stg_school.k_school = bld_network_associations.k_school
 
+),
+
+add_custom_data_source as (
+    {{ add_custom_data_source() }}
 )
-{{ add_custom_data_source('edu:schools:custom_data_sources', join_cols=['k_school']) }}
+
 select * from add_custom_data_source
 order by tenant_code, k_school

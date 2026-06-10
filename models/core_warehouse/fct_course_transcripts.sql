@@ -66,6 +66,10 @@ formatted as (
     join fct_student_academic_record
         on course_transcripts.k_student_academic_record = fct_student_academic_record.k_student_academic_record
 
+),
+
+add_custom_data_source as (
+    {{ add_custom_data_source() }}
 )
-{{ add_custom_data_source('edu:course_transcripts:custom_data_sources', join_cols=['k_course', 'k_student_academic_record', 'course_attempt_result']) }}
+
 select * from add_custom_data_source

@@ -112,6 +112,10 @@ final as (
     from student_assessments_wide
     left join object_agg_other_results
         on student_assessments_wide.k_student_assessment__original = object_agg_other_results.k_student_assessment
+),
+
+add_custom_data_source as (
+    {{ add_custom_data_source(relation='final') }}
 )
-{{ add_custom_data_source('edu:student_assessment:custom_data_sources', base='final', join_cols=['k_student_assessment']) }}
+
 select * from add_custom_data_source

@@ -63,7 +63,11 @@ formatted as (
     left join staff_race_ethnicity
         on stg_staff.k_staff = staff_race_ethnicity.k_staff
 
+),
+
+add_custom_data_source as (
+    {{ add_custom_data_source() }}
 )
-{{ add_custom_data_source('edu:staff:custom_data_sources', join_cols=['k_staff']) }}
+
 select * from add_custom_data_source
 order by tenant_code, k_staff

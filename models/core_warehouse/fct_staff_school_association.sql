@@ -105,6 +105,10 @@ check_active as (
             true, false
         ) as is_active_assignment
     from formatted
+),
+
+add_custom_data_source as (
+    {{ add_custom_data_source(relation='check_active') }}
 )
-{{ add_custom_data_source('edu:staff_school_association:custom_data_sources', base='check_active', join_cols=['k_staff_school_association']) }}
+
 select * from add_custom_data_source

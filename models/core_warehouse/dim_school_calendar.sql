@@ -41,7 +41,11 @@ formatted as (
     left join aggregated_grades
         on stg_calendar.k_school_calendar = aggregated_grades.k_school_calendar
 
+),
+
+add_custom_data_source as (
+    {{ add_custom_data_source() }}
 )
-{{ add_custom_data_source('edu:school_calendar:custom_data_sources', join_cols=['k_school_calendar']) }}
+
 select * from add_custom_data_source
 order by tenant_code, k_school, k_school_calendar

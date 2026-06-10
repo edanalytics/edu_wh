@@ -94,9 +94,11 @@ keyed as (
 
   from joined_with_display_names
 
-)
+),
 
-{{ add_custom_data_source('edu:subgroup:custom_data_sources', base='keyed', join_cols=['subgroup_category', 'subgroup_value']) }}
+add_custom_data_source as (
+    {{ add_custom_data_source(relation='keyed') }}
+)
 
 select * from add_custom_data_source
 order by subgroup_category, subgroup_value

@@ -125,7 +125,11 @@ final as (
     from student_obj_assessments_wide_deduped
     left join object_agg_other_results
         on student_obj_assessments_wide_deduped.k_student_objective_assessment__original = object_agg_other_results.k_student_objective_assessment
+),
+
+add_custom_data_source as (
+    {{ add_custom_data_source(relation='final') }}
 )
-{{ add_custom_data_source('edu:student_objective_assessment:custom_data_sources', base='final', join_cols=['k_student_objective_assessment']) }}
+
 select * from add_custom_data_source
 

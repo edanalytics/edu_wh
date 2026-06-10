@@ -58,8 +58,10 @@ formatted as (
         inner join dim_cohort
             on stage.k_cohort = dim_cohort.k_cohort
         
-)
+),
 
-{{ add_custom_data_source('edu:student_cohort_association:custom_data_sources', join_cols=['k_student', 'k_cohort', 'cohort_begin_date']) }}
+add_custom_data_source as (
+    {{ add_custom_data_source() }}
+)
 
 select * from add_custom_data_source

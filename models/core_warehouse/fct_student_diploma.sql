@@ -70,8 +70,12 @@ dedupe_diplomas as (
                 order_by = "sort_index nulls last" if xwalk_academic_term_enabled else "academic_term"
             )
         }}
+),
+
+add_custom_data_source as (
+    {{ add_custom_data_source(relation='dedupe_diplomas') }}
 )
-{{ add_custom_data_source('edu:student_diploma:custom_data_sources', base='dedupe_diplomas', join_cols=['k_student', 'school_year', 'k_lea', 'k_school', 'diploma_type', 'diploma_award_date']) }}
+
 select {{ edu_edfi_source.star('add_custom_data_source', except=['academic_term'])}}
 from add_custom_data_source
 order by tenant_code, k_student

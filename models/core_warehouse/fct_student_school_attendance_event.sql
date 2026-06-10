@@ -130,6 +130,10 @@ formatted as (
 
     from deduped
 
+),
+
+add_custom_data_source as (
+    {{ add_custom_data_source() }}
 )
-{{ add_custom_data_source('edu:student_school_attendance_event:custom_data_sources', join_cols=['k_student', 'k_school', 'k_session', 'attendance_event_category', 'k_calendar_date']) }}
+
 select * from add_custom_data_source

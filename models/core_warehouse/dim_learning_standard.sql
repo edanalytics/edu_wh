@@ -33,7 +33,11 @@ formatted as (
 
     from stg_learning_standards
 
+),
+
+add_custom_data_source as (
+    {{ add_custom_data_source() }}
 )
-{{ add_custom_data_source('edu:learning_standard:custom_data_sources', join_cols=['k_learning_standard']) }}
+
 select * from add_custom_data_source
 order by tenant_code, k_learning_standard

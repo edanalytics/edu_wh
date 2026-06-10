@@ -35,7 +35,11 @@ formatted as (
 
     from stg_graduation_plans
 
+),
+
+add_custom_data_source as (
+    {{ add_custom_data_source() }}
 )
-{{ add_custom_data_source('edu:graduation_plan:custom_data_sources', join_cols=['k_graduation_plan']) }}
+
 select * from add_custom_data_source
 order by tenant_code, k_graduation_plan

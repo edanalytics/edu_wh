@@ -31,7 +31,11 @@ formatted as (
     join dim_school
         on stg_sessions.k_school = dim_school.k_school
 
+),
+
+add_custom_data_source as (
+    {{ add_custom_data_source() }}
 )
-{{ add_custom_data_source('edu:session:custom_data_sources', join_cols=['k_session']) }}
+
 select * from add_custom_data_source
 order by tenant_code, k_school, session_begin_date desc

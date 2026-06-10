@@ -56,6 +56,10 @@ metric_labels as (
         on attendance_rate > metric_absentee_categories.threshold_lower
         and attendance_rate <= metric_absentee_categories.threshold_upper
 
+),
+
+add_custom_data_source as (
+    {{ add_custom_data_source(relation='metric_labels') }}
 )
-{{ add_custom_data_source('edu:msr_student_cumulative_attendance:custom_data_sources', base='metric_labels', join_cols=['k_student', 'k_school', 'school_year']) }}
+
 select * from add_custom_data_source

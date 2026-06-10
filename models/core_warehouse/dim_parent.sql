@@ -67,7 +67,11 @@ formatted as (
     left join choose_address
         on stg_parent.k_contact = choose_address.k_contact
 
+),
+
+add_custom_data_source as (
+    {{ add_custom_data_source() }}
 )
-{{ add_custom_data_source('edu:parent:custom_data_sources', join_cols=['k_contact']) }}
+
 select * from add_custom_data_source
 order by tenant_code, k_parent

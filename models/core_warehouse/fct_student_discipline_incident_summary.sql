@@ -96,6 +96,10 @@ formatted as (
     -- in order to keep the grain of k_student and k_discipline_incident, we want to keep this subset 
     -- even if we do not have the severity orders defined
     qualify 1 = row_number() over (partition by fct_student_discipline_incident_behaviors.k_student, fct_student_discipline_incident_behaviors.k_discipline_incident order by fct_student_discipline_actions.severity_order desc nulls last, fct_student_discipline_incident_behaviors.severity_order desc nulls last)
+),
+
+add_custom_data_source as (
+    {{ add_custom_data_source() }}
 )
-{{ add_custom_data_source('edu:student_discipline_incident_summary:custom_data_sources', join_cols=['k_student', 'k_discipline_incident']) }}
+
 select * from add_custom_data_source

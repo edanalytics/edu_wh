@@ -59,7 +59,11 @@ formatted as (
         on stg_lea.tenant_code = tenant_lea_ownership.tenant_code
         and stg_lea.lea_id = cast(tenant_lea_ownership.lea_id as int)
 
+),
+
+add_custom_data_source as (
+    {{ add_custom_data_source() }}
 )
-{{ add_custom_data_source('edu:lea:custom_data_sources', join_cols=['k_lea']) }}
+
 select * from add_custom_data_source
 order by tenant_code, k_lea

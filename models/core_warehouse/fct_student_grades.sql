@@ -66,6 +66,10 @@ formatted as (
     left join letter_grade_xwalk
         on lower(stg_grades.letter_grade_earned) = letter_grade_xwalk.letter_grade
 
+),
+
+add_custom_data_source as (
+    {{ add_custom_data_source() }}
 )
-{{ add_custom_data_source('edu:student_grades:custom_data_sources', join_cols=['k_grading_period', 'k_student', 'k_school', 'k_course_section', 'grade_type']) }}
+
 select * from add_custom_data_source

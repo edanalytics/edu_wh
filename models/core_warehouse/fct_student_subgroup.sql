@@ -86,9 +86,11 @@ keyed as (
     on lower(stu_long_subgroup.subgroup_category) = lower(dim_subgroup.subgroup_category)
     and lower(stu_long_subgroup.subgroup_value) = lower(dim_subgroup.subgroup_value)
         
-)
+),
 
-{{ add_custom_data_source('edu:student_subgroup:custom_data_sources', base='keyed', join_cols=['k_student', 'subgroup_category', 'subgroup_value']) }}
+add_custom_data_source as (
+    {{ add_custom_data_source(relation='keyed') }}
+)
 
 select * from add_custom_data_source
 order by tenant_code, school_year desc, k_student, k_subgroup

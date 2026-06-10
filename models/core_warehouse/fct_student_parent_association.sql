@@ -55,6 +55,10 @@ formatted as (
     join dim_parent
         on stg_stu_parent.k_contact = dim_parent.k_parent
         
+),
+
+add_custom_data_source as (
+    {{ add_custom_data_source() }}
 )
-{{ add_custom_data_source('edu:student_parent_association:custom_data_sources', join_cols=['k_student', 'k_contact']) }}
+
 select * from add_custom_data_source

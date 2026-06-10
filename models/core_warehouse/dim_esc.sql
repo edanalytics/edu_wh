@@ -46,7 +46,11 @@ formatted as (
     left join choose_address 
         on stg_esc.k_esc = choose_address.k_esc
 
+),
+
+add_custom_data_source as (
+    {{ add_custom_data_source() }}
 )
-{{ add_custom_data_source('edu:esc:custom_data_sources', join_cols=['k_esc']) }}
+
 select * from add_custom_data_source
 order by tenant_code, k_esc

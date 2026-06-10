@@ -93,8 +93,10 @@ subset as (
   join dim_program
     on stacked.k_program = dim_program.k_program
 
-)
+),
 
-{{ add_custom_data_source('edu:student_program_service:custom_data_sources', base='subset', join_cols=['k_student_program', 'program_service']) }}
+add_custom_data_source as (
+    {{ add_custom_data_source(relation='subset') }}
+)
 
 select * from add_custom_data_source

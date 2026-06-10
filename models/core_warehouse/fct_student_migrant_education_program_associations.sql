@@ -57,8 +57,10 @@ formatted as (
     inner join dim_program
         on stage.k_program = dim_program.k_program
 
-)
+),
 
-{{ add_custom_data_source('edu:student_migrant_education_program_association:custom_data_sources', join_cols=['k_student_program']) }}
+add_custom_data_source as (
+    {{ add_custom_data_source() }}
+)
 
 select * from add_custom_data_source

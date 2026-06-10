@@ -72,7 +72,11 @@ joined as (
     left join section_chars 
         on stg_ef3__sections.k_course_section = section_chars.k_course_section
 
+),
+
+add_custom_data_source as (
+    {{ add_custom_data_source(relation='joined') }}
 )
-{{ add_custom_data_source('edu:course_section:custom_data_sources', base='joined', join_cols=['k_course_section']) }}
+
 select * from add_custom_data_source
 order by tenant_code, k_school, k_course_section

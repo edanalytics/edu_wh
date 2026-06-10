@@ -36,7 +36,11 @@ formatted as (
     join academic_record
         on combined_gpas.k_student_academic_record = academic_record.k_student_academic_record
         
+),
+
+add_custom_data_source as (
+    {{ add_custom_data_source() }}
 )
-{{ add_custom_data_source('edu:student_gpa:custom_data_sources', join_cols=['k_student_academic_record', 'gpa_type']) }}
+
 select * from add_custom_data_source
 order by tenant_code, k_student

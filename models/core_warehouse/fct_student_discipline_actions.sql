@@ -134,7 +134,11 @@ join_descriptor_interpretation as (
     from formatted
     left join xwalk_discipline_actions
         on formatted.discipline_action = xwalk_discipline_actions.discipline_action
+),
+
+add_custom_data_source as (
+    {{ add_custom_data_source(relation='join_descriptor_interpretation') }}
 )
-{{ add_custom_data_source('edu:discipline_actions:custom_data_sources', base='join_descriptor_interpretation', join_cols=['k_student', 'discipline_date', 'discipline_action_id']) }}
+
 select * from add_custom_data_source
 

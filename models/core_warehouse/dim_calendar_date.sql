@@ -108,7 +108,11 @@ week_calculation as (
     join week_offset
         on augmented.k_school_calendar = week_offset.k_school_calendar
 
+),
+
+add_custom_data_source as (
+    {{ add_custom_data_source(relation='week_calculation') }}
 )
-{{ add_custom_data_source('edu:calendar_date:custom_data_sources', base='week_calculation', join_cols=['k_calendar_date']) }}
+
 select * from add_custom_data_source
 order by tenant_code, k_school, calendar_date desc

@@ -56,6 +56,10 @@ formatted as (
     join dim_course_section
         on stg_stu_section.k_course_section = dim_course_section.k_course_section
         
+),
+
+add_custom_data_source as (
+    {{ add_custom_data_source() }}
 )
-{{ add_custom_data_source('edu:student_section_association:custom_data_sources', join_cols=['k_student', 'k_course_section', 'begin_date']) }}
+
 select * from add_custom_data_source

@@ -27,8 +27,10 @@ formatted as (
 
     from stg_programs
 
-)
+),
 
-{{ add_custom_data_source('edu:program:custom_data_sources', join_cols=['k_program']) }}
+add_custom_data_source as (
+    {{ add_custom_data_source() }}
+)
 
 select * from add_custom_data_source

@@ -47,8 +47,8 @@ vars:
 
   # custom intersections of other demographic groupings
   'edu:stu_demos:intersection_groups': Null
-  # custom data sources for student characteristics. must contain and be unique by `k_student`
-  'edu:stu_demos:custom_data_sources': Null
+  # custom data sources keyed by warehouse model name (e.g., dim_student, fct_student_school_association)
+  'edu:custom_data_sources': {}
 
   # Optional override logic when enrollment grade level != true grade level.
   'edu:stu_demos:grade_level_override': Null

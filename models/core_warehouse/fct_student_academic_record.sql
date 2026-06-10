@@ -55,6 +55,10 @@ formatted as (
         on stg_academic_record.k_student_xyear = dim_student.k_student_xyear
         and stg_academic_record.school_year = dim_student.school_year
         
+),
+
+add_custom_data_source as (
+    {{ add_custom_data_source() }}
 )
-{{ add_custom_data_source('edu:student_academic_record:custom_data_sources', join_cols=['k_student_academic_record']) }}
+
 select * from add_custom_data_source

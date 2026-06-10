@@ -64,6 +64,10 @@ formatted as (
     join dim_course_section
         on stg_grades_learning_standards.k_course_section = dim_course_section.k_course_section
 
+),
+
+add_custom_data_source as (
+    {{ add_custom_data_source() }}
 )
-{{ add_custom_data_source('edu:student_learning_standard_grades:custom_data_sources', join_cols=['k_grading_period', 'k_student', 'k_school', 'k_course_section', 'grade_type', 'k_learning_standard']) }}
+
 select * from add_custom_data_source

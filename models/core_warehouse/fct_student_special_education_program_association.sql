@@ -84,8 +84,10 @@ formatted as (
             and stage.k_program = bld_primary_disability.k_program
             and stage.program_enroll_begin_date = bld_primary_disability.program_enroll_begin_date
 
-)
+),
 
-{{ add_custom_data_source('edu:student_special_education_program_association:custom_data_sources', join_cols=['k_student_program']) }}
+add_custom_data_source as (
+    {{ add_custom_data_source() }}
+)
 
 select * from add_custom_data_source

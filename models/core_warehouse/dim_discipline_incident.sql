@@ -60,6 +60,10 @@ formatted as (
     join dim_school
         on stg_discipline_incidents.k_school = dim_school.k_school
 
+),
+
+add_custom_data_source as (
+    {{ add_custom_data_source() }}
 )
-{{ add_custom_data_source('edu:discipline_incident:custom_data_sources', join_cols=['k_discipline_incident']) }}
+
 select * from add_custom_data_source

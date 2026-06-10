@@ -55,7 +55,11 @@ formatted as (
     left join bld_ef3__course_subject
         on stg_course.k_course = bld_ef3__course_subject.k_course
     
+),
+
+add_custom_data_source as (
+    {{ add_custom_data_source() }}
 )
-{{ add_custom_data_source('edu:course:custom_data_sources', join_cols=['k_course']) }}
+
 select * from add_custom_data_source
 order by tenant_code, school_year desc, k_course

@@ -78,7 +78,11 @@ dedupe_assessments as (
             order_by='tenant_code,school_year'
         )
     }}
+),
+
+add_custom_data_source as (
+    {{ add_custom_data_source(relation='dedupe_assessments') }}
 )
-{{ add_custom_data_source('edu:assessment:custom_data_sources', base='dedupe_assessments', join_cols=['k_assessment']) }}
+
 select * from add_custom_data_source
 order by tenant_code, k_assessment

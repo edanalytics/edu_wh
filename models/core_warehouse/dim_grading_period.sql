@@ -31,7 +31,11 @@ formatted as (
     join dim_school
         on stg_grading_periods.k_school = dim_school.k_school
 
+),
+
+add_custom_data_source as (
+    {{ add_custom_data_source() }}
 )
-{{ add_custom_data_source('edu:grading_period:custom_data_sources', join_cols=['k_grading_period']) }}
+
 select * from add_custom_data_source
 order by tenant_code, k_school, k_grading_period

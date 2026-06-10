@@ -50,8 +50,12 @@ formatted as (
     join dim_school
         on class_periods.k_school = dim_school.k_school
 
+),
+
+add_custom_data_source as (
+    {{ add_custom_data_source() }}
 )
-{{ add_custom_data_source('edu:class_period:custom_data_sources', join_cols=['k_class_period']) }}
+
 select {{ edu_edfi_source.star('add_custom_data_source', except=['meeting_time']) }}
 from add_custom_data_source
 order by tenant_code, k_school, k_class_period

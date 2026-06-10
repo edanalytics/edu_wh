@@ -88,6 +88,10 @@ formatted as (
     left join xwalk_discipline_behaviors
         on stg_stu_discipline_incident_behaviors.behavior_type = xwalk_discipline_behaviors.behavior_type
 
+),
+
+add_custom_data_source as (
+    {{ add_custom_data_source() }}
 )
-{{ add_custom_data_source('edu:student_discipline_incident_behaviors:custom_data_sources', join_cols=['k_student', 'k_discipline_incident', 'behavior_type']) }}
+
 select * from add_custom_data_source
