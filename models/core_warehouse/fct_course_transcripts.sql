@@ -33,7 +33,7 @@ formatted as (
         fct_student_academic_record.school_year,
         fct_student_academic_record.academic_term,
         course_transcripts.course_attempt_result,
-        course_transcripts.course_title,
+        dim_course.course_title,
         course_transcripts.alternative_course_code,
         course_transcripts.alternative_course_title,
         course_transcripts.when_taken_grade_level,
@@ -63,5 +63,7 @@ formatted as (
     from course_transcripts
     join fct_student_academic_record
         on course_transcripts.k_student_academic_record = fct_student_academic_record.k_student_academic_record
+    join dim_course
+        on course_transcripts.k_course = dim_course.k_course
 )
 select * from formatted
