@@ -53,6 +53,7 @@ formatted as (
         bld_chart_of_accounts_dimensions.operational_unit_dimension_fiscal_year,
         bld_chart_of_accounts_dimensions.operational_unit_dimension_code_name,
         bld_chart_of_accounts_dimensions.program_dimension_code,
+        bld_chart_of_accounts_dimensions.program_dimension_fiscal_year,
         bld_chart_of_accounts_dimensions.program_dimension_code_name,
         bld_chart_of_accounts_dimensions.project_dimension_code,
         bld_chart_of_accounts_dimensions.project_dimension_fiscal_year,
