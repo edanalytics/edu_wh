@@ -1,5 +1,8 @@
 # Unreleased
 ## New features
+- Add finance warehouse models: `dim_chart_of_account`, `dim_local_account`, `fct_local_actual_snapshots`, `fct_local_budget_snapshots`
+- Add `finance_warehouse` schema to isolate finance models from core warehouse
+- Add `bld_ef3__chart_of_accounts_dimensions` build model joining chart of accounts with all dimension tables (balance sheet, function, fund, object, operational unit, program, project, source)
 ## Under the hood
 ## Fixes
 
