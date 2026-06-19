@@ -6,10 +6,6 @@ exclude_rules = layout, convention, capitalisation, aliasing, references, ambigu
 
 # Settings for --templater dbt
 [sqlfluff:templater:dbt]
-# project_dir = .               # root of the dbt project (default: current directory)
-# profiles_dir = ~/.dbt         # where profiles.yml lives (default: ~/.dbt)
-# profile =                     # profile name from profiles.yml (default: from dbt_project.yml)
-# target =                      # target within that profile e.g. dev (default: profile default)
 # If dbt compilation fails on a model, skip it rather than erroring out.
 dbt_skip_compilation_error = True
 
@@ -17,8 +13,7 @@ dbt_skip_compilation_error = True
 apply_dbt_builtins = true
 load_macros_from_path = macros
 
-# Stubs only for dbt_utils macros, those live in dbt_packages/ which is
-# gitignored and not always present, so they cannot be loaded from path.
+# Stubs only for dbt_utils macros, those live in dbt_packages
 [sqlfluff:templater:jinja:macros]
 generate_surrogate_key = {% macro generate_surrogate_key(fields) %}null{% endmacro %}
 deduplicate            = {% macro deduplicate(relation, partition_by, order_by) %}select * from stub_relation{% endmacro %}
