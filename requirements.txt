@@ -1,0 +1,4 @@
+# Pinned so local versions match
+# Install with: pip install -r requirements.txt
+sqlfluff==3.3.1
+sqlfluff-templater-dbt==3.3.1
