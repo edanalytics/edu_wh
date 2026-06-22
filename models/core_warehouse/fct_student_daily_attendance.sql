@@ -1,10 +1,10 @@
+    {# pre_hook=[
+      "{% if is_incremental() %} {{ edu_wh.incremental_pre_hook_by_year() }} {% endif %}"
+    ], #}
 {{
   config(
     materialized=var('edu:large_wh_materialization', 'table'),
     unique_key=['k_student', 'k_school', 'calendar_date'],
-    pre_hook=[
-      "{% if  is_incremental() %} edu_wh.incremental_pre_hook_by_year() {% endif %}"
-    ]
     post_hook=[
         "{% if not is_incremental() %} alter table {{ this }} alter column k_student set not null {% endif %}",
         "{% if not is_incremental() %} alter table {{ this }} alter column k_school set not null {% endif %}",
@@ -46,9 +46,6 @@ metric_absentee_categories as (
 ),
 bld_attendance_sessions as (
     select * from {{ ref('bld_ef3__attendance_sessions') }}
-    {% if is_incremental() %}
-    where school_year = (select max(school_year) from {{ this }})
-    {% endif %}
 ),
 school_max_submitted as (
     -- find the most recently submitted attendance date by school

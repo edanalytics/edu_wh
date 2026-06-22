@@ -69,7 +69,8 @@ joined as (
         stg_stu_sch_attend.educational_environment,
         fct_student_school_assoc.enrollment_length,
         fct_student_school_assoc.entry_date,
-        fct_student_school_assoc.exit_withdraw_date
+        fct_student_school_assoc.exit_withdraw_date,
+        stg_stu_sch_attend.last_modified_timestamp
     from stg_stu_sch_attend
     join dim_student
         on stg_stu_sch_attend.k_student = dim_student.k_student
@@ -123,7 +124,8 @@ formatted as (
         school_attendance_duration,
         arrival_time,
         departure_time,
-        educational_environment
+        educational_environment,
+        last_modified_timestamp
         {# add any extension columns configured from stg_ef3__student_school_attendance_events #}
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_school_attendance_events', flatten=False) }}
     from deduped
