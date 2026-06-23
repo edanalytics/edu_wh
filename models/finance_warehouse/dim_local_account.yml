@@ -6,10 +6,9 @@ models:
       tags: ['finance']
     description: >
       Local account dimension — one row per k_local_account. Carries tenant and identity/value
-      fields from staging (excluding JSON reference columns), v_reporting_tags, the same
-      finance dimension display names as dim_chart_of_account (from
-      bld_ef3__chart_of_accounts_dimensions via k_chart_of_account), and Ed-Fi extension
-      columns via extract_extension.
+      fields from staging (excluding JSON reference columns), v_reporting_tags, and Ed-Fi
+      extension columns via extract_extension. Join to dim_chart_of_account via
+      k_chart_of_account for dimension codes and display names.
     columns:
       - name: k_local_account
         description: Primary key — matches stg_ef3__local_accounts.k_local_account

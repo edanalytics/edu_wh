@@ -16,14 +16,12 @@ models:
               to: ref('dim_local_account')
               field: k_local_account
       - name: k_local_budget_snapshot
-        description: Primary key — surrogate for the budget record at account / as-of / collection grain
+        description: Primary key — surrogate for the budget record at account / as-of grain
         tests:
           - unique
           - not_null
       - name: tenant_code
         description: Data owner identifier
-      - name: api_year
-        description: School year of the ODS (api_year from staging)
       - name: as_of_date
         description: The point-in-time date of the financial snapshot
       - name: local_account_identifier
