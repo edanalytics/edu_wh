@@ -5,6 +5,7 @@
 - Add `bld_ef3__chart_of_accounts_dimensions` build model joining chart of accounts with all dimension tables (balance sheet, function, fund, object, operational unit, program, project, source)
 ## Under the hood
 ## Fixes
+- Fix null `course_title` values in `fct_course_transcripts` by sourcing the title from `dim_course`, where the field is required rather than optional.
 
 # edu_wh v0.6.3
 ## New features
