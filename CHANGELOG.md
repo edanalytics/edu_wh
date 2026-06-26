@@ -1,5 +1,10 @@
 # Unreleased
 ## New features
+## Under the hood
+## Fixes
+
+# edu_wh v0.6.4
+## New features
 - Add finance warehouse models: `dim_chart_of_account`, `dim_local_account`, `fct_local_actual_snapshots`, `fct_local_budget_snapshots`, by default in schema `finance_warehouse` to isolate finance models from core warehouse
 - Add `fct_student_program_participation_status`, a new fact table that unions participation status records from all enabled program types, at the grain of `k_student_program, participation_status, status_begin_date`.
 - Add `k_student_program` surrogate key to all program fact tables and `__program_services` build models. The primary key on all program fact tables changed from `(k_student, k_program, program_enroll_begin_date)` to `k_student_program`.
