@@ -33,7 +33,7 @@ formatted as (
         fct_student_academic_record.school_year,
         fct_student_academic_record.academic_term,
         course_transcripts.course_attempt_result,
-        coalesce(course_transcripts.course_title, dim_course.course_title),
+        coalesce(course_transcripts.course_title, dim_course.course_title) as course_title,
         course_transcripts.alternative_course_code,
         course_transcripts.alternative_course_title,
         course_transcripts.when_taken_grade_level,
