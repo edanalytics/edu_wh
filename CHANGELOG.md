@@ -3,8 +3,15 @@
 - Add finance warehouse models: `dim_chart_of_account`, `dim_local_account`, `fct_local_actual_snapshots`, `fct_local_budget_snapshots`
 - Add `finance_warehouse` schema to isolate finance models from core warehouse
 - Add `bld_ef3__chart_of_accounts_dimensions` build model joining chart of accounts with all dimension tables (balance sheet, function, fund, object, operational unit, program, project, source)
+- Added `fct_student_program_participation_status`, a new fact table that unions participation status records from all enabled program types, at the grain of `k_student_program, participation_status, status_begin_date`.
+- Added `k_student_program` surrogate key to all program fact tables and `__program_services` build models. The primary key on all program fact tables changed from `(k_student, k_program, program_enroll_begin_date)` to `k_student_program`.
+- Added generic program services (`stg_ef3__stu_program__program_services`) as a source in `fct_student_program_service`.
+- Added `cip_code` to `fct_student_program_service` when `src:program:cte:enabled` is true.
 ## Under the hood
+- Changed the source of `k_lea`, `k_school`, and `school_year` on all program fact tables from `dim_program` to the staging enrollment record. These columns now reflect the ed org the student is enrolled in at enrollment time, not the ed org that owns the program definition.
+
 ## Fixes
+- Fix null `course_title` values in `fct_course_transcripts` by sourcing the title from `dim_course`, where the field is required rather than optional.
 
 # edu_wh v0.6.3
 ## New features

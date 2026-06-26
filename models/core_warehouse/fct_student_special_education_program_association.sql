@@ -1,10 +1,11 @@
 {{
   config(
     post_hook=[
+        "alter table {{ this }} alter column k_student_program set not null",
         "alter table {{ this }} alter column k_student set not null",
         "alter table {{ this }} alter column k_program set not null",
         "alter table {{ this }} alter column program_enroll_begin_date set not null",
-        "alter table {{ this }} add primary key (k_student, k_program, program_enroll_begin_date)",
+        "alter table {{ this }} add primary key (k_student_program)",
         "alter table {{ this }} add constraint fk_{{ this.name }}_student foreign key (k_student) references {{ ref('dim_student') }}",
         "alter table {{ this }} add constraint fk_{{ this.name }}_program foreign key (k_program) references {{ ref('dim_program') }}",
     ]
@@ -33,13 +34,14 @@ bld_primary_disability as (
 
 formatted as (
     select
+        stage.k_student_program,
         dim_student.k_student,
         dim_student.k_student_xyear,
-        dim_program.k_program,
-        dim_program.k_lea,
-        dim_program.k_school,
+        stage.k_program,
+        stage.k_lea,
+        stage.k_school,
         stage.tenant_code,
-        dim_program.school_year,
+        stage.school_year,
         stage.program_enroll_begin_date,
         stage.program_enroll_end_date,
         stage.is_idea_eligible,
@@ -66,20 +68,16 @@ formatted as (
     
         inner join dim_student
             on stage.k_student = dim_student.k_student
-            
+
         inner join dim_program
             on stage.k_program = dim_program.k_program
-            
+
         -- left join because not all special ed programs include services (and they're optional in EdFi)
-        left join bld_program_services 
-            on stage.k_student = bld_program_services.k_student
-            and stage.k_program = bld_program_services.k_program
-            and stage.program_enroll_begin_date = bld_program_services.program_enroll_begin_date
+        left join bld_program_services
+            on stage.k_student_program = bld_program_services.k_student_program
 
         left join bld_primary_disability
-            on stage.k_student = bld_primary_disability.k_student
-            and stage.k_program = bld_primary_disability.k_program
-            and stage.program_enroll_begin_date = bld_primary_disability.program_enroll_begin_date
+            on stage.k_student_program = bld_primary_disability.k_student_program
 )
 
 select * from formatted
