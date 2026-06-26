@@ -29,6 +29,9 @@ models:
         +enabled: "{{ var('edu:tpdm:enabled', False) }}"
     core_warehouse:
       +schema: wh
+    finance_warehouse:
+      +schema: finance_wh
+      +enabled: "{{ var('edu:finance:enabled', False) }}"
     tpdm_warehouse:
       +schema: wh
       +enabled: "{{ var('edu:tpdm:enabled', False) }}"
