@@ -24,7 +24,7 @@ models:
       - name: tenant_code
         description: "Code defining the Tenant (may be an LEA, SEA, etc.) of the Ed-Fi ODS from which this record was pulled"
       - name: school_year
-        description: "The school year passed to the Ed-Fi API when pulling this record from Course"
+        description: School year specified by Spring year, e.g. the 2021-2022 year would be 2022. The school year is populated based on the year associated with the source ODS, which is assumed to contain data for only that school year (with rare exceptions for transcript/academic record data).
       - name: course_code
         description: "A unique alphanumeric code assigned to a course."
       - name: course_title

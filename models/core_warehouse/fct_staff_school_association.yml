@@ -71,6 +71,7 @@ models:
       - name: tenant_code
         description: "Code defining the Tenant (may be an LEA, SEA, etc.) of the EdFi ODS from which this record was pulled"
       - name: school_year
+        description: School year specified by Spring year, e.g. the 2021-2022 year would be 2022. The school year is populated based on the year associated with the source ODS, which is assumed to contain data for only that school year (with rare exceptions for transcript/academic record data).
       - name: program_assignment
         description: "The name of the program for which the individual is assigned; for example: Regular education Title I-Academic Title I-Non-Academic Special Education Bilingual/English as a Second Language.	"
       - name: position_title

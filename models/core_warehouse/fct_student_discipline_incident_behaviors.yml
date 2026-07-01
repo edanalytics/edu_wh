@@ -46,6 +46,7 @@ models:
           A key containing incident_id and school_id to represent a single discipline incident.
       - name: tenant_code
       - name: school_year
+        description: School year specified by Spring year, e.g. the 2021-2022 year would be 2022. The school year is populated based on the year associated with the source ODS, which is assumed to contain data for only that school year (with rare exceptions for transcript/academic record data).
       - name: school_id
       - name: incident_id
         description: > 

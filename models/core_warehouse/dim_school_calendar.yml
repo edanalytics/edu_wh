@@ -31,6 +31,7 @@ models:
         description: Foreign key to `dim_school`, identifying the school associated with the calendar.
       - name: tenant_code
       - name: school_year
+        description: School year specified by Spring year, e.g. the 2021-2022 year would be 2022. The school year is populated based on the year associated with the source ODS, which is assumed to contain data for only that school year (with rare exceptions for transcript/academic record data).
       - name: calendar_code
         description: Identifier for the calendar.
       - name: calendar_type

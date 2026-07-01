@@ -47,6 +47,7 @@ models:
         description: "Unique key for course section, foreign key reference to `dim_course_section`"
       - name: tenant_code
       - name: school_year
+        description: School year specified by Spring year, e.g. the 2021-2022 year would be 2022. The school year is populated based on the year associated with the source ODS, which is assumed to contain data for only that school year (with rare exceptions for transcript/academic record data).
       - name: begin_date
         description: "Month, day, and year of the student's entry or assignment to the section."
       - name: end_date

@@ -34,9 +34,7 @@ models:
       - name: k_school
         description: Association to the school with the program.
       - name: school_year
-        description: > 
-          School year specified by Spring year.
-          e.g., the 2021-2022 year would be 2022.
+        description: School year specified by Spring year, e.g. the 2021-2022 year would be 2022. The school year is populated based on the year associated with the source ODS, which is assumed to contain data for only that school year (with rare exceptions for transcript/academic record data).
       - name: tenant_code
       - name: ed_org_id
         description: The identifier for the educational organization with the program.

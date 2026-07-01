@@ -92,6 +92,7 @@ models:
           portion of the instruction for which a grade or report is assigned (e.g., reading, 
           composition, spelling, and language arts).
       - name: school_year
+        description: School year specified by Spring year, e.g. the 2021-2022 year would be 2022. The school year is populated based on the year associated with the source ODS, which is assumed to contain data for only that school year (with rare exceptions for transcript/academic record data).
       - name: session_name
         description: >
           (sourced from Course Offering) -- The session in which the course is offered at the school.
