@@ -48,7 +48,7 @@ models:
       - name: k_school
       - name: tenant_code
       - name: school_year
-        description: School year specified by Spring year, e.g. the 2021-2022 year would be 2022. The school year is populated based on the year associated with the source ODS, which is assumed to contain data for only that school year (with rare exceptions for transcript/academic record data).
+        description: School year specified by Spring year, e.g. the 2021-2022 year would be 2022. Unlike most other tables, `school_year` here is sourced from the `student_academic_records` Ed-Fi endpoint, where it is a required field provided directly by the source system rather than inferred from a single-year ODS.
       - name: academic_term
       - name: session_earned_credits
         description: The number of credits an individual earned in this session.

@@ -153,6 +153,8 @@ models:
       - name: k_school__responsibility
         description: >
           The school responsible for the student's discipline
+      - name: school_year
+        description: School year specified by Spring year, e.g. the 2021-2022 year would be 2022. The school year is populated based on the year associated with the source ODS, which is assumed to contain data for only that school year.
       - name: k_discipline_actions_event
         description: >
           A key containing discipline_action_id and discipline_date to represent a single discipline event.

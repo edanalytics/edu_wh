@@ -41,7 +41,7 @@ models:
       - name: calendar_code
         description: Descriptive label for a calendar.
       - name: school_year
-        description: School year specified by Spring year, e.g. the 2021-2022 year would be 2022. The school year is populated based on the year associated with the source ODS, which is assumed to contain data for only that school year (with rare exceptions for transcript/academic record data).
+        description: "School year specified by Spring year, e.g. the 2021-2022 year would be 2022. Unlike most other tables, `school_year` here reflects a school year reference embedded directly in the source Ed-Fi record, rather than the year of the source ODS pull — so it can differ from the pull year in edge cases (e.g. calendar or schedule data that spans a year boundary)."
       - name: calendar_date
         description: Date on school calendar.
         config:
