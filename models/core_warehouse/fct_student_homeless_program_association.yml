@@ -44,7 +44,7 @@ models:
       - name: k_school
       - name: tenant_code
       - name: school_year
-        description: School year specified by Spring year, e.g. the 2021-2022 year would be 2022. The school year is populated based on the year associated with the source ODS, which is assumed to contain data for only that school year.
+        description: "{{ doc('school_year_ods_pull') }}"
       - name: program_enroll_begin_date
       - name: program_enroll_end_date
       - name: is_awaiting_foster_care

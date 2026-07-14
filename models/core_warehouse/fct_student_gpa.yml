@@ -56,7 +56,7 @@ models:
       - name: k_school
       - name: tenant_code
       - name: school_year
-        description: School year specified by Spring year, e.g. the 2021-2022 year would be 2022. Unlike most other tables, `school_year` here is sourced from the `student_academic_records` Ed-Fi endpoint, where it is a required field provided directly by the source system rather than inferred from a single-year ODS.
+        description: "{{ doc('school_year_academic_record') }}"
       - name: academic_term
       - name: gpa_type
         description: The system used for calculating the grade point average for an individual.

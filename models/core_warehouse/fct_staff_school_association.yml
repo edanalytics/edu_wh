@@ -71,7 +71,7 @@ models:
       - name: tenant_code
         description: "Code defining the Tenant (may be an LEA, SEA, etc.) of the EdFi ODS from which this record was pulled"
       - name: school_year
-        description: "School year specified by Spring year, e.g. the 2021-2022 year would be 2022. Unlike most other tables, `school_year` here reflects a school year reference embedded directly in the source Ed-Fi record, rather than the year of the source ODS pull — so it can differ from the pull year in edge cases (e.g. calendar or schedule data that spans a year boundary). If that reference is missing, `school_year` falls back to the source ODS pull year."
+        description: "{{ doc('school_year_source_reference') }} If that reference is missing, `school_year` falls back to the source ODS pull year."
       - name: program_assignment
         description: "The name of the program for which the individual is assigned; for example: Regular education Title I-Academic Title I-Non-Academic Special Education Bilingual/English as a Second Language.	"
       - name: position_title

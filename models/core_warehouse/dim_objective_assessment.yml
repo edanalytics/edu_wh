@@ -32,7 +32,7 @@ models:
       - name: k_assessment
       - name: tenant_code
       - name: school_year
-        description: "School year specified by Spring year, e.g. the 2021-2022 year would be 2022. For assessment records, `school_year` is primarily populated based on the year associated with the source ODS, which is assumed to contain data for only that school year. If not available from the ODS, it is inferred from `administration_date` using a school-year cutoff date that can vary by implementation (e.g. defaulting to 8/1, meaning an assessment administered on or after 8/1/2021 and before 8/1/2022 is assigned school year 2022). Some implementations may also configure a school year crosswalk to override the ODS-sourced or inferred year for specific assessments or date ranges."
+        description: "{{ doc('school_year_assessment') }}"
       - name: assessment_identifier
       - name: namespace
       - name: objective_assessment_description

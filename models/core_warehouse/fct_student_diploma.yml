@@ -36,7 +36,7 @@ models:
       - name: k_lea
       - name: k_school
       - name: school_year
-        description: School year specified by Spring year, e.g. the 2021-2022 year would be 2022. Unlike most other tables, `school_year` here is sourced from the `student_academic_records` Ed-Fi endpoint, where it is a required field provided directly by the source system rather than inferred from a single-year ODS.
+        description: "{{ doc('school_year_academic_record') }}"
       - name: diploma_type
         description: The type of diploma/credential that is awarded to a student in recognition of his/her completion of the curricular requirements.
       - name: diploma_award_date

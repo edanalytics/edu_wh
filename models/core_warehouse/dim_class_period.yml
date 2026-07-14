@@ -11,4 +11,4 @@ models:
 
     columns:
       - name: school_year
-        description: School year specified by Spring year, e.g. the 2021-2022 year would be 2022. The school year is populated based on the year associated with the source ODS, which is assumed to contain data for only that school year.
+        description: "{{ doc('school_year_ods_pull') }}"
