@@ -1,0 +1,41 @@
+version: 2
+
+models:
+  - name: dim_survey
+    description: "Survey definitions and metadata"
+    config:
+      tags: ['survey', 'core']
+      enabled: "{{ var('src:domain:survey:enabled', True) }}"
+    columns:
+      - name: k_survey
+        description: "Surrogate key for survey"
+        tests:
+          - unique
+          - not_null
+
+      - name: survey_id
+        description: "Natural key identifier for the survey"
+
+      - name: survey_title
+        description: "Title of the survey"
+
+      - name: survey_category
+        description: "Category or type of survey"
+
+      - name: school_year
+        description: "School year when the survey was administered"
+
+      - name: ed_org_id
+        description: "Education organization identifier"
+
+      - name: ed_org_type
+        description: "Type of education organization (e.g., SEA, LEA, School)"
+
+      - name: school_id
+        description: "School identifier if survey is school-specific"
+
+      - name: session_name
+        description: "Session name when survey was administered"
+
+      - name: number_administered
+        description: "Number of times the survey was administered"

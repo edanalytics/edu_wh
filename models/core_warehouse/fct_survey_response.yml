@@ -1,0 +1,61 @@
+version: 2
+
+models:
+  - name: fct_survey_response
+    description: "Fact table for survey responses. Grain: 1 submitted survey response"
+    config:
+      tags: ['survey', 'core']
+      enabled: "{{ var('src:domain:survey:enabled', True) }}"
+    columns:
+      - name: k_survey_response
+        description: "Surrogate key for survey response"
+        tests:
+          - unique
+          - not_null
+
+      - name: k_survey
+        description: "Foreign key to dim_survey"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_survey')
+              field: k_survey
+
+      - name: k_student
+        description: "Foreign key to dim_student (nullable)"
+
+      - name: k_staff
+        description: "Foreign key to dim_staff (nullable)"
+
+      - name: k_parent
+        description: "Foreign key to dim_parent (nullable)"
+
+      - name: survey_response_id
+        description: "Natural key identifier for the survey response"
+
+      - name: respondent_type
+        description: "Type of respondent"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['student', 'staff', 'contact', 'anonymous']
+
+      - name: electronic_mail_address
+        description: "Email address of respondent"
+
+      - name: full_name
+        description: "Full name of respondent"
+
+      - name: location
+        description: "Location where survey was taken"
+
+      - name: response_date
+        description: "Date survey was submitted"
+
+      - name: completion_time_seconds
+        description: "Time in seconds to complete the survey"
+
+      - name: response_count
+        description: "Measure field, always 1 for counting responses"
+        tests:
+          - not_null
