@@ -93,6 +93,12 @@ formatted as (
                         )
                         -- only apply to cases where calendar end is in the current year (exclude from active if calendar ended in Fall or previous year, or tenant only has data from last year)
                         AND year(bld_school_calendar_windows.last_school_day) = year(current_date())
+
+                        -- only apply year-end extension until new year of data loads
+                        AND
+                        -- is highest school year observed by tenant. 
+                        stg_stu_school.school_year = max(stg_stu_school.school_year)
+                            over(partition by stg_stu_school.tenant_code)
                     )
                 {% endif %}
             ),
