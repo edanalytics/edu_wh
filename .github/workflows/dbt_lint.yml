@@ -1,4 +1,4 @@
-name: dbt_lint
+name: sql_dialect_linter
 
 on:
   pull_request:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   lint:
-    name: dbt_lint (${{ matrix.dialect }})
+    name: sql_dialect_linter (${{ matrix.dialect }})
     runs-on: ubuntu-latest
     timeout-minutes: 20
     strategy:
@@ -40,4 +40,4 @@ jobs:
         run: dbt deps
 
       - name: Compile and lint (${{ matrix.dialect }})
-        run: bash .github/scripts/dbt_lint.sh ${{ matrix.dialect }}
+        run: bash .github/scripts/sql_dialect_linter.sh ${{ matrix.dialect }}
