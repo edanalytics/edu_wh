@@ -167,13 +167,15 @@ done
 #
 # tpdm_warehouse and finance_warehouse (and their edu_edfi_source staging
 # models) are disabled by default. turn them on so they get linted too.
-needs_real_warehouse=()
+models_needing_warehouse=()
+tests_needing_warehouse=()
 compile_log=$(mktemp)
 trap 'rm -f "$compile_log"' EXIT
 
 while true; do
   exclude_flags=()
-  [[ ${#needs_real_warehouse[@]} -gt 0 ]] && exclude_flags=(--exclude "${needs_real_warehouse[@]}")
+  all_excluded=("${models_needing_warehouse[@]}" "${tests_needing_warehouse[@]}")
+  [[ ${#all_excluded[@]} -gt 0 ]] && exclude_flags=(--exclude "${all_excluded[@]}")
 
   dbt compile --no-introspect --no-populate-cache \
     --select package:edu_wh \
@@ -191,49 +193,81 @@ while true; do
     > "$compile_log" 2>&1 && break
 
   # dbt's error looks like "Runtime Error in model some_model_name (path/to/file.sql)"
+  # or "...in test some_test_name (...)". Pull out both the node type and its name.
   culprit=""
+  culprit_type=""
   grep -q "connection never acquired for thread" "$compile_log" \
+    && culprit_type=$(grep -oE "Runtime Error in (model|test)" "$compile_log" | head -1 | awk '{print $NF}') \
     && culprit=$(grep -oE "Runtime Error in (model|test) [a-zA-Z0-9_]+" "$compile_log" | head -1 | awk '{print $NF}')
 
-  if [[ -z "$culprit" ]] || [[ " ${needs_real_warehouse[*]} " == *" $culprit "* ]]; then
+  if [[ -z "$culprit" ]] || [[ " ${all_excluded[*]} " == *" $culprit "* ]]; then
     echo "❌ dbt compile failed:"
     cat "$compile_log"
     exit 1
   fi
 
   echo "⚠️ $culprit needs a live warehouse connection to compile, adding $culprit to the exclude list and recompiling"
-  needs_real_warehouse+=("$culprit")
-done
-
-# Lint each compiled model on its own so one failure doesn't stop the rest.
-# Passing models print one line; failing ones get a collapsible group with
-# the full sqlfluff output inside.
-mapfile -d '' -t compiled_files < <(find "$target_path/compiled" -path "*/edu_wh/models/*" -name "*.sql" -print0)
-total=${#compiled_files[@]}
-pass=0
-fail=0
-failed=()
-for f in "${compiled_files[@]}"; do
-  name=$(basename "$f")
-  path=${f#*/edu_wh/}
-  if out=$(sqlfluff lint --config .sqlfluff --templater raw --dialect "$dialect" "$f" 2>&1); then
-    pass=$((pass + 1))
-    echo "Linting $path ✅"
+  if [[ "$culprit_type" == "test" ]]; then
+    tests_needing_warehouse+=("$culprit")
   else
-    fail=$((fail + 1))
-    failed+=("${name%.sql}")
-    printf '::group::Linting %s ❌\n%s\n::endgroup::\n' "$path" "$out"
+    models_needing_warehouse+=("$culprit")
   fi
 done
 
+# Lint each compiled model/test on its own so one failure doesn't stop the
+# rest. Passing ones print one line; failing ones get a collapsible group
+# with the full sqlfluff output inside. Generic tests (auto-generated from
+# schema .yml files, like unique/not_null) compile into a "<node>.yml/"
+# subfolder — split those out from real models so the counts mean what they say.
+mapfile -d '' -t compiled_files < <(find "$target_path/compiled" -path "*/edu_wh/models/*" -name "*.sql" -print0)
+model_total=0; model_pass=0; model_fail=0; model_failed=()
+test_total=0; test_pass=0; test_fail=0; test_failed=()
+for f in "${compiled_files[@]}"; do
+  name=$(basename "$f")
+  path=${f#*/edu_wh/}
+  is_test=false
+  [[ "$path" == *.yml/* ]] && is_test=true
+
+  if out=$(sqlfluff lint --config .sqlfluff --templater raw --dialect "$dialect" "$f" 2>&1); then
+    echo "Linting $path ✅"
+    if $is_test; then test_pass=$((test_pass + 1)); else model_pass=$((model_pass + 1)); fi
+  else
+    printf '::group::Linting %s ❌\n%s\n::endgroup::\n' "$path" "$out"
+    if $is_test; then
+      test_fail=$((test_fail + 1)); test_failed+=("${name%.sql}")
+    else
+      model_fail=$((model_fail + 1)); model_failed+=("${name%.sql}")
+    fi
+  fi
+  if $is_test; then test_total=$((test_total + 1)); else model_total=$((model_total + 1)); fi
+done
+
 echo ""
-printf '✅ %d/%d models compatible with %s\n' "$pass" "$total" "$dialect"
-printf '⚠️ %d models cannot be compiled here and requires live warehouse, lint these models locally instead:\n' "${#needs_real_warehouse[@]}"
-printf '    - %s\n' "${needs_real_warehouse[@]}"
-if [[ ${#failed[@]} -eq 0 ]]; then
-  exit 0
-else
-  printf '❌ %d models are NOT compatible with %s:\n' "${#failed[@]}" "$dialect"
-  printf '    - %s\n' "${failed[@]}"
-  exit 1
+model_known=$((model_total + ${#models_needing_warehouse[@]}))
+printf '✅ %d/%d models compatible with %s\n' "$model_pass" "$model_known" "$dialect"
+if [[ ${#models_needing_warehouse[@]} -gt 0 ]]; then
+  printf '⚠️ %d of those %d cannot be compiled here and requires live warehouse, lint these models locally instead:\n' "${#models_needing_warehouse[@]}" "$model_known"
+  printf '    - %s\n' "${models_needing_warehouse[@]}"
 fi
+
+echo ""
+test_known=$((test_total + ${#tests_needing_warehouse[@]}))
+printf '✅ %d/%d tests compatible with %s\n' "$test_pass" "$test_known" "$dialect"
+if [[ ${#tests_needing_warehouse[@]} -gt 0 ]]; then
+  printf '⚠️ %d of those %d cannot be compiled here and requires live warehouse, lint these tests locally instead:\n' "${#tests_needing_warehouse[@]}" "$test_known"
+  printf '    - %s\n' "${tests_needing_warehouse[@]}"
+fi
+
+if [[ ${#model_failed[@]} -eq 0 && ${#test_failed[@]} -eq 0 ]]; then
+  exit 0
+fi
+echo ""
+if [[ ${#model_failed[@]} -gt 0 ]]; then
+  printf '❌ %d models are NOT compatible with %s:\n' "${#model_failed[@]}" "$dialect"
+  printf '    - %s\n' "${model_failed[@]}"
+fi
+if [[ ${#test_failed[@]} -gt 0 ]]; then
+  printf '❌ %d tests are NOT compatible with %s:\n' "${#test_failed[@]}" "$dialect"
+  printf '    - %s\n' "${test_failed[@]}"
+fi
+exit 1
