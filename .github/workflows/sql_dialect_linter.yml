@@ -15,11 +15,7 @@ jobs:
       # Run both dialects even if one fails, so we get both results.
       fail-fast: false
       matrix:
-        include:
-          - dialect: databricks
-            adapter: "dbt-databricks~=1.10.0"
-          - dialect: snowflake
-            adapter: "dbt-snowflake~=1.10.0"
+        dialect: [databricks, snowflake]
     steps:
       - uses: actions/checkout@v4
 
@@ -27,12 +23,11 @@ jobs:
         with:
           python-version: "3.11"
 
-      # Pin versions so this keeps working the same way over time. Update
-      # them on purpose, not by accident. dbt-core is pinned explicitly
-      # because edu_wh's dbt_project.yml requires dbt >=1.10.5,<2.0.0 —
-      # an older core makes dbt refuse to parse the project at all.
+      # Everything (sqlfluff, dbt-core, both adapters) is pinned in this one
+      # file so CI always matches local dev — an older sqlfluff previously
+      # produced parsing failures that this pinned version doesn't have.
       - name: Install dbt + sqlfluff
-        run: pip install "dbt-core~=1.10.5" "${{ matrix.adapter }}" "sqlfluff~=3.1.0"
+        run: pip install -r .github/workflows/requirements/sql-linter.txt
 
       # The lint script edits files inside dbt_packages/edu_edfi_source,
       # so those need to be downloaded first.
