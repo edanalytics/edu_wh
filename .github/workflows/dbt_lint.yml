@@ -17,9 +17,9 @@ jobs:
       matrix:
         include:
           - dialect: databricks
-            adapter: "dbt-databricks~=1.8.0"
+            adapter: "dbt-databricks~=1.10.0"
           - dialect: snowflake
-            adapter: "dbt-snowflake~=1.8.0"
+            adapter: "dbt-snowflake~=1.10.0"
     steps:
       - uses: actions/checkout@v4
 
@@ -28,9 +28,11 @@ jobs:
           python-version: "3.11"
 
       # Pin versions so this keeps working the same way over time. Update
-      # them on purpose, not by accident.
+      # them on purpose, not by accident. dbt-core is pinned explicitly
+      # because edu_wh's dbt_project.yml requires dbt >=1.10.5,<2.0.0 —
+      # an older core makes dbt refuse to parse the project at all.
       - name: Install dbt + sqlfluff
-        run: pip install "${{ matrix.adapter }}" "sqlfluff~=3.1.0"
+        run: pip install "dbt-core~=1.10.5" "${{ matrix.adapter }}" "sqlfluff~=3.1.0"
 
       # The lint script edits files inside dbt_packages/edu_edfi_source,
       # so those need to be downloaded first.
