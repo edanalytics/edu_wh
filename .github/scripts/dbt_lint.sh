@@ -66,9 +66,14 @@ fi
 #   get_column_values                          -> select distinct values
 #   get_intervals_between                      -> a real date-diff query
 #   is_incremental                             -> checks if the table exists
+#   union_relations                            -> also lists a table's columns
 cat > macros/_ci_lint_stub.sql << EOF
 {% macro ${dialect}__get_filtered_columns_in_relation(from, except=[]) %}
   {{ return([]) }}
+{% endmacro %}
+
+{% macro ${dialect}__union_relations(relations, column_override=none, include=[], exclude=[], source_column_name='_dbt_source_relation', where=none) %}
+  {{ return('') }}
 {% endmacro %}
 
 {% macro ${dialect}__get_column_values(table, column, order_by='count(*) desc', max_records=none, default=none, where=none) %}
@@ -144,24 +149,54 @@ for missing in $(comm -23 /tmp/_ci_all_refs.txt /tmp/_ci_defined_nodes.txt); do
   printf 'placeholder\nx\n' > "seeds/${missing}.csv"
 done
 
-# bld_ef3__student_programs and bld_ef3__student_indicators run a live query
-# and use its actual results to build columns. bld_ef3__student_assessments_long_results
-# asks the warehouse directly for a table's column names. All three need a
-# real database connection, so skip them. Tell dbt not to try talking to a
-# real database while compiling.
+# These models talk to the warehouse directly for real data or column info,
+# so they can't compile against a fake connection. Skip them here and lint
+# them locally instead, where a real database connection is available.
+needs_real_warehouse=(bld_ef3__student_programs bld_ef3__student_indicators bld_ef3__student_assessments_long_results cfg_assessment_scores)
+echo "[dbt-lint] ⚠ can't lint here, needs a real warehouse, recommend to lint locally instead for these models: ${needs_real_warehouse[*]}"
+
+# Tell dbt not to try talking to a real database while compiling.
+#
+# fct_student_program_service also needs an "extensions" for each of
+# these 7 program names, or it errors out asking for a setting that's
+# normally supplied by implementation.
 dbt compile --no-introspect --no-populate-cache \
   --select package:edu_wh \
-  --exclude bld_ef3__student_programs bld_ef3__student_indicators bld_ef3__student_assessments_long_results \
+  --exclude "${needs_real_warehouse[@]}" \
+  --vars '{"extensions": {
+    "stg_ef3__stu_spec_ed__program_services": {},
+    "stg_ef3__stu_lang_instr__program_services": {},
+    "stg_ef3__stu_homeless__program_services": {},
+    "stg_ef3__stu_title_i_part_a__program_services": {},
+    "stg_ef3__stu_cte__program_services": {},
+    "stg_ef3__stu_migrant_edu__program_services": {},
+    "stg_ef3__stu_school_food_service__program_services": {}
+  }}' \
   --profiles-dir "$profiles_dir" --target dry_run --target-path "$target_path"
 
 # Lint each compiled model on its own so one failure doesn't stop the rest.
+total=0
+pass=0
 fail=0
+failed=()
 while IFS= read -r -d '' f; do
+  total=$((total + 1))
   echo "::group::$f"
-  if ! sqlfluff lint --config .sqlfluff --templater raw --dialect "$dialect" "$f"; then
-    fail=1
+  if sqlfluff lint --config .sqlfluff --templater raw --dialect "$dialect" "$f"; then
+    pass=$((pass + 1))
+  else
+    fail=$((fail + 1))
+    failed+=("$(basename "$f" .sql)")
   fi
   echo "::endgroup::"
 done < <(find "$target_path/compiled" -path "*/edu_wh/models/*" -name "*.sql" -print0)
 
-exit $fail
+printf '[dbt-lint] finished · ✔ %d  ✘ %d  (of %d)\n' "$pass" "$fail" "$total"
+echo "[dbt-lint] ⚠ not checked here, needs a real warehouse — lint locally instead: ${needs_real_warehouse[*]}"
+if [[ ${#failed[@]} -eq 0 ]]; then
+  echo "[dbt-lint] ✔ compatible with $dialect"
+  exit 0
+else
+  echo "[dbt-lint] ✘ NOT compatible with $dialect — failed: ${failed[*]}"
+  exit 1
+fi
