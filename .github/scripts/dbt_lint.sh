@@ -153,17 +153,19 @@ done
 # so they can't compile against a fake connection. Skip them here and lint
 # them locally instead, where a real database connection is available.
 needs_real_warehouse=(bld_ef3__student_programs bld_ef3__student_indicators bld_ef3__student_assessments_long_results cfg_assessment_scores)
-echo "[dbt-lint] ⚠ can't lint here, needs a real warehouse, recommend to lint locally instead for these models: ${needs_real_warehouse[*]}"
 
 # Tell dbt not to try talking to a real database while compiling.
 #
 # fct_student_program_service also needs an "extensions" for each of
 # these 7 program names, or it errors out asking for a setting that's
 # normally supplied by implementation.
+#
+# tpdm_warehouse (and edu_edfi_source's tpdm staging models) are disabled by
+# default — turn them on so they get linted too.
 dbt compile --no-introspect --no-populate-cache \
   --select package:edu_wh \
   --exclude "${needs_real_warehouse[@]}" \
-  --vars '{"extensions": {
+  --vars '{"edu:tpdm:enabled": true, "src:domain:tpdm:enabled": true, "src:domain:tpdmcommunity:enabled": true, "extensions": {
     "stg_ef3__stu_spec_ed__program_services": {},
     "stg_ef3__stu_lang_instr__program_services": {},
     "stg_ef3__stu_homeless__program_services": {},
@@ -175,28 +177,38 @@ dbt compile --no-introspect --no-populate-cache \
   --profiles-dir "$profiles_dir" --target dry_run --target-path "$target_path"
 
 # Lint each compiled model on its own so one failure doesn't stop the rest.
-total=0
+# Show a single updating counter while linting; failures get their own
+# collapsible group with the full sqlfluff output inside.
+mapfile -d '' -t compiled_files < <(find "$target_path/compiled" -path "*/edu_wh/models/*" -name "*.sql" -print0)
+total=${#compiled_files[@]}
 pass=0
 fail=0
 failed=()
-while IFS= read -r -d '' f; do
-  total=$((total + 1))
-  echo "::group::$f"
-  if sqlfluff lint --config .sqlfluff --templater raw --dialect "$dialect" "$f"; then
+idx=0
+for f in "${compiled_files[@]}"; do
+  idx=$((idx + 1))
+  printf '\rlinting %d/%d models' "$idx" "$total"
+  name=$(basename "$f")
+  if out=$(sqlfluff lint --config .sqlfluff --templater raw --dialect "$dialect" "$f" 2>&1); then
     pass=$((pass + 1))
   else
     fail=$((fail + 1))
-    failed+=("$(basename "$f" .sql)")
+    failed+=("${name%.sql}")
+    printf '\n::group::❌ %s\n%s\n::endgroup::\n' "$name" "$out"
   fi
-  echo "::endgroup::"
-done < <(find "$target_path/compiled" -path "*/edu_wh/models/*" -name "*.sql" -print0)
+done
+printf '\n'
 
-printf '[dbt-lint] finished · ✔ %d  ✘ %d  (of %d)\n' "$pass" "$fail" "$total"
-echo "[dbt-lint] ⚠ not checked here, needs a real warehouse — lint locally instead: ${needs_real_warehouse[*]}"
+echo ""
+printf '✅ %d/%d models compatible with %s\n' "$pass" "$total" "$dialect"
+printf '⚠️ %d models cannot be compiled here and requires live warehouse, lint these models locally instead:\n' "${#needs_real_warehouse[@]}"
+needs_real_warehouse_list=$(printf ', %s' "${needs_real_warehouse[@]}")
+echo "    - ${needs_real_warehouse_list:2}"
 if [[ ${#failed[@]} -eq 0 ]]; then
-  echo "[dbt-lint] ✔ compatible with $dialect"
   exit 0
 else
-  echo "[dbt-lint] ✘ NOT compatible with $dialect — failed: ${failed[*]}"
+  printf '❌ %d models are NOT compatible with %s:\n' "${#failed[@]}" "$dialect"
+  failed_list=$(printf ', %s' "${failed[@]}")
+  echo "    - ${failed_list:2}"
   exit 1
 fi
