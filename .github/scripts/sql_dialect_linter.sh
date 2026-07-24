@@ -156,6 +156,9 @@ done
 # fct_student_program_service also needs an "extensions" answer for each of
 # these 7 program names, or it errors out asking for a setting that's
 # normally supplied by implementation.
+#
+# tpdm_warehouse and finance_warehouse (and their edu_edfi_source staging
+# models) are disabled by default. turn them on so they get linted too.
 needs_real_warehouse=()
 compile_log=$(mktemp)
 trap 'rm -f "$compile_log"' EXIT
@@ -167,7 +170,7 @@ while true; do
   dbt compile --no-introspect --no-populate-cache \
     --select package:edu_wh \
     "${exclude_flags[@]}" \
-    --vars '{"edu:tpdm:enabled": true, "src:domain:tpdm:enabled": true, "src:domain:tpdmcommunity:enabled": true, "extensions": {
+    --vars '{"edu:tpdm:enabled": true, "src:domain:tpdm:enabled": true, "src:domain:tpdmcommunity:enabled": true, "edu:finance:enabled": true, "src:domain:finance:enabled": true, "extensions": {
       "stg_ef3__stu_spec_ed__program_services": {},
       "stg_ef3__stu_lang_instr__program_services": {},
       "stg_ef3__stu_homeless__program_services": {},
