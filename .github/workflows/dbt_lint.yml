@@ -1,0 +1,41 @@
+name: dbt_lint
+
+on:
+  pull_request:
+  # Adds a manual "Run workflow" button in the Actions tab. GitHub only
+  # shows that button after this file is merged to main.
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: dbt_lint (${{ matrix.dialect }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      # Run both dialects even if one fails, so we get both results.
+      fail-fast: false
+      matrix:
+        include:
+          - dialect: databricks
+            adapter: "dbt-databricks~=1.8.0"
+          - dialect: snowflake
+            adapter: "dbt-snowflake~=1.8.0"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # Pin versions so this keeps working the same way over time. Update
+      # them on purpose, not by accident.
+      - name: Install dbt + sqlfluff
+        run: pip install "${{ matrix.adapter }}" "sqlfluff~=3.1.0"
+
+      # The lint script edits files inside dbt_packages/edu_edfi_source,
+      # so those need to be downloaded first.
+      - name: dbt deps
+        run: dbt deps
+
+      - name: Compile and lint (${{ matrix.dialect }})
+        run: bash .github/scripts/dbt_lint.sh ${{ matrix.dialect }}
