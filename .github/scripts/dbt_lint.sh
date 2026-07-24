@@ -145,11 +145,13 @@ for missing in $(comm -23 /tmp/_ci_all_refs.txt /tmp/_ci_defined_nodes.txt); do
 done
 
 # bld_ef3__student_programs and bld_ef3__student_indicators run a live query
-# and use its actual results to build columns, so they need a real database
-# connection. Tell dbt not to try talking to a real database while compiling.
+# and use its actual results to build columns. bld_ef3__student_assessments_long_results
+# asks the warehouse directly for a table's column names. All three need a
+# real database connection, so skip them. Tell dbt not to try talking to a
+# real database while compiling.
 dbt compile --no-introspect --no-populate-cache \
   --select package:edu_wh \
-  --exclude bld_ef3__student_programs bld_ef3__student_indicators \
+  --exclude bld_ef3__student_programs bld_ef3__student_indicators bld_ef3__student_assessments_long_results \
   --profiles-dir "$profiles_dir" --target dry_run --target-path "$target_path"
 
 # Lint each compiled model on its own so one failure doesn't stop the rest.
