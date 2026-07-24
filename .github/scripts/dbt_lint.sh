@@ -204,13 +204,14 @@ fail=0
 failed=()
 for f in "${compiled_files[@]}"; do
   name=$(basename "$f")
+  path=${f#*/edu_wh/}
   if out=$(sqlfluff lint --config .sqlfluff --templater raw --dialect "$dialect" "$f" 2>&1); then
     pass=$((pass + 1))
-    echo "Linting $name ✅"
+    echo "Linting $path ✅"
   else
     fail=$((fail + 1))
     failed+=("${name%.sql}")
-    printf '::group::Linting %s ❌\n%s\n::endgroup::\n' "$name" "$out"
+    printf '::group::Linting %s ❌\n%s\n::endgroup::\n' "$path" "$out"
   fi
 done
 
