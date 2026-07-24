@@ -1,0 +1,2 @@
+slack-sdk==3.34.0
+markdown2slack==0.2.0

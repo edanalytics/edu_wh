@@ -3,6 +3,19 @@
 ## Under the hood
 ## Fixes
 
+# edu_wh v0.6.4
+## New features
+- Add finance warehouse models: `dim_chart_of_account`, `dim_local_account`, `fct_local_actual_snapshots`, `fct_local_budget_snapshots`, by default in schema `finance_warehouse` to isolate finance models from core warehouse
+- Add `fct_student_program_participation_status`, a new fact table that unions participation status records from all enabled program types, at the grain of `k_student_program, participation_status, status_begin_date`.
+- Add `k_student_program` surrogate key to all program fact tables and `__program_services` build models. The primary key on all program fact tables changed from `(k_student, k_program, program_enroll_begin_date)` to `k_student_program`.
+- Add generic program services (`stg_ef3__stu_program__program_services`) as a source in `fct_student_program_service`.
+- Add `cip_code` to `fct_student_program_service` when `src:program:cte:enabled` is true.
+- Add var `edu:enroll:first_day_exit_date_inclusive` to allow specific logic for inclusivity of the first day of school in exit date window logic.
+## Under the hood
+- Change the source of `k_lea`, `k_school`, and `school_year` on all program fact tables from `dim_program` to the staging enrollment record. These columns now reflect the ed org the student is enrolled in at enrollment time, not the ed org that owns the program definition.
+## Fixes
+- Fix null `course_title` values in `fct_course_transcripts` by sourcing the title from `dim_course`, where the field is required rather than optional.
+
 # edu_wh v0.6.3
 ## New features
 - Update `is_active_enrollment` logic in `fct_student_school_association` to allow for extending active periods into Summer, if configured

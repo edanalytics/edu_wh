@@ -138,8 +138,10 @@ formatted as (
         on stg_stu_school.entry_grade_level = xwalk_grade_levels.grade_level
     where true
    {% if var('edu:enroll:exclude_exit_before_first_day', True) -%}
+      {#- allow implementations with exclusive exit dates to still keep first-day exits -#}
+      {%- set first_day_inclusive = var('edu:enroll:first_day_exit_date_inclusive', var('edu:enroll:exit_withdraw_date_inclusive', True)) -%}
       -- exclude students who exited before the first school day
-      and ({{ date_within_end_date('bld_school_calendar_windows.first_school_day', 'exit_withdraw_date', var('edu:enroll:exit_withdraw_date_inclusive', True)) }}
+      and ({{ date_within_end_date('bld_school_calendar_windows.first_school_day', 'exit_withdraw_date', first_day_inclusive) }}
           or bld_school_calendar_windows.first_school_day is null
           )
     {% endif %}
