@@ -149,66 +149,79 @@ for missing in $(comm -23 /tmp/_ci_all_refs.txt /tmp/_ci_defined_nodes.txt); do
   printf 'placeholder\nx\n' > "seeds/${missing}.csv"
 done
 
-# These models talk to the warehouse directly for real data or column info,
-# so they can't compile against a fake connection. Skip them here and lint
-# them locally instead, where a real database connection is available.
-needs_real_warehouse=(bld_ef3__student_programs bld_ef3__student_indicators bld_ef3__student_assessments_long_results cfg_assessment_scores)
-
-# Tell dbt not to try talking to a real database while compiling.
+# Some models talk to the warehouse directly for real data or column info,
+# so they can't compile against a fake connection. Any OTHER kind of failure (a real bug, a missing
+# config) stops the script.
 #
-# fct_student_program_service also needs an "extensions" for each of
+# fct_student_program_service also needs an "extensions" answer for each of
 # these 7 program names, or it errors out asking for a setting that's
 # normally supplied by implementation.
-#
-# tpdm_warehouse (and edu_edfi_source's tpdm staging models) are disabled by
-# default — turn them on so they get linted too.
-dbt compile --no-introspect --no-populate-cache \
-  --select package:edu_wh \
-  --exclude "${needs_real_warehouse[@]}" \
-  --vars '{"edu:tpdm:enabled": true, "src:domain:tpdm:enabled": true, "src:domain:tpdmcommunity:enabled": true, "extensions": {
-    "stg_ef3__stu_spec_ed__program_services": {},
-    "stg_ef3__stu_lang_instr__program_services": {},
-    "stg_ef3__stu_homeless__program_services": {},
-    "stg_ef3__stu_title_i_part_a__program_services": {},
-    "stg_ef3__stu_cte__program_services": {},
-    "stg_ef3__stu_migrant_edu__program_services": {},
-    "stg_ef3__stu_school_food_service__program_services": {}
-  }}' \
-  --profiles-dir "$profiles_dir" --target dry_run --target-path "$target_path"
+needs_real_warehouse=()
+compile_log=$(mktemp)
+trap 'rm -f "$compile_log"' EXIT
+
+while true; do
+  exclude_flags=()
+  [[ ${#needs_real_warehouse[@]} -gt 0 ]] && exclude_flags=(--exclude "${needs_real_warehouse[@]}")
+
+  dbt compile --no-introspect --no-populate-cache \
+    --select package:edu_wh \
+    "${exclude_flags[@]}" \
+    --vars '{"edu:tpdm:enabled": true, "src:domain:tpdm:enabled": true, "src:domain:tpdmcommunity:enabled": true, "extensions": {
+      "stg_ef3__stu_spec_ed__program_services": {},
+      "stg_ef3__stu_lang_instr__program_services": {},
+      "stg_ef3__stu_homeless__program_services": {},
+      "stg_ef3__stu_title_i_part_a__program_services": {},
+      "stg_ef3__stu_cte__program_services": {},
+      "stg_ef3__stu_migrant_edu__program_services": {},
+      "stg_ef3__stu_school_food_service__program_services": {}
+    }}' \
+    --profiles-dir "$profiles_dir" --target dry_run --target-path "$target_path" \
+    > "$compile_log" 2>&1 && break
+
+  # dbt's error looks like "Runtime Error in model some_model_name (path/to/file.sql)"
+  culprit=""
+  grep -q "connection never acquired for thread" "$compile_log" \
+    && culprit=$(grep -oE "Runtime Error in (model|test) [a-zA-Z0-9_]+" "$compile_log" | head -1 | awk '{print $NF}')
+
+  if [[ -z "$culprit" ]] || [[ " ${needs_real_warehouse[*]} " == *" $culprit "* ]]; then
+    echo "❌ dbt compile failed:"
+    cat "$compile_log"
+    exit 1
+  fi
+
+  echo "⚠️ $culprit needs a live warehouse connection to compile, adding $culprit to the exclude list and recompiling"
+  needs_real_warehouse+=("$culprit")
+done
 
 # Lint each compiled model on its own so one failure doesn't stop the rest.
-# Show a single updating counter while linting; failures get their own
-# collapsible group with the full sqlfluff output inside.
+# Passing models print one line; failing ones get a collapsible group with
+# the full sqlfluff output inside.
 mapfile -d '' -t compiled_files < <(find "$target_path/compiled" -path "*/edu_wh/models/*" -name "*.sql" -print0)
 total=${#compiled_files[@]}
 pass=0
 fail=0
 failed=()
-idx=0
 for f in "${compiled_files[@]}"; do
-  idx=$((idx + 1))
-  printf '\rlinting %d/%d models' "$idx" "$total"
   name=$(basename "$f")
   if out=$(sqlfluff lint --config .sqlfluff --templater raw --dialect "$dialect" "$f" 2>&1); then
     pass=$((pass + 1))
+    echo "Linting $name ✅"
   else
     fail=$((fail + 1))
     failed+=("${name%.sql}")
-    printf '\n::group::❌ %s\n%s\n::endgroup::\n' "$name" "$out"
+    printf '::group::Linting %s ❌\n%s\n::endgroup::\n' "$name" "$out"
   fi
 done
-printf '\n'
 
 echo ""
 printf '✅ %d/%d models compatible with %s\n' "$pass" "$total" "$dialect"
 printf '⚠️ %d models cannot be compiled here and requires live warehouse, lint these models locally instead:\n' "${#needs_real_warehouse[@]}"
-needs_real_warehouse_list=$(printf ', %s' "${needs_real_warehouse[@]}")
-echo "    - ${needs_real_warehouse_list:2}"
+printf '    - %s\n' "${needs_real_warehouse[@]}"
 if [[ ${#failed[@]} -eq 0 ]]; then
   exit 0
 else
   printf '❌ %d models are NOT compatible with %s:\n' "${#failed[@]}" "$dialect"
-  failed_list=$(printf ', %s' "${failed[@]}")
-  echo "    - ${failed_list:2}"
+  printf '    - %s\n' "${failed[@]}"
   exit 1
 fi
