@@ -7,8 +7,6 @@
         "alter table {{ this }} add primary key (k_student_disability)",
         "alter table {{ this }} add constraint fk_{{ this.name }}_student foreign key (k_student) references {{ ref('dim_student') }}",
         "alter table {{ this }} add constraint fk_{{ this.name }}_program foreign key (k_program) references {{ ref('dim_program') }}",
-        "alter table {{ this }} add constraint fk_{{ this.name }}_lea foreign key (k_lea) references {{ ref('dim_lea') }}",
-        "alter table {{ this }} add constraint fk_{{ this.name }}_school foreign key (k_school) references {{ ref('dim_school') }}",
     ]
   )
 }}
@@ -31,12 +29,11 @@ formatted as (
         student_disabilities.k_school,
         student_disabilities.k_program,
         student_disabilities.k_student_program,
+        student_disabilities.tenant_code,
+        student_disabilities.school_year,
         student_disabilities.is_program,
         student_disabilities.program_enroll_begin_date,
         student_disabilities.program_enroll_end_date,
-        student_disabilities.tenant_code,
-        student_disabilities.api_year,
-        student_disabilities.school_year,
         student_disabilities.disability_type,
         student_disabilities.disability_source_type,
         student_disabilities.disability_diagnosis,
@@ -49,7 +46,7 @@ formatted as (
             add_trailing_comma=false
         ) }}
     from student_disabilities
-    inner join dim_student
+    join dim_student
         on dim_student.k_student = student_disabilities.k_student
     left join student_disability_designations
         on student_disabilities.k_student_disability = student_disability_designations.k_student_disability

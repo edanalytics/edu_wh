@@ -48,21 +48,58 @@ models:
     config:
       tags: ['special_ed']
 
+    constraints:
+      - type: primary_key
+        columns: [k_student_disability]
+      - type: foreign_key
+        name: fk__fct_student_disability__k_student
+        columns: [k_student]
+        to: ref('dim_student')
+        to_columns: [k_student]
+      - type: foreign_key
+        name: fk__fct_student_disability__k_program
+        columns: [k_program]
+        to: ref('dim_program')
+        to_columns: [k_program]
+
     columns:
       - name: k_student_disability
+        description: >
+          Surrogate primary key. Generated from `tenant_code`, `school_year`, `k_student`, `k_lea`,
+          `k_school`, `k_program`, `program_enroll_begin_date`, and `disability_type`.
       - name: k_student
+        description: Unique identifier for the student-year. Foreign key reference to [dim_student](#!/model/model.edu_wh.dim_student).
       - name: k_student_xyear
+        description: Defining key for the student, which is consistent across years.
       - name: k_lea
+        description: Unique key identifying the Local Education Agency (LEA) associated with this disability record.
       - name: k_school
+        description: Unique key identifying the school associated with this disability record.
       - name: k_program
+        description: >
+          Unique identifier for the program associated with this disability. Foreign key reference to
+          [dim_program](#!/model/model.edu_wh.dim_program). Null for ed org disability rows.
       - name: k_student_program
-      - name: is_program
-      - name: program_enroll_begin_date
-      - name: program_enroll_end_date
+        description: >
+          Surrogate key for the student's program enrollment. Use this to join to
+          `fct_student_{program_type}_program_association` tables. Null for ed org disability rows.
       - name: tenant_code
-      - name: api_year
+        description: The tenant associated with the record.
       - name: school_year
+        description: >
+          School year specified by Spring year.
+          e.g. the 2021-2022 year would be 2022.
+      - name: is_program
+        description: Whether the disability is sourced from a program association (true) or an ed org association (false).
+      - name: program_enroll_begin_date
+        description: The date the student began enrollment in the program associated with this disability. Null for ed org disability rows.
+      - name: program_enroll_end_date
+        description: The date the student's enrollment in the associated program ended, if applicable. Null for ed org disability rows.
       - name: disability_type
+        description: A disability category that describes the student's impairment (e.g. Autism, Intellectual Disability).
       - name: disability_source_type
+        description: The source that provided the disability determination (e.g. Medical, Self).
       - name: disability_diagnosis
+        description: A more specific description of the disability diagnosis, if provided.
       - name: order_of_disability
+        description: The ordinal ranking when a student has multiple disabilities listed, where 1 indicates the primary disability.
