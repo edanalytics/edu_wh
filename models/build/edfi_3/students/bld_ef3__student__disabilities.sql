@@ -29,7 +29,6 @@ formatted as (
             'disability_type',
         ]) }} as k_student_disability,
         tenant_code,
-        api_year,
         school_year,
         k_student,
         k_lea,
