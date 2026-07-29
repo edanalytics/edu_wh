@@ -103,7 +103,9 @@ which is real, working Databricks SQL (Databricks' variant type + lateral table
 functions), but sqlfluff's databricks dialect can't parse it yet. Reproduce the
 exact same SQL and just tell sqlfluff to skip the parse check on that line -#}
 {% macro databricks__json_flatten(column, alias, outer) -%}
-, lateral variant_explode{% if outer %}_outer{% endif %}({{ column }}) {% if alias != '' %} as {{ alias }} {% endif %} -- noqa: PRS
+-- noqa: PRS
+, lateral variant_explode{% if outer %}_outer{% endif %}({{ column }}) {% if alias != '' %} as {{ alias }} {% endif %} 
+-- noqa: PRS
 {%- endmacro %}
 EOF
 
