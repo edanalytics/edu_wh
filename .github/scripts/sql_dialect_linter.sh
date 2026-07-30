@@ -98,18 +98,13 @@ cat > macros/_ci_lint_stub.sql << EOF
   where false
 {% endmacro %}
 
-{#- edu_edfi_source's own databricks__json_flatten emits "lateral variant_explode(...)",
-which is real, working Databricks SQL (Databricks' variant type + lateral table
-functions), but sqlfluff's databricks dialect can't parse it yet. Reproduce the
-exact same SQL and just tell sqlfluff to skip the parse check on that line -#}
+{#- edu_edfi_source's databricks__json_flatten emits "lateral variant_explode(...)",
+but sqlfluff's databricks dialect can't parse this for some reason, even though it  
+is an actual Databricks call. When a where clause follows directly after this variant_explode, 
+sqlfluff errors. Adding trailing comma to force sqlfluff to look at this line instead of the 
+where clause #}
 {% macro databricks__json_flatten(column, alias, outer) -%}
-{#- in some models, there is a where clause that is directly after this variant_explode call, so --noqa PRS 
-    doesn't really work well here, test out passing a dummy -#}
-{%- if execute and flags.WHICH == 'lint' -%}
-    , lateral view explode(array('dummy')) {% if alias != '' %} as {{ alias }} {% endif %}
-{%- else -%}
-    , lateral variant_explode{% if outer %}_outer{% endif %}({{ column }}) {% if alias != '' %} as {{ alias }} {% endif %} 
-{%- endif -%}
+, lateral variant_explode{% if outer %}_outer{% endif %}({{ column }}) {% if alias != '' %} as {{ alias }} {% endif %}, -- noqa: PRS
 {%- endmacro %}
 
 EOF
@@ -131,7 +126,7 @@ cat > dbt_packages/edu_edfi_source/macros/extract_descriptor.sql << 'EOF'
 {%- endmacro %}
 EOF
 
-# Generate a placeholder covering every resource name actually referenced, 
+# Generate a placeholder covering every resource name actually referenced,
 # with a fake database/schema, so source() resolves without needing a real one.
 resources=$(grep -rhoE "source_edfi3\(\s*['\"][a-zA-Z0-9_]+['\"]" \
     dbt_packages/edu_edfi_source/models dbt_packages/edu_edfi_source/macros 2>/dev/null \
