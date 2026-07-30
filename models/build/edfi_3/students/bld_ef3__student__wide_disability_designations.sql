@@ -8,7 +8,6 @@ flattened as (
     select
         k_student_disability,
         tenant_code,
-        api_year,
         school_year,
         k_student,
         k_lea,
@@ -25,7 +24,6 @@ pivoted as (
     select
         k_student_disability,
         tenant_code,
-        api_year,
         school_year,
         k_student,
         k_lea,
