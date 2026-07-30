@@ -23,15 +23,37 @@ jobs:
         with:
           python-version: "3.11"
 
-      # Everything (sqlfluff, dbt-core, both adapters) is pinned in this one
-      # file so CI always matches local dev — an older sqlfluff previously
-      # produced parsing failures that this pinned version doesn't have.
-      - name: Install dbt + sqlfluff
-        run: pip install -r .github/workflows/requirements/sql-linter.txt
+      # Skip reinstalling everything if nothing's changed since last time.
+      - name: Cache virtualenv
+        id: cache-venv
+        uses: actions/cache@v6
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ hashFiles('.github/workflows/requirements/sql-linter.txt') }}
 
-      # The lint script edits files inside dbt_packages/edu_edfi_source,
-      # so those need to be downloaded first.
+      # Installs the exact versions pinned in sql-linter.txt. Skipped
+      # entirely when the cache above already has a matching virtualenv.
+      - name: Install dbt + sqlfluff
+        if: steps.cache-venv.outputs.cache-hit != 'true'
+        run: |
+          python -m venv .venv
+          .venv/bin/pip install -r .github/workflows/requirements/sql-linter.txt
+
+      - name: Put virtualenv on PATH
+        run: echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
+
+      # Skips the dbt deps step below entirely if packages.yml hasn't changed.
+      - name: Cache dbt packages
+        id: cache-dbt-packages
+        uses: actions/cache@v6
+        with:
+          path: dbt_packages
+          key: dbt-packages-${{ hashFiles('packages.yml') }}
+
+      # Downloads edu_edfi_source and dbt_utils, unless the cache above
+      # already has them.
       - name: dbt deps
+        if: steps.cache-dbt-packages.outputs.cache-hit != 'true'
         run: dbt deps
 
       - name: Compile and lint (${{ matrix.dialect }})
