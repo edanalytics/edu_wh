@@ -6,7 +6,6 @@
         "alter table {{ this }} alter column disability_type set not null",
         "alter table {{ this }} add primary key (k_student_disability)",
         "alter table {{ this }} add constraint fk_{{ this.name }}_student foreign key (k_student) references {{ ref('dim_student') }}",
-        "alter table {{ this }} add constraint fk_{{ this.name }}_program foreign key (k_program) references {{ ref('dim_program') }}",
     ]
   )
 }}
