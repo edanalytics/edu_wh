@@ -20,7 +20,7 @@ bld_ef3__course_subject as (
     select * from {{ ref('bld_ef3__course_subject') }}
 ),
 course_chars as (
-    select * from {{ ref('bld_ef3__course_char__combined_wide') }}
+    select * from {{ ref('bld_ef3__course__wide_course_characteristics') }}
 ),
 formatted as (
     select 
@@ -55,12 +55,12 @@ formatted as (
 
           -- course characteristics
         {{ accordion_columns(
-            source_table='bld_ef3__course_char__combined_wide',
-            exclude_columns=['tenant_code', 'api_year', 'k_course', 'k_course_offering', 'course_level_characteristics_array'],
+            source_table='bld_ef3__course__wide_course_characteristics',
+            exclude_columns=['tenant_code', 'api_year', 'k_course', 'course_characteristics_array'],
             source_alias='course_chars',
             coalesce_value = 'FALSE'
         ) }}
-        course_chars.course_level_characteristics_array,
+        course_chars.course_characteristics_array,
 
         -- custom indicators
         {% if custom_data_sources is not none and custom_data_sources | length -%}
