@@ -163,9 +163,9 @@ done
 # so they can't compile against a fake connection. Any OTHER kind of failure (a real bug, a missing
 # config) stops the script.
 #
-# fct_student_program_service also needs an "extensions" answer for each of
-# these 7 program names, or it errors out asking for a setting that's
-# normally supplied by implementation.
+# fct_student_program_service also needs an "extensions" valude for each of
+# these 7 program names, or it errors out asking for a value that's
+# normally supplied in an implementation.
 #
 # tpdm_warehouse and finance_warehouse (and their edu_edfi_source staging
 # models) are disabled by default. turn them on so they get linted too.
@@ -216,11 +216,8 @@ while true; do
   fi
 done
 
-# Lint each compiled model/test on its own so one failure doesn't stop the
-# rest. Passing ones print one line; failing ones get a collapsible group
-# with the full sqlfluff output inside. Generic tests (auto-generated from
-# schema .yml files, like unique/not_null) compile into a "<node>.yml/"
-# subfolder — split those out from real models so the counts mean what they say.
+# Lint each compiled model/test. Generic tests (auto-generated from
+# schema .yml files, like unique/not_null) compile into a "<node>.yml/" 
 mapfile -d '' -t compiled_files < <(find "$target_path/compiled" -path "*/edu_wh/models/*" -name "*.sql" -print0)
 model_total=0; model_pass=0; model_fail=0; model_failed=()
 test_total=0; test_pass=0; test_fail=0; test_failed=()
