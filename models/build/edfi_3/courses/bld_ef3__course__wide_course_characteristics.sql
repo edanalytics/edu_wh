@@ -9,7 +9,7 @@ flattened as (
         tenant_code,
         api_year,
         k_course,
-        {{ edu_edfi_source.extract_descriptor('course_chars.value:courseCharacteristicDescriptor::string') }} as course_characteristic
+        {{ edu_edfi_source.extract_descriptor('course_chars.value:courseLevelCharacteristicDescriptor::string') }} as course_characteristic
     from courses
         {{ edu_edfi_source.json_flatten('v_level_characteristics', 'course_chars', outer=true) }} 
 ),
