@@ -85,3 +85,9 @@ models:
     config:
       tags: ['migrant_education']
       enabled: "{{ var('src:program:migrant_education:enabled', True) }}"
+  - name: bld_ef3__student__disabilities
+    config:
+      tags: ['special_ed']
+  - name: bld_ef3__student__wide_disability_designations
+    config:
+      tags: ['special_ed']
