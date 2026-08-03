@@ -216,8 +216,17 @@ while true; do
   fi
 done
 
+# sqlfluff only catches syntax that doesn't parse, it can't tell that a
+# function or type doesn't exist in the dialect, so check for
+# these known Databricks gaps by name instead. Add new ones here as they come up.
+databricks_incompatible_patterns=(
+  'try_to_date\s*\('  # function has no Databricks equivalent
+  '\bas\s+time\b'     # Databricks has no TIME datatype
+)
+incompatible_regex=$(IFS='|'; echo "${databricks_incompatible_patterns[*]}")
+
 # Lint each compiled model/test. Generic tests (auto-generated from
-# schema .yml files, like unique/not_null) compile into a "<node>.yml/" 
+# schema .yml files, like unique/not_null) compile into a "<node>.yml/"
 mapfile -d '' -t compiled_files < <(find "$target_path/compiled" -path "*/edu_wh/models/*" -name "*.sql" -print0)
 model_total=0; model_pass=0; model_fail=0; model_failed=()
 test_total=0; test_pass=0; test_fail=0; test_failed=()
@@ -228,10 +237,25 @@ for f in "${compiled_files[@]}"; do
   [[ "$path" == *.yml/* ]] && is_test=true
 
   if out=$(sqlfluff lint --config .sqlfluff --templater raw --dialect "$dialect" "$f" 2>&1); then
+    sqlfluff_ok=0
+  else
+    sqlfluff_ok=1
+  fi
+
+  bad_function=""
+  if [[ "$dialect" == "databricks" ]]; then
+    match=$(grep -inE "$incompatible_regex" "$f" | head -1 || true)
+    [[ -n "$match" ]] && bad_function="No Databricks equivalent: $match"
+  fi
+
+  if [[ $sqlfluff_ok -eq 0 && -z "$bad_function" ]]; then
     echo "Linting $path ✅"
     if $is_test; then test_pass=$((test_pass + 1)); else model_pass=$((model_pass + 1)); fi
   else
-    printf '::group::Linting %s ❌\n%s\n::endgroup::\n' "$path" "$out"
+    printf '::group::Linting %s ❌\n' "$path"
+    [[ -n "$bad_function" ]] && echo "$bad_function"
+    echo "$out"
+    echo "::endgroup::"
     if $is_test; then
       test_fail=$((test_fail + 1)); test_failed+=("${name%.sql}")
     else
