@@ -11,12 +11,14 @@ models:
         `k_course_section` - There is one record per course section.
 
       ##### Important Business Rules:
-        The columns that begin with `is_` e.g. `is_ap` are generated dynamically based on the course characteristics 
+        The columns that begin with `is_` e.g. `is_ap` are generated dynamically based on the course characteristics
         configured in **xwalk_course_level_characteristics**
         To populate these fields, we combine characteristics found in Course, Course Offering, and Sections, because it's
-        possible for implementations to populate characterstics at any of these three levels in Ed-Fi. The model that 
+        possible for implementations to populate characterstics at any of these three levels in Ed-Fi. The model that
         combines these characteristics is [bld_ef3__course_char__combined_long](#!/model/model.edu_wh.bld_ef3__course_char__combined_long)
         `course_level_characteristics_array` lists every characteristic descriptor string in effect for the section (including descriptors not mapped in **xwalk_course_level_characteristics**). Use the `is_*` booleans for consistent filters; use the array for display and exploration.
+        Section-level `is_*` indicator columns are generated dynamically based on the section characteristics configured in **xwalk_section_characteristics**.
+        `section_characteristics_array` lists every section-level characteristic descriptor string for the section (including descriptors not mapped in **xwalk_section_characteristics**). Use the section-level `is_*` booleans for consistent filters; use the array for display and exploration.
 
       
     config:
@@ -149,4 +151,10 @@ models:
           Ed-Fi Course, Course Offering, and Section characteristic payloads (see
           [bld_ef3__course_char__combined_wide](#!/model/model.edu_wh.bld_ef3__course_char__combined_wide)).
           Null when the section has no such characteristics (no row in the combined-wide build). Not coerced through the xwalk, so
+          it may include descriptors that do not have a matching `is_*` column.
+      - name: section_characteristics_array
+        description: >
+          Sorted array of section-level characteristic descriptor strings for this section (see
+          [bld_ef3__section__wide_section_characteristics](#!/model/model.edu_wh.bld_ef3__section__wide_section_characteristics)).
+          Null when the section has no such characteristics (no row in the section-wide build). Not coerced through the xwalk, so
           it may include descriptors that do not have a matching `is_*` column.

@@ -6,13 +6,17 @@ xwalk_section_characteristics as (
 ),
 flattened as (
     select 
+        tenant_code,
+        api_year,
         k_course_section,
         {{ edu_edfi_source.extract_descriptor('section_chars.value:sectionCharacteristicDescriptor::string') }} as section_characteristic
     from sections
-        {{ edu_edfi_source.json_flatten('v_section_characteristics', 'section_chars', outer=true) }}
+        {{ edu_edfi_source.json_flatten('v_section_characteristics', 'section_chars') }}
 ),
 pivoted as (
-    select 
+    select
+        tenant_code,
+        api_year,
         k_course_section,
         {{ edu_edfi_source.json_array_agg(
             'section_characteristic',
@@ -27,7 +31,7 @@ pivoted as (
             ) }}
         {%- endif %}
     from flattened
-    left outer join xwalk_section_characteristics 
+    left join xwalk_section_characteristics
         on flattened.section_characteristic = xwalk_section_characteristics.section_characteristic_descriptor
     group by all
 )

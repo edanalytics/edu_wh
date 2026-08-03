@@ -62,7 +62,7 @@ joined as (
         -- section characteristics
         {{ accordion_columns(
             source_table='bld_ef3__section__wide_section_characteristics',
-            exclude_columns=['k_course_section', 'section_characteristics_array'],
+            exclude_columns=['tenant_code', 'api_year', 'k_course_section', 'section_characteristics_array'],
             source_alias='section_chars',
             coalesce_value = 'FALSE'
         ) }}
@@ -77,7 +77,6 @@ joined as (
         stg_ef3__sections.available_credit_type,
         stg_ef3__sections.available_credit_conversion
 
-        -- todo: add characteristic indicators
         -- custom indicators
         {% if custom_data_sources is not none and custom_data_sources | length -%}
           {%- for source in custom_data_sources -%}

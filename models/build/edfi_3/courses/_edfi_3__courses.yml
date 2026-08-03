@@ -12,6 +12,9 @@ models:
         description: >
           Sorted array of raw course-level characteristic descriptor strings for each section,
           derived from the same long grain as the pivoted `is_*` flags (Course, Course Offering, and Section).
+  - name: bld_ef3__section__wide_section_characteristics
+    config:
+      tags: ['core']
   - name: bld_ef3__wide_ids_course
     config:
       tags: ['core']
