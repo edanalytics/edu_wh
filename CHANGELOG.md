@@ -8,6 +8,7 @@
 - Add `course_level_characteristics_array` column to `dim_course`. This column was previously added to `dim_course_section`.
 - Add `section_characteristics_array` and individual section characteristics to `dim_course_section`.
   - Done via new `bld_ef3__section__wide_section_characteristics`;
+  - Breaking change: New xwalk is required, `xwalk_section_characteristics`. Default can be found in edu_project_template.
 - Added `fct_student_disability`, a new fact table unifying student disabilities from ed org associations and special education program associations into a single model. Includes `is_program` to distinguish the two grains, `k_student_program` for joining to program association fact tables, and extensible boolean designation columns via `xwalk_disability_designations`.
 - Breaking change: New xwalk is required, `xwalk_disability_designations`, to pivot disability designation descriptors into boolean indicator columns in `fct_student_disability`. Expected columns: `disability_designation_descriptor` (the Ed-Fi descriptor value to match) and `indicator_name` (the name of the resulting boolean column). If the seed is empty, the designation columns are omitted and the model builds without them.
 
