@@ -1,8 +1,8 @@
 {{
   config(
     post_hook=[
-        "alter table {{ this }} alter column k_staff_educaton_organization_assignment_association set not null",
-        "alter table {{ this }} add primary key (k_staff_educaton_organization_assignment_associatio)",
+        "alter table {{ this }} alter column k_staff_education_organization_assignment_association set not null",
+        "alter table {{ this }} add primary key (k_staff_education_organization_assignment_association)",
         "alter table {{ this }} add constraint fk_{{ this.name }}_staff foreign key (k_staff) references {{ ref('dim_staff') }}",
     ]
   )
@@ -26,8 +26,8 @@ formatted as (
         dim_staff.k_staff,
         stg_staff_ed_org_assign.k_lea,
         stg_staff_ed_org_assign.k_school,
-        stg_staff_school.tenant_code,
-        stg_staff_school.school_year,
+        stg_staff_ed_org_assign.tenant_code,
+        stg_staff_ed_org_assign.school_year,
         stg_staff_ed_org_assign.position_title,
         stg_staff_ed_org_assign.begin_date,
         stg_staff_ed_org_assign.end_date,
@@ -51,9 +51,11 @@ check_active as (
                 'school_year',
                 'begin_date',
                 'k_staff',
+                'k_lea',
+                'k_school',
                 'staff_classification'
             ]
-        )}} as k_staff_educaton_organization_assignment_association
+        )}} as k_staff_education_organization_assignment_association,
         *,
         iff(
             school_year = max(school_year)
@@ -62,7 +64,7 @@ check_active as (
                 or end_date >= current_date())
             and begin_date <= current_date(),
             true, false
-            ) as is_active_assignment
+        ) as is_active_assignment
     from formatted
 )
 select * from check_active
