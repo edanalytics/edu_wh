@@ -38,8 +38,6 @@ formatted as (
         stg_staff_ed_org_assign.staff_classification
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__staff_education_organization_assignment_associations', flatten=False) }}
     from stg_staff_ed_org_assign
-    join dim_school
-        on stg_staff_ed_org_assign.k_school = dim_school.k_school
     join dim_staff
         on stg_staff_ed_org_assign.k_staff = dim_staff.k_staff
 ),
