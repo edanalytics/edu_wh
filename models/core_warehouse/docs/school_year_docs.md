@@ -3,7 +3,7 @@ School year specified by Spring year, e.g. the 2021-2022 year would be 2022. The
 {% enddocs %}
 
 {% docs school_year_source_reference %}
-School year specified by Spring year, e.g. the 2021-2022 year would be 2022. Unlike most other tables, `school_year` here reflects a school year reference embedded directly in the source Ed-Fi record, rather than the year of the source ODS pull — so it can differ from the pull year in edge cases (e.g. calendar or schedule data that spans a year boundary).
+School year specified by Spring year, e.g. the 2021-2022 year would be 2022. The `school_year` here is sourced from a school year endpoint embedded directly in the source Ed-Fi record, rather than inferred based on the year of the source ODS (which is assumed to contain data for only one school year), so it can differ from the ODS year in edge cases (e.g. calendar or schedule data that spans a year boundary).
 {% enddocs %}
 
 {% docs school_year_assessment %}
@@ -11,5 +11,5 @@ School year specified by Spring year, e.g. the 2021-2022 year would be 2022. For
 {% enddocs %}
 
 {% docs school_year_academic_record %}
-School year specified by Spring year, e.g. the 2021-2022 year would be 2022. Unlike most other tables, `school_year` here is sourced from the `student_academic_records` Ed-Fi endpoint, where it is a required field provided directly by the source system rather than inferred from a single-year ODS.
+School year specified by Spring year, e.g. the 2021-2022 year would be 2022. The `school_year` here is sourced from the `student_academic_records` Ed-Fi endpoint, where it is a required field provided directly by the source system rather than inferred from a single-year ODS.
 {% enddocs %}
