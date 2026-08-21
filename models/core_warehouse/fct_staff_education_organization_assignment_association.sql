@@ -1,8 +1,8 @@
 {{
   config(
     post_hook=[
-        "alter table {{ this }} alter column k_staff_education_organization_assignment_association set not null",
-        "alter table {{ this }} add primary key (k_staff_education_organization_assignment_association)",
+        "alter table {{ this }} alter column k_staff_ed_org_assignment set not null",
+        "alter table {{ this }} add primary key (k_staff_ed_org_assignment)",
         "alter table {{ this }} add constraint fk_{{ this.name }}_staff foreign key (k_staff) references {{ ref('dim_staff') }}",
     ]
   )
@@ -22,7 +22,8 @@ dim_school_calendar as (
     select * from {{ ref('dim_school_calendar') }}
 ),
 formatted as (
-    select 
+    select
+        stg_staff_ed_org_assign.k_staff_ed_org_assignment,
         dim_staff.k_staff,
         stg_staff_ed_org_assign.k_lea,
         stg_staff_ed_org_assign.k_school,
@@ -43,17 +44,6 @@ formatted as (
 ),
 check_active as (
     select
-        {{ dbt_utils.generate_surrogate_key(
-            [
-                'tenant_code',
-                'school_year',
-                'begin_date',
-                'k_staff',
-                'k_lea',
-                'k_school',
-                'staff_classification'
-            ]
-        )}} as k_staff_education_organization_assignment_association,
         *,
         iff(
             school_year = max(school_year)
