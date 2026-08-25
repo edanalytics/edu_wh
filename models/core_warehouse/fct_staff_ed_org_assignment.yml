@@ -1,25 +1,25 @@
 version: 2
 
 models:
-  - name: fct_staff_education_organization_assignment_association
+  - name: fct_staff_ed_org_assignment
     config:
       tags: ['core']
 
     constraints:
       - type: primary_key
-        columns: [k_staff_education_organization_assignment_association]
+        columns: [k_staff_ed_org_assignment]
       - type: foreign_key
-        name: fk__fct_staff_education_organization_assignment_association__k_staff
+        name: fk__fct_staff_ed_org_assignment__k_staff
         columns: [k_staff]
         to: ref('dim_staff')
         to_columns: [k_staff]
       - type: foreign_key
-        name: fk__fct_staff_education_organization_assignment_association__k_lea
+        name: fk__fct_staff_ed_org_assignment__k_lea
         columns: [k_lea]
         to: ref('dim_lea')
         to_columns: [k_lea]
       - type: foreign_key
-        name: fk__fct_staff_education_organization_assignment_association__k_school
+        name: fk__fct_staff_ed_org_assignment__k_school
         columns: [k_school]
         to: ref('dim_school')
         to_columns: [k_school]
@@ -40,7 +40,7 @@ models:
        - and the `end_date` is either null or later than the current date
 
     columns:
-      - name: k_staff_education_organization_assignment_association
+      - name: k_staff_ed_org_assignment
         description: "Unique key for the staff education organization assignment association"
       - name: k_staff
         description: "Unique key for staff, foreign key reference to `dim_staff`"
