@@ -3,6 +3,10 @@
 ## Under the hood
 ## Fixes
 
+## New features
+- Add `fct_staff_ed_org_assignment`. This model brings the staging model columns through to the warehouse, including a new primary key
+- Breaking change: `k_staff_ed_org_assignment` is now expected in `stg_ef3__staff_education_organization_assignment_associatons`, therefore any implementations using a custom version of this staging model will need the new key added.
+
 # edu_wh v0.7.0
 ## New features
 - Add `course_level_characteristics_array` column to `dim_course`. This column was previously added to `dim_course_section`.
