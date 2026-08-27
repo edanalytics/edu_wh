@@ -60,19 +60,20 @@ formatted as (
         stg_stu_school.is_school_choice,
         stg_stu_school.school_choice_basis,
         stg_stu_school.enrollment_type,
+
         -- create indicator for active enrollment
         iff(
-            -- is highest school year observed by tenant. 
-            stg_stu_school.school_year = max(stg_stu_school.school_year)
-                over(partition by stg_stu_school.tenant_code)
             -- enrollment has begun
-            and entry_date <= current_date()
+            entry_date <= current_date()
             -- not yet exited, or 'year-end extension' if configured
             and (
-                -- standard: not yet exited as of today
-                {{ date_within_end_date('current_date()', 'exit_withdraw_date', var('edu:enroll:exit_withdraw_date_inclusive', True)) }}
+                -- standard: not yet exited as of the last day of the school year for the enrollment record
+                {{ date_within_end_date(
+                    'current_date()', 
+                    'least(coalesce(stg_stu_school.exit_withdraw_date, bld_school_calendar_windows.last_school_day), bld_school_calendar_windows.last_school_day)', 
+                    var('edu:enroll:exit_withdraw_date_inclusive', True)) }}
                 
-                -- extended: if configured, students who exit at the end of the school year are still active until the next year's data loads
+                -- extended: if configured, students who exit at the end of the school year are still active until buffer days
                 {%- set buffer_days = var('edu:enroll:year_end_active_buffer_days', none) -%}
                 {%- if buffer_days is not none %}
                     or (exit_withdraw_date >= dateadd(
