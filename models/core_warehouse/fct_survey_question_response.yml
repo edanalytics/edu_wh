@@ -1,0 +1,70 @@
+version: 2
+
+models:
+  - name: fct_survey_question_response
+    description: "Fact table for survey question responses. Grain: 1 submitted response to 1 survey question"
+    config:
+      tags: ['survey', 'core']
+      enabled: "{{ var('src:domain:survey:enabled', True) }}"
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - k_survey_response
+            - k_survey_question
+    columns:
+      - name: k_survey_response
+        description: "Foreign key to fct_survey_response"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('fct_survey_response')
+              field: k_survey_response
+
+      - name: k_survey_question
+        description: "Foreign key to dim_survey_question"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_survey_question')
+              field: k_survey_question
+
+      - name: k_survey
+        description: "Foreign key to dim_survey (for filtering/aggregation)"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_survey')
+              field: k_survey
+
+      - name: k_student
+        description: "Foreign key to dim_student (nullable, from parent fct_survey_response)"
+
+      - name: k_staff
+        description: "Foreign key to dim_staff (nullable, from parent fct_survey_response)"
+
+      - name: k_parent
+        description: "Foreign key to dim_parent (nullable, from parent fct_survey_response)"
+
+      - name: respondent_type
+        description: "Type of respondent (from parent fct_survey_response)"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['student', 'staff', 'contact', 'anonymous']
+
+      - name: location
+        description: "Location where question was answered"
+
+      - name: comment
+        description: "Optional comment or explanation for the response"
+
+      - name: no_response
+        description: "Indicator if respondent did not answer this question"
+
+      - name: response_date
+        description: "Date question was answered"
+
+      - name: question_response_count
+        description: "Measure field, always 1 for counting question responses"
+        tests:
+          - not_null
