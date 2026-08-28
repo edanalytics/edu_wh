@@ -30,7 +30,7 @@ dedupe_cross_tenant_assessments as (
         dbt_utils.deduplicate(
             relation='student_assessment_cross_tenant',
             partition_by='k_assessment',
-            order_by='tenant_code,school_year'
+            order_by='tenant_code,api_year'
         )
     }}
 ),
@@ -74,7 +74,7 @@ dedupe_assessments as (
         dbt_utils.deduplicate(
             relation='formatted',
             partition_by='k_assessment',
-            order_by='tenant_code,school_year'
+            order_by='tenant_code,api_year'
         )
     }}
 )
