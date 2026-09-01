@@ -85,6 +85,18 @@ models:
     config:
       tags: ['migrant_education']
       enabled: "{{ var('src:program:migrant_education:enabled', True) }}"
+  - name: bld_ef3__student_program__neglected_or_delinquent
+    config:
+      tags: ['neglected_or_delinquent']
+      enabled: "{{ var('src:program:neglected_or_delinquent:enabled', True) }}"
+  - name: bld_ef3__student_program__neglected_or_delinquent__program_services
+    config:
+      tags: ['neglected_or_delinquent']
+      enabled: "{{ var('src:program:neglected_or_delinquent:enabled', True) }}"
+  - name: bld_ef3__student_program__section_504
+    config:
+      tags: ['section_504']
+      enabled: "{{ var('src:program:section_504:enabled', True) }}"
   - name: bld_ef3__student__disabilities
     config:
       tags: ['special_ed']
