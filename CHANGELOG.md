@@ -1,6 +1,8 @@
 # Unreleased
 ## New features
 ## Under the hood
+- Add a `sql_dialect_linter` CI check that compiles and lints all `edu_wh` models/tests
+  against both Databricks and Snowflake on every PR, catching models that are incompatible before merge.
 ## Fixes
 
 # edu_wh v0.7.0

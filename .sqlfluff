@@ -1,0 +1,19 @@
+[sqlfluff]
+# global default
+templater = dbt
+dialect = snowflake
+exclude_rules = layout, convention, capitalisation, aliasing, references, ambiguous, structure
+
+# Settings for --templater dbt
+[sqlfluff:templater:dbt]
+# If dbt compilation fails on a model, skip it rather than erroring out.
+dbt_skip_compilation_error = True
+
+[sqlfluff:templater:jinja]
+apply_dbt_builtins = true
+load_macros_from_path = macros
+
+# Stubs only for dbt_utils macros, those live in dbt_packages
+[sqlfluff:templater:jinja:macros]
+generate_surrogate_key = {% macro generate_surrogate_key(fields) %}null{% endmacro %}
+deduplicate            = {% macro deduplicate(relation, partition_by, order_by) %}select * from stub_relation{% endmacro %}
