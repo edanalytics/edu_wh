@@ -1,5 +1,6 @@
 # Unreleased
 ## New features
+- Adds optional filtering of `bld_ef3__staff_official_emails` to only official email domains. Set `edu:staff:email_domains_xwalk_enabled` to true and add `xwalk_tenant_email_domains` with columns `tenant_code`, `email_domain` to use this feature.
 ## Under the hood
 ## Fixes
 
