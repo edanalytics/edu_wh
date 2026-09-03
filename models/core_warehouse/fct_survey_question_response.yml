@@ -5,36 +5,60 @@ models:
     description: "Fact table for survey question responses. Grain: 1 submitted response to 1 survey question"
     config:
       tags: ['survey', 'core']
-      enabled: "{{ var('src:domain:survey:enabled', True) }}"
+      enabled: "{{ var('src:domain:survey:enabled', False) }}"
+
+    constraints:
+      - type: primary_key
+        columns: [k_survey_response, k_survey_question]
+      - type: foreign_key
+        name: fk__fct_survey_question_response__k_survey_response
+        columns: [k_survey_response]
+        to: ref('fct_survey_response')
+        to_columns: [k_survey_response]
+      - type: foreign_key
+        name: fk__fct_survey_question_response__k_survey_question
+        columns: [k_survey_question]
+        to: ref('dim_survey_question')
+        to_columns: [k_survey_question]
+      - type: foreign_key
+        name: fk__fct_survey_question_response__k_survey
+        columns: [k_survey]
+        to: ref('dim_survey')
+        to_columns: [k_survey]
+
     tests:
       - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - k_survey_response
-            - k_survey_question
+          arguments:
+            combination_of_columns:
+              - k_survey_response
+              - k_survey_question
     columns:
       - name: k_survey_response
         description: "Foreign key to fct_survey_response"
         tests:
           - not_null
           - relationships:
-              to: ref('fct_survey_response')
-              field: k_survey_response
+              arguments:
+                to: ref('fct_survey_response')
+                field: k_survey_response
 
       - name: k_survey_question
         description: "Foreign key to dim_survey_question"
         tests:
           - not_null
           - relationships:
-              to: ref('dim_survey_question')
-              field: k_survey_question
+              arguments:
+                to: ref('dim_survey_question')
+                field: k_survey_question
 
       - name: k_survey
         description: "Foreign key to dim_survey (for filtering/aggregation)"
         tests:
           - not_null
           - relationships:
-              to: ref('dim_survey')
-              field: k_survey
+              arguments:
+                to: ref('dim_survey')
+                field: k_survey
 
       - name: k_student
         description: "Foreign key to dim_student (nullable, from parent fct_survey_response)"
@@ -50,7 +74,8 @@ models:
         tests:
           - not_null
           - accepted_values:
-              values: ['student', 'staff', 'contact', 'anonymous']
+              arguments:
+                values: ['student', 'staff', 'parent', 'anonymous']
 
       - name: location
         description: "Location where question was answered"

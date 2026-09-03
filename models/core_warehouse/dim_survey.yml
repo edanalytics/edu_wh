@@ -5,7 +5,12 @@ models:
     description: "Survey definitions and metadata"
     config:
       tags: ['survey', 'core']
-      enabled: "{{ var('src:domain:survey:enabled', True) }}"
+      enabled: "{{ var('src:domain:survey:enabled', False) }}"
+
+    constraints:
+      - type: primary_key
+        columns: [k_survey]
+
     columns:
       - name: k_survey
         description: "Surrogate key for survey"

@@ -1,14 +1,14 @@
 {{
-  config(
-    post_hook=[
-        "alter table {{ this }} alter column k_survey_response set not null",
-        "alter table {{ this }} alter column k_survey_question set not null",
-        "alter table {{ this }} alter column question_response_value_id set not null",
-        "alter table {{ this }} add primary key (k_survey_response, k_survey_question, question_response_value_id)",
-        "alter table {{ this }} add constraint fk_{{ this.name }}_survey_question_response foreign key (k_survey_response, k_survey_question) references {{ ref('fct_survey_question_response') }}",
-        "alter table {{ this }} add constraint fk_{{ this.name }}_survey foreign key (k_survey) references {{ ref('dim_survey') }}",
-    ]
-  )
+    config(
+        post_hook=[
+            "alter table {{ this }} alter column k_survey_response set not null",
+            "alter table {{ this }} alter column k_survey_question set not null",
+            "alter table {{ this }} alter column question_response_value_id set not null",
+            "alter table {{ this }} add primary key (k_survey_response, k_survey_question, question_response_value_id)",
+            "alter table {{ this }} add constraint fk_{{ this.name }}_survey_question_response foreign key (k_survey_response, k_survey_question) references {{ ref('fct_survey_question_response') }}",
+            "alter table {{ this }} add constraint fk_{{ this.name }}_survey foreign key (k_survey) references {{ ref('dim_survey') }}",
+        ]
+    )
 }}
 
 with stg_survey_question_response_values as (

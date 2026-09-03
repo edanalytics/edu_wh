@@ -5,7 +5,17 @@ models:
     description: "Survey question definitions"
     config:
       tags: ['survey', 'core']
-      enabled: "{{ var('src:domain:survey:enabled', True) }}"
+      enabled: "{{ var('src:domain:survey:enabled', False) }}"
+
+    constraints:
+      - type: primary_key
+        columns: [k_survey_question]
+      - type: foreign_key
+        name: fk__dim_survey_question__k_survey
+        columns: [k_survey]
+        to: ref('dim_survey')
+        to_columns: [k_survey]
+
     columns:
       - name: k_survey_question
         description: "Surrogate key for survey question"
@@ -18,8 +28,22 @@ models:
         tests:
           - not_null
           - relationships:
-              to: ref('dim_survey')
-              field: k_survey
+              arguments:
+                to: ref('dim_survey')
+                field: k_survey
+
+      - name: k_survey_section
+        description: >
+          Foreign key to dim_survey_section (nullable). Ed-Fi treats surveySectionReference as
+          optional, so this is null for surveys that are not divided into sections. Only tested when
+          survey sections are enabled, since dim_survey_section is not built otherwise.
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_survey_section')
+                field: k_survey_section
+              config:
+                enabled: "{{ var('src:domain:survey:enabled', False) and var('edu:survey:sections:enabled', False) }}"
 
       - name: question_code
         description: "Code or identifier for the question"

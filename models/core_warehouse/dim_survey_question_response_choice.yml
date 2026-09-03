@@ -5,20 +5,32 @@ models:
     description: "Available response choices for survey questions"
     config:
       tags: ['survey', 'core']
-      enabled: "{{ var('src:domain:survey:enabled', True) }}"
+      enabled: "{{ var('src:domain:survey:enabled', False) }}"
+
+    constraints:
+      - type: primary_key
+        columns: [k_survey_question, sort_order]
+      - type: foreign_key
+        name: fk__dim_survey_question_response_choice__k_survey_question
+        columns: [k_survey_question]
+        to: ref('dim_survey_question')
+        to_columns: [k_survey_question]
+
     tests:
       - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - k_survey_question
-            - sort_order
+          arguments:
+            combination_of_columns:
+              - k_survey_question
+              - sort_order
     columns:
       - name: k_survey_question
         description: "Foreign key to dim_survey_question"
         tests:
           - not_null
           - relationships:
-              to: ref('dim_survey_question')
-              field: k_survey_question
+              arguments:
+                to: ref('dim_survey_question')
+                field: k_survey_question
 
       - name: sort_order
         description: "Sort order for the response choice"

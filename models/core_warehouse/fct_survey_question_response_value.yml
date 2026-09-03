@@ -5,23 +5,47 @@ models:
     description: "Fact table for individual response values. Grain: 1 selected/entered value for 1 survey question response"
     config:
       tags: ['survey', 'core']
-      enabled: "{{ var('src:domain:survey:enabled', True) }}"
+      enabled: "{{ var('src:domain:survey:enabled', False) }}"
+
+    constraints:
+      - type: primary_key
+        columns: [k_survey_response, k_survey_question, question_response_value_id]
+      - type: foreign_key
+        name: fk__fct_survey_question_response_value__k_survey_question_response
+        columns: [k_survey_response, k_survey_question]
+        to: ref('fct_survey_question_response')
+        to_columns: [k_survey_response, k_survey_question]
+      - type: foreign_key
+        name: fk__fct_survey_question_response_value__k_survey
+        columns: [k_survey]
+        to: ref('dim_survey')
+        to_columns: [k_survey]
+
     tests:
       - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - k_survey_response
-            - k_survey_question
-            - question_response_value_id
+          arguments:
+            combination_of_columns:
+              - k_survey_response
+              - k_survey_question
+              - question_response_value_id
     columns:
       - name: k_survey_response
         description: "Foreign key to fct_survey_response"
         tests:
           - not_null
+          - relationships:
+              arguments:
+                to: ref('fct_survey_response')
+                field: k_survey_response
 
       - name: k_survey_question
         description: "Foreign key to dim_survey_question"
         tests:
           - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_survey_question')
+                field: k_survey_question
 
       - name: question_response_value_id
         description: "Identifier for this specific response value"
@@ -33,8 +57,9 @@ models:
         tests:
           - not_null
           - relationships:
-              to: ref('dim_survey')
-              field: k_survey
+              arguments:
+                to: ref('dim_survey')
+                field: k_survey
 
       - name: k_student
         description: "Foreign key to dim_student (nullable, from parent)"
@@ -50,13 +75,18 @@ models:
         tests:
           - not_null
           - accepted_values:
-              values: ['student', 'staff', 'contact', 'anonymous']
+              arguments:
+                values: ['student', 'staff', 'parent', 'anonymous']
 
       - name: numeric_response
         description: "Numeric value of the response"
 
       - name: text_response
-        description: "Text value of the response. May contain delimited multi-select values."
+        description: >
+          Text value of the response. Where the question defines response choices, this matches
+          dim_survey_question_response_choice.text_value, which is the only route to the choice's
+          numeric_value — numeric_response is frequently not populated by survey applications.
+          May also contain delimited multi-select values, which are not parsed here.
 
       - name: location
         description: "Location where response value was provided"
