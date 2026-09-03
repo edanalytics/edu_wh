@@ -14,9 +14,11 @@
 with stg_survey_question_responses as (
     select * from {{ ref('stg_ef3__survey_question_responses') }}
 ),
+
 fct_survey_response as (
     select * from {{ ref('fct_survey_response') }}
 ),
+
 formatted as (
     select
         stg_survey_question_responses.k_survey_response,
@@ -32,7 +34,9 @@ formatted as (
         stg_survey_question_responses.no_response,
         fct_survey_response.response_date,
         1 as question_response_count
+
     from stg_survey_question_responses
+    
     left join fct_survey_response
         on stg_survey_question_responses.k_survey_response = fct_survey_response.k_survey_response
 )

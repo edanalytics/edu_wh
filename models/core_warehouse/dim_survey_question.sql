@@ -11,6 +11,7 @@
 with stg_survey_questions as (
     select * from {{ ref('stg_ef3__survey_questions') }}
 ),
+
 formatted as (
     select
         stg_survey_questions.k_survey_question,
@@ -20,6 +21,8 @@ formatted as (
         stg_survey_questions.question_code,
         stg_survey_questions.question_text,
         stg_survey_questions.question_form
+
     from stg_survey_questions
 )
+
 select * from formatted
