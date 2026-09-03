@@ -10,7 +10,7 @@ with emails as (
 
 -- if using a tenant to email domain xwalk, keep only valid emails that match the official domain(s) for the tenant
 -- otherwise keep only emails that are valid, coded as a 'work'-type email, and don't appear to be personal domains
-{% if var('edu:staff:use_official_email_domains_xwalk', False) %}
+{% if var('edu:staff:email_domains_xwalk_enabled', False) %}
     official_email_domains as (
         select * from {{ ref('xwalk_tenant_email_domains') }}
     ),
