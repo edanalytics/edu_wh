@@ -27,6 +27,8 @@
 {% set custom_cte_program_agg_indicators = var('edu:cte:custom_program_agg_indicators', None) %}
 {% set custom_food_service_program_agg_indicators = var('edu:food_service:custom_program_agg_indicators', None) %}
 {% set custom_migrant_education_program_agg_indicators = var('edu:migrant_education:custom_program_agg_indicators', None) %}
+{% set custom_section_504_program_agg_indicators = var('edu:section_504:custom_program_agg_indicators', None) %}
+{% set custom_neglected_or_delinquent_program_agg_indicators = var('edu:neglected_or_delinquent:custom_program_agg_indicators', None) %}
 
 {% set other_name_types = var('edu:stu_demos:other_names', None) %}
 {%- set name_type_list = ['personal_title_prefix', 'first_name', 'middle_name', 'last_surname', 'generation_code_suffix']-%}
@@ -102,6 +104,18 @@ stu_other_names as (
 {% if var('src:program:migrant_education:enabled', True) %}
     stu_migrant_education as (
         select * from {{ ref('bld_ef3__student_program__migrant_education') }}
+    ),
+{% endif %}
+
+{% if var('src:program:section_504:enabled', True) %}
+    stu_section_504 as (
+        select * from {{ ref('bld_ef3__student_program__section_504') }}
+    ),
+{% endif %}
+
+{% if var('src:program:neglected_or_delinquent:enabled', True) %}
+    stu_neglected_or_delinquent as (
+        select * from {{ ref('bld_ef3__student_program__neglected_or_delinquent') }}
     ),
 {% endif %}
 
@@ -206,6 +220,28 @@ formatted as (
             {% if custom_migrant_education_program_agg_indicators -%}
                 {% for custom_indicator in custom_migrant_education_program_agg_indicators %}
                 coalesce(stu_migrant_education.{{custom_indicator}}, false) as {{custom_indicator}},
+                {% endfor %}
+            {% endif %}
+        {% endif %}
+
+        {% if var('src:program:section_504:enabled', True) %}
+            {% for agg_type in var('edu:section_504:agg_types') %}
+                coalesce(stu_section_504.is_section_504_{{agg_type}}, false) as is_section_504_{{agg_type}},
+            {% endfor %}
+            {% if custom_section_504_program_agg_indicators -%}
+                {% for custom_indicator in custom_section_504_program_agg_indicators %}
+                coalesce(stu_section_504.{{custom_indicator}}, false) as {{custom_indicator}},
+                {% endfor %}
+            {% endif %}
+        {% endif %}
+
+        {% if var('src:program:neglected_or_delinquent:enabled', True) %}
+            {% for agg_type in var('edu:neglected_or_delinquent:agg_types') %}
+                coalesce(stu_neglected_or_delinquent.is_neglected_or_delinquent_{{agg_type}}, false) as is_neglected_or_delinquent_{{agg_type}},
+            {% endfor %}
+            {% if custom_neglected_or_delinquent_program_agg_indicators -%}
+                {% for custom_indicator in custom_neglected_or_delinquent_program_agg_indicators %}
+                coalesce(stu_neglected_or_delinquent.{{custom_indicator}}, false) as {{custom_indicator}},
                 {% endfor %}
             {% endif %}
         {% endif %}
@@ -326,6 +362,16 @@ formatted as (
     {% if var('src:program:migrant_education:enabled', True) %}
         left join stu_migrant_education
             on stu_demos.k_student = stu_migrant_education.k_student
+    {% endif %}
+
+    {% if var('src:program:section_504:enabled', True) %}
+        left join stu_section_504
+            on stu_demos.k_student = stu_section_504.k_student
+    {% endif %}
+
+    {% if var('src:program:neglected_or_delinquent:enabled', True) %}
+        left join stu_neglected_or_delinquent
+            on stu_demos.k_student = stu_neglected_or_delinquent.k_student
     {% endif %}
 
     -- custom data sources

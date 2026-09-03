@@ -50,6 +50,11 @@
     {% do stage_program_relations.append(ref('stg_ef3__stu_migrant_edu__program_services')) %}
 {% endif %}
 
+-- Neglected or Delinquent
+{% if var('src:program:neglected_or_delinquent:enabled', True) %}
+    {% do stage_program_relations.append(ref('stg_ef3__stu_neglected_delinquent__program_services')) %}
+{% endif %}
+
 -- Food Service
 {% if var('src:program:food_service:enabled', True) %}
     {% do stage_program_relations.append(ref('stg_ef3__stu_school_food_service__program_services')) %}

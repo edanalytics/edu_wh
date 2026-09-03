@@ -1,0 +1,59 @@
+{{
+  config(
+    post_hook=[
+        "alter table {{ this }} alter column k_student_program set not null",
+        "alter table {{ this }} alter column k_student set not null",
+        "alter table {{ this }} alter column k_program set not null",
+        "alter table {{ this }} alter column program_enroll_begin_date set not null",
+        "alter table {{ this }} add primary key (k_student_program)",
+        "alter table {{ this }} add constraint fk_{{ this.name }}_student foreign key (k_student) references {{ ref('dim_student') }}",
+        "alter table {{ this }} add constraint fk_{{ this.name }}_program foreign key (k_program) references {{ ref('dim_program') }}",
+    ]
+  )
+}}
+
+with stage as (
+    select * from {{ ref('stg_ef3__student_section_504_program_associations') }}
+),
+
+dim_student as (
+    select * from {{ ref('dim_student') }}
+),
+
+dim_program as (
+    select * from {{ ref('dim_program') }}
+),
+
+formatted as (
+    select
+        stage.k_student_program,
+        dim_student.k_student,
+        dim_student.k_student_xyear,
+        stage.k_program,
+        stage.k_lea,
+        stage.k_school,
+        stage.tenant_code,
+        stage.school_year,
+        stage.program_enroll_begin_date,
+        stage.program_enroll_end_date,
+
+        stage.accommodation_plan,
+        stage.section_504_eligibility,
+        stage.served_outside_of_regular_session,
+        stage.section_504_eligibility_decision_date,
+        stage.section_504_meeting_date,
+        stage.section_504_disability,
+        stage.reason_exited
+        {# add any extension columns configured from stg_ef3__student_section_504_program_associations #}
+        {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_section_504_program_associations', flatten=False) }}
+
+    from stage
+
+    inner join dim_student
+        on stage.k_student = dim_student.k_student
+
+    inner join dim_program
+        on stage.k_program = dim_program.k_program
+)
+
+select * from formatted
