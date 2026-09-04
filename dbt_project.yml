@@ -108,3 +108,27 @@ vars:
   'edu:discipline:non_offender_codes': ['Victim', 'Witness', 'Reporter']
 
   'edu:schools:custom_indicators': Null
+
+  # assessment_identifier values to include in msr_student_cumulative_assessment_score
+  # and msr_student_cumulative_objective_assessment_score; empty = all
+  'edu:assessment:assessment_identifiers': []
+  # assessment_family values to include; empty = all; applied alongside assessment_identifiers
+  'edu:assessment:assessment_families': []
+  # superscores to compute in msr_student_superscore; dict keyed by assessment_identifier
+  # each entry: {subscore_codes: [...], method: sum_of_max}
+  'edu:assessment:superscores': {}
+
+  # gpa_type from fct_student_gpa to use in msr_student_cumulative_gpa; null = no filter (all types)
+  'edu:gpa:gpa_type': ~
+  # academic_term values to include; empty = all terms
+  'edu:gpa:academic_terms': []
+  # when true, restricts to is_cumulative = true; set false if the gpa_type is not flagged as cumulative
+  'edu:gpa:cumulative_only': true
+
+  # subject fields from dim_course to group by in msr_student_cumulative_course_credits
+  # each entry produces its own subject_type rows; extend with partner-specific fields as needed
+  'edu:course:subject_fields': ['academic_subject']
+
+  # transcript-derived columns to add as cross-cut grouping dimensions; dict of {field_name: sql_expression}
+  # expressions may reference fct_course_transcripts directly; null in output = rolled up across all values
+  'edu:course:transcript_grouping_fields': {}
