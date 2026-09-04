@@ -10,6 +10,9 @@ models:
   - name: bld_ef3__school_calendar_windows
     config:
       tags: ['core']
+  - name: bld_ef3__stu_sch_assoc__enrollment_flags
+    config:
+      tags: ['core']
   - name: bld_ef3__wide_ids_lea
     config:
       tags: ['core']

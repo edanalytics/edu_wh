@@ -2,7 +2,10 @@
 ## New features
 * Update descriptions of `school_year` to increase comprehensiveness and add clarity on both format and sourcing mechanism.
 ## Under the hood
+- Refactored `fct_student_school_association` to move the enrollment status logic into a new `bld_ef3__stu_sch_assoc__enrollment_flags` build model. The build now calculates the individual flags that make up active enrollment, while the fact model combines those flags into the final `is_active_enrollment` definition, making the logic easier to follow and maintain.
+
 ## Fixes
+- Fixed `is_active_enrollment` in `fct_student_school_association`, which made current enrollments inactive when data for the next school year was loaded before that year had actually started. The active school year is now based on the most recent school year that has begun, using the first school day and falling back to `entry_date` when no calendar match is available, rather than using the most recent school year loaded in general.
 
 ## New features
 - Add `fct_staff_ed_org_assignment`. This model brings the staging model columns through to the warehouse, including a new primary key
