@@ -11,6 +11,17 @@
 - Add `fct_staff_ed_org_assignment`. This model brings the staging model columns through to the warehouse, including a new primary key
 - Breaking change: `k_staff_ed_org_assignment` is now expected in `stg_ef3__staff_education_organization_assignment_associatons`, therefore any implementations using a custom version of this staging model will need the new key added.
 
+# edu_wh v0.7.1
+## New features
+- Add `bld_ef3__stu_sch_assoc__enrollment_flags` as a dedicated home for enrollment business rule flags
+- Add `fct_staff_ed_org_assignment` to surface staff who have an ed-org assignment but no school association
+- Improve the school_year column description in the docs and consolidate it into a shared docs block, so the definition is maintained in one place instead of repeated across models
+## Under the hood
+- Move enrollment flags out of `fct_student_school_association` and refactor the logic into a series of modular boolean flags, improving logical flow and readability
+## Fixes 
+- Fix `ct_student_school_association.is_active_enrollment` so current records are no longer incorrectly marked inactive when next year's data loads early
+- Fix `school_year` attribution in `dim_assessment` for cross-tenant assessments (applies only when an upstream student assess school year != api_year)
+
 # edu_wh v0.7.0
 ## New features
 - Add `course_level_characteristics_array` column to `dim_course`. This column was previously added to `dim_course_section`.
