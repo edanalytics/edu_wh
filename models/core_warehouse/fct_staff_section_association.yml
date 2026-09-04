@@ -40,6 +40,7 @@ models:
       - name: tenant_code
         description: "Code defining the Tenant (may be an LEA, SEA, etc.) of the EdFi ODS from which this record was pulled"
       - name: school_year
+        description: "{{ doc('school_year_source_reference') }}"
       - name: begin_date
         description: "Month, day, and year of the start or effective date of a staff member's employment, contract, or relationship with the LEA."
       - name: end_date

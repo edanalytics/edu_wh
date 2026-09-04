@@ -1,5 +1,6 @@
 # Unreleased
 ## New features
+* Update descriptions of `school_year` to increase comprehensiveness and add clarity on both format and sourcing mechanism.
 ## Under the hood
 ## Fixes
 

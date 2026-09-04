@@ -33,9 +33,7 @@ models:
         description: Association to the school with the cohort.
       - name: tenant_code
       - name: school_year
-        description: > 
-          School year specified by Spring year.
-          e.g., the 2021-2022 year would be 2022.
+        description: "{{ doc('school_year_ods_pull') }}"
       - name: ed_org_id
         description: The identifier for the educational organization with the cohort.
       - name: ed_org_type

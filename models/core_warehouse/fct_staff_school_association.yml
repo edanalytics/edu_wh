@@ -71,6 +71,7 @@ models:
       - name: tenant_code
         description: "Code defining the Tenant (may be an LEA, SEA, etc.) of the EdFi ODS from which this record was pulled"
       - name: school_year
+        description: "{{ doc('school_year_source_reference') }} If that reference is missing, `school_year` falls back to the source ODS pull year."
       - name: program_assignment
         description: "The name of the program for which the individual is assigned; for example: Regular education Title I-Academic Title I-Non-Academic Special Education Bilingual/English as a Second Language.	"
       - name: position_title

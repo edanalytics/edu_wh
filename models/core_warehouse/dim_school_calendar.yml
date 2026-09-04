@@ -31,6 +31,7 @@ models:
         description: Foreign key to `dim_school`, identifying the school associated with the calendar.
       - name: tenant_code
       - name: school_year
+        description: "{{ doc('school_year_source_reference') }}"
       - name: calendar_code
         description: Identifier for the calendar.
       - name: calendar_type

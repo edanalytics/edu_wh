@@ -48,6 +48,7 @@ models:
       - name: k_school
       - name: tenant_code
       - name: school_year
+        description: "{{ doc('school_year_academic_record') }}"
       - name: academic_term
       - name: session_earned_credits
         description: The number of credits an individual earned in this session.

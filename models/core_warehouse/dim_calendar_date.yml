@@ -41,7 +41,7 @@ models:
       - name: calendar_code
         description: Descriptive label for a calendar.
       - name: school_year
-        description: School year specified by Spring year, e.g. the 2021-2022 year would be 2022.
+        description: "{{ doc('school_year_source_reference') }}"
       - name: calendar_date
         description: Date on school calendar.
         config:

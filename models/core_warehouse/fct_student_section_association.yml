@@ -47,6 +47,7 @@ models:
         description: "Unique key for course section, foreign key reference to `dim_course_section`"
       - name: tenant_code
       - name: school_year
+        description: "{{ doc('school_year_source_reference') }}"
       - name: begin_date
         description: "Month, day, and year of the student's entry or assignment to the section."
       - name: end_date

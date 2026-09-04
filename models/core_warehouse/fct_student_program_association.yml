@@ -40,6 +40,7 @@ models:
       - name: k_school
       - name: tenant_code
       - name: school_year
+        description: "{{ doc('school_year_ods_pull') }}"
       - name: program_enroll_begin_date
       - name: program_enroll_end_date
       - name: is_served_outside_regular_session

@@ -27,7 +27,7 @@ models:
       - name: k_school
         description: Unique identifier for a school.
       - name: school_year
-        description: School year specified by Spring year, e.g. the 2021-2022 year would be 2022.
+        description: "{{ doc('school_year_source_reference') }}"
       - name: tenant_code
         description: The tenant associated with the record.
       - name: days_absent

@@ -49,6 +49,7 @@ models:
         description: Unique identifier for the course section. Foreign key reference to dim_course_section.
       - name: tenant_code
       - name: school_year
+        description: "{{ doc('school_year_source_reference') }}"
       - name: attendance_event_date
         description: The date of the attendance event.
       - name: attendance_event_category

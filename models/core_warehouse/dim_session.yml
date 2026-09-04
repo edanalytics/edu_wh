@@ -32,7 +32,7 @@ models:
       - name: tenant_code
         description: The tenant associated with the record.
       - name: school_year
-        description: School year specified by Spring year, e.g. the 2021-2022 year would be 2022.
+        description: "{{ doc('school_year_source_reference') }}"
       - name: session_name
         description: Identifier code for a session.
       - name: session_begin_date

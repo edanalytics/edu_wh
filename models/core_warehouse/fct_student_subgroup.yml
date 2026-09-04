@@ -99,4 +99,5 @@ models:
       - name: k_student_xyear
       - name: tenant_code
       - name: school_year
+        description: "{{ doc('school_year_ods_pull') }}"
       - name: k_subgroup
