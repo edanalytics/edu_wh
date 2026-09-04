@@ -3,6 +3,17 @@
 ## Under the hood
 ## Fixes
 
+# edu_wh v0.7.1
+## New features
+- Add 'bld_ef3__stu_sch_assoc__enrollment_flags` as a clear home for enrollment business rule flags
+- Add `fct_staff_ed_org_assignment`, to surface staff who have edOrg but no school association
+- Update docs for better `school_year` column description everywhere and pull into 'docs block' for DRYer configuration
+## Under the hood
+- Move enrollment flags out of `fct_student_school_association` and make logic modular on series of boolean flags, for better logical flow and readability
+## Fixes 
+- Change behavior of `fct_student_school_association.is_active_enrollment` to avoid marking current records inactive when the next school year is loaded early.
+- For x-tenant assessments, fix `school_year` attribution in `dim_assessment`. Applies to edge cases where student assess was uploaded to the wrong year ODS
+
 # edu_wh v0.7.0
 ## New features
 - Add `course_level_characteristics_array` column to `dim_course`. This column was previously added to `dim_course_section`.
