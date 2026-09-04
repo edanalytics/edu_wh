@@ -5,14 +5,14 @@
 
 # edu_wh v0.7.1
 ## New features
-- Add 'bld_ef3__stu_sch_assoc__enrollment_flags` as a clear home for enrollment business rule flags
-- Add `fct_staff_ed_org_assignment`, to surface staff who have edOrg but no school association
-- Update docs for better `school_year` column description everywhere and pull into 'docs block' for DRYer configuration
+- Add `bld_ef3__stu_sch_assoc__enrollment_flags` as a dedicated home for enrollment business rule flags
+- Add `fct_staff_ed_org_assignment` to surface staff who have an ed-org assignment but no school association
+- Improve the school_year column description in the docs and consolidate it into a shared docs block, so the definition is maintained in one place instead of repeated across models
 ## Under the hood
-- Move enrollment flags out of `fct_student_school_association` and make logic modular on series of boolean flags, for better logical flow and readability
+- Move enrollment flags out of `fct_student_school_association` and refactor the logic into a series of modular boolean flags, improving logical flow and readability
 ## Fixes 
-- Change behavior of `fct_student_school_association.is_active_enrollment` to avoid marking current records inactive when the next school year is loaded early.
-- For x-tenant assessments, fix `school_year` attribution in `dim_assessment`. Applies to edge cases where student assess was uploaded to the wrong year ODS
+- Fix `ct_student_school_association.is_active_enrollment` so current records are no longer incorrectly marked inactive when next year's data loads early
+- Fix `school_year` attribution in `dim_assessment` for cross-tenant assessments (applies only when an upstream student assess school year != api_year)
 
 # edu_wh v0.7.0
 ## New features
