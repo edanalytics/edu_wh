@@ -129,6 +129,11 @@ vars:
   # each entry produces its own subject_type rows; extend with partner-specific fields as needed
   'edu:course:subject_fields': ['academic_subject']
 
-  # transcript-derived columns to add as cross-cut grouping dimensions; dict of {field_name: sql_expression}
-  # expressions may reference fct_course_transcripts directly; null in output = rolled up across all values
+  # transcript-derived subject types for msr_student_cumulative_course_credits.
+  # each entry produces a union block of credits filtered by `filter` (SQL boolean over
+  # fct_course_transcripts) grouped by dim_course.`subject_field`, emitting subject_type
+  # = field_name rows. example:
+  #   is_honors:
+  #     filter: "coalesce(earned_credit_type in ('H','A'), false)"
+  #     subject_field: "grad_credit_subject"
   'edu:course:transcript_grouping_fields': {}

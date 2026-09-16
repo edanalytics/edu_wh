@@ -1,10 +1,10 @@
 {% set superscores = var('edu:assessment:superscores', {}) %}
 
+{% if superscores | length > 0 %}
+
 with objective_scores as (
     select * from {{ ref('msr_student_cumulative_objective_assessment_score') }}
 ),
-
-{% if superscores | length > 0 %}
 
 superscores as (
 
@@ -15,7 +15,7 @@ superscores as (
         objective_scores.tenant_code,
         objective_scores.school_year,
         '{{ assessment_id }}' as assessment_identifier,
-        sum(objective_scores.scale_score) as superscore
+        sum(objective_scores.max_scale_score) as superscore
 
     from objective_scores
 
@@ -35,7 +35,6 @@ select * from superscores
 
 {% else %}
 
--- no superscores configured; returns empty table
 select
     null::varchar as k_student_xyear,
     null::varchar as tenant_code,
