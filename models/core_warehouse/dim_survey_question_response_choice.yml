@@ -1,0 +1,32 @@
+version: 2
+
+models:
+  - name: dim_survey_question_response_choice
+    description: "Available response choices for survey questions"
+    config:
+      tags: ['survey', 'core']
+      enabled: "{{ var('src:domain:survey:enabled', True) }}"
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - k_survey_question
+            - sort_order
+    columns:
+      - name: k_survey_question
+        description: "Foreign key to dim_survey_question"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_survey_question')
+              field: k_survey_question
+
+      - name: sort_order
+        description: "Sort order for the response choice"
+        tests:
+          - not_null
+
+      - name: numeric_value
+        description: "Numeric value associated with this choice (e.g., 4 for 'Strongly Agree')"
+
+      - name: text_value
+        description: "Text label for this choice (e.g., 'Strongly Agree')"

@@ -1,0 +1,76 @@
+version: 2
+
+models:
+  - name: fct_survey_question_response_value
+    description: "Fact table for individual response values. Grain: 1 selected/entered value for 1 survey question response"
+    config:
+      tags: ['survey', 'core']
+      enabled: "{{ var('src:domain:survey:enabled', True) }}"
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - k_survey_response
+            - k_survey_question
+            - question_response_value_id
+    columns:
+      - name: k_survey_response
+        description: "Foreign key to fct_survey_response"
+        tests:
+          - not_null
+
+      - name: k_survey_question
+        description: "Foreign key to dim_survey_question"
+        tests:
+          - not_null
+
+      - name: question_response_value_id
+        description: "Identifier for this specific response value"
+        tests:
+          - not_null
+
+      - name: k_survey
+        description: "Foreign key to dim_survey (for filtering/aggregation)"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_survey')
+              field: k_survey
+
+      - name: k_student
+        description: "Foreign key to dim_student (nullable, from parent)"
+
+      - name: k_staff
+        description: "Foreign key to dim_staff (nullable, from parent)"
+
+      - name: k_parent
+        description: "Foreign key to dim_parent (nullable, from parent)"
+
+      - name: respondent_type
+        description: "Type of respondent (from parent)"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['student', 'staff', 'contact', 'anonymous']
+
+      - name: numeric_response
+        description: "Numeric value of the response"
+
+      - name: text_response
+        description: "Text value of the response. May contain delimited multi-select values."
+
+      - name: location
+        description: "Location where response value was provided"
+
+      - name: comment
+        description: "Optional comment or explanation"
+
+      - name: no_response
+        description: "Indicator if respondent did not provide this value"
+
+      - name: response_date
+        description: "Date response value was provided"
+
+      - name: question_response_value_count
+        description: "Measure field, always 1 for counting response values"
+        tests:
+          - not_null
