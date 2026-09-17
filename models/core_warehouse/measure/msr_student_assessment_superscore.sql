@@ -15,7 +15,11 @@ superscores as (
         objective_scores.tenant_code,
         objective_scores.school_year,
         '{{ assessment_id }}' as assessment_identifier,
+        {% if config.method == 'avg_of_max' %}
+        round(avg(objective_scores.max_scale_score)) as superscore
+        {% else %}
         sum(objective_scores.max_scale_score) as superscore
+        {% endif %}
 
     from objective_scores
 
