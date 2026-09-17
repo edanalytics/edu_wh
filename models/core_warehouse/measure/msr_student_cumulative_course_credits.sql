@@ -51,7 +51,7 @@ annual_credits as (
         )
     )
 
-    union all
+    {% if not loop.last or transcript_grouping_fields %}union all{% endif %}
 
     {% endfor %}
 
