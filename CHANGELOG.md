@@ -1,6 +1,7 @@
 # Unreleased
 ## New features
-* Update descriptions of `school_year` to increase comprehensiveness and add clarity on both format and sourcing mechanism.
+- Update descriptions of `school_year` to increase comprehensiveness and add clarity on both format and sourcing mechanism.
+- Add `generation_suffix_code` to `dim_student`
 ## Under the hood
 - Refactored `fct_student_school_association` to move the enrollment status logic into a new `bld_ef3__stu_sch_assoc__enrollment_flags` build model. The build now calculates the individual flags that make up active enrollment, while the fact model combines those flags into the final `is_active_enrollment` definition, making the logic easier to follow and maintain.
 
