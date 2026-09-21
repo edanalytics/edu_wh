@@ -121,6 +121,7 @@ formatted as (
         stu_immutable_demos.first_name,
         stu_immutable_demos.middle_name,
         stu_immutable_demos.last_name,
+        stu_immutable_demos.generation_code_suffix,
         stu_immutable_demos.display_name,
         stu_immutable_demos.birth_date,
         stu_immutable_demos.birth_country,
