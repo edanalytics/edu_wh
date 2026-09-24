@@ -1,4 +1,3 @@
--- TODO: potentially move this to edu_wh, and make the logic more configurable
 with course_transcripts as (
     select * from {{ ref('fct_course_transcripts') }}
 ),
@@ -20,8 +19,7 @@ final as (
     from course_transcripts
     join dim_course
         on course_transcripts.k_course = dim_course.k_course
-    -- TODO make logic more configurable
-    where course_transcripts.course_attempt_result = 'P'
+    where course_transcripts.course_attempt_result in ('{{ var("edu:course_transcripts:passing_results", ["P"]) | join("', '") }}')
     group by 1, 2, 3
 
 )
