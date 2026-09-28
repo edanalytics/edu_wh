@@ -49,10 +49,10 @@ formatted as (
 
     from stage
 
-    inner join dim_student
+    join dim_student
         on stage.k_student = dim_student.k_student
 
-    inner join dim_program
+    join dim_program
         on stage.k_program = dim_program.k_program
 )
 
