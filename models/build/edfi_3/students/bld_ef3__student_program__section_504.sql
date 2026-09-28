@@ -29,20 +29,14 @@ maxed as (
 
         max(
           {{ value_not_in_list(field='program_name', excluded_items=exclude_programs) }}
-        ) as is_section_504_annual,
+        ) as is_section_504_annual
 
         -- custom section 504 program agg indicators
         {% if custom_program_agg_indicators -%}
           {%- for indicator in custom_program_agg_indicators -%}
-            {{ custom_program_agg_indicators[indicator]['agg_sql'] }} as {{ indicator }},
+            , {{ custom_program_agg_indicators[indicator]['agg_sql'] }} as {{ indicator }}
           {%- endfor -%}
         {%- endif %}
-
-        max(accommodation_plan) as accommodation_plan,
-        max(section_504_eligibility) as section_504_eligibility,
-        max(section_504_eligibility_decision_date) as section_504_eligibility_decision_date,
-        max(section_504_meeting_date) as section_504_meeting_date,
-        max(section_504_disability) as section_504_disability
 
     from stage
     group by 1, 2

@@ -29,19 +29,14 @@ maxed as (
 
         max(
           {{ value_not_in_list(field='program_name', excluded_items=exclude_programs) }}
-        ) as is_neglected_or_delinquent_annual,
+        ) as is_neglected_or_delinquent_annual
 
         -- custom neglected/delinquent program agg indicators
         {% if custom_program_agg_indicators -%}
           {%- for indicator in custom_program_agg_indicators -%}
-            {{ custom_program_agg_indicators[indicator]['agg_sql'] }} as {{ indicator }},
+            , {{ custom_program_agg_indicators[indicator]['agg_sql'] }} as {{ indicator }}
           {%- endfor -%}
         {%- endif %}
-
-        max(served_outside_of_regular_session) as served_outside_of_regular_session,
-        max(ela_progress_level) as ela_progress_level,
-        max(mathematics_progress_level) as mathematics_progress_level,
-        max(neglected_or_delinquent_program) as neglected_or_delinquent_program
 
     from stage
     group by 1, 2
