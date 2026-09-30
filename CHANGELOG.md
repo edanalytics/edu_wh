@@ -2,6 +2,7 @@
 ## New features
 ## Under the hood
 ## Fixes
+- Fix the `fct_student_diploma` uniqueness test to use `k_student_xyear` because `k_student` can be null for historic records
 
 # edu_wh v0.7.0
 ## New features
