@@ -34,7 +34,7 @@ models:
       - name: period_sequence
         description: The sequential order of this period relative to other periods.
       - name: school_year
-        description: The identifier for the grading period school year.
+        description: "{{ doc('school_year_source_reference') }}"
       - name: begin_date
         description: Month, day, and year of the first day of the grading period.
       - name: end_date

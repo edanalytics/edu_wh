@@ -98,7 +98,7 @@ models:
       - name: tenant_code
         description: The tenant associated with the record.
       - name: school_year
-        description: School year specified by Spring year, e.g. the 2021-2022 year would be 2022.
+        description: "{{ doc('school_year_source_reference') }} If that reference is missing, `school_year` falls back to a value inferred from `entry_date` using a school-year cutoff date that can vary by implementation."
       - name: entry_date
         description: > 
           The month, day, and year on which an individual enters and begins to 

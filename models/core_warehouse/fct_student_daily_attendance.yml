@@ -58,7 +58,7 @@ models:
       - name: k_calendar_date
         description: Unique identifier for an individual day in a single calendar at a single school.
       - name: school_year
-        description: School year specified by Spring year, e.g. the 2021-2022 year would be 2022.
+        description: "{{ doc('school_year_source_reference') }}"
       - name: calendar_date
         description: Date on school calendar.
         config:
