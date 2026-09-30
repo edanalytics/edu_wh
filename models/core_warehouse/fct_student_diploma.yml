@@ -7,20 +7,21 @@ models:
        This fact table contains information about diploma/credentials that is awarded to a student. 
 
       ##### Primary Key:
-      `k_student, school_year, k_school, diploma_type, diploma_award_date` -- There is one record
-       per student, school, year, diploma type and award date.
+      `k_student_xyear, school_year, k_school, diploma_type, diploma_award_date` -- There is one record
+      per student, school, year, diploma type and award date. `k_student` is not part of the primary key
+      because it will be null for historical student records where the student is not in dim_student.
 
       {{ doc(var('edu:custom_docs:fct_student_diploma')) if var('edu:custom_docs:fct_student_diploma', '') }}
 
     constraints:
       - type: primary_key
-        columns: [k_student, school_year, k_school, diploma_type, diploma_award_date]
+        columns: [k_student_xyear, school_year, k_school, diploma_type, diploma_award_date]
 
     tests:
       - dbt_utils.unique_combination_of_columns:
           arguments:
             combination_of_columns:
-              - k_student
+              - k_student_xyear
               - school_year
               - k_lea
               - k_school
