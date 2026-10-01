@@ -19,7 +19,8 @@ annual_scores as (
         dim_assessment.assessment_identifier,
         dim_objective_assessment.objective_assessment_identification_code,
         max_by(dim_objective_assessment.k_objective_assessment, fct_student_objective_assessment.school_year) as k_objective_assessment__latest_year,
-        max(fct_student_objective_assessment.scale_score) as max_scale_score,
+        -- scale_score is varchar; compare as numbers, or '900' outranks '1600'
+        max(try_to_double(fct_student_objective_assessment.scale_score)) as max_scale_score,
         max(fct_student_objective_assessment.performance_level) as max_performance_level
         {# TODO dunno if we need this -- could technically differ from max_performance_level. #}
         {# max_by(fct_student_objective_assessment.performance_level, fct_student_objective_assessment.scale_score) as implied_max_performance_level #}
@@ -54,7 +55,7 @@ cumulative_scores as (
             partition by annual_scores.k_student_xyear, annual_scores.assessment_identifier, annual_scores.objective_assessment_identification_code
             order by annual_scores.school_year
             rows between unbounded preceding and current row
-        ) as max_scale_score,
+        )::varchar as max_scale_score,
         {# TODO dunno if we need this #}
         {# max_by(annual_scores.implied_max_performance_level, annual_scores.max_scale_score) over (
             partition by annual_scores.k_student_xyear, annual_scores.assessment_identifier, annual_scores.objective_assessment_identification_code

@@ -33,7 +33,10 @@ best_subscores as (
         fct_student_objective_assessment.k_student_xyear,
         fct_student_objective_assessment.tenant_code,
         fct_student_objective_assessment.school_year,
-        fct_student_objective_assessment.k_assessment,
+        -- any administration's key, for lineage only; grouping by it would give one
+        -- row per section per sitting, and the superscore would then sum or average
+        -- every sitting's sections rather than each section's best
+        max(fct_student_objective_assessment.k_assessment) as k_assessment,
         dim_assessment.assessment_identifier,
         dim_objective_assessment.objective_assessment_identification_code,
         max(try_to_double(fct_student_objective_assessment.scale_score)) as max_scale_score
@@ -45,7 +48,7 @@ best_subscores as (
     where (dim_assessment.assessment_identifier, dim_objective_assessment.objective_assessment_identification_code) in (
         {{ superscore_pairs | join(', ') }}
     )
-    group by 1, 2, 3, 4, 5, 6
+    group by 1, 2, 3, 5, 6
 
 ),
 
@@ -124,11 +127,13 @@ final as (
             rows between unbounded preceding and current row
         ) as k_assessment,
         spine.score_name,
-        max(ab.best_score) over (
+        -- compared as numbers: best_score is varchar, and a string max ranks '900'
+        -- above '1600'. annual_best already reduced every score to a number or null
+        max(try_to_double(ab.best_score)) over (
             partition by spine.k_student_xyear, spine.assessment_identifier, spine.score_name
             order by spine.school_year
             rows between unbounded preceding and current row
-        ) as best_score
+        )::varchar as best_score
     from spine
     left join annual_best as ab
         on  spine.k_student_xyear       = ab.k_student_xyear
