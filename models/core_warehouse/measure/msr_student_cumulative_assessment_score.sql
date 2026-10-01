@@ -33,10 +33,7 @@ best_subscores as (
         fct_student_objective_assessment.k_student_xyear,
         fct_student_objective_assessment.tenant_code,
         fct_student_objective_assessment.school_year,
-        -- any administration's key, for lineage only; grouping by it would give one
-        -- row per section per sitting, and the superscore would then sum or average
-        -- every sitting's sections rather than each section's best
-        max(fct_student_objective_assessment.k_assessment) as k_assessment,
+        fct_student_objective_assessment.k_assessment,
         dim_assessment.assessment_identifier,
         dim_objective_assessment.objective_assessment_identification_code,
         max(try_to_double(fct_student_objective_assessment.scale_score)) as max_scale_score
@@ -48,7 +45,7 @@ best_subscores as (
     where (dim_assessment.assessment_identifier, dim_objective_assessment.objective_assessment_identification_code) in (
         {{ superscore_pairs | join(', ') }}
     )
-    group by 1, 2, 3, 5, 6
+    group by 1, 2, 3, 4, 5, 6
 
 ),
 
