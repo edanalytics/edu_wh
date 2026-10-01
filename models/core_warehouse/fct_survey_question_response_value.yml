@@ -11,15 +11,35 @@ models:
       - type: primary_key
         columns: [k_survey_response, k_survey_question, question_response_value_id]
       - type: foreign_key
-        name: fk__fct_survey_question_response_value__k_survey_question_response
-        columns: [k_survey_response, k_survey_question]
-        to: ref('fct_survey_question_response')
-        to_columns: [k_survey_response, k_survey_question]
+        name: fk__fct_survey_question_response_value__k_survey_response
+        columns: [k_survey_response]
+        to: ref('fct_survey_response')
+        to_columns: [k_survey_response]
+      - type: foreign_key
+        name: fk__fct_survey_question_response_value__k_survey_question
+        columns: [k_survey_question]
+        to: ref('dim_survey_question')
+        to_columns: [k_survey_question]
       - type: foreign_key
         name: fk__fct_survey_question_response_value__k_survey
         columns: [k_survey]
         to: ref('dim_survey')
         to_columns: [k_survey]
+      - type: foreign_key
+        name: fk__fct_survey_question_response_value__k_student
+        columns: [k_student]
+        to: ref('dim_student')
+        to_columns: [k_student]
+      - type: foreign_key
+        name: fk__fct_survey_question_response_value__k_staff
+        columns: [k_staff]
+        to: ref('dim_staff')
+        to_columns: [k_staff]
+      - type: foreign_key
+        name: fk__fct_survey_question_response_value__k_parent
+        columns: [k_parent]
+        to: ref('dim_parent')
+        to_columns: [k_parent]
 
     tests:
       - dbt_utils.unique_combination_of_columns:

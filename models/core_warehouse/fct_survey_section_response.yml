@@ -25,10 +25,26 @@ models:
         to: ref('dim_survey_section')
         to_columns: [k_survey_section]
       - type: foreign_key
-        name: fk__fct_survey_section_response__k_survey
+        name: fk__fct_survey_question_response_value__k_survey
         columns: [k_survey]
         to: ref('dim_survey')
         to_columns: [k_survey]
+      - type: foreign_key
+        name: fk__fct_survey_question_response_value__k_student
+        columns: [k_student]
+        to: ref('dim_student')
+        to_columns: [k_student]
+      - type: foreign_key
+        name: fk__fct_survey_question_response_value__k_staff
+        columns: [k_staff]
+        to: ref('dim_staff')
+        to_columns: [k_staff]
+      - type: foreign_key
+        name: fk__fct_survey_question_response_value__k_parent
+        columns: [k_parent]
+        to: ref('dim_parent')
+        to_columns: [k_parent]
+
 
     tests:
       - dbt_utils.unique_combination_of_columns:
