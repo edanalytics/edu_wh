@@ -63,6 +63,7 @@ unioned as (
 select 
     tenant_code,
     api_year,
+    k_course,
     k_course_section,
     characteristic as course_level_characteristic
 from unioned

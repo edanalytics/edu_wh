@@ -49,6 +49,7 @@ models:
       - name: k_session
       - name: tenant_code
       - name: school_year
+        description: "{{ doc('school_year_source_reference') }}"
       - name: attendance_event_category
       - name: attendance_event_reason
       - name: is_absent

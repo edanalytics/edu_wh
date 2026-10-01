@@ -6,6 +6,7 @@ filtered as (
 	select
 		tenant_code,
 		school_year,
+		k_student_program,
 		k_student,
 		k_student_xyear,
 		k_program,
@@ -25,7 +26,7 @@ deduped as (
 	{{
 		dbt_utils.deduplicate(
 			relation='filtered',
-			partition_by='k_student, k_program, school_year, program_enroll_begin_date',
+			partition_by='k_student_program',
 			order_by='disability_type'
 		)
 	}}

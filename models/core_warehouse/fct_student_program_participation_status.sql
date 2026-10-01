@@ -1,0 +1,94 @@
+{{
+  config(
+    post_hook=[
+        "alter table {{ this }} alter column k_student_program set not null",
+        "alter table {{ this }} alter column k_student set not null",
+        "alter table {{ this }} alter column k_program set not null",
+        "alter table {{ this }} alter column program_enroll_begin_date set not null",
+        "alter table {{ this }} alter column participation_status set not null",
+        "alter table {{ this }} alter column status_begin_date set not null",
+        "alter table {{ this }} add primary key (k_student_program, participation_status, status_begin_date)",
+        "alter table {{ this }} add constraint fk_{{ this.name }}_student foreign key (k_student) references {{ ref('dim_student') }}",
+        "alter table {{ this }} add constraint fk_{{ this.name }}_program foreign key (k_program) references {{ ref('dim_program') }}",
+    ]
+  )
+}}
+
+-- Define all optional program service models here.
+{% set stage_program_relations = [] %}
+
+--Generic Program Assoc
+{% do stage_program_relations.append(ref('stg_ef3__stu_program__program_participation_statuses')) %}
+
+-- Special Education
+{% if var('src:program:special_ed:enabled', True) %}
+    {% do stage_program_relations.append(ref('stg_ef3__stu_spec_ed__program_participation_statuses')) %}
+{% endif %}
+
+-- Language Instruction
+{% if var('src:program:language_instruction:enabled', True) %}
+    {% do stage_program_relations.append(ref('stg_ef3__stu_lang_instr__program_participation_statuses')) %}
+{% endif %}
+
+-- Homeless
+{% if var('src:program:homeless:enabled', True) %}
+    {% do stage_program_relations.append(ref('stg_ef3__stu_homeless__program_participation_statuses')) %}
+{% endif %}
+
+-- Title I Part A
+{% if var('src:program:title_i:enabled', True) %}
+    {% do stage_program_relations.append(ref('stg_ef3__stu_title_i_part_a__program_participation_statuses')) %}
+{% endif %}
+
+-- CTE
+{% if var('src:program:cte:enabled', True) %}
+    {% do stage_program_relations.append(ref('stg_ef3__stu_cte__program_participation_statuses')) %}
+{% endif %}
+
+-- Migrant Education
+{% if var('src:program:migrant_education:enabled', True) %}
+    {% do stage_program_relations.append(ref('stg_ef3__stu_migrant_edu__program_participation_statuses')) %}
+{% endif %}
+
+-- Food Service
+{% if var('src:program:food_service:enabled', True) %}
+    {% do stage_program_relations.append(ref('stg_ef3__stu_school_food_service__program_participation_statuses')) %}
+{% endif %}
+
+with dim_student as (
+    select * from {{ ref('dim_student') }}
+),
+
+stacked as (
+    {{ dbt_utils.union_relations(
+
+        relations=stage_program_relations
+
+    ) }}
+),
+
+{# -- append the name of each `stage_program_relations` into a new list, so we can pass that list to `extract_extension` below -- #}
+{% set relation_names = [] -%}
+{%- for relation in stage_program_relations -%}
+  {%- do relation_names.append(relation.name) -%}
+{%- endfor -%}
+
+subset as (
+  select
+    stacked.k_student_program,
+    stacked.k_student,
+    stacked.k_student_xyear,
+    stacked.k_program,
+    stacked.tenant_code,
+    stacked.program_enroll_begin_date,
+    stacked.participation_status,
+    stacked.status_begin_date,
+    stacked.status_end_date,
+    stacked.designated_by
+    {# add any extension columns configured from all stage_program_relations #}
+    {{ edu_edfi_source.extract_extension(model_name=relation_names, flatten=False) }}
+
+  from stacked
+)
+
+select * from subset

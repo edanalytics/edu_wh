@@ -9,6 +9,7 @@ pivoted as (
     select 
         tenant_code,
         api_year,
+        k_course,
         k_course_section,
         {{ edu_edfi_source.json_array_agg(
             'course_level_characteristic',

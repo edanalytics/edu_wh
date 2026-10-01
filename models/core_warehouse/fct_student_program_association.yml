@@ -7,14 +7,14 @@ models:
         This fact table defines associations between programs and a student. 
       
       ##### Primary Key:
-        `k_student, k_program` -- There is one record per tenant, year, student, and program.
+        `k_student_program` -- There is one record per student, year, program, ed org, and program enrollment begin date.
 
     config:
       tags: ['core']
 
     constraints:
       - type: primary_key
-        columns: [k_student, k_program, program_enroll_begin_date]
+        columns: [k_student_program]
       - type: foreign_key
         name: fk__fct_student_program_association__k_student
         columns: [k_student]
@@ -30,10 +30,9 @@ models:
       - dbt_utils.unique_combination_of_columns:
           arguments:
             combination_of_columns:
-              - k_student
-              - k_program
-              - program_enroll_begin_date
+              - k_student_program
     columns:
+      - name: k_student_program
       - name: k_student
       - name: k_student_xyear
       - name: k_program
@@ -41,6 +40,7 @@ models:
       - name: k_school
       - name: tenant_code
       - name: school_year
+        description: "{{ doc('school_year_ods_pull') }}"
       - name: program_enroll_begin_date
       - name: program_enroll_end_date
       - name: is_served_outside_regular_session

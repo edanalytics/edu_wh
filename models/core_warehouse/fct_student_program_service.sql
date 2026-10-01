@@ -1,11 +1,12 @@
 {{
   config(
     post_hook=[
+        "alter table {{ this }} alter column k_student_program set not null",
         "alter table {{ this }} alter column k_student set not null",
         "alter table {{ this }} alter column k_program set not null",
         "alter table {{ this }} alter column program_enroll_begin_date set not null",
         "alter table {{ this }} alter column program_service set not null",
-        "alter table {{ this }} add primary key (k_student, k_program, program_enroll_begin_date, program_service)",
+        "alter table {{ this }} add primary key (k_student_program, program_service)",
         "alter table {{ this }} add constraint fk_{{ this.name }}_student foreign key (k_student) references {{ ref('dim_student') }}",
         "alter table {{ this }} add constraint fk_{{ this.name }}_program foreign key (k_program) references {{ ref('dim_program') }}",
     ]
@@ -15,6 +16,9 @@
 
 -- Define all optional program service models here.
 {% set stage_program_relations = [] %}
+
+--Generic Program Assoc
+{% do stage_program_relations.append(ref('stg_ef3__stu_program__program_services')) %}
 
 -- Special Education
 {% if var('src:program:special_ed:enabled', True) %}
@@ -75,6 +79,7 @@ stacked as (
 
 subset as (
   select
+    stacked.k_student_program,
     stacked.k_student,
     stacked.k_student_xyear,
     stacked.k_program,
@@ -83,6 +88,9 @@ subset as (
     stacked.program_service,
     stacked.primary_indicator,
     stacked.v_providers,
+    {% if var('src:program:cte:enabled', True) %}
+        stacked.cip_code,
+    {% endif %}
     stacked.service_begin_date,
     stacked.service_end_date
     {# add any extension columns configured from all stage_program_relations #}

@@ -24,7 +24,7 @@ models:
       - name: tenant_code
         description: "Code defining the Tenant (may be an LEA, SEA, etc.) of the Ed-Fi ODS from which this record was pulled"
       - name: school_year
-        description: "The school year passed to the Ed-Fi API when pulling this record from Course"
+        description: "{{ doc('school_year_ods_pull') }}"
       - name: course_code
         description: "A unique alphanumeric code assigned to a course."
       - name: course_title
@@ -76,6 +76,8 @@ models:
       - name: time_required_for_completion
         description: "The actual or estimated number of clock minutes required for class completion. This number is especially important for career 
                       and technical education classes and may represent (in minutes) the clock hour requirement of the class."
+      - name: course_characteristics_array
+        description: A list of all the course level characteristics associated with the course.
       - name: subject_array
         description: A list of all the academic subjects associated with the course.
 

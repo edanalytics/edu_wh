@@ -1,0 +1,71 @@
+version: 2
+
+models:
+  - name: fct_staff_ed_org_assignment
+    config:
+      tags: ['core']
+
+    constraints:
+      - type: primary_key
+        columns: [k_staff_ed_org_assignment]
+      - type: foreign_key
+        name: fk__fct_staff_ed_org_assignment__k_staff
+        columns: [k_staff]
+        to: ref('dim_staff')
+        to_columns: [k_staff]
+      - type: foreign_key
+        name: fk__fct_staff_ed_org_assignment__k_lea
+        columns: [k_lea]
+        to: ref('dim_lea')
+        to_columns: [k_lea]
+      - type: foreign_key
+        name: fk__fct_staff_ed_org_assignment__k_school
+        columns: [k_school]
+        to: ref('dim_school')
+        to_columns: [k_school]
+
+    description: >
+     ##### Overview:
+       This fact table provides information on the association between Staff and Education Organizations Assignment. It includes both active and historic associations.
+
+     ##### Primary Key:
+       `k_staff, school_year, k_lea, k_school, staff_classification, begin_date` -- There is one record per staff, year, education organization, classification, and association begin date.
+
+     ##### Important Business Rules:
+       `staff_classification` and `begin_date` are part of the unique key, so be careful of duplicates when querying staff from this table.
+
+       `is_active_assignment` is TRUE if:
+       - the assignment is linked to the latest school year in the system,
+       - the `begin_date` is earlier than the current date,
+       - and the `end_date` is either null or later than the current date
+
+    columns:
+      - name: k_staff_ed_org_assignment
+        description: "Unique key for the staff education organization assignment association"
+      - name: k_staff
+        description: "Unique key for staff, foreign key reference to `dim_staff`"
+      - name: k_lea
+        description: "Unique key for LEA, foreign key reference to `dim_lea`"
+      - name: k_school
+        description: "Unique key for school, foreign key reference to `dim_school`"
+      - name: tenant_code
+        description: "Code defining the Tenant (may be an LEA, SEA, etc.) of the EdFi ODS from which this record was pulled"
+      - name: school_year
+      - name: position_title
+        description: "The descriptive name of an individual's position."
+      - name: begin_date
+        description: "Month, day, and year of the start or effective date of a staff member's employment, contract, or relationship with the LEA."
+      - name: end_date
+        description: "Month, day, and year of the end or termination date of a staff member's employment, contract, or relationship with the LEA."
+      - name: full_time_equivalency
+        description: "The ratio between the hours of work expected in a position and the hours of work normally expected in a full-time position in the same setting."
+      - name: order_of_assignment
+        description: "Describes whether the assignment is this the staff member's primary assignment, secondary assignment, etc."
+      - name: credential_identifier
+        description: "Identifier or serial number assigned to the credential."
+      - name: credential_state
+        description: "The abbreviation for the name of the state (within the United States) or extra-state jurisdiction in which a license/credential was issued."
+      - name: staff_classification
+        description: "The titles of employment, official status, or rank of education staff."
+      - name: is_active_assignment
+        description: "Flags whether this assignment is currently active. See full description in **Important Business Rules** section above."

@@ -69,7 +69,7 @@ models:
       - name: k_student
         description: Unique identifier for the student-year. Foreign key reference to `dim_student`.
       - name: school_year
-        description: The school year for which the assessment was administered to a student.	
+        description: "{{ doc('school_year_assessment') }}"
       - name: administration_date
         description: The date and time an assessment was completed by the student.
       - name: administration_end_date

@@ -19,6 +19,9 @@ bld_ef3__wide_ids_course as (
 bld_ef3__course_subject as (
     select * from {{ ref('bld_ef3__course_subject') }}
 ),
+course_chars as (
+    select * from {{ ref('bld_ef3__course__wide_course_characteristics') }}
+),
 formatted as (
     select 
         stg_course.k_course,
@@ -50,6 +53,15 @@ formatted as (
         stg_course.number_of_parts,
         stg_course.time_required_for_completion,
 
+          -- course characteristics
+        {{ accordion_columns(
+            source_table='bld_ef3__course__wide_course_characteristics',
+            exclude_columns=['tenant_code', 'api_year', 'k_course', 'course_characteristics_array'],
+            source_alias='course_chars',
+            coalesce_value = 'FALSE'
+        ) }}
+        course_chars.course_characteristics_array,
+
         -- custom indicators
         {% if custom_data_sources is not none and custom_data_sources | length -%}
           {%- for source in custom_data_sources -%}
@@ -67,6 +79,8 @@ formatted as (
         on stg_course.k_course = bld_ef3__wide_ids_course.k_course
     left join bld_ef3__course_subject
         on stg_course.k_course = bld_ef3__course_subject.k_course
+    left join course_chars
+        on stg_course.k_course = course_chars.k_course
     
     -- custom data sources
     {% if custom_data_sources is not none and custom_data_sources | length -%}

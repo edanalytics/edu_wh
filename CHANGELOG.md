@@ -1,7 +1,48 @@
 # Unreleased
 ## New features
+* Update descriptions of `school_year` to increase comprehensiveness and add clarity on both format and sourcing mechanism.
 ## Under the hood
+- Refactored `fct_student_school_association` to move the enrollment status logic into a new `bld_ef3__stu_sch_assoc__enrollment_flags` build model. The build now calculates the individual flags that make up active enrollment, while the fact model combines those flags into the final `is_active_enrollment` definition, making the logic easier to follow and maintain.
+
 ## Fixes
+- Fixed `is_active_enrollment` in `fct_student_school_association`, which made current enrollments inactive when data for the next school year was loaded before that year had actually started. The active school year is now based on the most recent school year that has begun, using the first school day and falling back to `entry_date` when no calendar match is available, rather than using the most recent school year loaded in general.
+
+## New features
+- Add `fct_staff_ed_org_assignment`. This model brings the staging model columns through to the warehouse, including a new primary key
+- Breaking change: `k_staff_ed_org_assignment` is now expected in `stg_ef3__staff_education_organization_assignment_associatons`, therefore any implementations using a custom version of this staging model will need the new key added.
+
+# edu_wh v0.7.1
+## New features
+- Add `bld_ef3__stu_sch_assoc__enrollment_flags` as a dedicated home for enrollment business rule flags
+- Add `fct_staff_ed_org_assignment` to surface staff who have an ed-org assignment but no school association
+- Improve the school_year column description in the docs and consolidate it into a shared docs block, so the definition is maintained in one place instead of repeated across models
+## Under the hood
+- Move enrollment flags out of `fct_student_school_association` and refactor the logic into a series of modular boolean flags, improving logical flow and readability
+## Fixes 
+- Fix `ct_student_school_association.is_active_enrollment` so current records are no longer incorrectly marked inactive when next year's data loads early
+- Fix `school_year` attribution in `dim_assessment` for cross-tenant assessments (applies only when an upstream student assess school year != api_year)
+
+# edu_wh v0.7.0
+## New features
+- Add `course_level_characteristics_array` column to `dim_course`. This column was previously added to `dim_course_section`.
+- Add `section_characteristics_array` and individual section characteristics to `dim_course_section`.
+  - Done via new `bld_ef3__section__wide_section_characteristics`;
+  - Breaking change: New xwalk is required, `xwalk_section_characteristics`. Default can be found in edu_project_template.
+- Added `fct_student_disability`, a new fact table unifying student disabilities from ed org associations and special education program associations into a single model. Includes `is_program` to distinguish the two grains, `k_student_program` for joining to program association fact tables, and extensible boolean designation columns via `xwalk_disability_designations`.
+- Breaking change: New xwalk is required, `xwalk_disability_designations`, to pivot disability designation descriptors into boolean indicator columns in `fct_student_disability`. Expected columns: `disability_designation_descriptor` (the Ed-Fi descriptor value to match) and `indicator_name` (the name of the resulting boolean column). If the seed is empty, the designation columns are omitted and the model builds without them.
+
+# edu_wh v0.6.4
+## New features
+- Add finance warehouse models: `dim_chart_of_account`, `dim_local_account`, `fct_local_actual_snapshots`, `fct_local_budget_snapshots`, by default in schema `finance_warehouse` to isolate finance models from core warehouse
+- Add `fct_student_program_participation_status`, a new fact table that unions participation status records from all enabled program types, at the grain of `k_student_program, participation_status, status_begin_date`.
+- Add `k_student_program` surrogate key to all program fact tables and `__program_services` build models. The primary key on all program fact tables changed from `(k_student, k_program, program_enroll_begin_date)` to `k_student_program`.
+- Add generic program services (`stg_ef3__stu_program__program_services`) as a source in `fct_student_program_service`.
+- Add `cip_code` to `fct_student_program_service` when `src:program:cte:enabled` is true.
+- Add var `edu:enroll:first_day_exit_date_inclusive` to allow specific logic for inclusivity of the first day of school in exit date window logic.
+## Under the hood
+- Change the source of `k_lea`, `k_school`, and `school_year` on all program fact tables from `dim_program` to the staging enrollment record. These columns now reflect the ed org the student is enrolled in at enrollment time, not the ed org that owns the program definition.
+## Fixes
+- Fix null `course_title` values in `fct_course_transcripts` by sourcing the title from `dim_course`, where the field is required rather than optional.
 
 # edu_wh v0.6.3
 ## New features
