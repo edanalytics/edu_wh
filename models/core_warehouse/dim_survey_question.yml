@@ -15,11 +15,6 @@ models:
         columns: [k_survey]
         to: ref('dim_survey')
         to_columns: [k_survey]
-      - type: foreign_key
-        name: fk__dim_survey_question__k_survey_section
-        columns: [k_survey_section]
-        to: ref('dim_survey_section')
-        to_columns: [k_survey_section]
 
     columns:
       - name: k_survey_question
