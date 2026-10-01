@@ -4,7 +4,6 @@
             "alter table {{ this }} alter column k_survey_question set not null",
             "alter table {{ this }} alter column sort_order set not null",
             "alter table {{ this }} add primary key (k_survey_question, sort_order)",
-            "alter table {{ this }} add constraint fk_{{ this.name }}_survey_question foreign key (k_survey_question) references {{ ref('dim_survey_question') }}",
         ]
     )
 }}

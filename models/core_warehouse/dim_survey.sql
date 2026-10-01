@@ -3,9 +3,6 @@
         post_hook=[
             "alter table {{ this }} alter column k_survey set not null",
             "alter table {{ this }} add primary key (k_survey)",
-            "alter table {{ this }} add constraint fk_{{ this.name }}_lea foreign key (k_lea) references {{ ref('dim_lea') }}",
-            "alter table {{ this }} add constraint fk_{{ this.name }}_school foreign key (k_school) references {{ ref('dim_school') }}",
-            "alter table {{ this }} add constraint fk_{{ this.name }}_session foreign key (k_session) references {{ ref('dim_session') }}",
         ]
     )
 }}
