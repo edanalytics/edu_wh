@@ -21,7 +21,9 @@ formatted as (
         stg_survey_questions.tenant_code,
         stg_survey_questions.question_code,
         stg_survey_questions.question_text,
-        stg_survey_questions.question_form
+        stg_survey_questions.question_form,
+        stg_survey_questions.v_response_choices,
+        stg_survey_questions.v_matrices
 
     from stg_survey_questions
 )
