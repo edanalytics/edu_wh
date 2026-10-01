@@ -22,6 +22,8 @@ xwalk_response_values as (
         namespace,
         question_code,
         text_value,
+        normalized_sort_order,
+        normalized_numeric_value,
         normalized_text_value
 
     from {{ ref('xwalk_survey_question_response_values') }}
