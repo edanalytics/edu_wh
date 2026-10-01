@@ -7,6 +7,9 @@
             "alter table {{ this }} add primary key (k_survey_response, k_survey_question, question_response_value_id)",
             "alter table {{ this }} add constraint fk_{{ this.name }}_survey_question_response foreign key (k_survey_response, k_survey_question) references {{ ref('fct_survey_question_response') }}",
             "alter table {{ this }} add constraint fk_{{ this.name }}_survey foreign key (k_survey) references {{ ref('dim_survey') }}",
+            "alter table {{ this }} add constraint fk_{{ this.name }}_student foreign key (k_student) references {{ ref('dim_student') }}",
+            "alter table {{ this }} add constraint fk_{{ this.name }}_staff foreign key (k_staff) references {{ ref('dim_staff') }}",
+            "alter table {{ this }} add constraint fk_{{ this.name }}_parent foreign key (k_parent) references {{ ref('dim_parent') }}",
         ]
     )
 }}
@@ -35,8 +38,7 @@ formatted as (
         fct_survey_question_response.location,
         fct_survey_question_response.comment,
         fct_survey_question_response.no_response,
-        fct_survey_question_response.response_date,
-        1 as question_response_value_count
+        fct_survey_question_response.response_date
 
     from stg_survey_question_response_values
     
