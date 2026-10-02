@@ -25,16 +25,17 @@ formatted as (
     select
         stg_survey_question_response_values.k_survey_response,
         stg_survey_question_response_values.k_survey_question,
-        stg_survey_question_response_values.tenant_code,
         stg_survey_question_response_values.question_response_value_id,
         stg_survey_question_responses.k_survey,
         fct_survey_responses.k_student,
         fct_survey_responses.k_staff,
         fct_survey_responses.k_parent,
+        stg_survey_question_response_values.tenant_code,
         fct_survey_responses.respondent_type,
-        fct_survey_responses.response_date,
         stg_survey_question_response_values.numeric_response,
         stg_survey_question_response_values.text_response,
+        fct_survey_responses.response_date,
+        fct_survey_responses.location,
         stg_survey_question_responses.comment,
         stg_survey_question_responses.no_response
 

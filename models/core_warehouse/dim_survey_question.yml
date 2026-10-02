@@ -15,6 +15,11 @@ models:
         columns: [k_survey]
         to: ref('dim_survey')
         to_columns: [k_survey]
+      - type: foreign_key
+        name: fk__dim_survey_question__k_survey_section
+        columns: [k_survey_section]
+        to: ref('dim_survey_section')
+        to_columns: [k_survey_section]
 
     columns:
       - name: k_survey_question
@@ -42,8 +47,6 @@ models:
               arguments:
                 to: ref('dim_survey_section')
                 field: k_survey_section
-              config:
-                enabled: "{{ var('src:domain:survey:enabled', False) and var('edu:survey:sections:enabled', False) }}"
 
       - name: question_code
         description: "Code or identifier for the question"
@@ -53,3 +56,9 @@ models:
 
       - name: question_form
         description: "Form or type of question (e.g., multiple choice, free text)"
+
+      - name: v_response_choices
+        description: "Possible responses to a closed response survey question."
+
+      - name: v_matrices
+        description: "Information about the matrix element in the survey."

@@ -33,6 +33,21 @@ models:
           - unique
           - not_null
 
+      - name: k_lea
+        description: "Foreign key reference to dim_lea (nullable)"
+
+      - name: k_school
+        description: "Foreign key reference to dim_school (nullable)"
+
+      - name: k_session
+        description: "Foreign key reference to dim_session (nullable)"
+
+      - name: ed_org_id
+        description: "Education organization identifier"
+
+      - name: ed_org_type
+        description: "Type of education organization (e.g., SEA, LEA, School)"
+
       - name: survey_id
         description: "Natural key identifier for the survey"
 
@@ -44,18 +59,6 @@ models:
 
       - name: school_year
         description: "School year when the survey was administered"
-
-      - name: ed_org_id
-        description: "Education organization identifier"
-
-      - name: ed_org_type
-        description: "Type of education organization (e.g., SEA, LEA, School)"
-
-      - name: school_id
-        description: "School identifier if survey is school-specific"
-
-      - name: session_name
-        description: "Session name when survey was administered"
 
       - name: number_administered
         description: "Number of times the survey was administered"

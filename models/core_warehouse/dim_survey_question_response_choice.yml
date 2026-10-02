@@ -42,3 +42,18 @@ models:
 
       - name: text_value
         description: "Text label for this choice (e.g., 'Strongly Agree')"
+
+      - name: normalized_sort_order
+        description: "Standardized sort order for the response choice."
+        config:
+          enabled: "{{ var('edu:xwalk_survey_question_response_choices:enabled', False) }}"
+
+      - name: normalized_numeric_value
+        description: "Standardized numeric value for this choice."
+        config:
+          enabled: "{{ var('edu:xwalk_survey_question_response_choices:enabled', False) }}"
+
+      - name: normalized_text_value
+        description: "Standardized text label for this choice."
+        config:
+          enabled: "{{ var('edu:xwalk_survey_question_response_choices:enabled', False) }}"
