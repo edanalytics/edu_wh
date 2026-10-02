@@ -1,0 +1,67 @@
+version: 2
+
+models:
+  - name: dim_survey_question
+    description: "Survey question definitions"
+    config:
+      tags: ['survey', 'core']
+      enabled: "{{ var('src:domain:survey:enabled', False) }}"
+
+    constraints:
+      - type: primary_key
+        columns: [k_survey_question]
+      - type: foreign_key
+        name: fk__dim_survey_question__k_survey
+        columns: [k_survey]
+        to: ref('dim_survey')
+        to_columns: [k_survey]
+      - type: foreign_key
+        name: fk__dim_survey_question__k_survey_section
+        columns: [k_survey_section]
+        to: ref('dim_survey_section')
+        to_columns: [k_survey_section]
+
+    columns:
+      - name: k_survey_question
+        description: "Surrogate key for survey question"
+        tests:
+          - unique
+          - not_null
+
+      - name: k_survey
+        description: "Foreign key to dim_survey"
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_survey')
+                field: k_survey
+
+      - name: k_survey_section
+        description: >
+          Foreign key to dim_survey_section (nullable). Ed-Fi treats surveySectionReference as
+          optional, so this is null for surveys that are not divided into sections. Only tested when
+          survey sections are enabled, since dim_survey_section is not built otherwise.
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_survey_section')
+                field: k_survey_section
+
+      - name: tenant_code
+        description: "Tenant associated with the survey question."
+
+      - name: question_code
+        description: "Code or identifier for the question"
+
+      - name: question_text
+        description: "Full text of the survey question"
+
+      - name: question_form
+        description: "Form or type of question (e.g., multiple choice, free text)"
+
+      - name: v_response_choices
+        description: "Possible responses to a closed response survey question."
+
+      - name: v_matrices
+        description: "Information about the matrix element in the survey."

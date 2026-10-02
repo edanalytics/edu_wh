@@ -1,0 +1,64 @@
+version: 2
+
+models:
+  - name: dim_survey
+    description: "Survey definitions and metadata"
+    config:
+      tags: ['survey', 'core']
+      enabled: "{{ var('src:domain:survey:enabled', False) }}"
+
+    constraints:
+      - type: primary_key
+        columns: [k_survey]
+      - type: foreign_key
+        name: fk__dim_survey__k_lea
+        columns: [k_lea]
+        to: ref('dim_lea')
+        to_columns: [k_lea]
+      - type: foreign_key
+        name: fk__dim_survey__k_school
+        columns: [k_school]
+        to: ref('dim_school')
+        to_columns: [k_school]
+      - type: foreign_key
+        name: fk__dim_survey__k_session
+        columns: [k_session]
+        to: ref('dim_session')
+        to_columns: [k_session]
+
+    columns:
+      - name: k_survey
+        description: "Surrogate key for survey"
+        tests:
+          - unique
+          - not_null
+
+      - name: k_lea
+        description: "Foreign key reference to dim_lea (nullable)"
+
+      - name: k_school
+        description: "Foreign key reference to dim_school (nullable)"
+
+      - name: k_session
+        description: "Foreign key reference to dim_session (nullable)"
+
+      - name: ed_org_id
+        description: "Education organization identifier"
+
+      - name: ed_org_type
+        description: "Type of education organization (e.g., SEA, LEA, School)"
+
+      - name: survey_id
+        description: "Natural key identifier for the survey"
+
+      - name: survey_title
+        description: "Title of the survey"
+
+      - name: survey_category
+        description: "Category or type of survey"
+
+      - name: school_year
+        description: "School year when the survey was administered"
+
+      - name: number_administered
+        description: "Number of times the survey was administered"
