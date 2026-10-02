@@ -28,6 +28,7 @@ joined as (
         stg_student.first_name,
         stg_student.middle_name,
         stg_student.last_name,
+        stg_student.generation_code_suffix,
         {# stu_display_name logic: prefer SQL from this dbt variable, but default to "concat(...)" #}
         {{ var('edu:stu_demos:display_name_sql',
           "concat(

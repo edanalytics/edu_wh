@@ -32,6 +32,7 @@ models:
       - name: k_assessment
       - name: tenant_code
       - name: school_year
+        description: "{{ doc('school_year_assessment') }}"
       - name: assessment_identifier
       - name: namespace
       - name: objective_assessment_description

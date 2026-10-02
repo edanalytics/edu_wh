@@ -77,6 +77,7 @@ models:
         description: Defining key for the student in this school year.
       - name: tenant_code
       - name: school_year
+        description: "{{ doc('school_year_academic_record') }}"
       - name: academic_term
       - name: course_attempt_result
         description: The result from the student's attempt to take the course, e.g. Pass or Fail

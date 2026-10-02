@@ -30,7 +30,7 @@ dedupe_cross_tenant_assessments as (
         dbt_utils.deduplicate(
             relation='student_assessment_cross_tenant',
             partition_by='k_assessment',
-            order_by='tenant_code,school_year'
+            order_by='tenant_code,api_year'
         )
     }}
 ),
@@ -38,7 +38,7 @@ formatted as (
     select
         coalesce(dedupe_cross_tenant_assessments.k_assessment, stg_assessments.k_assessment) as k_assessment,
         coalesce(dedupe_cross_tenant_assessments.tenant_code, stg_assessments.tenant_code) as tenant_code,
-        coalesce(dedupe_cross_tenant_assessments.school_year, stg_assessments.api_year) as school_year,
+        coalesce(dedupe_cross_tenant_assessments.api_year, stg_assessments.api_year) as school_year,
         stg_assessments.assessment_identifier,
         stg_assessments.namespace,
         stg_assessments.assessment_title,
