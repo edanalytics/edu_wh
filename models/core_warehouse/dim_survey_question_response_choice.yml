@@ -32,6 +32,9 @@ models:
                 to: ref('dim_survey_question')
                 field: k_survey_question
 
+      - name: tenant_code
+        description: "Tenant associated with the survey question."
+
       - name: sort_order
         description: "Sort order for the response choice"
         tests:

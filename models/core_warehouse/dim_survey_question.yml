@@ -48,6 +48,9 @@ models:
                 to: ref('dim_survey_section')
                 field: k_survey_section
 
+      - name: tenant_code
+        description: "Tenant associated with the survey question."
+
       - name: question_code
         description: "Code or identifier for the question"
 

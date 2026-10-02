@@ -34,7 +34,7 @@ models:
                 field: k_survey
 
       - name: tenant_code
-        description: Tenant the section was sourced from. Component of k_survey_section.
+        description: Tenant the section was sourced from.
 
       - name: survey_section_title
         description: >
