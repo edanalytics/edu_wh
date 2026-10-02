@@ -36,7 +36,7 @@ models:
       - name: k_lea
       - name: k_school
       - name: school_year
-        description: The school year for which the diploma was awarded to a student.
+        description: "{{ doc('school_year_academic_record') }}"
       - name: diploma_type
         description: The type of diploma/credential that is awarded to a student in recognition of his/her completion of the curricular requirements.
       - name: diploma_award_date
