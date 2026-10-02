@@ -1,16 +1,10 @@
 # Unreleased
 ## New features
-* Update descriptions of `school_year` to increase comprehensiveness and add clarity on both format and sourcing mechanism.
-## Under the hood
-- Refactored `fct_student_school_association` to move the enrollment status logic into a new `bld_ef3__stu_sch_assoc__enrollment_flags` build model. The build now calculates the individual flags that make up active enrollment, while the fact model combines those flags into the final `is_active_enrollment` definition, making the logic easier to follow and maintain.
-
+- Added program models for `student_section_504_program_associations` and `student_neglected_or_delinquent_program_associations`. Disable these programs by setting `'src:program:section_504:enabled': False` and `'src:program:neglected_or_delinquent:enabled': False` if necessary
+- Adds optional filtering of `bld_ef3__staff_official_emails` to only official email domains. Set `edu:staff:email_domains_xwalk_enabled` to true and add `xwalk_tenant_email_domains` with columns `tenant_code`, `email_domain` to use this feature.
+- Add `generation_suffix_code` to `dim_student`
 ## Fixes
-- Fixed `is_active_enrollment` in `fct_student_school_association`, which made current enrollments inactive when data for the next school year was loaded before that year had actually started. The active school year is now based on the most recent school year that has begun, using the first school day and falling back to `entry_date` when no calendar match is available, rather than using the most recent school year loaded in general.
 - Fix the `fct_student_diploma` uniqueness test to use `k_student_xyear` because `k_student` can be null for historic records
-
-## New features
-- Add `fct_staff_ed_org_assignment`. This model brings the staging model columns through to the warehouse, including a new primary key
-- Breaking change: `k_staff_ed_org_assignment` is now expected in `stg_ef3__staff_education_organization_assignment_associatons`, therefore any implementations using a custom version of this staging model will need the new key added.
 
 # edu_wh v0.7.1
 ## New features

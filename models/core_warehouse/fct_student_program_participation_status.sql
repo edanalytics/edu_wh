@@ -50,6 +50,16 @@
     {% do stage_program_relations.append(ref('stg_ef3__stu_migrant_edu__program_participation_statuses')) %}
 {% endif %}
 
+-- Section 504
+{% if var('src:program:section_504:enabled', True) %}
+    {% do stage_program_relations.append(ref('stg_ef3__stu_section_504__program_participation_statuses')) %}
+{% endif %}
+
+-- Neglected or Delinquent
+{% if var('src:program:neglected_or_delinquent:enabled', True) %}
+    {% do stage_program_relations.append(ref('stg_ef3__stu_neglected_delinquent__program_participation_statuses')) %}
+{% endif %}
+
 -- Food Service
 {% if var('src:program:food_service:enabled', True) %}
     {% do stage_program_relations.append(ref('stg_ef3__stu_school_food_service__program_participation_statuses')) %}

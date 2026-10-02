@@ -1,0 +1,53 @@
+version: 2
+
+models:
+  - name: fct_student_section_504_program_associations
+    description: >
+      ##### Overview:
+        This fact table contains student section 504 program enrollment information.
+
+      ##### Primary Key:
+        `k_student_program` -- There is one record per student, year, program, ed org, and program enrollment begin date.
+
+    config:
+      tags: ['section_504']
+      enabled: "{{ var('src:program:section_504:enabled', True) }}"
+
+    constraints:
+      - type: primary_key
+        columns: [k_student_program]
+      - type: foreign_key
+        name: fk__fct_student_section_504_program_associations__k_student
+        columns: [k_student]
+        to: ref('dim_student')
+        to_columns: [k_student]
+      - type: foreign_key
+        name: fk__fct_student_section_504_program_associations__k_program
+        columns: [k_program]
+        to: ref('dim_program')
+        to_columns: [k_program]
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - k_student_program
+
+    columns:
+      - name: k_student_program
+      - name: k_student
+      - name: k_student_xyear
+      - name: k_program
+      - name: k_lea
+      - name: k_school
+      - name: tenant_code
+      - name: school_year
+      - name: program_enroll_begin_date
+      - name: program_enroll_end_date
+      - name: accommodation_plan
+      - name: section_504_eligibility
+      - name: served_outside_of_regular_session
+      - name: section_504_eligibility_decision_date
+      - name: section_504_meeting_date
+      - name: section_504_disability
+      - name: reason_exited
