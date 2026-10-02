@@ -93,6 +93,16 @@ vars:
   'edu:migrant_education:exclude_programs': Null
   'edu:migrant_education:agg_types': ['annual', 'active']
 
+  'edu:section_504:start_date_column': program_enroll_begin_date
+  'edu:section_504:exit_date_column': program_enroll_end_date
+  'edu:section_504:exclude_programs': Null
+  'edu:section_504:agg_types': ['annual', 'active']
+
+  'edu:neglected_or_delinquent:start_date_column': program_enroll_begin_date
+  'edu:neglected_or_delinquent:exit_date_column': program_enroll_end_date
+  'edu:neglected_or_delinquent:exclude_programs': Null
+  'edu:neglected_or_delinquent:agg_types': ['annual', 'active']
+
   # label for 'Present' days generated from negative attendance
   'edu:attendance:in_attendance_code': In Attendance
   # threshold and minimum enrolled days for chronic absence definition
