@@ -3,6 +3,8 @@
 - Added program models for `student_section_504_program_associations` and `student_neglected_or_delinquent_program_associations`. Disable these programs by setting `'src:program:section_504:enabled': False` and `'src:program:neglected_or_delinquent:enabled': False` if necessary
 - Adds optional filtering of `bld_ef3__staff_official_emails` to only official email domains. Set `edu:staff:email_domains_xwalk_enabled` to true and add `xwalk_tenant_email_domains` with columns `tenant_code`, `email_domain` to use this feature.
 - Add `generation_suffix_code` to `dim_student`
+## Fixes
+- Fix the `fct_student_diploma` uniqueness test to use `k_student_xyear` because `k_student` can be null for historic records
 
 # edu_wh v0.7.1
 ## New features
