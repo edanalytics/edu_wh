@@ -15,6 +15,7 @@ with stg_survey_question_response_choices as (
 
 formatted as (
     select
+        stg_survey_question_response_choices.k_survey,
         stg_survey_question_response_choices.k_survey_question,
         stg_survey_question_response_choices.tenant_code,
         stg_survey_question_response_choices.sort_order,
