@@ -96,7 +96,7 @@ models:
   - name: bld_ef3__student_program__section_504
     config:
       tags: ['section_504']
-      enabled: "{{ var('src:program:section_504:enabled', True) }}"
+      enabled: "{{ var('src:program:section_504:enabled', False) }}"
   - name: bld_ef3__student__disabilities
     config:
       tags: ['special_ed']
