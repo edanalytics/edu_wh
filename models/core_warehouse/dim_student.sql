@@ -107,7 +107,7 @@ stu_other_names as (
     ),
 {% endif %}
 
-{% if var('src:program:section_504:enabled', True) %}
+{% if var('src:program:section_504:enabled', False) %}
     stu_section_504 as (
         select * from {{ ref('bld_ef3__student_program__section_504') }}
     ),
@@ -225,7 +225,7 @@ formatted as (
             {% endif %}
         {% endif %}
 
-        {% if var('src:program:section_504:enabled', True) %}
+        {% if var('src:program:section_504:enabled', False) %}
             {% for agg_type in var('edu:section_504:agg_types') %}
                 coalesce(stu_section_504.is_section_504_{{agg_type}}, false) as is_section_504_{{agg_type}},
             {% endfor %}
@@ -365,7 +365,7 @@ formatted as (
             on stu_demos.k_student = stu_migrant_education.k_student
     {% endif %}
 
-    {% if var('src:program:section_504:enabled', True) %}
+    {% if var('src:program:section_504:enabled', False) %}
         left join stu_section_504
             on stu_demos.k_student = stu_section_504.k_student
     {% endif %}
