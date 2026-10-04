@@ -11,7 +11,7 @@ models:
 
     config:
       tags: ['section_504']
-      enabled: "{{ var('src:program:section_504:enabled', True) }}"
+      enabled: "{{ var('src:program:section_504:enabled', False) }}"
 
     constraints:
       - type: primary_key
