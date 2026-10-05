@@ -1,0 +1,29 @@
+{{
+    config(
+        post_hook=[
+            "alter table {{ this }} alter column k_survey_question set not null",
+            "alter table {{ this }} add primary key (k_survey_question)",
+        ]
+    )
+}}
+
+with stg_survey_questions as (
+    select * from {{ ref('stg_ef3__survey_questions') }}
+),
+
+formatted as (
+    select
+        stg_survey_questions.k_survey_question,
+        stg_survey_questions.k_survey,
+        stg_survey_questions.k_survey_section,
+        stg_survey_questions.tenant_code,
+        stg_survey_questions.question_code,
+        stg_survey_questions.question_text,
+        stg_survey_questions.question_form,
+        stg_survey_questions.v_response_choices,
+        stg_survey_questions.v_matrices
+
+    from stg_survey_questions
+)
+
+select * from formatted

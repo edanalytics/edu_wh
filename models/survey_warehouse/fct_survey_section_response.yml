@@ -1,0 +1,113 @@
+version: 2
+
+models:
+  - name: fct_survey_section_response
+    description: >
+      Fact table for survey section responses. Grain: 1 section of 1 submitted survey response.
+      Note that Ed-Fi's SurveySectionResponse carries no measures beyond the optional section_rating,
+      so this is effectively a coverage (factless) fact recording which sections a respondent reached.
+
+    config:
+      tags: ['survey', 'core']
+      enabled: "{{ var('src:domain:survey:enabled', False) }}"
+
+    constraints:
+      - type: primary_key
+        columns: [k_survey_response, k_survey_section]
+      - type: foreign_key
+        name: fk__fct_survey_section_response__k_survey_response
+        columns: [k_survey_response]
+        to: ref('fct_survey_response')
+        to_columns: [k_survey_response]
+      - type: foreign_key
+        name: fk__fct_survey_section_response__k_survey_section
+        columns: [k_survey_section]
+        to: ref('dim_survey_section')
+        to_columns: [k_survey_section]
+      - type: foreign_key
+        name: fk__fct_survey_question_response_value__k_survey
+        columns: [k_survey]
+        to: ref('dim_survey')
+        to_columns: [k_survey]
+      - type: foreign_key
+        name: fk__fct_survey_question_response_value__k_student
+        columns: [k_student]
+        to: ref('dim_student')
+        to_columns: [k_student]
+      - type: foreign_key
+        name: fk__fct_survey_question_response_value__k_staff
+        columns: [k_staff]
+        to: ref('dim_staff')
+        to_columns: [k_staff]
+      - type: foreign_key
+        name: fk__fct_survey_question_response_value__k_parent
+        columns: [k_parent]
+        to: ref('dim_parent')
+        to_columns: [k_parent]
+
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - k_survey_response
+              - k_survey_section
+
+    columns:
+      - name: k_survey_response
+        description: "Foreign key to fct_survey_response"
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('fct_survey_response')
+                field: k_survey_response
+
+      - name: k_survey_section
+        description: "Foreign key to dim_survey_section"
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_survey_section')
+                field: k_survey_section
+
+      - name: k_survey
+        description: "Foreign key to dim_survey (for filtering/aggregation, from parent fct_survey_response)"
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_survey')
+                field: k_survey
+
+      - name: k_student
+        description: "Foreign key to dim_student (nullable, from parent fct_survey_response)"
+
+      - name: k_staff
+        description: "Foreign key to dim_staff (nullable, from parent fct_survey_response)"
+
+      - name: k_parent
+        description: "Foreign key to dim_parent (nullable, from parent fct_survey_response)"
+
+      - name: tenant_code
+        description: Tenant the section response was sourced from. Component of k_survey_response.
+
+      - name: respondent_type
+        description: "Type of respondent (from parent fct_survey_response)"
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['student', 'staff', 'parent', 'anonymous']
+
+      - name: response_date
+        description: "Date of the survey response (from parent fct_survey_response)"
+      
+      - name: location
+        description: Location of the respondent, often a city, district, or school.
+
+      - name: section_rating
+        description: >
+          Optional respondent rating of the section as a whole. Frequently not populated by survey
+          applications, in which case this fact carries no measure other than section_response_count.
