@@ -32,6 +32,9 @@ models:
     finance_warehouse:
       +schema: finance_wh
       +enabled: "{{ var('edu:finance:enabled', False) }}"
+    survey_warehouse:
+      +schema: survey_wh
+      +enabled: "{{ var('src:domain:survey:enabled', False) }}"
     tpdm_warehouse:
       +schema: wh
       +enabled: "{{ var('edu:tpdm:enabled', False) }}"
