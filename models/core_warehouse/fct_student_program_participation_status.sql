@@ -51,7 +51,7 @@
 {% endif %}
 
 -- Section 504
-{% if var('src:program:section_504:enabled', True) %}
+{% if var('src:program:section_504:enabled', False) %}
     {% do stage_program_relations.append(ref('stg_ef3__stu_section_504__program_participation_statuses')) %}
 {% endif %}
 
