@@ -40,7 +40,7 @@ models:
       - type: foreign_key
         name: fk__fct_student_daily_attendance__k_calendar_date
         columns: [k_calendar_date]
-        to: ref('dim_school')
+        to: ref('dim_calendar_date')
         to_columns: [k_calendar_date]
       
     tests:
