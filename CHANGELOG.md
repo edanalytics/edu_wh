@@ -1,5 +1,7 @@
 # Unreleased
 ## New features
+## Under the hood
+- Nest generic test arguments under `arguments:` to resolve `MissingArgumentsPropertyInGenericTestDeprecation` warnings
 ## Fixes
 
 # edu_wh v0.7.2
