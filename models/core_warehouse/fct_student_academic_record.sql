@@ -9,7 +9,7 @@
 }}
 
 with stg_academic_record as (
-    select * from {{ ref('stg_ef3__student_academic_records') }}
+    select * from {{ ref('bld_ef3__academic_record_mode') }}
 ),
 dim_school as (
     select * from {{ ref('dim_school') }}
@@ -18,7 +18,7 @@ dim_student as (
     select * from {{ ref('dim_student') }}
 ),
 formatted as (
-    select 
+    select
         stg_academic_record.k_student_academic_record,
         dim_student.k_student,  -- will be null if no dim_student record for this 
         stg_academic_record.k_student_xyear,
