@@ -7,13 +7,18 @@ seed_academic_record_mode as (
 longitudinal_mode as (
     select stg_academic_record.*,
     -- keeping this column here temporarily for qc
-    seed_academic_record_mode.academic_record_mode
+    coalesce(seed_academic_record_mode.academic_record_mode, 'longitudinal') as academic_record_mode
     from stg_academic_record
     left join seed_academic_record_mode
         on stg_academic_record.tenant_code = seed_academic_record_mode.tenant_code
+    -- default to interpreting as longitudinal unless specified
     where (academic_record_mode = 'longitudinal'
         or academic_record_mode is null)
-    qualify api_year = max(api_year) over(partition by tenant_code, ed_org_id, student_unique_id)
+    qualify api_year = max(api_year) over(
+        partition by stg_academic_record.tenant_code,
+                     stg_academic_record.ed_org_id,
+                     stg_academic_record.student_unique_id
+        )
 ),
 single_year_mode as (
     select stg_academic_record.*,
