@@ -1,3 +1,6 @@
+-- SPDX-FileCopyrightText: 2022 Education Analytics
+-- SPDX-License-Identifier: MPL-2.0
+
 with score_results as (
     select * from {{ ref('stg_ef3__student_objective_assessments__score_results') }}
 ),

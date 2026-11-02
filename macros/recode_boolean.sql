@@ -1,3 +1,6 @@
+-- SPDX-FileCopyrightText: 2022 Education Analytics
+-- SPDX-License-Identifier: MPL-2.0
+
 {#
 This macro reclassifies text fields to boolean, and includes commonly observed T/F indicators as defaults.
 

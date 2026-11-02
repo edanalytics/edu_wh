@@ -1,3 +1,6 @@
+-- SPDX-FileCopyrightText: 2022 Education Analytics
+-- SPDX-License-Identifier: MPL-2.0
+
 {% set xwalk_academic_term_enabled = var('edu:xwalk_academic_terms:enabled', False) %}
 
 with stg_diplomas as (

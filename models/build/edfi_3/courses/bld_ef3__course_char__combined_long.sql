@@ -1,3 +1,6 @@
+-- SPDX-FileCopyrightText: 2022 Education Analytics
+-- SPDX-License-Identifier: MPL-2.0
+
 -- this model unpacks the characteristics payload from each of the 3 levels at 
 -- which it's defined, then unions the lists at the section-characteristic grain
 with sections as (

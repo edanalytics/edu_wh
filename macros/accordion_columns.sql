@@ -1,3 +1,6 @@
+-- SPDX-FileCopyrightText: 2022 Education Analytics
+-- SPDX-License-Identifier: MPL-2.0
+
 {#- 
 This macro helps with configurable, extensible sets of columns that can 
 be included in a table.

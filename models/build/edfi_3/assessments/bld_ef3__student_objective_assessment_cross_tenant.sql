@@ -1,3 +1,6 @@
+-- SPDX-FileCopyrightText: 2022 Education Analytics
+-- SPDX-License-Identifier: MPL-2.0
+
 {% if var("edu:assessment:cross_tenant_enabled", False) -%}
 
 with student_obj_assessments as (

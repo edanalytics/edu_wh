@@ -1,3 +1,6 @@
+-- SPDX-FileCopyrightText: 2022 Education Analytics
+-- SPDX-License-Identifier: MPL-2.0
+
 {# customizable: certain program names may be excluded and not counted as language instruction #}
 {% set exclude_programs = var('edu:special_ed:exclude_programs') %}
 

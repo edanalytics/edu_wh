@@ -1,3 +1,6 @@
+-- SPDX-FileCopyrightText: 2022 Education Analytics
+-- SPDX-License-Identifier: MPL-2.0
+
 {# Check if a model is empty (has zero rows). Return boolean #}
 {% macro is_empty_model(model_name) %}
 

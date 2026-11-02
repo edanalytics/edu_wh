@@ -1,3 +1,6 @@
+-- SPDX-FileCopyrightText: 2022 Education Analytics
+-- SPDX-License-Identifier: MPL-2.0
+
 with lea_ids as (
     select * from {{ ref('stg_ef3__local_education_agencies__identification_codes') }}
 ),

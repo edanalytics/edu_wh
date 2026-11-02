@@ -1,3 +1,6 @@
+-- SPDX-FileCopyrightText: 2022 Education Analytics
+-- SPDX-License-Identifier: MPL-2.0
+
 {# If edu var has been configured to make demos immutable, set partition var to `k_candidate_xyear` so demos are unique by xyear #}
 {# otherwise, use k_candidate so demos are unique by candidate+year #}
 {%- if var('edu:candidate_demos:make_demos_immutable', False) -%}

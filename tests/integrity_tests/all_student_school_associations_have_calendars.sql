@@ -1,3 +1,6 @@
+-- SPDX-FileCopyrightText: 2022 Education Analytics
+-- SPDX-License-Identifier: MPL-2.0
+
 /*
 Find records in student school associations where we can't
 associate the record with a school calendar, and the school has >1 calendar.

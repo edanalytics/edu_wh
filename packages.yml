@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2022 Education Analytics
+# SPDX-License-Identifier: MPL-2.0
+
 packages:
   - package: edanalytics/edu_edfi_source
     version: [">=0.7.2", "<0.8.0"]

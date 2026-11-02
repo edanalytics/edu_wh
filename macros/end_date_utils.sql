@@ -1,3 +1,6 @@
+-- SPDX-FileCopyrightText: 2022 Education Analytics
+-- SPDX-License-Identifier: MPL-2.0
+
 {% macro date_within_end_date(date_col, end_date, inclusive=true, coalesce_to_today=false) %}
 {#- 
     Produces sql to determine if a date is within an end date or not.

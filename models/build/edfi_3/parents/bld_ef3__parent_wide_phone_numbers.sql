@@ -1,3 +1,6 @@
+-- SPDX-FileCopyrightText: 2022 Education Analytics
+-- SPDX-License-Identifier: MPL-2.0
+
 with stg_parent_phones as (
     -- parents were renamed to contacts in Data Standard v5.0
     -- the contacts staging tables contain both parent and contact records

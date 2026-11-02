@@ -1,3 +1,6 @@
+-- SPDX-FileCopyrightText: 2022 Education Analytics
+-- SPDX-License-Identifier: MPL-2.0
+
 with stg_staff_races as (
     select * from {{ ref('stg_ef3__staffs__races') }}
 ),

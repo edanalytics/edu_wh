@@ -1,3 +1,6 @@
+-- SPDX-FileCopyrightText: 2022 Education Analytics
+-- SPDX-License-Identifier: MPL-2.0
+
 with stage_program_services as (
     select * from {{ ref('stg_ef3__stu_title_i_part_a__program_services') }}
 ),

@@ -1,3 +1,6 @@
+-- SPDX-FileCopyrightText: 2022 Education Analytics
+-- SPDX-License-Identifier: MPL-2.0
+
 -- when filling positive attendance, we need to link to sessions 
 -- to produce k_session. we can't fill by date range, because schools
 -- have sessions with overlapping date ranges

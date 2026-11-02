@@ -1,3 +1,6 @@
+-- SPDX-FileCopyrightText: 2022 Education Analytics
+-- SPDX-License-Identifier: MPL-2.0
+
 {% macro row_pluck(obj, key, column, preferred, where=None) %}
 {#- 
     Pluck a single row out of a set, where we have a preference but want 

@@ -1,3 +1,6 @@
+-- SPDX-FileCopyrightText: 2022 Education Analytics
+-- SPDX-License-Identifier: MPL-2.0
+
 with sections as (
     select * from {{ ref('stg_ef3__sections') }}
 ),
