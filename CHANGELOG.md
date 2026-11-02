@@ -1,9 +1,15 @@
 # Unreleased
 ## New features
 ## Under the hood
-- Update License to MPL 2.0
 ## Fixes
 
+# edu_wh v0.7.3
+## Under the hood
+- Update License to MPL 2.0
+- Nest generic test arguments under `arguments:` to resolve `MissingArgumentsPropertyInGenericTestDeprecation` warnings
+## Fixes
+- Fix foreign key constraint to `k_calendar_date` in `fct_student_daily_attendance` config
+- 
 # edu_wh v0.7.2
 ## New features
 - Add core warehouse models for survey domain: `dim_survey`, `dim_survey_section`, `dim_survey_question`, `dim_survey_question_response_choice`, `fct_survey_response`, `fct_survey_question_response_value`, `fct_survey_section_response`.
