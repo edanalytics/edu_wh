@@ -1,5 +1,7 @@
 # Unreleased
 ## New features
+## Under the hood
+- Update License to MPL 2.0
 ## Fixes
 
 # edu_wh v0.7.2
