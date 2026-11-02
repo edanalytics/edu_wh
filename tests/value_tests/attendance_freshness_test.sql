@@ -1,3 +1,6 @@
+-- SPDX-FileCopyrightText: 2022 Education Analytics
+-- SPDX-License-Identifier: MPL-2.0
+
 /*
 **What is this test?**
 This test finds records where attendance data for a tenant is stale (> 7 days old).

@@ -1,0 +1,28 @@
+repos:
+  - repo: https://github.com/Lucas-C/pre-commit-hooks
+    rev: v1.5.6   # run `pre-commit autoupdate` to pin the current tag
+    hooks:
+      - id: insert-license
+        name: Add license header (Python)
+        files: \.py$
+        args:
+          - --license-filepath
+          - LICENSE_HEADER.txt
+          - --comment-style=#
+
+      - id: insert-license
+        name: Add license header (yaml)
+        types: [yaml]
+        exclude: ^(\.github/|\.pre-commit-config\.yaml$)
+        args:
+          - --license-filepath
+          - LICENSE_HEADER.txt
+          - --comment-style=#
+
+      - id: insert-license
+        name: Add license header (SQL)
+        files: \.sql$
+        args:
+          - --license-filepath
+          - LICENSE_HEADER.txt
+          - --comment-style=--

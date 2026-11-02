@@ -1,3 +1,6 @@
+-- SPDX-FileCopyrightText: 2022 Education Analytics
+-- SPDX-License-Identifier: MPL-2.0
+
 {# This macro will be available in v1.0 of dbt utils. Copied to here for now. #}
 {% macro get_single_value(query, default) %}
 

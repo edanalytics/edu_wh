@@ -1,3 +1,6 @@
+-- SPDX-FileCopyrightText: 2022 Education Analytics
+-- SPDX-License-Identifier: MPL-2.0
+
 {#- 
 Ensure that the cross-walking of calendar events completely covers data in Ed-Fi.
  todo: 

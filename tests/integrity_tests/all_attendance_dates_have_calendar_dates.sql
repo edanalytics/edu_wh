@@ -1,3 +1,6 @@
+-- SPDX-FileCopyrightText: 2022 Education Analytics
+-- SPDX-License-Identifier: MPL-2.0
+
 /*
 Find records where attendance is recorded for a student, but we can't 
 associate the record with a day in the school's calendar.

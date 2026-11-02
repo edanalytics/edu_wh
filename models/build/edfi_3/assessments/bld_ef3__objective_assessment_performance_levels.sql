@@ -1,3 +1,6 @@
+-- SPDX-FileCopyrightText: 2022 Education Analytics
+-- SPDX-License-Identifier: MPL-2.0
+
 with stg_obj_assessment_perf_levels as (
     select * from {{ ref('stg_ef3__objective_assessments__performance_levels') }}
 ),

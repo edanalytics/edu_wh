@@ -1,3 +1,6 @@
+-- SPDX-FileCopyrightText: 2022 Education Analytics
+-- SPDX-License-Identifier: MPL-2.0
+
 /*
 Find records where the is_active, is_annual, and is_ever values are 
 not consistent across each indicator_name. This can occur when there 

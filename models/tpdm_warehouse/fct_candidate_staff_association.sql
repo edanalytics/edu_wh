@@ -1,3 +1,6 @@
+-- SPDX-FileCopyrightText: 2022 Education Analytics
+-- SPDX-License-Identifier: MPL-2.0
+
 with stg_candidate_staff_association as (
     select * from {{ ref('stg_tpdm__candidate_relationship_to_staff_associations') }}
 ),

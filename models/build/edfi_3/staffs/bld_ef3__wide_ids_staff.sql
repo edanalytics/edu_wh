@@ -1,3 +1,6 @@
+-- SPDX-FileCopyrightText: 2022 Education Analytics
+-- SPDX-License-Identifier: MPL-2.0
+
 with staff_ids as (
     select * from {{ ref('stg_ef3__staffs__identification_codes') }}
 ),

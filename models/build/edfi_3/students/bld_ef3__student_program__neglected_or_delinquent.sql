@@ -1,3 +1,6 @@
+-- SPDX-FileCopyrightText: 2022 Education Analytics
+-- SPDX-License-Identifier: MPL-2.0
+
 {# customizable: certain program names may be excluded and not counted as neglected or delinquent #}
 {% set exclude_programs = var('edu:neglected_or_delinquent:exclude_programs') %}
 

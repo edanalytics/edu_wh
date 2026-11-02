@@ -1,3 +1,6 @@
+-- SPDX-FileCopyrightText: 2022 Education Analytics
+-- SPDX-License-Identifier: MPL-2.0
+
 with student_school as (
     select * from {{ ref('stg_ef3__student_school_associations') }}
 ),

@@ -1,3 +1,6 @@
+-- SPDX-FileCopyrightText: 2022 Education Analytics
+-- SPDX-License-Identifier: MPL-2.0
+
 /*
 **What is this test?**
 This test finds records where a grade_level_override for dim_student is NOT unique on k_student. If true,

@@ -1,3 +1,6 @@
+-- SPDX-FileCopyrightText: 2022 Education Analytics
+-- SPDX-License-Identifier: MPL-2.0
+
 -- in multi-tenant systems, it is possible for each tenant to individually 
 -- define all the districts/schools in a state. We want to avoid having 
 -- each tenant individually define each district and school, and only

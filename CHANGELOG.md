@@ -1,6 +1,11 @@
 # Unreleased
 ## New features
 ## Under the hood
+## Fixes
+
+# edu_wh v0.7.3
+## Under the hood
+- Update License to MPL 2.0
 - Nest generic test arguments under `arguments:` to resolve `MissingArgumentsPropertyInGenericTestDeprecation` warnings
 ## Fixes
 - Fix foreign key constraint to `k_calendar_date` in `fct_student_daily_attendance` config

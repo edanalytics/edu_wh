@@ -1,3 +1,6 @@
+-- SPDX-FileCopyrightText: 2022 Education Analytics
+-- SPDX-License-Identifier: MPL-2.0
+
 {# otherName properties pulled from Ed-Fi Data Handbook (v5.0.0)
 https://edfidocs.blob.core.windows.net/$web/handbook/v5.0/index.html#/OtherName82adcecf-8e39-4f24-a5a6-3c32964693c3 #}
 {%- set name_type_list = ['personal_title_prefix', 'first_name', 'middle_name', 'last_surname', 'generation_code_suffix']-%}

@@ -1,3 +1,6 @@
+-- SPDX-FileCopyrightText: 2022 Education Analytics
+-- SPDX-License-Identifier: MPL-2.0
+
 with student_cohort_years as (
     select * from {{ ref('stg_ef3__stu_ed_org__cohort_years') }}
 ),

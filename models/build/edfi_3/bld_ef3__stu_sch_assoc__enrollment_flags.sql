@@ -1,3 +1,6 @@
+-- SPDX-FileCopyrightText: 2022 Education Analytics
+-- SPDX-License-Identifier: MPL-2.0
+
 {#-
     enrollment behavior is configurable because source systems do not all
     represent enrollment dates and withdrawal records the same way.

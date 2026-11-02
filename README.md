@@ -29,7 +29,7 @@ packages:
 > This package already includes the upstream [Ed-Fi Source package](https://github.com/edanalytics/edu_edfi_source), so you don't need to include it again.
 
 ## License
-This package is free to use for noncommercial purposes. 
+Mozilla Public License Version 2.0
 See [License](LICENSE.md).
 
 ## Configuration
