@@ -3,6 +3,7 @@
 ## Under the hood
 - Nest generic test arguments under `arguments:` to resolve `MissingArgumentsPropertyInGenericTestDeprecation` warnings
 ## Fixes
+- Fix foreign key constraint to `k_calendar_date` in `fct_student_daily_attendance` config
 
 # edu_wh v0.7.2
 ## New features
