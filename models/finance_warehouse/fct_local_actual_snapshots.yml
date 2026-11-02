@@ -13,8 +13,9 @@ models:
         tests:
           - not_null
           - relationships:
-              to: ref('dim_local_account')
-              field: k_local_account
+              arguments:
+                to: ref('dim_local_account')
+                field: k_local_account
       - name: k_local_actual_snapshot
         description: Primary key — surrogate for the actual record at account / as-of grain
         tests:

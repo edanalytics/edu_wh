@@ -13,8 +13,9 @@ models:
         tests:
           - not_null
           - relationships:
-              to: ref('dim_local_account')
-              field: k_local_account
+              arguments:
+                to: ref('dim_local_account')
+                field: k_local_account
       - name: k_local_budget_snapshot
         description: Primary key — surrogate for the budget record at account / as-of grain
         tests:

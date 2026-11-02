@@ -19,9 +19,10 @@ models:
 
     tests:
       - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - k_candidate
-            - k_staff
+          arguments:
+            combination_of_columns:
+              - k_candidate
+              - k_staff
     columns:
       - name: k_candidate
         description: "Unique key for candidate, foreign key reference to `dim_candidate`"
