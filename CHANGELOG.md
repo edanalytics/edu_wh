@@ -1,6 +1,7 @@
 # Unreleased
 ## New features
 ## Fixes
+- Fix foreign key constraint to `k_calendar_date` in `fct_student_daily_attendance` config
 
 # edu_wh v0.7.2
 ## New features
