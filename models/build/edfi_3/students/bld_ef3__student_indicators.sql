@@ -1,7 +1,7 @@
 -- SPDX-FileCopyrightText: 2022 Education Analytics
 -- SPDX-License-Identifier: MPL-2.0
 
-{%- set sql_statement  -%}
+{% set sql_statement  -%}
     select 
         dim_stu_name,
         type
