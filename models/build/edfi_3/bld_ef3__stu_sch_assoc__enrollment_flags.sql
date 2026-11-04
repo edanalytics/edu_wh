@@ -1,14 +1,14 @@
 -- SPDX-FileCopyrightText: 2022 Education Analytics
 -- SPDX-License-Identifier: MPL-2.0
 
-{#-
+{#
     enrollment behavior is configurable because source systems do not all
     represent enrollment dates and withdrawal records the same way.
 
     these values control which enrollment records survive validation and how
     active enrollment status is calculated later in the model. they are resolved
     once here to keep the ctes below easier to read and understand.
--#}
+#}
 
     {#- controls whether the model removes exits before the first day of school. -#}
     {%- set exclude_exit_before_first_day = var('edu:enroll:exclude_exit_before_first_day', true) -%}
