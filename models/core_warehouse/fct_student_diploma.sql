@@ -6,6 +6,14 @@ with stg_diplomas as (
 stu_academic_records as (
       select * from {{ ref('fct_student_academic_record') }}
 ), 
+-- Keep diplomas from the same ODS as the selected academic record.
+-- Match on both the record key and api_year so diplomas from older copies aren't included.
+chosen_ods as (
+    select 
+        k_student_academic_record, 
+        api_year 
+    from {{ ref('bld_ef3__academic_records_latest_ods') }}
+),
 joined_diploma as (
     select
         stg_diplomas.tenant_code,  
@@ -37,6 +45,9 @@ joined_diploma as (
         {# add any extension columns configured from stg_ef3__student_academic_records__diplomas #}
         {{ edu_edfi_source.extract_extension(model_name='stg_ef3__student_academic_records__diplomas', flatten=False) }}
     from stg_diplomas 
+    join chosen_ods
+        on stg_diplomas.k_student_academic_record = chosen_ods.k_student_academic_record
+        and stg_diplomas.api_year = chosen_ods.api_year
     join stu_academic_records 
         on stg_diplomas.k_student_academic_record = stu_academic_records.k_student_academic_record
 ),

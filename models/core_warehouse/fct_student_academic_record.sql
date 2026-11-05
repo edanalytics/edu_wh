@@ -9,7 +9,7 @@
 }}
 
 with stg_academic_record as (
-    select * from {{ ref('bld_ef3__academic_record_mode') }}
+    select * from {{ ref('bld_ef3__academic_records_latest_ods') }}
 ),
 dim_school as (
     select * from {{ ref('dim_school') }}
