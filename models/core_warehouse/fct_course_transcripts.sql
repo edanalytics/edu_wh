@@ -16,7 +16,7 @@
 }}
 
 with course_transcripts as (
-    select * from {{ ref('stg_ef3__course_transcripts') }}
+    select * from {{ ref('bld_ef3__course_transcripts_latest_ods') }}
 ),
 dim_course as (
     select * from {{ ref('dim_course') }}
