@@ -2,10 +2,6 @@ with stg_academic_record as (
     select * from {{ ref('stg_ef3__student_academic_records') }}
 ),
 
-with stg_academic_record as (
-    select * from {{ ref('stg_ef3__student_academic_records') }}
-),
-
 -- The same student's school year academic records can show up in several ODS years.
 -- So here, we keep the records from the newest ODS that has the academic record for the student-school_year combination.
 -- For example:
@@ -26,19 +22,6 @@ with stg_academic_record as (
 -- Diplomas come from the ODS chosen here.
 -- Transcripts and GPAs make their own choice, since a newer ODS can have
 -- academic records without the corresponding courses or GPA values.
-
-latest_ods as (
-    select *
-    from stg_academic_record
-    qualify api_year = max(api_year) over (
-        partition by
-            tenant_code,
-            lower(student_unique_id),
-            school_year
-    )
-)
-
-select * from latest_ods
 
 latest_ods as (
     select *
