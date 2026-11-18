@@ -14,7 +14,7 @@ models:
       per student, school, year, honor type and award date. `k_student` is not part of the primary key
       because it will be null for historical student records where the student is not in dim_student.
 
-      {{ doc(var('edu:custom_docs:fct_student_diploma')) if var('edu:custom_docs:fct_student_diploma', '') }}
+      {{ doc(var('edu:custom_docs:fct_student_academic_honors')) if var('edu:custom_docs:fct_student_academic_honors', '') }}
 
     config:
       tags: ['core']
