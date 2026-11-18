@@ -8,7 +8,7 @@
         "alter table {{ this }} add primary key (k_staff_ed_org_contact)",
         "alter table {{ this }} alter column k_staff set not null",
         "alter table {{ this }} alter column contact_title set not null",
-        "alter table {{ this }} alter column email_address set not null"
+        "alter table {{ this }} alter column email_address set not null",
         "alter table {{ this }} add constraint fk__{{ this.name }}__staff foreign key (k_staff) references {{ ref('dim_staff') }}",
         "alter table {{ this }} add constraint fk__{{ this.name }}__lea foreign key (k_lea) references {{ ref('dim_lea') }}",
         "alter table {{ this }} add constraint fk__{{ this.name }}__school foreign key (k_school) references {{ ref('dim_school') }}"
