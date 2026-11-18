@@ -1,6 +1,15 @@
 -- SPDX-FileCopyrightText: 2022 Education Analytics
 -- SPDX-License-Identifier: MPL-2.0
 
+{{
+  config(
+    post_hook=[
+        "alter table {{ this }} add primary key (k_student_xyear, school_year, k_lea, k_school, academic_honor_category_code, honor_award_date)",
+        "alter table {{ this }} add constraint fk_{{ this.name }} foreign key (k_student_academic_record) references {{ ref('fct_student_academic_record') }}",
+    ]
+  )
+}}
+
 {% set xwalk_academic_term_enabled = var('edu:xwalk_academic_terms:enabled', False) %}
 
 with stg_academic_honors as (
@@ -15,7 +24,7 @@ joined_academic_honors as (
       -- we pull k_student, k_student_xyear from stu_academic record to ensure we are 
       -- including historical student records from years prior where the student is not in dim_student. 
       -- This logic is already implemented in fct_student_academic_record, we pull this in to avoid 
-      -- duplicating the logic.
+      -- duplicating the logic.`
       stu_academic_records.k_student,
       stu_academic_records.k_student_xyear,
       stu_academic_records.k_lea, 
