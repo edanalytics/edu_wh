@@ -1,4 +1,5 @@
 # Unreleased
+- add `fct_student_academic_honors` model to track information about academic honors associated with student academic records.
 ## New features
 ## Under the hood
 ## Fixes
