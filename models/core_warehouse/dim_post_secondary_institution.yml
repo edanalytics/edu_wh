@@ -1,0 +1,68 @@
+# SPDX-FileCopyrightText: 2022 Education Analytics
+# SPDX-License-Identifier: MPL-2.0
+
+version: 1
+
+models:
+  - name: dim_post_secondary_institution
+    description: >
+      ##### Overview:
+        This dimension table defines post-secondary institutions. It includes identifying and descriptive information about each institution, 
+        as well as its current preferred address.
+
+
+      ##### Primary Key:
+        `k_post_secondary_institution` -- There is one record per post-secondary institution
+
+
+    config:
+      tags: ['core']
+
+    constraints:
+      - type: primary_key
+        columns: [k_post_secondary_institution]
+
+    columns:
+      - name: k_post_secondary_institution
+        description: Defining key for post-secondary institutions.
+        tests:
+          - unique
+      - name: tenant_code
+      - name: psi_id
+        description: The identifier for the post-secondary institution.
+      - name: psi_name
+        description: The name of the post-secondary institution.
+      - name: psi_short_name
+        description: The short name of the post-secondary institution.
+      - name: administrative_funding_control
+        description: The administrative funding control of the post-secondary institution.
+      - name: post_secondary_institution_level
+        description: The level of the post-secondary institution.
+      - name: operational_status
+        description: The operational status of the post-secondary institution.
+      - name: web_site
+        description: The web site of the post-secondary institution.
+      - name: address_type
+        description: The type of address 
+      - name: street_address
+        description: The street address of the post-secondary institution.
+      - name: city
+        description: The city of the post-secondary institution.
+      - name: name_of_county
+        description: The name of the county in which the post-secondary institution is located.
+      - name: state_code
+        description: The state in which the post-secondary institution is located.
+      - name: postal_code
+        description: The postal code of the post-secondary institution.
+      - name: building_site_number
+        description: The building or site number associated with the post-secondary institution address.
+      - name: locale
+        description: The locale associated with the post-secondary institution address.
+      - name: congressional_district
+        description: The congressional district in which the post-secondary institution is located.
+      - name: county_fips_code
+        description: The FIPS code for the county in which the post-secondary institution is located.
+      - name: latitude
+        description: The latitude of the post-secondary institution address.
+      - name: longitude
+        description: The longitude of the post-secondary institution address.
