@@ -1,0 +1,71 @@
+# SPDX-FileCopyrightText: 2022 Education Analytics
+# SPDX-License-Identifier: MPL-2.0
+
+version: 2
+
+models:
+  - name: fct_student_academic_honors
+    description: >
+      ##### Overview:
+        Represents academic honors associated with student academic records.
+
+      ##### Primary Key:
+      `k_student_xyear, school_year, k_school, academic_honor_category_code, honor_award_date` -- There is one record
+      per student, school, year, honor type and award date. `k_student` is not part of the primary key
+      because it will be null for historical student records where the student is not in dim_student.
+
+      {{ doc(var('edu:custom_docs:fct_student_diploma')) if var('edu:custom_docs:fct_student_diploma', '') }}
+
+    config:
+      tags: ['core']
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - k_student_xyear
+              - school_year
+              - k_lea
+              - k_school
+              - academic_honor_category_code
+              - honor_award_date
+
+    columns:
+      - name: tenant_code
+      - name: k_student
+        description: Defining key for the student in this school year.
+      - name: k_student_xyear
+        description: Defining key for the student that is consistent across years.
+      - name: k_lea
+      - name: k_school
+      - name: school_year
+      - name: k_student_academic_record
+        description: Foreign key reference to fct_student_academic_record.
+      - name: academic_honor_category_code
+        description: The category of academic honor awarded to the student.
+      - name: honor_description
+        description: A description of the academic honor.
+      - name: honor_award_date
+        description: The date the academic honor was awarded.
+      - name: honor_award_expires_date
+        description: The date the academic honor expires.
+      - name: achievement_category_descriptor
+        description: The category of achievement represented by the honor.
+      - name: achievement_category_system
+        description: The system used to categorize the achievement.
+      - name: achievement_title
+        description: The title of the achievement.
+      - name: criteria
+        description: The criteria used to confer the honor.
+      - name: criteria_url
+        description: A URL containing the honor criteria.
+      - name: evidence_statement
+        description: A statement describing evidence supporting the achievement.
+      - name: image_url
+        description: A URL containing an image associated with the achievement.
+      - name: issuer_name
+        description: The name of the organization issuing the honor.
+      - name: issuer_origin_url
+        description: The URL for the issuer.
+      - name: sort_index
+        description: Ordering value used to select an academic term when deduplicating records.
