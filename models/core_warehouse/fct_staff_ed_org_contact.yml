@@ -1,0 +1,99 @@
+# SPDX-FileCopyrightText: 2022 Education Analytics
+# SPDX-License-Identifier: MPL-2.0
+
+version: 1
+
+models:
+  - name: fct_staff_ed_org_contact
+    config:
+      tags: ['core']
+
+    constraints:
+      - type: primary_key
+        columns: [k_staff_ed_org_contact]
+
+      - type: foreign_key
+        name: fk__fct_staff_ed_org_contact__staff
+        columns: [k_staff]
+        to: ref('dim_staff')
+        to_columns: [k_staff]
+
+      - type: foreign_key
+        name: fk__fct_staff_ed_org_contact__lea
+        columns: [k_lea]
+        to: ref('dim_lea')
+        to_columns: [k_lea]
+
+      - type: foreign_key
+        name: fk__fct_staff_ed_org_contact__school
+        columns: [k_school]
+        to: ref('dim_school')
+        to_columns: [k_school]
+
+    description: >
+      ##### Overview:
+        This fact table provides contact information for staff associated with education organizations, including email and address information.
+
+
+      ##### Primary Key:
+        `k_staff_ed_org_contact`
+
+
+      ##### Grain:
+        There is one record per staff education organization contact association.
+
+
+      ##### Important Business Rules:
+        Unlike other Ed-Fi resources that support an array of addresses, the Staff Education Organization Contact Association currently supports 
+        a single address. Address attributes are therefore included directly on this fact table rather than modeled as a separate address fact.
+
+
+    columns:
+      - name: k_staff_ed_org_contact
+        description: "Unique key for the staff education organization contact association."
+      - name: k_staff
+        description: "Unique key for staff, foreign key reference to `dim_staff`."
+      - name: k_lea
+        description: "Unique key for LEA, foreign key reference to `dim_lea`."
+      - name: k_school
+        description: "Unique key for school, foreign key reference to `dim_school`."
+      - name: tenant_code
+        description: "Code defining the Tenant (may be an LEA, SEA, etc.) of the EdFi ODS from which this record was pulled"
+      - name: school_year
+        description: "{{ doc('school_year_ods_pull') }}"
+      - name: contact_title
+        description: "The title associated with the staff contact."
+      - name: contact_type
+        description: "The type of staff contact."
+      - name: email_address
+        description: "The email address associated with the staff contact."
+      - name: address_type
+        description: "The type of address associated with the staff contact."
+      - name: street_address
+        description: "The street address associated with the staff contact."
+      - name: apartment_room_suite_number
+        description: "The apartment, room, or suite number associated with the address."
+      - name: city
+        description: "The city associated with the address."
+      - name: state_code
+        description: "The state associated with the address."
+      - name: postal_code
+        description: "The postal code associated with the address."
+      - name: name_of_county
+        description: "The name of the county associated with the address."
+      - name: building_site_number
+        description: "The building or site number associated with the address."
+      - name: locale
+        description: "The locale associated with the address."
+      - name: congressional_district
+        description: "The congressional district associated with the address."
+      - name: county_fips_code
+        description: "The FIPS code for the county associated with the address."
+      - name: do_not_publish
+        description: "Indicates whether the address should not be published."
+      - name: latitude
+        description: "The latitude of the address."
+      - name: longitude
+        description: "The longitude of the address."
+      - name: full_address
+        description: "The fully formatted address."

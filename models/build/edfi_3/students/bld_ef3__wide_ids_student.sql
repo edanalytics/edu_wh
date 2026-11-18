@@ -1,6 +1,24 @@
 -- SPDX-FileCopyrightText: 2022 Education Analytics
 -- SPDX-License-Identifier: MPL-2.0
 
+{{
+  config(
+    materialized="table",
+    schema="build"
+  )
+}}
+
+{#
+    Student ID types are user-configured through xwalk_id_types_student.
+    If none are configured, there are no id_name values to pivot, so
+    skip generating the dynamic ID columns.
+#}
+{% set id_names = dbt_utils.get_column_values(
+    table=ref('xwalk_id_types_student'),
+    column='id_name',
+    order_by='id_name'
+) %}
+
 with student_ids as (
     select * from {{ ref('stg_ef3__stu_ed_org__identification_codes') }}
 ),
@@ -12,17 +30,19 @@ select
     api_year,
     k_student,
     k_student_xyear,
-    ed_org_id,
+    ed_org_id
+
+    {%- if id_names %}
+    ,
     {{ dbt_utils.pivot(column='id_name',
-                       values=dbt_utils.get_column_values(
-                           table=ref('xwalk_id_types_student'), 
-                           column='id_name',
-                           order_by='id_name'),
+                       values=id_names,
                        alias=True,
                        agg='min',
                        then_value='id_code',
                        else_value='null',
                        quote_identifiers=False) }}
+    {%- endif %}
+
 from student_ids
 join xwalk_ids 
     on student_ids.id_system = xwalk_ids.id_system

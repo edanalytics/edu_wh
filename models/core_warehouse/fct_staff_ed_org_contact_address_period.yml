@@ -1,0 +1,47 @@
+# SPDX-FileCopyrightText: 2022 Education Analytics
+# SPDX-License-Identifier: MPL-2.0
+
+version: 1
+
+models:
+  - name: fct_staff_ed_org_contact_address_period
+    config:
+      tags: ['core']
+
+    constraints:
+      - type: primary_key
+        columns: [k_staff_ed_org_contact_address_period]
+
+      - type: foreign_key
+        name: fk__fct_staff_ed_org_contact_address_period__contact
+        columns: [k_staff_ed_org_contact]
+        to: ref('fct_staff_ed_org_contact')
+        to_columns: [k_staff_ed_org_contact]
+
+    description: >
+      ##### Overview:
+        This fact table provides the effective periods for addresses associated with Staff Education Organization Contact Associations.
+
+
+      ##### Primary Key:
+        `k_staff_ed_org_contact_address_period`
+
+
+      ##### Grain:
+        There is one record per staff education organization contact address period.
+
+
+      ##### Important Business Rules:
+        An address without a defined period is represented by a record with a null `address_begin_date` and `address_end_date`.
+        This ensures that every staff education organization contact address is represented in this table, allowing consumers to join
+        to address periods without dropping addresses that do not have explicitly defined periods.
+
+    columns:
+      - name: k_staff_ed_org_contact_address_period
+        description: "Unique key for the staff education organization contact address period. Surrogate key for [`k_staff_ed_org_contact` + `address_begin_date`]."
+      - name: k_staff_ed_org_contact
+        description: "Unique key for the staff education organization contact, foreign key reference to `fct_staff_ed_org_contact`."
+      - name: address_begin_date
+        description: "The first date the address is applicable. Null when no address period is defined."
+      - name: address_end_date
+        description: "The last date the address is applicable. Null when no end date is defined or no address period is defined."

@@ -1,0 +1,82 @@
+# SPDX-FileCopyrightText: 2022 Education Analytics
+# SPDX-License-Identifier: MPL-2.0
+
+version: 1
+
+models:
+  - name: fct_staff_ed_org_employment
+    config:
+      tags: ['core']
+
+    constraints:
+      - type: primary_key
+        columns: [k_staff_ed_org_employment]
+
+      - type: foreign_key
+        name: fk__fct_staff_ed_org_employment__staff
+        columns: [k_staff]
+        to: ref('dim_staff')
+        to_columns: [k_staff]
+
+      - type: foreign_key
+        name: fk__fct_staff_ed_org_employment__lea
+        columns: [k_lea]
+        to: ref('dim_lea')
+        to_columns: [k_lea]
+
+      - type: foreign_key
+        name: fk__fct_staff_ed_org_employment__school
+        columns: [k_school]
+        to: ref('dim_school')
+        to_columns: [k_school]
+
+    description: >
+      ##### Overview:
+        This fact table provides information on the employment association between Staff and Education Organizations. It includes 
+        employment status, employment dates, compensation, and separation information.
+
+
+      ##### Primary Key:
+        `k_staff_ed_org_employment`
+
+
+      ##### Grain:
+        There is one record per staff education organization employment association.
+
+    columns:
+      - name: k_staff_ed_org_employment
+        description: "Unique key for the staff education organization employment association."
+      - name: k_staff
+        description: "Unique key for staff, foreign key reference to `dim_staff`."
+      - name: k_lea
+        description: "Unique key for LEA, foreign key reference to `dim_lea`."
+      - name: k_school
+        description: "Unique key for school, foreign key reference to `dim_school`."
+      - name: tenant_code
+        description: "Code defining the Tenant (may be an LEA, SEA, etc.) of the EdFi ODS from which this record was pulled."
+      - name: school_year
+        description: "{{ doc('school_year_ods_pull') }}"
+      - name: employment_status
+        description: "The status of the staff member's employment."
+      - name: credential_identifier
+        description: "Identifier or serial number assigned to the credential."
+      - name: credential_state
+        description: "The abbreviation for the name of the state (within the United States) or extra-state jurisdiction in which a license/credential was issued."
+      - name: department
+        description: "The department or organizational unit associated with the staff member's employment."
+      - name: hire_date
+        description: "The date on which the staff member was hired for the employment association."
+      - name: end_date
+        description: "The date on which the staff member's employment association ended."
+      - name: full_time_equivalency
+        description: "The ratio between the hours of work expected in a position and the hours of work normally expected in a full-time position in the same setting."
+      - name: hourly_wage
+        description: "The hourly wage associated with the staff member's employment."
+      - name: annual_wage
+        description: "The annual wage associated with the staff member's employment."
+      - name: offer_date
+        description: "The date on which the employment offer was made to the staff member."
+      - name: separation
+        description: "The type of separation associated with the end of the staff member's employment."
+      - name: separation_reason
+        description: "The reason for the staff member's separation from employment."

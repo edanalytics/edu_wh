@@ -1,0 +1,51 @@
+# SPDX-FileCopyrightText: 2022 Education Analytics
+# SPDX-License-Identifier: MPL-2.0
+
+version: 1
+
+models:
+  - name: fct_school_grade_level
+    config:
+      tags: ['core']
+
+    constraints:
+      - type: primary_key
+        columns: [k_school, school_year, grade_level]
+
+      - type: foreign_key
+        name: fk__fct_school_grade_level__school
+        columns: [k_school]
+        to: ref('dim_school')
+        to_columns: [k_school]
+
+    description: >
+      ##### Overview:
+        This fact table identifies the grade levels offered by each school for each school year. It supports reporting on changes to a school's grade-level 
+        configuration over time, such as adding or removing prekindergarten or other grade levels.
+
+
+      ##### Primary Key:
+        `k_school, school_year, grade_level`
+
+
+      ##### Grain:
+        There is one record per school, school year, and grade level.
+
+
+      ##### Important Business Rules:
+        `dim_school` represents a school across all school years and therefore does not include `school_year` as part of its grain. 
+        This fact table is school-year dependent and should be used when determining which grade levels were offered by a school in 
+        a particular year.
+
+        Grade-level attributes may be supplied through the optional `xwalk_grade_levels` seed. If a grade level does not have a matching 
+        crosswalk record, the original `grade_level` is retained and the crosswalk-derived columns are null.
+
+    columns:
+      - name: tenant_code
+        description: "Code defining the Tenant (may be an LEA, SEA, etc.) of the EdFi ODS from which this record was pulled."
+      - name: k_school
+        description: "Unique cross-year key for the school, foreign key reference to `dim_school`."
+      - name: school_year
+        description: "{{ doc('school_year_ods_pull') }}"
+      - name: grade_level
+        description: "The grade level offered by the school during the specified school year."
