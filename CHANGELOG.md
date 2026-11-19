@@ -3,6 +3,14 @@
 ## Under the hood
 ## Fixes
 
+# edu_wh v0.7.4
+## New features
+## Changes
+## Under the hood
+- Raised the minimum required dbt version to `1.10.8` and allowed dbt v2 (`require-dbt-version: [">=1.10.8", "<3.0.0"]`). Projects on dbt `1.10.5` to `1.10.7` need to upgrade dbt before installing this release.
+- Removed the deprecated `target-path` setting from `dbt_project.yml`. It was set to the default (`target`), so compiled output still goes to the same place.
+## Fixes
+
 # edu_wh v0.7.3
 ## Under the hood
 - Update License to MPL 2.0
