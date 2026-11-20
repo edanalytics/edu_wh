@@ -10,16 +10,24 @@ models:
         Represents a historical record of student grade point averages, including cumulative and non-cumulative measures.
 
       ##### Primary Key:
-        `k_student_academic_record, gpa_type` -- There is one record per student, education organization (usually school 
+        `k_student_gpa` -- There is one record per student, school year, education organization (usually school
         or LEA), academic term, and GPA type (such as weighted or unweighted). 
-        
         Prior to Data Standard 5, session and cumulative GPAs were optionally included in fields on the student academic record. In these cases,
         the `gpa_type` field will be set to 'Cumulative, unknown weighting' or 'Non-cumulative, unknown weighting'.
 
       ##### Important Business Rules:
         `k_student` is an annualized student identifier, so it will be null unless there is a student record for the relevant school year.
 
+        GPAs are chosen separately from academic records. For each student and school year, this table keeps the GPAs from the newest
+        ODS that has at least one GPA value, which may be older than the ODS used for `fct_student_academic_record`. Because the education
+        organization or term can be recoded between ODS copies, a GPA is not guaranteed to have a matching academic record key, so this
+        table does not include `k_student_academic_record`.
+
       ##### Example Use Cases:
+        To find the academic records for a GPA's student and school year, join to `fct_student_academic_record` on `k_student_xyear` and `school_year`.
+        This can match more than one academic record. Add `academic_term` for term-level matches, keeping in mind that
+        terms can be recoded between ODS copies.
+
         To join to `dim_student` without dropping the records where `k_student` is null (i.e., those without `dim_student` data for the
         year of the GPA record), it is necessary to join on `k_student_xyear` and include some logic to determine which year of student 
         data should be used. One way to do this is using the `is_latest_record` indicator. For example, if a student was most recently
@@ -37,12 +45,7 @@ models:
 
     constraints:
       - type: primary_key
-        columns: [k_student_academic_record, gpa_type]
-      - type: foreign_key
-        name: fk__fct_student_gpa__k_student_academic_record
-        columns: [k_student_academic_record]
-        to: ref('fct_student_academic_record')
-        to_columns: [k_student_academic_record]
+        columns: [k_student_gpa]
       - type: foreign_key
         name: fk__fct_student_gpa__k_student
         columns: [k_student]
@@ -50,7 +53,10 @@ models:
         to_columns: [k_student]
 
     columns:
-      - name: k_student_academic_record
+      - name: k_student_gpa
+        description: >
+          Defining key for the GPA, generated from tenant, school year, student, education organization, academic term, and GPA type.
+          It does not include `api_year`, so the key stays the same when a GPA is re-sent in a newer ODS.
       - name: k_student_xyear
         description: Defining key for the student, which is consistent across years.
       - name: k_student

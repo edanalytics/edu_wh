@@ -16,6 +16,11 @@ models:
       ##### Important Business Rules:
         `k_student` is an annualized student identifier, so it will be null unless there is a student record for the relevant school year.
 
+        A student's academic records for a school year can be sent in more than one ODS. For each student and school year, this table
+        keeps the records from the newest ODS that has one. Records from older ODSs are dropped, even if their education organization
+        or term differs, since those fields can be recoded between ODS copies. Course transcripts and GPAs choose their ODS separately,
+        so they may come from an older ODS than the records in this table.
+
       ##### Example Use Cases:
         To join to `dim_student` without dropping the records where `k_student` is null (i.e., those without `dim_student` data for the year 
         of the academic record), it is necessary to join on `k_student_xyear` and include some logic to determine which year of student data 
