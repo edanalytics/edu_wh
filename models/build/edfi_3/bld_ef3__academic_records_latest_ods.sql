@@ -28,8 +28,7 @@ latest_ods as (
     from stg_academic_record
     qualify api_year = max(api_year) over (
         partition by
-            tenant_code,
-            lower(student_unique_id),
+            k_student_xyear,
             school_year
     )
 )

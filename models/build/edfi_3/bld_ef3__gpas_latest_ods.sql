@@ -27,8 +27,7 @@ latest_ods as (
     from combined_gpas
     qualify api_year = max(api_year) over (
         partition by
-            tenant_code,
-            lower(student_unique_id),
+            k_student_xyear,
             school_year
     )
 )

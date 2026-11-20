@@ -2,6 +2,30 @@ with stg_course_transcripts as (
     select * from {{ ref('stg_ef3__course_transcripts') }}
 ),
 
+dim_school as (
+    select * from {{ ref('dim_school') }}
+),
+
+dim_lea as (
+    select * from {{ ref('dim_lea') }}
+),
+
+-- The transcript's academic record reference only has an ed org id, not whether it is a school or an LEA.
+-- Ed-Fi ed org ids are unique across ed org types, so at most one of these joins matches.
+add_keys as (
+    select
+        stg_course_transcripts.*,
+        dim_school.k_school,
+        coalesce(dim_lea.k_lea, dim_school.k_lea) as k_lea  -- fill district if record is specified at school level
+    from stg_course_transcripts
+    left join dim_school
+        on stg_course_transcripts.tenant_code = dim_school.tenant_code
+        and stg_course_transcripts.student_academic_record_ed_org_id = dim_school.school_id
+    left join dim_lea
+        on stg_course_transcripts.tenant_code = dim_lea.tenant_code
+        and stg_course_transcripts.student_academic_record_ed_org_id = dim_lea.lea_id
+),
+
 -- A newer ODS can have a student's academic record without any of their courses.
 -- So we choose where to get transcripts separately from where we get academic records.
 -- For example:
@@ -18,11 +42,10 @@ with stg_course_transcripts as (
 
 latest_ods as (
     select *
-    from stg_course_transcripts
+    from add_keys
     qualify api_year = max(api_year) over (
         partition by
-            tenant_code,
-            lower(student_unique_id),
+            k_student_xyear,
             school_year
     )
 )

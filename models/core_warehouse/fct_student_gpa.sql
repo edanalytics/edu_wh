@@ -28,12 +28,15 @@ formatted as (
     select
         -- Give each GPA its own key using tenant, student, school year, ed org, term, and GPA type.
         -- Leave out api_year so receiving the same GPA in a newer ODS doesn't change its key.
+        -- For the ed org, use k_school for school-level records and k_lea for LEA-level records,
+        -- so the key doesn't change if a school's district changes.
+        -- Keep this key built the same way as k_course_transcript in fct_course_transcripts.
         {{ dbt_utils.generate_surrogate_key(
             [
                 'gpas.tenant_code',
+                'gpas.k_student_xyear',
                 'gpas.school_year',
-                'lower(gpas.student_unique_id)',
-                'gpas.ed_org_id',
+                'coalesce(gpas.k_school, gpas.k_lea)',
                 'lower(gpas.academic_term)',
                 'gpas.gpa_type'
             ]
