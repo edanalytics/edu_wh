@@ -1,0 +1,60 @@
+name: sql_dialect_linter
+
+on:
+  pull_request:
+  # Adds a manual "Run workflow" button in the Actions tab. GitHub only
+  # shows that button after this file is merged to main.
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: sql_dialect_linter (${{ matrix.dialect }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      # Run both dialects even if one fails, so we get both results.
+      fail-fast: false
+      matrix:
+        dialect: [databricks, snowflake]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # Skip reinstalling everything if nothing's changed since last time.
+      - name: Cache virtualenv
+        id: cache-venv
+        uses: actions/cache@v6
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ hashFiles('.github/workflows/requirements/sql-linter.txt') }}
+
+      # Installs the exact versions pinned in sql-linter.txt. Skipped
+      # entirely when the cache above already has a matching virtualenv.
+      - name: Install dbt + sqlfluff
+        if: steps.cache-venv.outputs.cache-hit != 'true'
+        run: |
+          python -m venv .venv
+          .venv/bin/pip install -r .github/workflows/requirements/sql-linter.txt
+
+      - name: Put virtualenv on PATH
+        run: echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
+
+      # Skips the dbt deps step below entirely if packages.yml hasn't changed.
+      - name: Cache dbt packages
+        id: cache-dbt-packages
+        uses: actions/cache@v6
+        with:
+          path: dbt_packages
+          key: dbt-packages-${{ hashFiles('packages.yml') }}
+
+      # Downloads edu_edfi_source and dbt_utils, unless the cache above
+      # already has them.
+      - name: dbt deps
+        if: steps.cache-dbt-packages.outputs.cache-hit != 'true'
+        run: dbt deps
+
+      - name: Compile and lint (${{ matrix.dialect }})
+        run: bash .github/scripts/sql_dialect_linter.sh ${{ matrix.dialect }}
