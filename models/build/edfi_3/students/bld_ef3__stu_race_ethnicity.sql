@@ -5,7 +5,7 @@ with stg_stu_races as (
     select * from {{ ref('stg_ef3__stu_ed_org__races') }}
 ),
 stg_stu_ed_org as (
-    select * from {{ ref('stg_ef3__student_education_organization_associations') }}
+    select * from {{ ref('stg_ef3__student_education_organization_associations__unified') }}
 ),
 build_array as (
     select 
