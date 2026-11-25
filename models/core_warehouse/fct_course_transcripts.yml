@@ -15,19 +15,32 @@ models:
        one school during one academic term.
 
       ##### Primary Key:
-        `k_course, k_student_academic_record, course_attempt_result` -- There is one record per course,
-        student, education organization (usually school or LEA), academic term, and course attempt (e.g. Pass or Fail).
+        `k_course_transcript` -- There is one record per course, student, school year, education organization (usually school or LEA),
+        academic term, and course attempt (e.g. Pass or Fail).
 
       ##### Important Business Rules:
         `k_student` is an annualized student identifier, so it will be null unless there is a student record for the relevant school year.
 
         The `course_attempt_result` attribute is included in the unique key for each record. As a result, there may be multiple records
-        with the same values for `k_course` and `k_student_academic_record`, but different values for `course_attempt_result`.
-        For example, a student may have both passed and failed a course in a given term. Queries must consider the potential for multiple 
-        `course_attempt_result` values per combination of `k_course` and `k_student_academic_record`, and either aggregate the data 
+        for the same course, student, and term, but different values for `course_attempt_result`.
+        For example, a student may have both passed and failed a course in a given term. Queries must consider the potential for multiple
+        `course_attempt_result` values per course, student, and term, and either aggregate the data
         or choose a specific `course_attempt_result` to avoid incorrect results.
 
+        Transcripts are chosen separately from academic records. For each student and school year, this table keeps the transcript lines
+        from the newest ODS that has at least one, which may be older than the ODS used for `fct_student_academic_record`. Because the
+        education organization or term can be recoded between ODS copies, a transcript line is not guaranteed to have a matching academic
+        record key, so this table does not include `k_student_academic_record`.
+
+        `k_school` and `k_lea` are found by looking up the academic record's education organization in `dim_school` and `dim_lea`.
+        If that education organization is not in either dimension, both will be null.
+
       ##### Example Use Cases:
+        To find the academic records for a transcript line's student and school year, join to `fct_student_academic_record` on
+        `k_student_xyear` and `school_year`. This can match more than one academic record. Add `academic_term` for term-level matches,
+        keeping in mind that terms can be recoded between ODS copies.
+
+
         To join to `dim_student` without dropping the records where `k_student` is null (i.e., those without `dim_student` data for the year 
         of the transcript record), it is necessary to join on `k_student_xyear` and include some logic to determine which year of student data 
         should be used. One way to do this is using the `is_latest_record` indicator. For example, if a student was most recently enrolled 
@@ -45,17 +58,12 @@ models:
 
     constraints:
       - type: primary_key
-        columns: [k_course, k_student_academic_record, course_attempt_result]
+        columns: [k_course_transcript]
       - type: foreign_key
         name: fk__fct_course_transcripts__k_course
         columns: [k_course]
         to: ref('dim_course')
         to_columns: [k_course]
-      - type: foreign_key
-        name: fk__fct_course_transcripts__k_student_academic_record
-        columns: [k_student_academic_record]
-        to: ref('fct_student_academic_record')
-        to_columns: [k_student_academic_record]
       - type: foreign_key
         name: fk__fct_course_transcripts__k_student
         columns: [k_student]
@@ -66,12 +74,14 @@ models:
       - dbt_utils.unique_combination_of_columns:
           arguments:
             combination_of_columns:
-              - k_course
-              - k_student_academic_record
-              - course_attempt_result
+              - k_course_transcript
     columns:
+      - name: k_course_transcript
+        description: >
+          Defining key for the transcript line, generated from tenant, school year, student, academic record education organization,
+          academic term, course code, course education organization, and course attempt result.
+          It does not include `api_year`, so the key stays the same when a transcript line is re-sent in a newer ODS.
       - name: k_course
-      - name: k_student_academic_record
       - name: k_lea
       - name: k_school
       - name: k_student_xyear
